@@ -1,0 +1,17 @@
+{
+  "servingProcessesUnchanged": true,
+  "servingProcesses": [
+    {
+      "LocalPort": 3100,
+      "OwningProcess": 6272
+    },
+    {
+      "LocalPort": 3011,
+      "OwningProcess": 9152
+    },
+    {
+      "LocalPort": 3001,
+      "OwningProcess": 6272
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "riftbound-rules-assistant",
+  "version": "0.1.5",
+  "private": true,
+  "description": "Riftbound rules and tournament assistant prototype",
+  "scripts": {
+    "start": "node src/manager.js",
+    "manager": "node src/manager.js",
+    "sources:check": "node scripts/content-sync.js",
+    "sources:watch": "node scripts/content-sync.js --watch",
+    "knowledge:status": "node scripts/knowledge.js status"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "devDependencies": {
+    "pdfjs-dist": "5.6.205"
+  }
+}

@@ -1,0 +1,11 @@
+.env
+node_modules/
+logs/*.jsonl
+tmp/
+.DS_Store
+# Locally collected prototype data; keep out of source-code distribution.
+knowledge/cards.json
+knowledge/imports/
+knowledge/card-history/
+knowledge/source-translations/
+private/

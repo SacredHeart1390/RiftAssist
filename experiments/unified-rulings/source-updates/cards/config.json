@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "mode": "inbox",
+  "remoteUrl": "",
+  "intervalHours": 24,
+  "note": "리프트나루 제공 JSON 주소 미확보. 현재 파일 가져오기만 활성화되어 있습니다."
+}

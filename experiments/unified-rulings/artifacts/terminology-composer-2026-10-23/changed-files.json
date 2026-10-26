@@ -1,0 +1,17 @@
+{
+  "createdAt": "2026-10-23T00:23:44.978Z",
+  "baseRelease": "v0.1.5",
+  "nextRelease": "v0.1.6",
+  "changed": [
+    "src/cards.js",
+    "src/retrieval.js",
+    "src/server.js",
+    "src/source-translations.js",
+    "src/terminology-ko.js",
+    "public/app-ui5.js",
+    "public/card-composer-ui3.js",
+    "public/index.html",
+    "public/service-worker.js",
+    "public/styles-ui5.css"
+  ]
+}

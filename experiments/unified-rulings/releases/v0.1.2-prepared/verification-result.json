@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-20T13:43:25.620Z",
+  "passed": [
+    "정상 자료의 해시와 구조",
+    "점멸 4장 질문과 기본 규칙 연결",
+    "명시 조항·대회 절차·카드 효과 구분",
+    "검토·경합 차단과 요청별 자료 유지",
+    "손상 자료 거절·정상 자료 유지·복구",
+    "진행 중 응답 유지와 새 앱 전환",
+    "실패한 앱 전환 시 기존 앱 유지",
+    "공개 주소 전달",
+    "실제 앱·카드검색·하단 안내",
+    "관리·비밀 파일 미공개와 다른 사이트 요청 차단"
+  ],
+  "count": 10,
+  "paidCalls": 0,
+  "productionDbTouched": false,
+  "fixture": "C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tmp\\release-check-JzOcWm"
+}

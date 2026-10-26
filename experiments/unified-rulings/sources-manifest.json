@@ -1,0 +1,72 @@
+[
+  {
+    "id": "official-core-rules",
+    "title": "Riftbound Core Rules",
+    "kind": "official",
+    "url": "https://riftbound.gg/rules/core-rules/",
+    "englishPdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+    "koreanPdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf",
+    "version": "2026-10-09",
+    "status": "indexed-local-bilingual",
+    "indexedClauseCount": 2494,
+    "note": "2,493 clauses are paired by rule number; one additional English clause has no matching Korean clause in this PDF."
+  },
+  {
+    "id": "official-tournament-rules",
+    "title": "Riftbound Tournament Rules",
+    "kind": "official",
+    "url": "https://riftbound.gg/rules/tournament-rules/",
+    "englishPdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861752822d217edf37d9febaeaf77a7d924c1bb6.pdf",
+    "koreanPdf": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/6e1f622e65081b2975853b603eaaef33fec74afb.pdf",
+    "version": "2026-10-09",
+    "status": "indexed-local-bilingual",
+    "indexedClauseCount": 977,
+    "note": "975 clauses are paired; one English-only and one Korean-only clause have no matching rule number in the other PDF."
+  },
+  {
+    "id": "core-radiance-patch-notes",
+    "title": "Core Rules: Radiance Patch Notes",
+    "kind": "official-supplement",
+    "version": "2026-10-16",
+    "englishUrl": "https://playriftbound.com/en-us/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/",
+    "koreanUrl": "https://playriftbound.com/ko-kr/news/announcements/core-rules-radiance-patch-notes-effective-october-16-2026/",
+    "status": "indexed-local-bilingual",
+    "note": "Official current core-rule update and Q&A; effective October 16, 2026."
+  },
+  {
+    "id": "october-tournament-changelog",
+    "title": "October 2026 Tournament Rules Changelog",
+    "kind": "official-supplement",
+    "version": "2026-10-16",
+    "englishUrl": "https://playriftbound.com/en-us/news/announcements/october-2026-tournament-rules-changelog/",
+    "koreanUrl": "https://playriftbound.com/ko-kr/news/announcements/october-2026-tournament-rules-changelog/",
+    "status": "indexed-local-bilingual",
+    "note": "Official tournament-policy changes effective with the Radiance Pre-Rift on October 16, 2026."
+  },
+  {
+    "id": "radiance-errata",
+    "title": "Radiance Errata Updates",
+    "kind": "official-supplement",
+    "version": "2026-10-09",
+    "englishUrl": "https://playriftbound.com/en-us/news/announcements/radiance-errata-updates/",
+    "status": "indexed-local-english",
+    "note": "Official English card text errata. The localized page did not provide a matching article version, so no Korean translation is fabricated."
+  },
+  {
+    "id": "riftjudge",
+    "title": "RiftJudge Q&A",
+    "kind": "community-live-search",
+    "url": "https://app.riftjudge.com/",
+    "searchApi": "https://app.riftjudge.com/api/search",
+    "status": "live-search-per-question",
+    "note": "Does not bulk-copy the site's Q&A corpus. Retrieves matching public cases at question time, fetches full answer/status/version, and links to the source page."
+  },
+  {
+    "id": "official-rules-hub",
+    "title": "Riftbound Rules Hub",
+    "kind": "official",
+    "url": "https://playriftbound.com/ko-kr/rules-hub/",
+    "status": "update-check-source",
+    "note": "Official hub for checking current releases and PDF versions before refreshing the index."
+  }
+]

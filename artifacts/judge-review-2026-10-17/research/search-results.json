@@ -1,0 +1,350 @@
+[
+  {
+    "query": "buff already buffed unit multiple buffs",
+    "results": [
+      {
+        "id": 6583,
+        "question": "Can a unit have more than one buff?",
+        "answer_snippet": "Ruling: A unit can only have one buff at a time.\n\nNuances:\n- Effects like [Assault] or [Shield] are not considered buffs, so they can coexist with a buff on the same unit.",
+        "score": 0.7297
+      },
+      {
+        "id": 9051,
+        "question": "Can a unit be buffed +2?",
+        "answer_snippet": "No, a unit cannot be buffed +2.\n\nAccording to **CR 702.3**, there can only be one Buff on a unit at a time. Furthermore, **CR 703** states that each Buff individually contributes exactly +1 Might to a unit.\n\nBecause a unit can only have one Buff coun...",
+        "score": 0.6837
+      },
+      {
+        "id": 653,
+        "question": "Can a unit have multiple buffs applied to it at the same time?",
+        "answer_snippet": "Ruling: A unit can only have one buff at a time unless a card specifically states otherwise.\n\nNuances:\n- You can still attempt to buff an already buffed unit, but the action will have no effect",
+        "score": 0.6828
+      },
+      {
+        "id": 5423,
+        "question": "Can you buff a unit that already has a buff, and does it replace the existing buff?",
+        "answer_snippet": "Ruling: A unit cannot have multiple buffs unless specifically stated (like \"any number of buffs\"). You cannot replace an existing buff by buffing the unit again.\n\nNuances:\n- You can still choose to target a buffed unit with another buff effect, but o...",
+        "score": 0.6332
+      }
+    ]
+  },
+  {
+    "query": "standard move battlefield to another battlefield",
+    "results": [
+      {
+        "id": 12774,
+        "question": "can i move an unit from one battlefield to another if I control both",
+        "answer_snippet": "Not with a Standard Move — a normal unit can only Standard Move Base→Battlefield or Battlefield→Base (Rule 144.4); Battlefield→Battlefield requires the **Ganking** keyword (Rule 810.1.b).\n\nIf the unit has Ganking, yes: exhaust it during your Main Pha...",
+        "score": 0.7393
+      },
+      {
+        "id": 12668,
+        "question": "Can i plau marching order to different battlefield with repeat",
+        "answer_snippet": "Yes. Repeat lets you make fresh choices for the additional execution, so the second \"fight\" can involve entirely different units at a different battlefield.\n\nFAQ #719 uses exactly this card as the example: you could target unit A to fight enemy unit ...",
+        "score": 0.6555
+      },
+      {
+        "id": 3296,
+        "question": "Can you move an enemy unit from one battlefield to another?",
+        "answer_snippet": "Ruling: Yes, it is possible to move an enemy unit from one battlefield to another.\n\nNuances:\n- The asker specifically mentioned this in the context of \"ganking\" (concentrating forces against an opponent)",
+        "score": 0.6479
+      },
+      {
+        "id": 11628,
+        "question": "Can I move units from different battlefields with Emperors Divide?",
+        "answer_snippet": "**No.** Emperor's Divide can only move units from a single battlefield. The card text says \"at **a** battlefield\" (singular), so you must choose one battlefield and move units only from that location.\n\nIf it were intended to affect multiple battlefie...",
+        "score": 0.628
+      }
+    ]
+  },
+  {
+    "query": "mana pool empty end turn",
+    "results": [
+      {
+        "id": 7050,
+        "question": "When does floating energy empty from a player's pool?",
+        "answer_snippet": "Ruling: Each player's pool empties at the end of each turn and after the draw phase.\n\nNuances:\n- Energy can be floated throughout a turn, allowing players to recycle runes and hold up resources until they decide to play something\n- The draw phase emp...",
+        "score": 0.5121
+      },
+      {
+        "id": 5729,
+        "question": "Why does the rune pool empty after the draw phase (in addition to at end of turn)?",
+        "answer_snippet": "Ruling: The rune pool empties after the draw phase to prevent potential exploits where players could float resources from exhausting/recycling runes during the Beginning step, then immediately re-channel those runes for excessive resources in a singl...",
+        "score": 0.5085
+      },
+      {
+        "id": 8992,
+        "question": "How many times does your mana pool empty per turn?",
+        "answer_snippet": "According to Rule 163 and multiple RiftJudge FAQs, your rune pool (which holds your Energy and Power) empties **twice** per turn:\n\n1.  **After the draw phase:** This is to prevent exploits where players could float resources from the beginning of the...",
+        "score": 0.4731
+      },
+      {
+        "id": 5618,
+        "question": "When does the rune pool empty?",
+        "answer_snippet": "Ruling: The rune pool empties at two specific times during your turn: at the end of the draw step and at the end of the turn.\n\nSequence:\n- End of draw step\n- End of turn\n\nNuances:\n- The rune pool does not empty at the end of your opponent's turn\n- Th...",
+        "score": 0.4728
+      }
+    ]
+  },
+  {
+    "query": "spell all targets illegal draw card",
+    "results": [
+      {
+        "id": 1612,
+        "question": "Can I cast a spell without legal targets (like Stupefy) just to draw a card?",
+        "answer_snippet": "Ruling: No, if a spell needs a target, you can't cast it without a valid target.\n\nNuances:\n- If there is a valid target when you cast the spell, but the target becomes invalid before resolution, you'll still draw the card\n- You cannot cast a spell wi...",
+        "score": 0.6619
+      },
+      {
+        "id": 5431,
+        "question": "Can a spell that targets something be played if there are no valid targets?",
+        "answer_snippet": "Ruling: No, you cannot play a spell that targets if there are no legal targets available. You must have legal targets to put a spell on the chain and finalize it.\n\nNuances:\n- Spells that say \"up to ___ targets\" or \"any number of targets\" can choose t...",
+        "score": 0.6316
+      },
+      {
+        "id": 1833,
+        "question": "If a spell like Void Seeker has multiple instructions (deal damage to a target, then draw a card), and the target becomes illegal, does the draw still resolve?",
+        "answer_snippet": "Ruling: When a spell has separate instructions and the target becomes illegal, only the instruction requiring the illegal target fails to execute. Other instructions that don't require that target still resolve.\n\nSequence:\n- The deal damage instructi...",
+        "score": 0.6172
+      },
+      {
+        "id": 1342,
+        "question": "Can you play a hidden card if it has no legal targets available?",
+        "answer_snippet": "Ruling: No, you cannot play a card from hidden if you cannot choose all legal targets. Cards need all legal targets to be played.\n\nSequence:\n- Choosing targets is part of playing a card\n- If you can't choose targets, you can't play the card\n- This ap...",
+        "score": 0.6
+      }
+    ]
+  },
+  {
+    "query": "combat damage simultaneous stunned unit",
+    "results": [
+      {
+        "id": 5525,
+        "question": "What happens if there are two units stunned at the same battlefield?",
+        "answer_snippet": "Ruling: When two units are stunned at the same battlefield, the attacker gets recalled to base during combat cleanup.\n\nSequence:\n- Combat occurs with both units stunned\n- During combat cleanup, the attacker is recalled to base",
+        "score": 0.7338
+      },
+      {
+        "id": 4484,
+        "question": "What happens if a unit is stunned but the opposing units don't have enough damage to kill it in combat?",
+        "answer_snippet": "Ruling: The attacking units will be recalled to base during the combat cleanup after combat damage.\n\nSequence:\n- Combat damage occurs\n- During combat cleanup, attacking units are recalled to base (even if the stunned defender survives)",
+        "score": 0.719
+      },
+      {
+        "id": 7227,
+        "question": "How does combat damage work with stunned units, and how is damage distributed among multiple blocking/attacking units?",
+        "answer_snippet": "Ruling: Each player adds up the total might on their side of combat and distributes that damage to opposing units simultaneously. Stunned units do not contribute their might to their side's total. After damage is dealt, units with damage marked equal...",
+        "score": 0.7149
+      },
+      {
+        "id": 9251,
+        "question": "Does a stunned unit deal damage when challenged?",
+        "answer_snippet": "Yes, a stunned unit deals damage when targeted by the spell **Challenge**.\n\nAccording to **FAQ 3841** and **FAQ 6766**, a stunned unit can deal damage via the spell **Challenge** because the Stun condition only prevents combat damage, not damage deal...",
+        "score": 0.6993
+      }
+    ]
+  },
+  {
+    "query": "unit played exhausted accelerate ready",
+    "results": [
+      {
+        "id": 10757,
+        "question": "When play from hidden, does unit exhaust or ready?",
+        "answer_snippet": "According to Rule 811.1.c.3 and the related FAQs (such as FAQ #1908 and #8277), units played from **Hidden** follow the same rules as playing a unit from your hand.\n\n**Ruling: Units played from Hidden enter the battlefield exhausted by default.**\n\nWh...",
+        "score": 0.6048
+      },
+      {
+        "id": 2808,
+        "question": "Can you pay the Accelerate cost to ready a unit that is already in play on the battlefield?",
+        "answer_snippet": "Ruling: No, you cannot pay the Accelerate cost to ready a unit already on the battlefield. Accelerate provides an optional cost and effect only when you play the card, not an activated ability that the card has once it's on the board.",
+        "score": 0.5632
+      },
+      {
+        "id": 5605,
+        "question": "If a unit is ready at a battlefield due to Ride the Wind, the opponent plays Rebuke, and then Flash is played in response, does the unit end up exhausted or ready at base?",
+        "answer_snippet": "Ruling: The unit ends up ready at base.\n\nNuances:\n- Units become exhausted after a Standard Move because exhausting is the cost to perform a standard move\n- Most other move effects (like Flash) leave the unit in whatever state it was already in",
+        "score": 0.555
+      },
+      {
+        "id": 4386,
+        "question": "When playing a piece of equipment, does it enter the base readied or exhausted?",
+        "answer_snippet": "Ruling: Equipment enters the battlefield ready by default (unless specified otherwise on the card).\n\nNuances:\n- Equipping or using the equip ability does not require the equipment to be ready\n- You can use the equip ability while the equipment is tap...",
+        "score": 0.5521
+      }
+    ]
+  },
+  {
+    "query": "conquer same battlefield twice turn points",
+    "results": [
+      {
+        "id": 2676,
+        "question": "Can you conquer the same battlefield more than once in a turn?",
+        "answer_snippet": "Ruling: You cannot conquer a battlefield twice in a turn. You can take control of the same battlefield multiple times, but \"conquer\" only happens when you score a point from taking control, and you can only score once per battlefield per turn.\n\nNuanc...",
+        "score": 0.7527
+      },
+      {
+        "id": 6578,
+        "question": "Can you score the same battlefield twice in one turn by conquering it, losing it, then reconquering it?",
+        "answer_snippet": "Ruling: You can only score each battlefield once per turn. If you've already scored it from a conquer or hold that turn, you can't score it again.\n\nNuances:\n- This applies even if you conquer a battlefield, then lose control of it (such as by using C...",
+        "score": 0.751
+      },
+      {
+        "id": 244,
+        "question": "Can the same battlefield be scored twice in one turn by different players (once by holding, once by conquering)?",
+        "answer_snippet": "Ruling: Yes, the same battlefield can be scored twice in one turn by different players. The restriction that \"a player may only score once per battlefield per turn\" applies to each individual player, not to both players collectively.\n\nSequence:\n- Pla...",
+        "score": 0.738
+      },
+      {
+        "id": 2205,
+        "question": "Can I conquer an open battlefield twice in the same round and still win the points?",
+        "answer_snippet": "Ruling: You can only score a battlefield once per turn. If you conquer a battlefield, lose control, then gain control again in the same turn, you don't conquer it again.\n\nNuances:\n- A battlefield is only considered conquered if you can score from it\n...",
+        "score": 0.715
+      }
+    ]
+  },
+  {
+    "query": "hidden card lose control battlefield",
+    "results": [
+      {
+        "id": 3662,
+        "question": "What happens to a hidden card on a battlefield when the player who played it loses control of that battlefield?",
+        "answer_snippet": "Ruling: When a player loses control of a battlefield that has their hidden card on it, the hidden card goes to the graveyard.",
+        "score": 0.6133
+      },
+      {
+        "id": 9245,
+        "question": "What happens to hidden cards after its controller loses control over the battlefield?",
+        "answer_snippet": "According to the official rules and FAQs, when a player loses control of a battlefield that has their hidden card on it, the hidden card is sent to the trash.\n\nThis is supported by several RiftJudge FAQs:\n\n*   **FAQ 3662:** \"Ruling: When a player los...",
+        "score": 0.6085
+      },
+      {
+        "id": 6143,
+        "question": "If a player controls a battlefield with a hidden card, and all their units are removed during combat, do they lose control immediately or can they still use the hidden card?",
+        "answer_snippet": "Ruling: During combat, you maintain control of a battlefield even if all your units are removed, until combat fully resolves. This allows you to use your hidden card even without units present.\n\nSequence:\n- Combat is initiated at a battlefield\n- If a...",
+        "score": 0.6004
+      },
+      {
+        "id": 3989,
+        "question": "If you control a battlefield with 1 unit and a hidden card, and the unit is killed, what happens to the hidden card?",
+        "answer_snippet": "Ruling: When your last unit is removed from a battlefield, you lose control of that battlefield and your hidden card gets trashed.\n\nNuances:\n- You can react with your hidden card to whatever effect would remove your unit from that battlefield, allowi...",
+        "score": 0.5892
+      }
+    ]
+  },
+  {
+    "query": "late match two minutes tournament",
+    "results": [
+      {
+        "id": 4557,
+        "question": "If a match reaches 1-1 in games with only a few minutes left on the clock, do players proceed to a third game?",
+        "answer_snippet": "Ruling: Yes, players start game 3. When time in the round is called, the match goes to turns, and whoever has the most points at the end of turns wins the game.\n\nSequence:\n- Start game 3\n- When time is called, proceed to turns\n- Player with the most ...",
+        "score": 0.5361
+      },
+      {
+        "id": 1272,
+        "question": "What is the time limit for one match in a Summoner Skirmish tournament, and how much time should be given between matches?",
+        "answer_snippet": "Ruling: Summoner Skirmish should be run at high OPL with 50 minute rounds. When time runs out, play 5 more turns after the current one ends. Time between rounds is up to the LGS to decide.\n\nSequence:\n- 50 minute round timer starts\n- When time expires...",
+        "score": 0.4841
+      },
+      {
+        "id": 2764,
+        "question": "Is it legal for the top 2 players to intentionally draw during the last match of the Swiss phase in a competitive event?",
+        "answer_snippet": "Ruling: Intentional draws are 100% legal at any point in a tournament, including the last match of Swiss. Players may mutually agree to draw a game or match at any time before it is completed, as long as no bribery or out-of-game incentives are invol...",
+        "score": 0.4828
+      },
+      {
+        "id": 4011,
+        "question": "In a single elimination Top 64 with 50-minute timed rounds, what happens if a game is still tied after the 5 extra turns?",
+        "answer_snippet": "Ruling: After the 50-minute round timer expires and the current turn ends, players play 5 additional turns. After those 5 turns, whoever has the highest score wins that game, or the game is tied. However, Top 8 and playoff portions should be untimed ...",
+        "score": 0.481
+      }
+    ]
+  },
+  {
+    "query": "appeal head judge ruling tournament",
+    "results": [
+      {
+        "id": 7550,
+        "question": "If a judge makes an incorrect ruling that affects the outcome of a game, what is the correct procedure to correct this?",
+        "answer_snippet": "Ruling: Most of the time judge mistakes will not be caught until well after the call has been made, so the vast majority of the time the resolution is to acknowledge the mistake and move on.\n\nNuances:\n- At low OPL events, the resolution is typically ...",
+        "score": 0.5804
+      },
+      {
+        "id": 570,
+        "question": "How should a judge rule when 4 players at a skirmish tournament sit at the wrong tables and play incorrect matchups, with less than 5 minutes remaining when notified?",
+        "answer_snippet": "Ruling: At competitive level (skirmish), all four players should receive a match loss for improperly determining a winner. If table numbers are clearly assigned, only the two players who sat at the wrong table receive match losses, while the players ...",
+        "score": 0.5574
+      },
+      {
+        "id": 2981,
+        "question": "Are judges allowed to play in tournaments, and what happens when judge calls take significant time during a match?",
+        "answer_snippet": "Ruling: Judges are allowed to play in low OPL events like Nexus Nights/release events, but not in high OPL events like Summoner Skirmish. Time extensions should be granted for rulings that take over 1 minute.\n\nNuances:\n- The specific policies for low...",
+        "score": 0.5495
+      },
+      {
+        "id": 5409,
+        "question": "How should a judge handle informing players about a wrong ruling that was made in a previous game?",
+        "answer_snippet": "Ruling: Inform the players of the correct ruling and apologize, but do not interrupt their current game to do so.\n\nSequence:\n- Wait until the players' current match is completed\n- Before the next round starts, inform them of the correct ruling\n- Apol...",
+        "score": 0.54
+      }
+    ]
+  },
+  {
+    "query": "sideboard first game game loss tournament",
+    "results": [
+      {
+        "id": 10723,
+        "question": "Can I sideboard in game 1 before the game starts?",
+        "answer_snippet": "No, you cannot sideboard in the first game of a match.\n\nAccording to **Rule 403.5** of the Tournament Rules: \"Players may not use sideboard cards in the first game of a match.\" Additionally, per **TR 406.1.f**, the start-of-game procedure—which inclu...",
+        "score": 0.5748
+      },
+      {
+        "id": 9366,
+        "question": "Can I side board cards in on the first match in a best of 3?",
+        "answer_snippet": "No, you cannot sideboard cards in the first game of a match.\n\nAccording to **Rule 403.5** of the Tournament Rules: \"Players may not use sideboard cards in the first game of a match.\" Sideboarding is only permitted between games of a match (Rule 403.4...",
+        "score": 0.5596
+      },
+      {
+        "id": 12353,
+        "question": "Low opl game 2 opponent forget to shuffle the trash to deck",
+        "answer_snippet": "Yes — this is a **Deck Presentation Error** (TR 703.4.a.4: incorrect deck size, e.g. forgetting to shuffle cards back into the deck between games), and at low OPL the fix is a **Warning** plus restoring the deck — no game loss, no rewind.\n\nThe remedy...",
+        "score": 0.5439
+      },
+      {
+        "id": 7143,
+        "question": "When a player starts with a game loss, do they still roll to decide who goes first, or does the player with the game loss get to choose (as in game 2)?",
+        "answer_snippet": "Ruling: When a player starts with a game loss, it is treated as game 2, and the player who received the game loss gets to choose who goes first or second. No sideboarding is allowed.\n\nSequence:\n- Game 1 is skipped due to the game loss\n- The match pro...",
+        "score": 0.5398
+      }
+    ]
+  },
+  {
+    "query": "written notes sideboarding opening hands tournament",
+    "results": [
+      {
+        "id": 7895,
+        "question": "Can you bring and reference a sideboard guide (notes made before the tournament) during a match in Riftbound?",
+        "answer_snippet": "Ruling: You can bring pre-made sideboard guides and reference them between games, but they must not be visible or accessible during individual games. Your active note-taking sheet that is visible during gameplay must start blank at the beginning of e...",
+        "score": 0.5791
+      },
+      {
+        "id": 6360,
+        "question": "Can I look up sideboard notes between games 1&2 and between games 2&3?",
+        "answer_snippet": "Ruling: Yes, you can look up sideboard notes between games.\n\nNuances:\n- You can refer to written notes made prior to the match between games (TR 416.5), but you must stop once opening hands are drawn (before mulligans)\n- You do not have to reveal the...",
+        "score": 0.571
+      },
+      {
+        "id": 2817,
+        "question": "Can players use pre-written notes (like sideboard guides) during a match in Riftbound?",
+        "answer_snippet": "Ruling: Players must start each match with a blank note sheet visible to opponents, but between games they may refer to notes made prior to the match (such as sideboard guides). These pre-made notes cannot be consulted during a game itself, only betw...",
+        "score": 0.5707
+      },
+      {
+        "id": 10723,
+        "question": "Can I sideboard in game 1 before the game starts?",
+        "answer_snippet": "No, you cannot sideboard in the first game of a match.\n\nAccording to **Rule 403.5** of the Tournament Rules: \"Players may not use sideboard cards in the first game of a match.\" Additionally, per **TR 406.1.f**, the start-of-game procedure—which inclu...",
+        "score": 0.5636
+      }
+    ]
+  }
+]

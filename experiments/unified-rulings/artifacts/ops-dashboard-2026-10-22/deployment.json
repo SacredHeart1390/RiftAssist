@@ -1,0 +1,100 @@
+{
+  "before": {
+    "recordedAt": "2026-10-22T01:21:43.533Z",
+    "managerPid": 22164,
+    "workerPid": 24624,
+    "appRunning": true,
+    "activeOrigin": "https://mustang-science-violation-declaration.trycloudflare.com",
+    "tunnel": "connected",
+    "error": "",
+    "appHost": {
+      "releaseId": "v0.1.4",
+      "workerPort": 3011,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "day": "2026-10-22",
+    "calls": [
+      {
+        "kind": "answer",
+        "count": 3,
+        "inputTokens": 9791,
+        "outputTokens": 1879,
+        "usageUnknown": 0
+      }
+    ],
+    "limits": {
+      "questions": 100,
+      "generations": 30,
+      "translations": 30,
+      "sessionQuestions": 10,
+      "sessionTranslations": 10,
+      "reports": 100,
+      "sessionReports": 5,
+      "concurrent": 3
+    },
+    "aiEnabled": true
+  },
+  "after": {
+    "recordedAt": "2026-10-22T01:21:43.583Z",
+    "managerPid": 22164,
+    "workerPid": 24624,
+    "appRunning": true,
+    "activeOrigin": "https://mustang-science-violation-declaration.trycloudflare.com",
+    "tunnel": "connected",
+    "error": "",
+    "appHost": {
+      "releaseId": "v0.1.4",
+      "workerPort": 3011,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "day": "2026-10-22",
+    "calls": [
+      {
+        "kind": "answer",
+        "count": 3,
+        "inputTokens": 9791,
+        "outputTokens": 1879,
+        "usageUnknown": 0
+      }
+    ],
+    "limits": {
+      "questions": 100,
+      "generations": 30,
+      "translations": 30,
+      "sessionQuestions": 10,
+      "sessionTranslations": 10,
+      "reports": 100,
+      "sessionReports": 5,
+      "concurrent": 3
+    },
+    "aiEnabled": true
+  },
+  "files": [
+    {
+      "name": "index.html",
+      "httpStatus": 200,
+      "bytes": 7944,
+      "sha256": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804"
+    },
+    {
+      "name": "manager.css",
+      "httpStatus": 200,
+      "bytes": 4907,
+      "sha256": "160d4bf045c6a5099a4b21847ea7bcdd8962c5d6f6a32973515564e463a13ff0"
+    },
+    {
+      "name": "manager.js",
+      "httpStatus": 200,
+      "bytes": 44727,
+      "sha256": "6030ed168e3cf1be761417222f70ae2cb82595a2fb0ebea2d331ef33aa92fecc"
+    }
+  ],
+  "processesAndAddressPreserved": true,
+  "paidAiCallsMadeByThisTask": 0
+}

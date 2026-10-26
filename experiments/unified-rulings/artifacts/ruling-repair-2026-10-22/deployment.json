@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-22T21:35:01.304Z",
+  "before": {
+    "appRunning": true,
+    "activeOrigin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected",
+    "appHost": {
+      "releaseId": "v0.1.4",
+      "workerPort": 3011,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "error": ""
+  },
+  "after": {
+    "appRunning": true,
+    "activeOrigin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected",
+    "appHost": {
+      "releaseId": "v0.1.5",
+      "workerPort": 3012,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "error": ""
+  },
+  "gatewaySamples": [
+    {
+      "at": "2026-10-22T21:35:00.658Z",
+      "status": 200
+    },
+    {
+      "at": "2026-10-22T21:35:01.214Z",
+      "status": 200
+    }
+  ],
+  "servedFiles": [
+    "index.html",
+    "app-ui4.js",
+    "styles-ui4.css",
+    "service-worker.js",
+    "app-ui3.js"
+  ],
+  "health": {
+    "ok": true,
+    "version": "0.1.5",
+    "appReleaseId": "v0.1.5"
+  }
+}

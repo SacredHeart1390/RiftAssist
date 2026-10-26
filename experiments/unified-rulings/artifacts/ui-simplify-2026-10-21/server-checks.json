@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-21T07:37:02.888Z",
+  "uiRevision": "simplify-tab-2b",
+  "assets": [
+    {
+      "name": "index.html",
+      "http": 200,
+      "liveMatches": true,
+      "sourceMatches": true,
+      "manifestMatches": true
+    },
+    {
+      "name": "app-ui2.js",
+      "http": 200,
+      "liveMatches": true,
+      "sourceMatches": true,
+      "manifestMatches": true
+    },
+    {
+      "name": "card-composer-ui2.js",
+      "http": 200,
+      "liveMatches": true,
+      "sourceMatches": true,
+      "manifestMatches": true
+    },
+    {
+      "name": "styles-ui2.css",
+      "http": 200,
+      "liveMatches": true,
+      "sourceMatches": true,
+      "manifestMatches": true
+    },
+    {
+      "name": "service-worker.js",
+      "http": 200,
+      "liveMatches": true,
+      "sourceMatches": true,
+      "manifestMatches": true
+    }
+  ],
+  "server": {
+    "appRunning": true,
+    "error": ""
+  }
+}

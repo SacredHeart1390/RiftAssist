@@ -1,0 +1,9 @@
+.git
+.env
+node_modules
+logs
+private
+tmp
+manager-ui
+knowledge/imports
+knowledge/card-history

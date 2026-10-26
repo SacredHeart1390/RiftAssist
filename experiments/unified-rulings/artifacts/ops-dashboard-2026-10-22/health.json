@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-22T01:23:37.525Z",
+  "httpStatus": 200,
+  "ok": true,
+  "version": "0.1.4",
+  "appReleaseId": "v0.1.4",
+  "features": {
+    "imageAttachments": false
+  },
+  "aiGenerationEnabled": true
+}

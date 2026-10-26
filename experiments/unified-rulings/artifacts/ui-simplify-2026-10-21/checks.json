@@ -1,0 +1,66 @@
+{
+  "layout": {
+    "catalogNoteHidden": true,
+    "footerNotice": true,
+    "heroFont": "14px",
+    "horizontalOverflow": false,
+    "inputFont": "14px",
+    "mirrorFont": "14px",
+    "removedPanels": true,
+    "sourceLinks": 4,
+    "submitEnabled": true
+  },
+  "tab": {
+    "focused": "question",
+    "mentions": 1,
+    "popupHidden": true,
+    "selected": 1,
+    "value": "포로치기 "
+  },
+  "enter": {
+    "popupHidden": true,
+    "selected": 0,
+    "value": "포로\n"
+  },
+  "shiftTab": {
+    "focused": "language-select",
+    "popupHidden": true,
+    "selected": 0,
+    "value": "포로"
+  },
+  "unselectedTab": {
+    "focused": "submit-button",
+    "selected": 0,
+    "value": "포로"
+  },
+  "english": {
+    "heading": "What happened?",
+    "language": "en",
+    "removedPanels": true,
+    "submitEnabled": true
+  },
+  "mobile": {
+    "horizontalOverflow": false,
+    "inputFont": "13px",
+    "mirrorFont": "13px",
+    "pageWidth": 375,
+    "sourceColumns": "345px",
+    "submitEnabled": true,
+    "viewport": 390
+  },
+  "mobileFinal": {
+    "buttonEnabled": true,
+    "countWrap": "nowrap",
+    "scrollWidth": 375,
+    "width": 390
+  },
+  "consoleLogs": [],
+  "desktopFinal": {
+    "font": "14px",
+    "question": "",
+    "scrollWidth": 1265,
+    "stylesheet": "/styles-ui2.css?v=2b",
+    "width": 1280
+  },
+  "scope": "Desktop and 390px browser layout; no real-phone/IME device test and no paid answer request."
+}

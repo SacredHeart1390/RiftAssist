@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "pid": 21912,
+  "running": true,
+  "phase": "waiting",
+  "updatedAt": "2026-10-26T01:19:41.025Z",
+  "intervalHours": 6,
+  "fullRecheckDays": 7,
+  "judge": {
+    "total": 11794,
+    "collected": 11794,
+    "removed": 0,
+    "errors": 0,
+    "missing": 0,
+    "unavailable": 0,
+    "pendingNow": false,
+    "sitemap": {
+      "cycle": "2026-10-26T00:46:27.488Z",
+      "total": 11789,
+      "checkedAt": "2026-10-26T00:46:27.608Z"
+    },
+    "coverage": "complete",
+    "pausedUntil": null
+  },
+  "official": {
+    "checkedAt": "2026-10-26T00:46:24.670Z",
+    "documents": {
+      "core-rules": {
+        "state": "current",
+        "version": "2026-10-09",
+        "count": 2494,
+        "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+        "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf",
+        "hashEn": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+        "hashKo": "30e59540e63fabaaa14021a102d64feea773c60f3ac651b8aac06f4576c85b54",
+        "versionKo": "2026-10-09",
+        "languageAlignment": "matching-document-dates",
+        "koError": null
+      },
+      "tournament-rules": {
+        "state": "current",
+        "version": "2026-10-08",
+        "count": 976,
+        "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861752822d217edf37d9febaeaf77a7d924c1bb6.pdf",
+        "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/6e1f622e65081b2975853b603eaaef33fec74afb.pdf",
+        "hashEn": "ce07da4fb632526afbbce7f058287a57e7444fa6bde17b0938ff52ce3fab3d07",
+        "hashKo": "dea6f7e7bbfb318f5f3192de5de6fcb3bc36ff3a3a1ab4da871f1abe6d37ad94",
+        "versionKo": "2026-10-09",
+        "languageAlignment": "unchanged-existing-bilingual-content",
+        "koError": null
+      }
+    },
+    "supplements": "preserved-existing-articles"
+  },
+  "publication": {
+    "releaseId": "2026-10-26-e14c666116dc",
+    "previousReleaseId": "2026-10-23-c2ce51bed139",
+    "timestamp": 1792975596981,
+    "collected": 11794,
+    "fingerprint": "1a1b1024a801f01bfeb91b5c371812e0579ebb61cae934c83c4051c12581270e",
+    "publishedAt": "2026-10-26T00:46:36.981Z"
+  },
+  "errors": {}
+}

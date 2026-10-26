@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-21T08:19:48.221Z",
+  "files": [
+    {
+      "file": "public/index.html",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "public/app-ui3.js",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "public/reports-ui3.js",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "public/service-worker.js",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "manager-ui/index.html",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "manager-ui/manager.js",
+      "http": 200,
+      "servedFileMatches": true
+    },
+    {
+      "file": "manager-ui/manager.css",
+      "http": 200,
+      "servedFileMatches": true
+    }
+  ],
+  "manifestMismatches": []
+}

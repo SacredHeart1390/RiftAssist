@@ -1,0 +1,754 @@
+[
+  {
+    "id": "fd50205a-40fa-4394-af2a-ca96ac14e7f1",
+    "created": "2026-10-23T01:44:10.288Z",
+    "status": "ruling-generated",
+    "knowledgeReleaseId": "2026-10-22-b126a78c3f4a",
+    "retrievalPolicy": "issue-prerequisite-search-4-official-ko",
+    "trace": {
+      "version": "issue-prerequisite-search-4-official-ko",
+      "intent": {
+        "deckConstruction": false,
+        "scoring": false,
+        "targetResolution": true,
+        "needsCardText": true,
+        "tournament": false,
+        "quantityContext": false,
+        "simultaneousZones": false,
+        "repeatedPlay": true,
+        "explicitRuleIds": []
+      },
+      "evidenceBudget": 8,
+      "requiredRuleIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "missingFromIndex": [],
+      "missingRequired": [],
+      "candidates": [
+        {
+          "id": "core-rules:359.3.e.5",
+          "score": 141.37,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.2",
+          "score": 132.243,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.1",
+          "score": 124.835,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.8",
+          "score": 122.208,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:340.1",
+          "score": 121.646,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.7",
+          "score": 114.238,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:355.15",
+          "score": 113.787,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.d",
+          "score": 109.564,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:383.2.c.2",
+          "score": 81.784,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:758.2",
+          "score": 53.84,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.10",
+          "score": 49.652,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.e",
+          "score": 49.434,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c",
+          "score": 44.826,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.3",
+          "score": 43.61,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:370.1.a.2",
+          "score": 43.112,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.f.2",
+          "score": 43.002,
+          "reason": "lexical"
+        },
+        {
+          "id": "supplement:core-radiance-patch-notes:unique-radiance-interactions",
+          "score": 41.643,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.14.h.1",
+          "score": 40.017,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.d",
+          "score": 39.571,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:481.1",
+          "score": 39.08,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:820.2.a",
+          "score": 38.98,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.14.c",
+          "score": 38.773,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:392",
+          "score": 38.605,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:149.2",
+          "score": 38.504,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.11.b",
+          "score": 38.051,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:370.2",
+          "score": 37.293,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.b",
+          "score": 36.542,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:148.1.a.1",
+          "score": 36.516,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.2.a",
+          "score": 35.849,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:391.3",
+          "score": 35.839,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:467.2.c.4.a",
+          "score": 35.813,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:358.3.a",
+          "score": 35.283,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:467.2.c.5",
+          "score": 34.97,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:758.1",
+          "score": 34.919,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:383.2.c.1",
+          "score": 34.402,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:142.4.b",
+          "score": 34.37,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:206",
+          "score": 34.36,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:467.2.c.10",
+          "score": 34.353,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:158.2",
+          "score": 34.241,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c.1",
+          "score": 33.75,
+          "reason": "lexical"
+        }
+      ],
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ]
+    },
+    "citedRuleIds": [
+      "core-rules:359.3.d"
+    ],
+    "model": "gpt-6-luna"
+  },
+  {
+    "id": "052fabc9-f2b6-4f31-89bd-ac7b241d36fa",
+    "created": "2026-10-23T01:41:14.053Z",
+    "status": "ruling-generated",
+    "knowledgeReleaseId": "2026-10-22-b126a78c3f4a",
+    "retrievalPolicy": "issue-prerequisite-search-4-official-ko",
+    "trace": {
+      "version": "issue-prerequisite-search-4-official-ko",
+      "intent": {
+        "deckConstruction": false,
+        "scoring": false,
+        "targetResolution": true,
+        "needsCardText": true,
+        "tournament": false,
+        "quantityContext": false,
+        "simultaneousZones": false,
+        "repeatedPlay": false,
+        "explicitRuleIds": []
+      },
+      "evidenceBudget": 8,
+      "requiredRuleIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "missingFromIndex": [],
+      "missingRequired": [],
+      "candidates": [
+        {
+          "id": "core-rules:359.3.e.2",
+          "score": 130.795,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.5",
+          "score": 129.995,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.1",
+          "score": 122.767,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:340.1",
+          "score": 121.646,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.8",
+          "score": 117.596,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:355.15",
+          "score": 113.787,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.7",
+          "score": 108.845,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.d",
+          "score": 104.605,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:383.2.c.2",
+          "score": 63.281,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:758.2",
+          "score": 42.132,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.10",
+          "score": 37.991,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.3",
+          "score": 34.287,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.f.2",
+          "score": 34.064,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:149.2",
+          "score": 31.046,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.e",
+          "score": 30.351,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:758.1",
+          "score": 29.436,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:148.1.a.1",
+          "score": 29.168,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:190.2.b",
+          "score": 28.81,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:204.3.a",
+          "score": 28.81,
+          "reason": "lexical"
+        },
+        {
+          "id": "supplement:core-radiance-patch-notes:unique-radiance-interactions",
+          "score": 28.722,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.11.b",
+          "score": 28.268,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:190.6.d",
+          "score": 27.664,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c",
+          "score": 27.555,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:430.2",
+          "score": 27.542,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.14.h.1",
+          "score": 26.223,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.d",
+          "score": 25.53,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c.1",
+          "score": 25.481,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.9.a",
+          "score": 25.436,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:809.1.c",
+          "score": 25.02,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:820.2.a",
+          "score": 24.986,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:370.1.a.2",
+          "score": 24.658,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:158",
+          "score": 24.448,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.2.a",
+          "score": 24.324,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.f.4",
+          "score": 24.306,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:313.1.a",
+          "score": 24.3,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:491.8.a",
+          "score": 24.063,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:377.3.b.2",
+          "score": 24.024,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.6",
+          "score": 23.997,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:467.2.c.2",
+          "score": 23.955,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:811.1.d.3",
+          "score": 23.892,
+          "reason": "lexical"
+        }
+      ],
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ]
+    },
+    "citedRuleIds": [
+      "core-rules:340.1",
+      "core-rules:359.3.d"
+    ],
+    "model": "gpt-6-luna"
+  },
+  {
+    "id": "d6a9bab8-da3e-4823-acbe-9199a52f9e7e",
+    "created": "2026-10-23T01:39:51.795Z",
+    "status": "ruling-generated",
+    "knowledgeReleaseId": "2026-10-22-b126a78c3f4a",
+    "retrievalPolicy": "issue-prerequisite-search-4-official-ko",
+    "trace": {
+      "version": "issue-prerequisite-search-4-official-ko",
+      "intent": {
+        "deckConstruction": false,
+        "scoring": false,
+        "targetResolution": true,
+        "needsCardText": true,
+        "tournament": false,
+        "quantityContext": false,
+        "simultaneousZones": false,
+        "repeatedPlay": false,
+        "explicitRuleIds": []
+      },
+      "evidenceBudget": 8,
+      "requiredRuleIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "missingFromIndex": [],
+      "missingRequired": [],
+      "candidates": [
+        {
+          "id": "core-rules:359.3.e.2",
+          "score": 129.757,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.5",
+          "score": 128.291,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.1",
+          "score": 122.887,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:340.1",
+          "score": 121.646,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:355.15",
+          "score": 115.987,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.8",
+          "score": 115.93,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.e.7",
+          "score": 108.965,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:359.3.d",
+          "score": 106.205,
+          "reason": "issue-principle"
+        },
+        {
+          "id": "core-rules:758.2",
+          "score": 40.54,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.10",
+          "score": 37.952,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:383.2.c.2",
+          "score": 37.46,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.f.2",
+          "score": 34.139,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.3",
+          "score": 33.273,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:149.2",
+          "score": 31.27,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:148.1.a.1",
+          "score": 30.933,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.e",
+          "score": 30.607,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:758.1",
+          "score": 29.556,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:190.2.b",
+          "score": 29.031,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:190.6.d",
+          "score": 28.803,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:204.3.a",
+          "score": 27.735,
+          "reason": "lexical"
+        },
+        {
+          "id": "supplement:core-radiance-patch-notes:unique-radiance-interactions",
+          "score": 26.686,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c",
+          "score": 26.283,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:430.2",
+          "score": 26.215,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:158",
+          "score": 26.188,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:313.1.a",
+          "score": 26.183,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:491.8.a",
+          "score": 26.114,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.f.4",
+          "score": 25.421,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.c.1",
+          "score": 25.375,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.9.a",
+          "score": 25.15,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:820.2.a",
+          "score": 24.674,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:316.5.b.1",
+          "score": 24.578,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:391.3",
+          "score": 23.718,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.d",
+          "score": 23.419,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:488.5.a",
+          "score": 23.226,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.f",
+          "score": 23.105,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:358.3",
+          "score": 22.961,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:355.10.g",
+          "score": 22.935,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:359.3.e.6",
+          "score": 22.92,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:436.3",
+          "score": 22.92,
+          "reason": "lexical"
+        },
+        {
+          "id": "core-rules:820.1.d",
+          "score": 22.806,
+          "reason": "lexical"
+        }
+      ],
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ]
+    },
+    "citedRuleIds": [
+      "core-rules:340.1",
+      "core-rules:359.3.d"
+    ],
+    "model": "gpt-6-luna"
+  }
+]

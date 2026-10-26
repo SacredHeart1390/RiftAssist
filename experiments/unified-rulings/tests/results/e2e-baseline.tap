@@ -1,0 +1,63 @@
+TAP version 13
+# Subtest: 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+ok 1 - 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+  ---
+  duration_ms: 1276.7652
+  type: 'test'
+  ...
+# Subtest: 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+not ok 2 - 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+  ---
+  duration_ms: 2115.0766
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:76:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok((await rule.innerText()).includes('한 턴'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:93:10)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+ok 3 - 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+  ---
+  duration_ms: 3173.3977
+  type: 'test'
+  ...
+# Subtest: 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+not ok 4 - 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+  ---
+  duration_ms: 5831.3357
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:124:1'
+  failureType: 'testCodeFailure'
+  error: 'page.waitForFunction: Timeout 5000ms exceeded.'
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:132:18)
+  ...
+# Subtest: 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+ok 5 - 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+  ---
+  duration_ms: 1499.5918
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 3
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14111.5062

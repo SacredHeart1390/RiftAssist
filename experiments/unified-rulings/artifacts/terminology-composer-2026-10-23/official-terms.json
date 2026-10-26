@@ -1,0 +1,1647 @@
+{
+  "createdAt": "2026-10-23T00:22:46.903Z",
+  "knowledgeReleaseId": "2026-10-22-b126a78c3f4a",
+  "terminologyVersion": "official-ko-2026-10-23-1",
+  "entries": [
+    {
+      "en": "Golden and Silver Rules",
+      "ko": "제1원칙 및 제2원칙",
+      "ruleId": "core-rules:000",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "Golden Rule",
+      "ko": "제1원칙",
+      "ruleId": "core-rules:001",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "Silver Rule",
+      "ko": "제2원칙",
+      "ruleId": "core-rules:050",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "“Can’t beats Can”",
+      "ko": "'할 수 있다'보다 '할 수 없다'가 우선 적용됩니다.",
+      "ruleId": "core-rules:054",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "Game Concepts",
+      "ko": "게임 개요",
+      "ruleId": "core-rules:100",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "Deck Construction",
+      "ko": "덱 구성",
+      "ruleId": "core-rules:101",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=1",
+      "essential": false
+    },
+    {
+      "en": "Chosen Champion",
+      "ko": "선발 챔피언",
+      "ruleId": "core-rules:103.3.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=2",
+      "essential": false
+    },
+    {
+      "en": "Rune Deck",
+      "ko": "룬 덱",
+      "ruleId": "core-rules:103.4",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Battlefields",
+      "ko": "전장",
+      "ruleId": "core-rules:103.5",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Setup",
+      "ko": "게임 준비",
+      "ruleId": "core-rules:104",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Spaces",
+      "ko": "공간",
+      "ruleId": "core-rules:105",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "The Board",
+      "ko": "게임판",
+      "ruleId": "core-rules:107",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Bases",
+      "ko": "기지",
+      "ruleId": "core-rules:107.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Battlefield Zone",
+      "ko": "전장 구역",
+      "ruleId": "core-rules:107.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=3",
+      "essential": false
+    },
+    {
+      "en": "Facedown Zones",
+      "ko": "뒷면 표시 구역",
+      "ruleId": "core-rules:107.3",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": false
+    },
+    {
+      "en": "Legend Zone",
+      "ko": "전설 구역",
+      "ruleId": "core-rules:107.4",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": false
+    },
+    {
+      "en": "Non-Board Zones",
+      "ko": "게임판 외 구역",
+      "ruleId": "core-rules:108",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": false
+    },
+    {
+      "en": "The Chain",
+      "ko": "체인",
+      "ruleId": "core-rules:108.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": false
+    },
+    {
+      "en": "Trashes",
+      "ko": "폐기장",
+      "ruleId": "core-rules:108.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": true
+    },
+    {
+      "en": "Trash",
+      "ko": "폐기장",
+      "ruleId": "core-rules:108.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=4",
+      "essential": true
+    },
+    {
+      "en": "Champion Zones",
+      "ko": "챔피언 구역",
+      "ruleId": "core-rules:108.3",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=5",
+      "essential": false
+    },
+    {
+      "en": "Main Deck Zones",
+      "ko": "주 덱 구역",
+      "ruleId": "core-rules:108.4",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=5",
+      "essential": false
+    },
+    {
+      "en": "Rune Deck Zones",
+      "ko": "룬 덱 구역",
+      "ruleId": "core-rules:108.5",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=5",
+      "essential": false
+    },
+    {
+      "en": "Banishments",
+      "ko": "추방지",
+      "ruleId": "core-rules:108.6",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=5",
+      "essential": false
+    },
+    {
+      "en": "The Hand",
+      "ko": "손",
+      "ruleId": "core-rules:108.7",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=6",
+      "essential": true
+    },
+    {
+      "en": "Hand",
+      "ko": "손",
+      "ruleId": "core-rules:108.7",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=6",
+      "essential": true
+    },
+    {
+      "en": "Setup Process",
+      "ko": "게임 준비 절차",
+      "ruleId": "core-rules:110",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=6",
+      "essential": false
+    },
+    {
+      "en": "Game Objects",
+      "ko": "게임 오브젝트",
+      "ruleId": "core-rules:119",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=7",
+      "essential": false
+    },
+    {
+      "en": "Cards",
+      "ko": "카드",
+      "ruleId": "core-rules:125",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=7",
+      "essential": false
+    },
+    {
+      "en": "Ownership",
+      "ko": "소유권",
+      "ruleId": "core-rules:127",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=7",
+      "essential": false
+    },
+    {
+      "en": "Privacy",
+      "ko": "보안",
+      "ruleId": "core-rules:128",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=7",
+      "essential": false
+    },
+    {
+      "en": "Back Side",
+      "ko": "뒷면",
+      "ruleId": "core-rules:129",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=8",
+      "essential": false
+    },
+    {
+      "en": "Front Side",
+      "ko": "앞면",
+      "ruleId": "core-rules:130",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=8",
+      "essential": false
+    },
+    {
+      "en": "Cost",
+      "ko": "비용",
+      "ruleId": "core-rules:131",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=8",
+      "essential": false
+    },
+    {
+      "en": "Energy Cost",
+      "ko": "에너지 비용",
+      "ruleId": "core-rules:131.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=8",
+      "essential": false
+    },
+    {
+      "en": "Power cost",
+      "ko": "힘 비용",
+      "ruleId": "core-rules:131.3",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=9",
+      "essential": false
+    },
+    {
+      "en": "Name",
+      "ko": "이름",
+      "ruleId": "core-rules:132",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=9",
+      "essential": false
+    },
+    {
+      "en": "Category",
+      "ko": "분류",
+      "ruleId": "core-rules:133",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=9",
+      "essential": false
+    },
+    {
+      "en": "Permanents",
+      "ko": "지속물",
+      "ruleId": "core-rules:133.4.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=9",
+      "essential": false
+    },
+    {
+      "en": "Spells",
+      "ko": "주문",
+      "ruleId": "core-rules:133.4.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=9",
+      "essential": false
+    },
+    {
+      "en": "Runes",
+      "ko": "룬",
+      "ruleId": "core-rules:133.5.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=10",
+      "essential": false
+    },
+    {
+      "en": "Legends",
+      "ko": "전설",
+      "ruleId": "core-rules:133.6.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=10",
+      "essential": false
+    },
+    {
+      "en": "Domain",
+      "ko": "영역",
+      "ruleId": "core-rules:134",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=10",
+      "essential": false
+    },
+    {
+      "en": "Rules Text",
+      "ko": "규칙 텍스트",
+      "ruleId": "core-rules:135",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=10",
+      "essential": false
+    },
+    {
+      "en": "Abilities",
+      "ko": "스킬",
+      "ruleId": "core-rules:135.2.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=11",
+      "essential": true
+    },
+    {
+      "en": "Ability",
+      "ko": "스킬",
+      "ruleId": "core-rules:135.2.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=11",
+      "essential": true
+    },
+    {
+      "en": "Instructions",
+      "ko": "지시",
+      "ruleId": "core-rules:135.2.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=11",
+      "essential": false
+    },
+    {
+      "en": "Keywords",
+      "ko": "키워드",
+      "ruleId": "core-rules:135.2.c",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=12",
+      "essential": false
+    },
+    {
+      "en": "Reminder Text",
+      "ko": "참고 텍스트",
+      "ruleId": "core-rules:135.2.d",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=12",
+      "essential": false
+    },
+    {
+      "en": "Symbols",
+      "ko": "상징",
+      "ruleId": "core-rules:135.2.e",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=12",
+      "essential": false
+    },
+    {
+      "en": "Effect Text",
+      "ko": "효과 텍스트",
+      "ruleId": "core-rules:136",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=13",
+      "essential": false
+    },
+    {
+      "en": "Might Bonus",
+      "ko": "추가 위력",
+      "ruleId": "core-rules:137",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=14",
+      "essential": false
+    },
+    {
+      "en": "Flavor Text",
+      "ko": "플레이버 텍스트",
+      "ruleId": "core-rules:138",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=14",
+      "essential": false
+    },
+    {
+      "en": "Illustration",
+      "ko": "일러스트",
+      "ruleId": "core-rules:139",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=14",
+      "essential": false
+    },
+    {
+      "en": "Units",
+      "ko": "유닛",
+      "ruleId": "core-rules:140",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=14",
+      "essential": false
+    },
+    {
+      "en": "Gear",
+      "ko": "도구",
+      "ruleId": "core-rules:147",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=17",
+      "essential": true
+    },
+    {
+      "en": "Action",
+      "ko": "행동",
+      "ruleId": "core-rules:159.2.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=19",
+      "essential": false
+    },
+    {
+      "en": "Reaction",
+      "ko": "반응",
+      "ruleId": "core-rules:159.2.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=19",
+      "essential": false
+    },
+    {
+      "en": "Basic Runes",
+      "ko": "기본 룬",
+      "ruleId": "core-rules:164",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=20",
+      "essential": false
+    },
+    {
+      "en": "Rune Pools",
+      "ko": "룬 구성",
+      "ruleId": "core-rules:165",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=20",
+      "essential": true
+    },
+    {
+      "en": "Rune Pool",
+      "ko": "룬 구성",
+      "ruleId": "core-rules:165",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=20",
+      "essential": true
+    },
+    {
+      "en": "Multiple Types",
+      "ko": "다양한 유형",
+      "ruleId": "core-rules:177",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=22",
+      "essential": false
+    },
+    {
+      "en": "Tokens",
+      "ko": "토큰",
+      "ruleId": "core-rules:179",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=22",
+      "essential": false
+    },
+    {
+      "en": "Control",
+      "ko": "통제",
+      "ruleId": "core-rules:188",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=24",
+      "essential": false
+    },
+    {
+      "en": "Everything Else",
+      "ko": "그 외 모든 것",
+      "ruleId": "core-rules:191",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=25",
+      "essential": false
+    },
+    {
+      "en": "Winning",
+      "ko": "승리",
+      "ruleId": "core-rules:193",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=26",
+      "essential": false
+    },
+    {
+      "en": "Locations",
+      "ko": "위치",
+      "ruleId": "core-rules:197",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=27",
+      "essential": false
+    },
+    {
+      "en": "Costs",
+      "ko": "비용",
+      "ruleId": "core-rules:201",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=27",
+      "essential": false
+    },
+    {
+      "en": "Playing the Game",
+      "ko": "게임 플레이하기",
+      "ruleId": "core-rules:300",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=29",
+      "essential": false
+    },
+    {
+      "en": "The Turn",
+      "ko": "턴",
+      "ruleId": "core-rules:301",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=29",
+      "essential": false
+    },
+    {
+      "en": "States of the Turn",
+      "ko": "턴의 상태",
+      "ruleId": "core-rules:307",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=29",
+      "essential": false
+    },
+    {
+      "en": "Priority and Focus",
+      "ko": "우선권 및 집중",
+      "ruleId": "core-rules:311",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=30",
+      "essential": false
+    },
+    {
+      "en": "Phases of the Turn",
+      "ko": "턴의 단계",
+      "ruleId": "core-rules:314",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": false
+    },
+    {
+      "en": "Start of Turn",
+      "ko": "턴 시작",
+      "ruleId": "core-rules:315",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": false
+    },
+    {
+      "en": "Awaken Phase",
+      "ko": "각성 단계",
+      "ruleId": "core-rules:315.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": true
+    },
+    {
+      "en": "Beginning Phase",
+      "ko": "개시 단계",
+      "ruleId": "core-rules:315.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": true
+    },
+    {
+      "en": "Beginning Step",
+      "ko": "개시 절차",
+      "ruleId": "core-rules:315.2.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": false
+    },
+    {
+      "en": "Scoring Step",
+      "ko": "득점 절차",
+      "ruleId": "core-rules:315.2.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": false
+    },
+    {
+      "en": "Channel Phase",
+      "ko": "전개 단계",
+      "ruleId": "core-rules:315.3",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": true
+    },
+    {
+      "en": "Draw Phase",
+      "ko": "뽑기 단계",
+      "ruleId": "core-rules:315.4",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": true
+    },
+    {
+      "en": "Main Phase",
+      "ko": "주요 단계",
+      "ruleId": "core-rules:316",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=31",
+      "essential": true
+    },
+    {
+      "en": "Combat",
+      "ko": "전투",
+      "ruleId": "core-rules:316.7",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=32",
+      "essential": false
+    },
+    {
+      "en": "Showdowns",
+      "ko": "결전",
+      "ruleId": "core-rules:316.8",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=32",
+      "essential": false
+    },
+    {
+      "en": "Ending Phase",
+      "ko": "종료 단계",
+      "ruleId": "core-rules:317",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=32",
+      "essential": true
+    },
+    {
+      "en": "Ending Step",
+      "ko": "종료 절차",
+      "ruleId": "core-rules:317.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=32",
+      "essential": false
+    },
+    {
+      "en": "Expiration Step",
+      "ko": "만료 절차",
+      "ruleId": "core-rules:317.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=33",
+      "essential": false
+    },
+    {
+      "en": "Cleanups",
+      "ko": "정리",
+      "ruleId": "core-rules:318",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=33",
+      "essential": false
+    },
+    {
+      "en": "Chains and Showdowns",
+      "ko": "체인 및 결전",
+      "ruleId": "core-rules:325",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=35",
+      "essential": false
+    },
+    {
+      "en": "During a Chain",
+      "ko": "체인 중",
+      "ruleId": "core-rules:326.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=35",
+      "essential": false
+    },
+    {
+      "en": "During a Showdown",
+      "ko": "결전 중",
+      "ruleId": "core-rules:326.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=35",
+      "essential": false
+    },
+    {
+      "en": "Chains",
+      "ko": "체인",
+      "ruleId": "core-rules:327",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=35",
+      "essential": false
+    },
+    {
+      "en": "Pass Priority",
+      "ko": "우선권 넘기기",
+      "ruleId": "core-rules:338.1.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=36",
+      "essential": false
+    },
+    {
+      "en": "Showdown",
+      "ko": "결전",
+      "ruleId": "core-rules:341",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=37",
+      "essential": true
+    },
+    {
+      "en": "Playing Cards",
+      "ko": "카드 사용하기",
+      "ruleId": "core-rules:349",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=38",
+      "essential": false
+    },
+    {
+      "en": "The Process of Play",
+      "ko": "사용 과정",
+      "ruleId": "core-rules:353",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=38",
+      "essential": false
+    },
+    {
+      "en": "Targeting",
+      "ko": "대상 지정",
+      "ruleId": "core-rules:355.6",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=39",
+      "essential": false
+    },
+    {
+      "en": "Splitting",
+      "ko": "분배",
+      "ruleId": "core-rules:355.14",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=42",
+      "essential": false
+    },
+    {
+      "en": "Mandatory Additional Costs",
+      "ko": "필수 추가 비용",
+      "ruleId": "core-rules:356.2.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=43",
+      "essential": false
+    },
+    {
+      "en": "Optional Additional Costs",
+      "ko": "선택적 추가 비용",
+      "ruleId": "core-rules:356.2.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=44",
+      "essential": false
+    },
+    {
+      "en": "Referents",
+      "ko": "참조 대상",
+      "ruleId": "core-rules:359.3.f",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=50",
+      "essential": false
+    },
+    {
+      "en": "Passive Abilities",
+      "ko": "기본 지속 스킬",
+      "ruleId": "core-rules:363",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=52",
+      "essential": true
+    },
+    {
+      "en": "Presence on Permanents",
+      "ko": "지속물에 존재 시",
+      "ruleId": "core-rules:365",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=52",
+      "essential": false
+    },
+    {
+      "en": "Replacement Effects",
+      "ko": "대체 효과",
+      "ruleId": "core-rules:367",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=52",
+      "essential": false
+    },
+    {
+      "en": "Activated Abilities",
+      "ko": "발동 스킬",
+      "ruleId": "core-rules:376",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=55",
+      "essential": true
+    },
+    {
+      "en": "Triggered Abilities",
+      "ko": "유발 스킬",
+      "ruleId": "core-rules:382",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=56",
+      "essential": true
+    },
+    {
+      "en": "Reflexive Triggers",
+      "ko": "재귀 유발 효과",
+      "ruleId": "core-rules:387",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=62",
+      "essential": true
+    },
+    {
+      "en": "Delayed Abilities",
+      "ko": "지연 스킬",
+      "ruleId": "core-rules:390",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=62",
+      "essential": false
+    },
+    {
+      "en": "Linked Abilities",
+      "ko": "연계 스킬",
+      "ruleId": "core-rules:394",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=63",
+      "essential": true
+    },
+    {
+      "en": "Playing or Activating Abilities",
+      "ko": "스킬 사용 또는 발동",
+      "ruleId": "core-rules:399",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=63",
+      "essential": false
+    },
+    {
+      "en": "Game Actions",
+      "ko": "게임 행동",
+      "ruleId": "core-rules:408",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=65",
+      "essential": false
+    },
+    {
+      "en": "Discretionary Actions",
+      "ko": "자율 행동",
+      "ruleId": "core-rules:411.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=65",
+      "essential": false
+    },
+    {
+      "en": "Limited Actions",
+      "ko": "제한 행동",
+      "ruleId": "core-rules:411.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=65",
+      "essential": false
+    },
+    {
+      "en": "Responsibility",
+      "ko": "책임",
+      "ruleId": "core-rules:412",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=65",
+      "essential": false
+    },
+    {
+      "en": "Draw",
+      "ko": "뽑기",
+      "ruleId": "core-rules:414",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=66",
+      "essential": true
+    },
+    {
+      "en": "Exhaust",
+      "ko": "탈진",
+      "ruleId": "core-rules:415",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=66",
+      "essential": true
+    },
+    {
+      "en": "Ready",
+      "ko": "준비",
+      "ruleId": "core-rules:416",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=67",
+      "essential": true
+    },
+    {
+      "en": "Recycle",
+      "ko": "재활용",
+      "ruleId": "core-rules:417",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=67",
+      "essential": true
+    },
+    {
+      "en": "Deal",
+      "ko": "피해 입히기",
+      "ruleId": "core-rules:418",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=68",
+      "essential": false
+    },
+    {
+      "en": "Heal",
+      "ko": "회복",
+      "ruleId": "core-rules:419",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=69",
+      "essential": false
+    },
+    {
+      "en": "Play",
+      "ko": "사용",
+      "ruleId": "core-rules:420",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=69",
+      "essential": false
+    },
+    {
+      "en": "Move",
+      "ko": "이동",
+      "ruleId": "core-rules:421",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=70",
+      "essential": false
+    },
+    {
+      "en": "Hide",
+      "ko": "숨기기",
+      "ruleId": "core-rules:422",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=70",
+      "essential": false
+    },
+    {
+      "en": "Discard",
+      "ko": "버리기",
+      "ruleId": "core-rules:423",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=71",
+      "essential": true
+    },
+    {
+      "en": "Stun",
+      "ko": "기절",
+      "ruleId": "core-rules:424",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=71",
+      "essential": false
+    },
+    {
+      "en": "Reveal",
+      "ko": "공개",
+      "ruleId": "core-rules:425",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=72",
+      "essential": false
+    },
+    {
+      "en": "Counter",
+      "ko": "차단",
+      "ruleId": "core-rules:426",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=72",
+      "essential": true
+    },
+    {
+      "en": "Buff",
+      "ko": "버프",
+      "ruleId": "core-rules:427",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=73",
+      "essential": false
+    },
+    {
+      "en": "Banish",
+      "ko": "추방",
+      "ruleId": "core-rules:428",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=73",
+      "essential": true
+    },
+    {
+      "en": "Kill",
+      "ko": "처치",
+      "ruleId": "core-rules:429",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=74",
+      "essential": true
+    },
+    {
+      "en": "Add",
+      "ko": "추가",
+      "ruleId": "core-rules:430",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=75",
+      "essential": false
+    },
+    {
+      "en": "Channel",
+      "ko": "전개",
+      "ruleId": "core-rules:431",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=75",
+      "essential": true
+    },
+    {
+      "en": "Burn Out",
+      "ko": "소진",
+      "ruleId": "core-rules:432",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=76",
+      "essential": true
+    },
+    {
+      "en": "Double",
+      "ko": "두 배로 만들기",
+      "ruleId": "core-rules:433",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=77",
+      "essential": false
+    },
+    {
+      "en": "Swap",
+      "ko": "바꾸기",
+      "ruleId": "core-rules:434",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=77",
+      "essential": false
+    },
+    {
+      "en": "Attach",
+      "ko": "부착",
+      "ruleId": "core-rules:435",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=77",
+      "essential": false
+    },
+    {
+      "en": "Detach",
+      "ko": "분리",
+      "ruleId": "core-rules:436",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=78",
+      "essential": false
+    },
+    {
+      "en": "Predict",
+      "ko": "예측",
+      "ruleId": "core-rules:437",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=79",
+      "essential": false
+    },
+    {
+      "en": "Prevent",
+      "ko": "방지",
+      "ruleId": "core-rules:438",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=79",
+      "essential": false
+    },
+    {
+      "en": "Replace",
+      "ko": "대체",
+      "ruleId": "core-rules:439",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=80",
+      "essential": false
+    },
+    {
+      "en": "Create",
+      "ko": "생성",
+      "ruleId": "core-rules:440",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=81",
+      "essential": false
+    },
+    {
+      "en": "Burn",
+      "ko": "소각",
+      "ruleId": "core-rules:441",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=82",
+      "essential": false
+    },
+    {
+      "en": "Empower",
+      "ko": "강화",
+      "ruleId": "core-rules:442",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=82",
+      "essential": false
+    },
+    {
+      "en": "Disempower",
+      "ko": "강화 해제",
+      "ruleId": "core-rules:443",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=82",
+      "essential": false
+    },
+    {
+      "en": "Skip",
+      "ko": "건너뛰기",
+      "ruleId": "core-rules:444",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=83",
+      "essential": false
+    },
+    {
+      "en": "Pay",
+      "ko": "지불",
+      "ruleId": "core-rules:445",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=83",
+      "essential": false
+    },
+    {
+      "en": "Copy",
+      "ko": "복사",
+      "ruleId": "core-rules:446",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=84",
+      "essential": false
+    },
+    {
+      "en": "Movement",
+      "ko": "이동",
+      "ruleId": "core-rules:447",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=84",
+      "essential": false
+    },
+    {
+      "en": "Recalls",
+      "ko": "귀환",
+      "ruleId": "core-rules:456",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=85",
+      "essential": true
+    },
+    {
+      "en": "Recall",
+      "ko": "귀환",
+      "ruleId": "core-rules:456",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=85",
+      "essential": true
+    },
+    {
+      "en": "The Steps of Combat",
+      "ko": "전투의 절차",
+      "ruleId": "core-rules:465",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=86",
+      "essential": false
+    },
+    {
+      "en": "Scoring",
+      "ko": "득점",
+      "ruleId": "core-rules:469",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=90",
+      "essential": true
+    },
+    {
+      "en": "Layers",
+      "ko": "레이어",
+      "ruleId": "core-rules:475",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=91",
+      "essential": false
+    },
+    {
+      "en": "Modes of Play",
+      "ko": "플레이 모드",
+      "ruleId": "core-rules:483",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=94",
+      "essential": false
+    },
+    {
+      "en": "Unique Rules",
+      "ko": "고유 규칙",
+      "ruleId": "core-rules:485.8",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=95",
+      "essential": false
+    },
+    {
+      "en": "Sanctioned Modes",
+      "ko": "공인 모드",
+      "ruleId": "core-rules:486",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=95",
+      "essential": false
+    },
+    {
+      "en": "Conceding",
+      "ko": "항복",
+      "ruleId": "core-rules:649",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=98",
+      "essential": false
+    },
+    {
+      "en": "Turn",
+      "ko": "턴",
+      "ruleId": "core-rules:652.5.a",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=99",
+      "essential": false
+    },
+    {
+      "en": "Focus",
+      "ko": "집중",
+      "ruleId": "core-rules:652.5.b",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=99",
+      "essential": false
+    },
+    {
+      "en": "Priority",
+      "ko": "우선권",
+      "ruleId": "core-rules:652.5.c",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=99",
+      "essential": false
+    },
+    {
+      "en": "Additional Rules",
+      "ko": "추가 규칙",
+      "ruleId": "core-rules:700",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=99",
+      "essential": false
+    },
+    {
+      "en": "Buffs",
+      "ko": "버프",
+      "ruleId": "core-rules:701",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=99",
+      "essential": false
+    },
+    {
+      "en": "Mighty",
+      "ko": "위력적",
+      "ruleId": "core-rules:706",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=100",
+      "essential": false
+    },
+    {
+      "en": "Bonus Damage",
+      "ko": "추가 피해",
+      "ruleId": "core-rules:712",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=100",
+      "essential": false
+    },
+    {
+      "en": "Attachment",
+      "ko": "부착",
+      "ruleId": "core-rules:716",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=101",
+      "essential": false
+    },
+    {
+      "en": "Inactive",
+      "ko": "비활성",
+      "ruleId": "core-rules:720",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=102",
+      "essential": false
+    },
+    {
+      "en": "Dependent Keywords",
+      "ko": "종속 키워드",
+      "ruleId": "core-rules:726",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=103",
+      "essential": false
+    },
+    {
+      "en": "XP",
+      "ko": "경험치",
+      "ruleId": "core-rules:728",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=103",
+      "essential": false
+    },
+    {
+      "en": "Additional Turns",
+      "ko": "추가 턴",
+      "ruleId": "core-rules:734",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=104",
+      "essential": false
+    },
+    {
+      "en": "Special Terms",
+      "ko": "특별 용어",
+      "ruleId": "core-rules:739",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=104",
+      "essential": false
+    },
+    {
+      "en": "Counters",
+      "ko": "카운터",
+      "ruleId": "core-rules:741",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=105",
+      "essential": false
+    },
+    {
+      "en": "Making New Choices",
+      "ko": "선택 다시하기",
+      "ruleId": "core-rules:750",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=105",
+      "essential": false
+    },
+    {
+      "en": "Untargetability",
+      "ko": "대상 지정 불가",
+      "ruleId": "core-rules:756",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=106",
+      "essential": false
+    },
+    {
+      "en": "Ignoring Effects",
+      "ko": "효과 무시",
+      "ruleId": "core-rules:764",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=107",
+      "essential": false
+    },
+    {
+      "en": "Keyword Glossary",
+      "ko": "키워드 용어집",
+      "ruleId": "core-rules:804",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=108",
+      "essential": false
+    },
+    {
+      "en": "Accelerate",
+      "ko": "가속",
+      "ruleId": "core-rules:805",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=108",
+      "essential": false
+    },
+    {
+      "en": "Assault",
+      "ko": "맹공",
+      "ruleId": "core-rules:807",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=109",
+      "essential": false
+    },
+    {
+      "en": "Deathknell",
+      "ko": "죽음의 종소리",
+      "ruleId": "core-rules:808",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=110",
+      "essential": false
+    },
+    {
+      "en": "Deflect",
+      "ko": "굴절",
+      "ruleId": "core-rules:809",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=111",
+      "essential": false
+    },
+    {
+      "en": "Ganking",
+      "ko": "개입",
+      "ruleId": "core-rules:810",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=111",
+      "essential": false
+    },
+    {
+      "en": "Hidden",
+      "ko": "숨겨짐",
+      "ruleId": "core-rules:811",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=111",
+      "essential": false
+    },
+    {
+      "en": "Legion",
+      "ko": "군단",
+      "ruleId": "core-rules:812",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=113",
+      "essential": false
+    },
+    {
+      "en": "Shield",
+      "ko": "보호막",
+      "ruleId": "core-rules:814",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=114",
+      "essential": false
+    },
+    {
+      "en": "Tank",
+      "ko": "탱커",
+      "ruleId": "core-rules:815",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=115",
+      "essential": false
+    },
+    {
+      "en": "Temporary",
+      "ko": "일시적",
+      "ruleId": "core-rules:816",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=115",
+      "essential": false
+    },
+    {
+      "en": "Vision",
+      "ko": "통찰",
+      "ruleId": "core-rules:817",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=115",
+      "essential": false
+    },
+    {
+      "en": "Equip",
+      "ko": "장착",
+      "ruleId": "core-rules:818",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=116",
+      "essential": false
+    },
+    {
+      "en": "Quick-Draw",
+      "ko": "빨리 뽑기",
+      "ruleId": "core-rules:819",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=116",
+      "essential": false
+    },
+    {
+      "en": "Repeat",
+      "ko": "반복",
+      "ruleId": "core-rules:820",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=117",
+      "essential": false
+    },
+    {
+      "en": "Weaponmaster",
+      "ko": "무기의 대가",
+      "ruleId": "core-rules:821",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=118",
+      "essential": false
+    },
+    {
+      "en": "Ambush",
+      "ko": "매복",
+      "ruleId": "core-rules:822",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=118",
+      "essential": false
+    },
+    {
+      "en": "Hunt",
+      "ko": "사냥",
+      "ruleId": "core-rules:823",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=119",
+      "essential": false
+    },
+    {
+      "en": "Level",
+      "ko": "레벨",
+      "ruleId": "core-rules:824",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=119",
+      "essential": false
+    },
+    {
+      "en": "Unique",
+      "ko": "고유",
+      "ruleId": "core-rules:825",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=120",
+      "essential": false
+    },
+    {
+      "en": "Backline",
+      "ko": "후방",
+      "ruleId": "core-rules:826",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=120",
+      "essential": false
+    },
+    {
+      "en": "Empowered",
+      "ko": "강화됨",
+      "ruleId": "core-rules:828",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=121",
+      "essential": false
+    },
+    {
+      "en": "Flow",
+      "ko": "흐름",
+      "ruleId": "core-rules:829",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=121",
+      "essential": false
+    },
+    {
+      "en": "Deploy",
+      "ko": "배치",
+      "ruleId": "core-rules:830",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=122",
+      "essential": false
+    },
+    {
+      "en": "Disarm",
+      "ko": "무장 해제",
+      "ruleId": "core-rules:831",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=122",
+      "essential": false
+    },
+    {
+      "en": "Show Off",
+      "ko": "과시",
+      "ruleId": "core-rules:832",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=123",
+      "essential": false
+    },
+    {
+      "en": "Conquer",
+      "ko": "정복",
+      "ruleId": "core-rules:471.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=90",
+      "essential": true
+    },
+    {
+      "en": "Hold",
+      "ko": "점거",
+      "ruleId": "core-rules:471.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=90",
+      "essential": true
+    },
+    {
+      "en": "Might",
+      "ko": "위력",
+      "ruleId": "core-rules:143.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=15",
+      "essential": true
+    },
+    {
+      "en": "Energy",
+      "ko": "에너지",
+      "ruleId": "core-rules:163.1",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=20",
+      "essential": true
+    },
+    {
+      "en": "Power",
+      "ko": "힘",
+      "ruleId": "core-rules:163.2",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=20",
+      "essential": true
+    },
+    {
+      "en": "Resolve",
+      "ko": "처리",
+      "ruleId": "core-rules:332",
+      "version": "2026-10-09",
+      "url": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf#page=35",
+      "essential": true
+    }
+  ]
+}

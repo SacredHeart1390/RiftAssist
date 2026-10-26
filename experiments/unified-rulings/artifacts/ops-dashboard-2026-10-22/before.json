@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-22T01:21:43.533Z",
+  "managerPid": 22164,
+  "workerPid": 24624,
+  "appRunning": true,
+  "activeOrigin": "https://mustang-science-violation-declaration.trycloudflare.com",
+  "tunnel": "connected",
+  "error": "",
+  "appHost": {
+    "releaseId": "v0.1.4",
+    "workerPort": 3011,
+    "activeRequests": 0,
+    "draining": 0,
+    "gatewayRunning": true,
+    "changing": false
+  },
+  "day": "2026-10-22",
+  "calls": [
+    {
+      "kind": "answer",
+      "count": 3,
+      "inputTokens": 9791,
+      "outputTokens": 1879,
+      "usageUnknown": 0
+    }
+  ],
+  "limits": {
+    "questions": 100,
+    "generations": 30,
+    "translations": 30,
+    "sessionQuestions": 10,
+    "sessionTranslations": 10,
+    "reports": 100,
+    "sessionReports": 5,
+    "concurrent": 3
+  },
+  "aiEnabled": true
+}

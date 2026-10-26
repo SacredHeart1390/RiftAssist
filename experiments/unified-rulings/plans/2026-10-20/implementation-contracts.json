@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-20",
+  "status": "design-only",
+  "active": false,
+  "runtimeChangesApplied": false,
+  "paidCallsMade": 0,
+  "implementationRoot": "experiments/unified-rulings",
+  "protectedPaths": [
+    "sources/",
+    "AGENTS.md",
+    "root backup application"
+  ],
+  "triggers": {
+    "data": "이제 자동 데이터 갱신 시스템을 적용시키자",
+    "hosting": "그 호스팅 서버 어쩌구를 구현해서 적용시키자"
+  },
+  "data": {
+    "sources": [
+      "core-rules",
+      "tournament-rules",
+      "riftjudge",
+      "riftnaru"
+    ],
+    "discoverEveryHours": {
+      "officialRules": 6,
+      "riftjudge": 6,
+      "riftnaru": 24
+    },
+    "initialJudgeItemLimitPerDay": 2000,
+    "jobBatchItems": 200,
+    "perHostConcurrency": 1,
+    "minRequestSpacingMs": 2000,
+    "maxRetries": 3,
+    "requiredBeforeCardAutomation": "Permitted stable API/export/feed or supported fetch path; blocked now",
+    "requiredManifestFields": [
+      "schemaVersion",
+      "releaseId",
+      "effectiveFrom",
+      "sourceVersions",
+      "contentHashes",
+      "documentCounts",
+      "parserVersion",
+      "searchVersion",
+      "compatibleAppVersions",
+      "validationStatus"
+    ],
+    "manualReviewGates": {
+      "itemDecreaseRatio": 0.1,
+      "changedRatio": 0.3,
+      "missingRuleParents": true,
+      "languageVersionConflict": true,
+      "unresolvedEffectiveDate": true,
+      "parserWarnings": true
+    },
+    "confirmedParserDefect": "Body reference 703.4.a.5 inside 703.4.c.5 is treated as a new definition and overwrites the earlier rule",
+    "parserPrerequisites": ["Distinguish rule-number column from body references by layout", "Reject duplicate definitions before Map insertion", "Preserve parent conditions and cross-page continuation"],
+    "hotSwap": "Immutable release; atomic compare-and-swap active pointer; one snapshot per question",
+    "translation": "Official Korean first; cache by source hash/language/glossary/prompt/model; on demand"
+  },
+  "localRollout": {
+    "gatewayPort": 3001,
+    "appSlots": [
+      3011,
+      3012
+    ],
+    "managerPort": 3100,
+    "drainSeconds": 90,
+    "tunnelRestartOnAppPatch": false,
+    "firstMigrationMayInterrupt": true,
+    "autoRetryModelPost": false
+  },
+  "cloud": {
+    "publicApp": "Workers + static assets",
+    "store": "D1 async adapter",
+    "objects": "R2 Standard private buckets",
+    "coordinator": "Durable Object",
+    "scheduler": "Cron + queue",
+    "pdfWorker": "Short-lived Node Container",
+    "admin": "Separate Worker protected by Access",
+    "initialAddress": "workers.dev; exact name unallocated",
+    "planBudgetUsdPerMonth": 5,
+    "accountSetupComplete": false
+  },
+  "answer": {
+    "footerKo": "리프트어시는 코어룰, 토너먼트룰, Riftjudge Q&A 기록을 참조하여 답변하는 AI 어시스턴트이므로, 100% 정확하지 않을 수 있습니다.",
+    "repeatGenericNotice": false,
+    "keepMaterialLimitations": true,
+    "keepInternalProvenance": true,
+    "hideRoutineCardSupplierBranding": true
+  },
+  "retrieval": {
+    "coreIssue": "103.3.b omitted from model input despite being indexed",
+    "candidateCap": 40,
+    "evidenceBundleCap": 8,
+    "caseCap": 4,
+    "normalizeRuleIds": true,
+    "preserveQuantitiesAndZones": true,
+    "conditionalCardTextExpansion": true,
+    "includeParentsAndExceptions": true,
+    "extraAiCallsOnDefaultPath": 0
+  },
+  "operations": {
+    "questionBodyDays": 7,
+    "metadataDays": 30,
+    "reportDays": 90,
+    "storePhotos": false,
+    "storePrivateChainOfThought": false,
+    "currentAnswerDailyCap": 30,
+    "currentTranslationDailyCap": 30,
+    "raiseCapsNow": false
+  },
+  "ads": {
+    "enabled": false,
+    "eligibleContent": "Manually reviewed original public guides only",
+    "slotsPerPage": 1,
+    "autoAds": false,
+    "interstitials": false,
+    "chatAnswers": false,
+    "privateReports": false,
+    "automaticUserQuestionPublication": false
+  },
+  "deferredVerification": "No new test suite or paid evaluation executed. Run acceptance checks after implementation and user-scoped authorization.",
+  "references": [
+    "01-data-updates.md",
+    "02-cloudflare-hosting.md",
+    "03-answer-policy.md",
+    "04-retrieval-diagnosis.md",
+    "05-cost-and-ads.md",
+    "cost-assumptions.json"
+  ]
+}

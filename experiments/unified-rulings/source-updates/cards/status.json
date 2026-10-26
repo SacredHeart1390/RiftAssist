@@ -1,0 +1,26 @@
+{
+  "state": "source-required",
+  "mode": "inbox",
+  "running": true,
+  "pid": 21912,
+  "checkedAt": "2026-10-26T01:19:38.600Z",
+  "intervalHours": 24,
+  "cardCount": 1527,
+  "activeVersion": "riftnaru-2026-10-18-0b8e475d8f90",
+  "nextCheckAt": null,
+  "lastSuccessAt": "2026-10-21T02:41:47.852Z",
+  "lastSourceCapturedAt": "2026-10-18T05:57:00.831Z",
+  "lastAppliedRelease": null,
+  "error": null,
+  "diff": {
+    "added": 0,
+    "changed": 0,
+    "missing": 0,
+    "translationPending": 0,
+    "unchanged": 1527
+  },
+  "sourceMissing": 0,
+  "remoteConnected": false,
+  "sourceNote": "원격 카드 제공 주소 미연결 · 파일 가져오기 대기",
+  "paidAiCalls": 0
+}

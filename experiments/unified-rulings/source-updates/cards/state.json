@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "history": {
+    "missing": {},
+    "snapshotId": "2026-10-18T05:57:00.831Z:76b0216d3bbe809520b826189c2ea48c6d4108ce73a584235a6800b01f90dbcb",
+    "lastFullCapturedAt": "2026-10-18T05:57:00.831Z"
+  },
+  "processed": [
+    "310d3d413aeb08414e53aeb2cf7642991879c1632095ef989126e3add73b3fdb"
+  ],
+  "remote": {},
+  "diff": {
+    "added": [],
+    "changed": [],
+    "missing": [],
+    "translationPending": [],
+    "unchanged": 1527
+  },
+  "lastSuccessAt": "2026-10-21T02:41:47.852Z",
+  "lastSourceCapturedAt": "2026-10-18T05:57:00.831Z",
+  "error": null,
+  "reviewRequired": false,
+  "lastRequest": "2026-10-20T21:37:25.5772657Z"
+}

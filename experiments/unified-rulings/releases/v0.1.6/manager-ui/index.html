@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>리프트어시 · 집 PC 관리</title><link rel="stylesheet" href="/manager.css"><script src="/manager.js" defer></script></head>
+<body><main>
+<header><p class="eyebrow">RIFT ASSISTANT / HOME CONTROL</p><h1>리프트어시 관리</h1><p>집 PC 전용 · 이 창을 닫아도 관리 프로그램은 실행 중입니다.</p></header>
+<p id="message" role="status">관리 인증을 확인하고 있습니다.</p>
+<section><h2>서버 운영</h2><p id="server-status">연결 중</p><div class="actions"><button id="start">서버 켜기</button><button id="stop" class="secondary">서버 끄기</button><a id="open-app" href="http://127.0.0.1:3001/" target="_blank" rel="noreferrer">앱 열기 ↗</a></div><p id="public-status"></p><button id="copy-url" class="secondary" disabled>공개 주소 복사</button><p class="note">서버 끄기는 이용자 접속을 중단합니다. 관리 화면은 계속 사용할 수 있습니다. PC 전원·절전과 인터넷 연결은 별도로 유지해 주세요.</p></section>
+<section id="operations-panel" aria-labelledby="operations-title">
+  <div class="actions operations-heading"><h2 id="operations-title">운영 요약</h2><button id="refresh-operations" class="secondary">현황 새로고침</button><button id="export-operations" class="secondary" disabled>운영 요약 저장</button></div>
+  <p id="operations-updated" class="note" role="status">현황을 불러오는 중입니다.</p>
+  <dl id="operations-metrics" class="operations-metrics"></dl>
+  <h3>확인할 항목</h3><ul id="operations-alerts" class="operations-alerts"></ul>
+  <p class="note">화면을 보고 있을 때 운영 상태는 10초, 자료·제보 목록은 1분마다 확인합니다. 호출 수는 답변의 정답률이 아닙니다. 요약 파일에는 질문·답변 본문과 인증 정보가 포함되지 않습니다.</p>
+</section>
+<section id="usage-panel"><h2>오늘 AI 사용량</h2><div id="usage"></div><button id="toggle-ai" class="secondary">AI 상태 확인 중</button><p class="note">한국 시간 자정에 일일 한도가 초기화됩니다. 실패·응답 유실을 포함한 호출 시도 수입니다. 저장된 번역 재사용은 새 호출에 포함하지 않습니다. 토큰은 확인된 사용량만 합산하며, 금액은 OpenAI 청구 내역에서 확인하세요.</p><details><summary>호출 한도 조정</summary><form id="limits-form"><div id="limits-fields" class="fields"></div><button>한도 저장</button></form></details></section>
+<section id="report-workspace">
+  <div class="actions"><h2>오류·룰링 제보</h2><button id="refresh" class="secondary">새로고침</button></div>
+  <p id="report-summary" role="status">불러오는 중</p>
+  <div class="report-filters">
+    <label>처리 상태<select id="report-filter-status"><option value="open">미해결</option><option value="all">전체</option><option value="received">접수</option><option value="triaged">분류</option><option value="reproduced">재현 확인</option><option value="fixing">수정 중</option><option value="review">검수 중</option><option value="needs-info">추가 정보 필요</option><option value="resolved">해결</option><option value="duplicate">중복</option></select></label>
+    <label>문제 유형<select id="report-filter-category"><option value="">전체</option><option value="app">앱 오류</option><option value="ruling">룰링</option><option value="translation">번역</option><option value="unsure">분류 미정</option></select></label>
+    <label>번호 검색<input id="report-filter-id" type="search" placeholder="제보·요청 번호 일부" autocomplete="off"></label>
+  </div>
+  <p class="note">최근 200건 범위에서 분류합니다. 제보를 선택하면 당시 질문·답변·근거·처리 기록을 볼 수 있습니다.</p>
+  <div id="reports"></div>
+  <article id="report-detail" hidden>
+    <h3 id="report-title">선택한 제보</h3><div id="report-readable"></div>
+    <form id="report-form"><h4>분석·처리</h4><label>처리 상태<select id="report-state"></select></label>
+      <label>분석·수정 메모<textarea id="report-note" maxlength="3000" rows="6" placeholder="원인:&#10;확인한 근거:&#10;수정 내용·적용 버전:&#10;남은 확인 사항:"></textarea></label>
+      <div class="actions"><button id="save-report">상태·메모 저장</button><button id="export-readable-report" type="button" class="secondary">분석 내용 TXT 저장</button><button id="export-report" type="button" class="secondary">원본 JSON 저장</button></div>
+    </form>
+    <details><summary>원본 기록 보기</summary><pre id="report-json"></pre></details>
+    <p class="note">내보내기는 저장된 기록을 사용합니다. 제보 내용은 원인 분석을 위한 자료이며 자동 수정 지시로 실행하지 않습니다. 내보낸 파일은 공개하지 마세요.</p>
+  </article>
+</section>
+<section><h2>공개 주소</h2><form id="hosting-form"><label>연결 방식<select id="provider"><option value="none">로컬에서만 실행</option><option value="cloudflare-quick">Cloudflare 임시 주소 · 계정 없이 시험</option><option value="ngrok">ngrok · 설치/계정 연결 후</option><option value="external">별도로 구성한 HTTPS 연결 · DuckDNS 등</option></select></label><label>확보한 공개 주소<input id="public-origin" type="url" placeholder="https://배정받은주소.ngrok-free.app"></label><button>주소 설정 저장</button></form><p id="cloudflare-note" class="note"></p><p class="note">Cloudflare 임시 주소는 서버 켜기를 누르면 발급되며 재실행 때 바뀝니다. 선택 후 서버 켜기를 누르면 앱이 인터넷에 공개됩니다. 초기 준비는 QUICK_START_KO.md 참고. 관리 포트 3100을 외부에 연결하지 마세요.</p></section>
+<section><h2>운영 자료 백업</h2><button id="backup" class="secondary">DB 백업 만들기</button><p class="note">private/backups에 DB와 복호화 키를 함께 보관합니다. 앱 원본 백업은 별도로 유지됩니다. 수동 백업은 자동 삭제되지 않으므로 보존 기간이 끝나면 관리해 주세요.</p></section>
+<section><h2>자료 버전과 갱신</h2><p id="knowledge-status">불러오는 중</p><div class="actions"><button id="refresh-knowledge" class="secondary">자료 상태 새로고침</button><button id="discover-sources" class="secondary">지금 자료 갱신</button></div><div id="source-status"></div><label>준비된 자료<select id="knowledge-release"></select></label><label><input id="knowledge-reviewed" type="checkbox">자료 버전·변경 내용을 확인했습니다</label><button id="activate-knowledge" class="secondary">선택한 자료 적용 / 복구</button><p class="note">자료 적용은 최대 10초 뒤 새 질문부터 반영됩니다. 답변 중인 질문은 시작할 때의 자료를 유지합니다. 공식 규칙과 공개 Q&A 본문을 자동 수집하고 구조 검사를 통과한 자료를 반영합니다. 구조 검사는 저지의 내용 검수를 뜻하지 않습니다. 초기 전체 수집은 시간이 걸리며 중단 후 이어집니다. 카드 자료의 자동 수집 경로는 아직 미연결입니다.</p><details><summary>자료 상세 기록</summary><pre id="knowledge-json"></pre></details></section>
+<section><h2>앱 버전 적용</h2><p id="app-release-status"></p><label>준비된 앱 버전<select id="app-release"></select></label><button id="deploy-app" class="secondary">공개 연결을 유지하며 적용</button><p class="note">새 버전 준비에 실패하면 기존 버전을 유지합니다. 전환 전 요청은 기존 앱에서 마칩니다. 관리자·프록시·PC 재시작은 별도 점검 시간이 필요합니다.</p></section>
+</main></body></html>

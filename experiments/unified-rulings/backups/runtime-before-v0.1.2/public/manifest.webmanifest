@@ -1,0 +1,13 @@
+{
+  "name": "리프트어시 — 리프트바운드 규칙 도우미",
+  "short_name": "리프트어시",
+  "description": "Riftbound rules and tournament assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#11121a",
+  "theme_color": "#11121a",
+  "lang": "ko",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Riftbound Judge Assistant",
+  "short_name": "Rift Judge",
+  "description": "Riftbound rules assistant prototype",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#11121a",
+  "theme_color": "#11121a",
+  "lang": "ko",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

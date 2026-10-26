@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "compatibleSchema": 2,
+  "releaseId": "2026-10-20-fc50c8d53f9f",
+  "createdAt": "2026-10-20T11:37:30.677Z",
+  "effectiveFrom": null,
+  "parserVersion": "coordinate-rule-columns-2",
+  "validationStatus": "validated",
+  "reviewRequired": true,
+  "sources": {
+    "core": {
+      "version": "2026-10-09",
+      "reindexed": true
+    },
+    "tournament": {
+      "version": "2026-10-09",
+      "reindexed": true
+    },
+    "supplements": {
+      "preserved": true
+    },
+    "riftnaru": {
+      "version": "riftnaru-2026-10-18-0b8e475d8f90"
+    },
+    "riftjudge": {
+      "coverage": "live-search-only"
+    }
+  },
+  "hashes": {
+    "rules.json": "04425e7cfde5ef093a5656eb0ec8cddab26a1f14170360513ee53b7db000a68a",
+    "cards.json": "8eec626a557995b9366242efeddd0b730ef5fe782b6a67b845ef3974a7d9c8c5",
+    "judge-cases.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "counts": {
+    "rules": 3487,
+    "cards": 1527,
+    "judgeCases": 0
+  }
+}

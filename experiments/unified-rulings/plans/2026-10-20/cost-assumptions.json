@@ -1,0 +1,88 @@
+{
+  "asOf": "2026-10-20",
+  "status": "planning-only",
+  "currency": "USD",
+  "model": "gpt-6-luna",
+  "inputPerMillion": 0.1,
+  "outputPerMillion": 0.5,
+  "fxKrwPerUsd": 1400,
+  "fxIsPlanningAssumption": true,
+  "answerInputTokens": 5000,
+  "answerOutputTokens": 1000,
+  "newTranslationsPerQuestion": 0.5,
+  "translationInputTokens": 1000,
+  "translationOutputTokens": 500,
+  "bufferRatio": 0.2,
+  "workersMonthlyUsd": 5,
+  "domainAnnualBudgetUsd": 15,
+  "storageJobsMonthlyReserveUsd": 2,
+  "adPageRpmKrw": [
+    300,
+    1000,
+    2000
+  ],
+  "monthlyScenarios": [
+    {
+      "questions": 1000,
+      "adEligiblePageViews": 500
+    },
+    {
+      "questions": 3000,
+      "adEligiblePageViews": 2000
+    },
+    {
+      "questions": 10000,
+      "adEligiblePageViews": 8000
+    }
+  ],
+  "excluded": [
+    "taxes and payment fees",
+    "image tokens",
+    "extra model calls or premium model changes",
+    "large one-time ingestion or cloud overages",
+    "development chat subscription"
+  ],
+  "derived": {
+    "usdPerQuestion": 0.001175,
+    "usdPerQuestionBuffered": 0.00141,
+    "fixedMonthlyUsd": 8.25,
+    "scenarios": [
+      {
+        "questions": 1000,
+        "adEligiblePageViews": 500,
+        "apiUsd": 1.41,
+        "totalUsd": 9.66,
+        "totalKrw": 13524,
+        "adRevenueKrw": [
+          150,
+          500,
+          1000
+        ]
+      },
+      {
+        "questions": 3000,
+        "adEligiblePageViews": 2000,
+        "apiUsd": 4.23,
+        "totalUsd": 12.48,
+        "totalKrw": 17472,
+        "adRevenueKrw": [
+          600,
+          2000,
+          4000
+        ]
+      },
+      {
+        "questions": 10000,
+        "adEligiblePageViews": 8000,
+        "apiUsd": 14.1,
+        "totalUsd": 22.35,
+        "totalKrw": 31290,
+        "adRevenueKrw": [
+          2400,
+          8000,
+          16000
+        ]
+      }
+    ]
+  }
+}

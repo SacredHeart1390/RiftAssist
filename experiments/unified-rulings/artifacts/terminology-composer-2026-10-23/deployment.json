@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-23T00:24:52.889Z",
+  "before": {
+    "appRunning": true,
+    "appHost": {
+      "releaseId": "v0.1.5",
+      "workerPort": 3012,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "activeOrigin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected",
+    "error": ""
+  },
+  "after": {
+    "appRunning": true,
+    "appHost": {
+      "releaseId": "v0.1.6",
+      "workerPort": 3011,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "activeOrigin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected",
+    "error": ""
+  },
+  "gatewaySamples": [
+    {
+      "at": "2026-10-23T00:24:52.183Z",
+      "status": 200
+    },
+    {
+      "at": "2026-10-23T00:24:52.769Z",
+      "status": 200
+    }
+  ],
+  "health": {
+    "ok": true,
+    "version": "0.1.6",
+    "appReleaseId": "v0.1.6"
+  },
+  "servedFiles": [
+    "index.html",
+    "app-ui5.js",
+    "card-composer-ui3.js",
+    "styles-ui5.css",
+    "service-worker.js",
+    "app-ui4.js",
+    "card-composer-ui2.js"
+  ],
+  "testsRun": false,
+  "paidAiCalls": 0
+}

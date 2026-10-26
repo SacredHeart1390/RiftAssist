@@ -1,0 +1,14 @@
+{
+  "case_count": 21,
+  "game": 14,
+  "tournament": 7,
+  "base": 12,
+  "variants": 9,
+  "reference_rules_present": true,
+  "source_faqs": 12,
+  "review_status": "pending_human_review",
+  "outputs": [
+    "C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\artifacts\\judge-review-2026-10-17\\Riftbound_Judge_Review_21_KO.docx",
+    "C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\artifacts\\judge-review-2026-10-17\\Riftbound_Judge_Review_21_KO.txt"
+  ]
+}

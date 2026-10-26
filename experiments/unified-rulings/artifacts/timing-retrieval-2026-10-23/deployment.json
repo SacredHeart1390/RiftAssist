@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-23T03:12:25.710Z",
+  "before": {
+    "releaseId": "v0.1.6",
+    "origin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected"
+  },
+  "result": {
+    "releaseId": "v0.1.7",
+    "workerPort": 3012,
+    "activeRequests": 0,
+    "draining": 0,
+    "gatewayRunning": true,
+    "changing": true
+  },
+  "after": {
+    "releaseId": "v0.1.7",
+    "origin": "https://acid-foods-strict-publishers.trycloudflare.com",
+    "tunnel": "connected"
+  },
+  "health": {
+    "version": "0.1.7",
+    "appReleaseId": "v0.1.7",
+    "knowledge": {
+      "releaseId": "2026-10-22-b126a78c3f4a",
+      "validation": "validated",
+      "judgeCases": 11760,
+      "judgeCoverage": "complete",
+      "unresolvedRuleAnchors": [],
+      "lastError": null
+    },
+    "aiEnabled": true
+  },
+  "testsRun": false,
+  "paidAiCalls": 0
+}

@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-22T21:35:45.637Z",
+  "reports": [
+    {
+      "reportId": "73721f3b-a83c-4bde-93b7-92d296fdcbed",
+      "requestId": "c79cf1fa-2bb3-47ba-9488-8c85bc3feee9",
+      "status": "resolved",
+      "inputTokens": 3816,
+      "outputTokens": 906,
+      "citedCaseIds": []
+    },
+    {
+      "reportId": "f182766a-29bf-4fbd-b734-0a9440b42192",
+      "requestId": "430c4bce-3dba-4ddc-9c48-3e22bd7d4317",
+      "status": "resolved",
+      "inputTokens": 4300,
+      "outputTokens": 1069,
+      "citedCaseIds": [
+        "6964",
+        "8308"
+      ]
+    }
+  ],
+  "totalInputTokens": 8116,
+  "totalOutputTokens": 1975
+}

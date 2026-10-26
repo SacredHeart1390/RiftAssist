@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-20T13:47:15.945Z",
+  "activeDataChanged": false,
+  "sources": {
+    "official-en": {
+      "url": "https://playriftbound.com/en-us/rules-hub/",
+      "etag": "W/\"1p8f7y6kyd33f2-df\"",
+      "lastModified": null,
+      "hash": "3595c3e9f36b582b544024e9eab38bfd9ea715bcf382f51c844d09297b327bd4",
+      "contentHash": "880edae88cf67496f1b5a8add0b6395c5c15ed31fbd72817f2366b4e86bb9daf",
+      "artifact": "official-en-3595c3e9f36b582b544024e9eab38bfd9ea715bcf382f51c844d09297b327bd4.json",
+      "checkedAt": "2026-10-20T13:47:15.945Z",
+      "lastSuccessAt": "2026-10-20T13:47:15.945Z",
+      "state": "unchanged",
+      "pendingReview": true,
+      "coverage": "links-only",
+      "error": null,
+      "itemCount": 10
+    },
+    "official-ko": {
+      "url": "https://playriftbound.com/ko-kr/rules-hub/",
+      "etag": "W/\"10owzm8ipsh2zqa-df\"",
+      "lastModified": null,
+      "hash": "691313eade9742d770ae4c93f2c8182342f977b7766bc2a78d9a15391f674300",
+      "contentHash": "aac6936beade2fed28e82bd1d26873baea76527bd42f84bc440985adb4f43ae6",
+      "artifact": "official-ko-691313eade9742d770ae4c93f2c8182342f977b7766bc2a78d9a15391f674300.json",
+      "checkedAt": "2026-10-20T13:47:15.945Z",
+      "lastSuccessAt": "2026-10-20T13:47:15.945Z",
+      "state": "unchanged",
+      "pendingReview": true,
+      "coverage": "links-only",
+      "error": null,
+      "itemCount": 9
+    },
+    "riftjudge": {
+      "url": "https://app.riftjudge.com/sitemap.xml",
+      "etag": null,
+      "lastModified": null,
+      "hash": "1415214b774f172f5f951272c8057084a15fad28610b9a19ddd94e1a14bdc929",
+      "contentHash": "460990f3a6cf52a4fc73a4fe52b560844378a9d134e3893aab3f0289de60fd0f",
+      "artifact": "riftjudge-1415214b774f172f5f951272c8057084a15fad28610b9a19ddd94e1a14bdc929.json",
+      "checkedAt": "2026-10-20T13:47:15.945Z",
+      "lastSuccessAt": "2026-10-20T13:47:15.945Z",
+      "state": "unchanged",
+      "pendingReview": true,
+      "coverage": "urls-only",
+      "error": null,
+      "itemCount": 11729
+    },
+    "riftnaru": {
+      "state": "source-required",
+      "mode": "inbox",
+      "running": true,
+      "pid": 21912,
+      "checkedAt": "2026-10-26T01:19:38.600Z",
+      "intervalHours": 24,
+      "cardCount": 1527,
+      "activeVersion": "riftnaru-2026-10-18-0b8e475d8f90",
+      "nextCheckAt": null,
+      "lastSuccessAt": "2026-10-21T02:41:47.852Z",
+      "lastSourceCapturedAt": "2026-10-18T05:57:00.831Z",
+      "lastAppliedRelease": null,
+      "error": null,
+      "diff": {
+        "added": 0,
+        "changed": 0,
+        "missing": 0,
+        "translationPending": 0,
+        "unchanged": 1527
+      },
+      "sourceMissing": 0,
+      "remoteConnected": false,
+      "sourceNote": "원격 카드 제공 주소 미연결 · 파일 가져오기 대기",
+      "paidAiCalls": 0
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "createdAt": "2026-10-22T21:34:10.196Z",
+  "intendedCalls": 2,
+  "completed": 2,
+  "results": [
+    {
+      "reportId": "73721f3b-a83c-4bde-93b7-92d296fdcbed",
+      "requestId": "c79cf1fa-2bb3-47ba-9488-8c85bc3feee9",
+      "status": "ruling-generated",
+      "checks": {
+        "http": true,
+        "generated": true,
+        "steps": true,
+        "noUnneededQuestions": true,
+        "noJudgeReferral": true,
+        "decisiveClause": true,
+        "noExtraPoint": true
+      },
+      "citedRuleIds": [
+        "core-rules:472",
+        "core-rules:470",
+        "core-rules:471.1",
+        "core-rules:471.2"
+      ],
+      "citedCaseIds": [],
+      "stepCount": 2
+    },
+    {
+      "reportId": "f182766a-29bf-4fbd-b734-0a9440b42192",
+      "requestId": "430c4bce-3dba-4ddc-9c48-3e22bd7d4317",
+      "status": "ruling-generated",
+      "checks": {
+        "http": true,
+        "generated": true,
+        "steps": true,
+        "noUnneededQuestions": true,
+        "noJudgeReferral": true,
+        "targetLock": true,
+        "partialResolution": true,
+        "remainingDamage": true,
+        "fullRetreat": true
+      },
+      "citedRuleIds": [
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:359.3.e.8",
+        "core-rules:355.15"
+      ],
+      "citedCaseIds": [
+        "6964",
+        "8308"
+      ],
+      "stepCount": 2
+    }
+  ]
+}

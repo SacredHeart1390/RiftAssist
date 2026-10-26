@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "compatibleSchema": 2,
+  "releaseId": "2026-10-23-c2ce51bed139",
+  "createdAt": "2026-10-23T09:34:50.316Z",
+  "effectiveFrom": null,
+  "parserVersion": "coordinate-rule-columns-2+judge-dom-1",
+  "validationStatus": "validated",
+  "reviewRequired": false,
+  "sources": {
+    "core": {
+      "state": "current",
+      "version": "2026-10-09",
+      "count": 2494,
+      "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+      "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf",
+      "hashEn": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+      "hashKo": "30e59540e63fabaaa14021a102d64feea773c60f3ac651b8aac06f4576c85b54",
+      "versionKo": "2026-10-09",
+      "languageAlignment": "matching-document-dates",
+      "koError": null
+    },
+    "tournament": {
+      "state": "current",
+      "version": "2026-10-08",
+      "count": 976,
+      "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861752822d217edf37d9febaeaf77a7d924c1bb6.pdf",
+      "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/6e1f622e65081b2975853b603eaaef33fec74afb.pdf",
+      "hashEn": "ce07da4fb632526afbbce7f058287a57e7444fa6bde17b0938ff52ce3fab3d07",
+      "hashKo": "dea6f7e7bbfb318f5f3192de5de6fcb3bc36ff3a3a1ab4da871f1abe6d37ad94",
+      "versionKo": "2026-10-09",
+      "languageAlignment": "unchanged-existing-bilingual-content",
+      "koError": null
+    },
+    "supplements": {
+      "preserved": true
+    },
+    "riftnaru": {
+      "version": "riftnaru-2026-10-18-0b8e475d8f90"
+    },
+    "riftjudge": {
+      "coverage": "complete",
+      "known": 11764,
+      "collected": 11764,
+      "unavailable": 0,
+      "removed": 0,
+      "sitemapCheckedAt": "2026-10-23T09:34:49.173Z",
+      "checkedAt": "2026-10-23T09:34:50.220Z"
+    },
+    "officialSync": {
+      "checkedAt": "2026-10-23T09:34:46.562Z",
+      "documents": {
+        "core-rules": {
+          "state": "current",
+          "version": "2026-10-09",
+          "count": 2494,
+          "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/5c7946f7c3b8c6e0faff85ab6dadc6d2e721ea94.pdf",
+          "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/162b6f1a4bf6711b778684336566483f4dce256c.pdf",
+          "hashEn": "94d41fee86f88b61c4157c0389c0595d990b98e5b42555c99d9f649ee64d1fec",
+          "hashKo": "30e59540e63fabaaa14021a102d64feea773c60f3ac651b8aac06f4576c85b54",
+          "versionKo": "2026-10-09",
+          "languageAlignment": "matching-document-dates",
+          "koError": null
+        },
+        "tournament-rules": {
+          "state": "current",
+          "version": "2026-10-08",
+          "count": 976,
+          "urlEn": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/861752822d217edf37d9febaeaf77a7d924c1bb6.pdf",
+          "urlKo": "https://cmsassets.rgpub.io/sanity/files/dsfx7636/news_live/6e1f622e65081b2975853b603eaaef33fec74afb.pdf",
+          "hashEn": "ce07da4fb632526afbbce7f058287a57e7444fa6bde17b0938ff52ce3fab3d07",
+          "hashKo": "dea6f7e7bbfb318f5f3192de5de6fcb3bc36ff3a3a1ab4da871f1abe6d37ad94",
+          "versionKo": "2026-10-09",
+          "languageAlignment": "unchanged-existing-bilingual-content",
+          "koError": null
+        }
+      },
+      "supplements": "preserved-existing-articles"
+    }
+  },
+  "hashes": {
+    "rules.json": "7acbc93d7f292242453961f5e298c2285ff13a2d148c06256dbb4cb46de03c9e",
+    "cards.json": "8eec626a557995b9366242efeddd0b730ef5fe782b6a67b845ef3974a7d9c8c5",
+    "judge-cases.json": "758bd621ec28c4e1c33194d6cba0f39d920871223222ea619094ee0a2359e1c3"
+  },
+  "counts": {
+    "rules": 3487,
+    "cards": 1527,
+    "judgeCases": 11764
+  }
+}

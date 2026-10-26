@@ -1,0 +1,25 @@
+{
+  "changed": false,
+  "diff": {
+    "added": [],
+    "changed": [],
+    "missing": [],
+    "translationPending": [],
+    "unchanged": 1527
+  },
+  "history": {
+    "missing": {},
+    "snapshotId": "2026-10-18T05:57:00.831Z:76b0216d3bbe809520b826189c2ea48c6d4108ce73a584235a6800b01f90dbcb",
+    "lastFullCapturedAt": "2026-10-18T05:57:00.831Z"
+  },
+  "fullListing": true,
+  "sourceCapturedAt": "2026-10-18T05:57:00.831Z",
+  "suppliedCount": 1527,
+  "semanticHash": "76b0216d3bbe809520b826189c2ea48c6d4108ce73a584235a6800b01f90dbcb",
+  "cards": 1527,
+  "version": "riftnaru-2026-10-18-0b8e475d8f90",
+  "releaseId": "2026-10-20-123d1c1336cb",
+  "preview": false,
+  "published": false,
+  "checkedAt": "2026-10-21T02:41:47.852Z"
+}

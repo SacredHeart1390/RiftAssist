@@ -1,0 +1,317 @@
+{
+  "knowledgeReleaseId": "2026-10-21-c3ae3533a11f",
+  "passed": 12,
+  "reproduction": [
+    {
+      "report": "73721f3b-a83c-4bde-93b7-92d296fdcbed",
+      "before": [
+        "core-rules:194.1",
+        "core-rules:383.4.d",
+        "core-rules:383.4.d.2.a",
+        "tournament-rules:204.5.a.1.a",
+        "tournament-rules:415.3.a",
+        "core-rules:412.4",
+        "core-rules:194.2.b",
+        "core-rules:491.6"
+      ]
+    },
+    {
+      "report": "f182766a-29bf-4fbd-b734-0a9440b42192",
+      "before": [
+        "core-rules:758.2",
+        "core-rules:355.14.h.1",
+        "core-rules:820.2.a",
+        "core-rules:359.3.e.3",
+        "core-rules:818.1.b.1",
+        "core-rules:355.10.b",
+        "core-rules:330",
+        "core-rules:811.1.d.2"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "label": "reported-scoring",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:383.4.d",
+        "core-rules:194.1",
+        "core-rules:383.4.d.2.a",
+        "core-rules:491.8.g.1"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "4693",
+        "5983",
+        "1691",
+        "3863"
+      ],
+      "caseTopics": [
+        "Can I conquer a location I already hold (when it's empty) to trigger conquer effects without scoring points?",
+        "If you kill your own unit in a battlefield after scoring a hold point, can you conquer that same battlefield in the same turn?",
+        "If I conquer a battlefield, then kill my own unit there, then move another unit to the now-empty battlefield in the same turn, do I score again?",
+        "Can you hold a battlefield with Monastery, move all units off, then conquer it again in the same turn to trigger Monastery's draw effect?"
+      ]
+    },
+    {
+      "label": "reported-targets",
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "cardIds": [
+        "riftnaru:ogn-029",
+        "riftnaru:ogn-104"
+      ],
+      "caseIds": [
+        "5568",
+        "6964",
+        "2844",
+        "6493"
+      ],
+      "caseTopics": [
+        "When you cast Rain or Falling Star, do you choose targets one-by-one or all at once? If an opponent uses Retreat on one of the targets, do you select ",
+        "If a spell's target is removed before the spell resolves (e.g., via Retreat), does the spell fizzle or must it retarget to another valid target?",
+        "If I cast Falling Star and choose 2 units, then my opponent plays Retreat on one of them, do I need to do 3 damage to my own unit instead?",
+        "If you use Falling Star on an enemy unit with 3 might or less as their only unit on the field, does the 2nd instance of Falling Star have to target yo"
+      ]
+    },
+    {
+      "label": "different-player",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:491.8.g.1",
+        "core-rules:473.1.b.1",
+        "core-rules:473.2",
+        "core-rules:194.1.b"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "4693",
+        "5983",
+        "1691",
+        "3863"
+      ],
+      "caseTopics": [
+        "Can I conquer a location I already hold (when it's empty) to trigger conquer effects without scoring points?",
+        "If you kill your own unit in a battlefield after scoring a hold point, can you conquer that same battlefield in the same turn?",
+        "If I conquer a battlefield, then kill my own unit there, then move another unit to the now-empty battlefield in the same turn, do I score again?",
+        "Can you hold a battlefield with Monastery, move all units off, then conquer it again in the same turn to trigger Monastery's draw effect?"
+      ]
+    },
+    {
+      "label": "different-turn",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:491.8.g.1",
+        "core-rules:473.1.b.1",
+        "core-rules:473.2",
+        "core-rules:194.1.b"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "4693",
+        "5983",
+        "1691",
+        "3863"
+      ],
+      "caseTopics": [
+        "Can I conquer a location I already hold (when it's empty) to trigger conquer effects without scoring points?",
+        "If you kill your own unit in a battlefield after scoring a hold point, can you conquer that same battlefield in the same turn?",
+        "If I conquer a battlefield, then kill my own unit there, then move another unit to the now-empty battlefield in the same turn, do I score again?",
+        "Can you hold a battlefield with Monastery, move all units off, then conquer it again in the same turn to trigger Monastery's draw effect?"
+      ]
+    },
+    {
+      "label": "different-battlefield",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:194.1.b",
+        "core-rules:491.8.g.1",
+        "core-rules:491.8.b",
+        "core-rules:194.1.a"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "4693",
+        "5983",
+        "1691",
+        "3863"
+      ],
+      "caseTopics": [
+        "Can I conquer a location I already hold (when it's empty) to trigger conquer effects without scoring points?",
+        "If you kill your own unit in a battlefield after scoring a hold point, can you conquer that same battlefield in the same turn?",
+        "If I conquer a battlefield, then kill my own unit there, then move another unit to the now-empty battlefield in the same turn, do I score again?",
+        "Can you hold a battlefield with Monastery, move all units off, then conquer it again in the same turn to trigger Monastery's draw effect?"
+      ]
+    },
+    {
+      "label": "all-targets-gone",
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "7924",
+        "6729",
+        "4899",
+        "5857"
+      ],
+      "caseTopics": [
+        "When do cards with targeting effects (like 'Kill a unit at a battlefield') choose their targets, and can targets be changed if the original target bec",
+        "When Gust targets a unit that becomes invalid during chain resolution (due to increased might), can the player change the target to a different valid ",
+        "How does Hidden Blade work when its target becomes invalid before resolution?",
+        "If Facebreaker is cast targeting two units on the same battlefield, but one target is removed (e.g., by Gust) before Facebreaker resolves, does the re"
+      ]
+    },
+    {
+      "label": "board-movement",
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "7924",
+        "6729",
+        "4899",
+        "5857"
+      ],
+      "caseTopics": [
+        "When do cards with targeting effects (like 'Kill a unit at a battlefield') choose their targets, and can targets be changed if the original target bec",
+        "When Gust targets a unit that becomes invalid during chain resolution (due to increased might), can the player change the target to a different valid ",
+        "How does Hidden Blade work when its target becomes invalid before resolution?",
+        "If Facebreaker is cast targeting two units on the same battlefield, but one target is removed (e.g., by Gust) before Facebreaker resolves, does the re"
+      ]
+    },
+    {
+      "label": "english-retarget",
+      "selectedIds": [
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "7178",
+        "6964",
+        "6504",
+        "2019"
+      ],
+      "caseTopics": [
+        "When Hextech Ray targets two units and one target becomes invalid due to Retreat, is the player forced to retarget their own unit or can they target n",
+        "If a spell's target is removed before the spell resolves (e.g., via Retreat), does the spell fizzle or must it retarget to another valid target?",
+        "If Hextech Ray's target becomes illegal after it's been placed on the chain (due to Retreat returning it to hand), can Hextech Ray change to target a ",
+        "If Singularity targets two opponent units and one is Retreated in response, do you have to retarget Singularity or does it still deal damage to the re"
+      ]
+    },
+    {
+      "label": "english-scoring",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:491.8.g.1",
+        "core-rules:473.2.a",
+        "core-rules:491.8.b",
+        "core-rules:194.1.b"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "6745",
+        "3484",
+        "3439",
+        "6012"
+      ],
+      "caseTopics": [
+        "Do conquer abilities trigger when you already held/conquered a battlefield, and what rules support this?",
+        "If I hold and score a battlefield on my turn, then leave it, and my opponent conquers it during a showdown, can I score it again (and trigger conquer ",
+        "If you are already holding one battlefield, and then conquer the other battlefield in the same turn, do you score the 8th point for having conquered b",
+        "Can you conquer the same battlefield twice in one turn by moving a unit away and then moving another unit back to it?"
+      ]
+    },
+    {
+      "label": "combined",
+      "selectedIds": [
+        "core-rules:472",
+        "core-rules:471.1",
+        "core-rules:471.2",
+        "core-rules:470",
+        "core-rules:355.15",
+        "core-rules:359.3.e.1",
+        "core-rules:359.3.e.2",
+        "core-rules:359.3.e.5",
+        "core-rules:340.1",
+        "core-rules:359.3.d",
+        "core-rules:359.3.e.7",
+        "core-rules:359.3.e.8"
+      ],
+      "cardIds": [],
+      "caseIds": [
+        "12897",
+        "12895",
+        "12894",
+        "12909"
+      ],
+      "caseTopics": [
+        "내 유닛과 상대 유닛의 죽음의 종소리가 유발될 때, 턴 플레이어부터 체인을 정하는거면 무조건 턴 플레이어가 아닌 사람의 죽음의 종소리부터 처리되는거야?",
+        "체인이 풀릴때 마다 거기에 또 체인을 걸 수 있어?",
+        "레이븐블룸 학생 2마리와 감시하는 보초 1마리가 있을 때, 내가 주문으로 감시하는 보초를 처치하면 레이븐블룸 학생의 스킬과 감시하는 보초의 죽음의 종소리는 어떤 순서로 처리돼?",
+        "내가 마비로 대상을 지정했는데 상대가 체인으로 그 대상을 처치하면 마비가 처리될 때 드로우를 할 수 있어?"
+      ]
+    },
+    {
+      "label": "deck-limit-preserved",
+      "selectedIds": [
+        "core-rules:103.3.b",
+        "core-rules:103.3.e",
+        "core-rules:432.2.b",
+        "core-rules:056.1",
+        "core-rules:141.1.b",
+        "core-rules:148.1.b",
+        "core-rules:441.1",
+        "core-rules:108.2"
+      ],
+      "cardIds": [],
+      "caseIds": [],
+      "caseTopics": []
+    }
+  ]
+}

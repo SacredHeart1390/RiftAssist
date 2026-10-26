@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-21T08:18:48.215Z",
+  "before": {
+    "appRunning": true,
+    "activeOrigin": "https://stars-cal-potentially-ftp.trycloudflare.com",
+    "tunnel": "connected",
+    "appHost": {
+      "releaseId": "v0.1.3",
+      "workerPort": 3011,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "error": ""
+  },
+  "after": {
+    "appRunning": true,
+    "activeOrigin": "https://stars-cal-potentially-ftp.trycloudflare.com",
+    "tunnel": "connected",
+    "appHost": {
+      "releaseId": "v0.1.4",
+      "workerPort": 3012,
+      "activeRequests": 0,
+      "draining": 0,
+      "gatewayRunning": true,
+      "changing": false
+    },
+    "error": ""
+  },
+  "publicAddressPreserved": true,
+  "health": {
+    "ok": true,
+    "version": "0.1.4",
+    "appReleaseId": "v0.1.4",
+    "features": {
+      "imageAttachments": false
+    },
+    "knowledgeReleaseId": "2026-10-21-5180ef38d670"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "riftassist-rules-regression",
+  "private": true,
+  "scripts": {
+    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs",
+    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs"
+  },
+  "devDependencies": { "playwright": "1.62.1" },
+  "engines": { "node": ">=22.13" }
+}

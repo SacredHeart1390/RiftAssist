@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-20T21:37:54.482Z",
+  "count": 7,
+  "passed": [
+    "수정된 실행 파일 구문 검사",
+    "실제 사례의 본문·상태 추출과 ID 불일치 차단",
+    "중단 후 이어받기·변경분·삭제 확인 재시도",
+    "로컬 전체 본문 검색·폐기 사례 제외",
+    "영한 전체 규칙·부모 문맥·누락 방지",
+    "손상된 자료 교체 거부·현재 자료 유지",
+    "격리 앱 시작·카드 검색·비공개 경로 차단"
+  ],
+  "cases": 974,
+  "rules": 3487,
+  "paidCalls": 0,
+  "productionAppStarted": false,
+  "productionTunnelStarted": false,
+  "fixture": "C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tmp\\content-readiness-srmcHS"
+}

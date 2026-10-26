@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+not ok 1 - 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+  ---
+  duration_ms: 6878.5387
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:60:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    page.goto: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:55502/", waiting until "domcontentloaded"[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    Object.open (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:47:58)
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:62:13)
+  ...
+# Subtest: 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+not ok 2 - 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+  ---
+  duration_ms: 7014.82
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:76:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    page.goto: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:55510/", waiting until "domcontentloaded"[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    Object.open (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:47:58)
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:78:13)
+  ...
+# Subtest: 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+not ok 3 - 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+  ---
+  duration_ms: 6845.9415
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:101:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    page.goto: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:55519/", waiting until "domcontentloaded"[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    Object.open (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:47:58)
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:106:13)
+  ...
+# Subtest: 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+not ok 4 - 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+  ---
+  duration_ms: 6860.9443
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    page.goto: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:55529/", waiting until "domcontentloaded"[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    Object.open (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:47:58)
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:131:13)
+  ...
+# Subtest: 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+not ok 5 - 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+  ---
+  duration_ms: 6833.0617
+  type: 'test'
+  location: 'C:\\Users\\user\\.codex\\.chatgpt-projects\\g-p-6ad1dd0b61bc8191a95d816389c6e577\\experiments\\unified-rulings\\tests\\e2e\\user-flows.test.cjs:139:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    page.goto: Timeout 5000ms exceeded.
+    Call log:
+    [2m  - navigating to "http://127.0.0.1:55537/", waiting until "domcontentloaded"[22m
+    
+  code: 'ERR_TEST_FAILURE'
+  name: 'TimeoutError'
+  stack: |-
+    Object.open (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:47:58)
+    TestContext.<anonymous> (C:\Users\user\.codex\.chatgpt-projects\g-p-6ad1dd0b61bc8191a95d816389c6e577\experiments\unified-rulings\tests\e2e\user-flows.test.cjs:142:13)
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 0
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 34653.2038

@@ -1,0 +1,24 @@
+{
+  "createdAt": "2026-10-22T03:06:11.488Z",
+  "intendedCalls": 2,
+  "completed": 1,
+  "results": [
+    {
+      "reportId": "73721f3b-a83c-4bde-93b7-92d296fdcbed",
+      "requestId": "178eb395-01ee-4046-9f20-f6bc4400db91",
+      "status": "model-error",
+      "checks": {
+        "http": true,
+        "generated": false,
+        "steps": false,
+        "noUnneededQuestions": true,
+        "noJudgeReferral": true,
+        "decisiveClause": false,
+        "noExtraPoint": false
+      },
+      "citedRuleIds": [],
+      "citedCaseIds": [],
+      "stepCount": 0
+    }
+  ]
+}
