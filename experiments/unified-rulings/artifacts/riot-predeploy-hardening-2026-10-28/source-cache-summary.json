@@ -1,0 +1,56 @@
+{
+  "purpose": "public-source synchronization cache and retry/publication state",
+  "schemaMatchesSyncStore": true,
+  "quickCheckPassed": true,
+  "rowCounts": {
+    "documents": 11,
+    "faqs": 11794,
+    "state": 7
+  },
+  "jsonRecords": 11812,
+  "invalidJsonRecords": 0,
+  "localOperationsTablesPresent": false,
+  "logicalTextIndicators": {
+    "emailLike": 0,
+    "ipv4Like": 0,
+    "credentialLike": 0,
+    "sensitiveFieldLike": 0
+  },
+  "rawFileIndicatorsIncludingWal": {
+    "content.sqlite": {
+      "emailLike": 0,
+      "ipv4Like": 0,
+      "credentialLike": 0,
+      "sensitiveFieldLike": 0
+    },
+    "content.sqlite-wal": {
+      "emailLike": 0,
+      "ipv4Like": 0,
+      "credentialLike": 0,
+      "sensitiveFieldLike": 0
+    },
+    "content.sqlite-shm": {
+      "emailLike": 0,
+      "ipv4Like": 0,
+      "credentialLike": 0,
+      "sensitiveFieldLike": 0
+    }
+  },
+  "originalFiles": {
+    "content.sqlite": {
+      "bytes": 37969920,
+      "sha256": "a10973b2cd84c6934bbc04cf612c7e09614f6e4cefc0cdfb0faf4c69a8bab4f3"
+    },
+    "content.sqlite-wal": {
+      "bytes": 34249592,
+      "sha256": "a54bb2bd055926a34fbc77ca622a7751e10c8c5d2723fb02f43669d6e048285c"
+    },
+    "content.sqlite-shm": {
+      "bytes": 65536,
+      "sha256": "6f09768d352dfccb2dd94e7c7b99aa7f9571031ea4b2fdba1f9987f971fff636"
+    }
+  },
+  "originalFilesUnchanged": true,
+  "rawValuesPrinted": false,
+  "limits": "Pattern matches may be public author data or version strings. No match is not proof of no sensitive data. Git history not scanned."
+}

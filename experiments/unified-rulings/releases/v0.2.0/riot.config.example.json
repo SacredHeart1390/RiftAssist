@@ -1,0 +1,10 @@
+{
+  "mode": "mock",
+  "enabled": false,
+  "endpoint": null,
+  "approvedAppReference": null,
+  "mappingVersion": null,
+  "permissions": { "display": false, "modelInput": false },
+  "credentialEnvironmentVariable": "RIOT_API_KEY",
+  "note": "No production endpoint or schema is assumed. Approval, reviewed mapper, data validation and deployment approval are separate steps."
+}

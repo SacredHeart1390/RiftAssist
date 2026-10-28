@@ -1,5 +1,7 @@
 # 핵심 규칙 판정 회귀 테스트
 
+현재 기본 대상은 **v0.2.0**입니다. `npm test`는 회귀·정책·환경 통합 28개, `npm run test:legacy`는 수정하지 않은 v0.1.7 회귀 11개, `npm run test:e2e`는 브라우저 12개를 실행합니다. 모두 임시 자료·DB·키와 모의 외부 응답을 사용합니다. 최신 구조·한계는 [v0.2.0 안내](../releases/v0.2.0/README.md), 재실행 결과는 [GitHub 보존 검사](../artifacts/github-preservation-2026-10-28/README.md)를 참조하세요. 아래는 최초 테스트 구축 당시의 자료·판정 근거 및 이력입니다.
+
 대상: `releases/v0.1.7/src/`. 기존 테스트 러너나 테스트 파일은 없었으므로 Node 내장 `node:test`와 `assert/strict`를 사용한다. 패키지 설치나 운영 코드 변경은 필요 없다.
 
 ## 실행

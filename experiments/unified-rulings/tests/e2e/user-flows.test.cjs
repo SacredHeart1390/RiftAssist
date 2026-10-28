@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { isolatedServer, fixture } = require('../helpers/isolated-server.cjs');
-const results = path.resolve(__dirname, '../results/e2e');
+const results = process.env.RIFTASSI_E2E_RESULTS || path.resolve(__dirname, '../results/e2e');
 const expected = '같은 턴에 같은 전장에서 이미 득점했다면 다시 정복해도 추가 점수를 얻지 않습니다.';
 const question = '제 턴 개시 단계에 한 전장에서 점거로 1점을 얻었습니다. 상대에게 빼앗긴 뒤 같은 턴에 다시 정복하면 추가 점수를 얻나요?';
 const steps = ['이 전장에서 이번 턴 이미 득점했는지 확인합니다.', '같은 턴의 재정복으로는 추가 점수를 얻지 않습니다.'];
@@ -18,6 +18,7 @@ async function browserSession(t, plans, options = {}) {
   const server = await isolatedServer(t, plans);
   // Use an isolated headless profile, never the user's existing browser or production server.
   const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'],
+    ...(process.env.RIFTASSI_E2E_EXECUTABLE_PATH ? { executablePath: process.env.RIFTASSI_E2E_EXECUTABLE_PATH } : {}),
     ...(process.env.RIFTASSI_E2E_CHANNEL ? { channel: process.env.RIFTASSI_E2E_CHANNEL } : {}) });
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: 'block',
     reducedMotion: 'reduce', locale: 'ko-KR', ...options });
@@ -34,7 +35,7 @@ async function browserSession(t, plans, options = {}) {
     offsite.push(target.origin);
     return route.abort('blockedbyclient');
   });
-  t.after(async () => {
+  server.addCleanup(async () => {
     try {
       if (t.passed === false) {
         await fs.mkdir(results, { recursive: true });

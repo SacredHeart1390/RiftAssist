@@ -1,0 +1,16 @@
+{
+  "status": "unconfirmed-not-consent-or-approval",
+  "controller": { "legalName": null, "operatorName": null, "contact": null },
+  "rightsRequests": { "channel": null, "identityVerification": null, "handlingProcedure": null, "backupDeletionProcedure": null },
+  "legalBasisByPurpose": null,
+  "consent": { "requiredScope": null, "actualCollectionMethod": null, "withdrawalMethod": null, "evidenceLocation": null },
+  "externalServices": {
+    "OpenAI": { "roleAndContract": null, "countries": null, "retention": null, "transferRequirements": null },
+    "RiftJudge": { "roleAndContract": null, "countries": null, "retention": null, "transferRequirements": null },
+    "hostingAndTunnel": { "providers": null, "countries": null, "logsAndRetention": null, "contract": null },
+    "permittedImageProviders": null
+  },
+  "operations": { "storageLocations": null, "accessRoles": null, "keyProtection": null, "logRetention": null, "backupScheduleAndRetention": null, "cleanupFailureMonitoring": null },
+  "effectiveDate": null,
+  "changeNoticeProcedure": null
+}

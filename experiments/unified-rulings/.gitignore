@@ -9,3 +9,15 @@ knowledge/imports/
 knowledge/card-history/
 knowledge/source-translations/
 private/
+# Runtime databases and key files must never enter new source changes.
+# Existing tracked source-cache databases still require a separate index/history review.
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+*.key
+# v0.2.0's isolated runtime, fixtures prepared at runtime, and local config.
+releases/v0.2.0/.dev-data/
+releases/v0.2.0/riot.config.local.json

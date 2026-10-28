@@ -1,0 +1,10 @@
+{
+  "schema": "riftassist-canonical-1",
+  "origin": "mock",
+  "version": "synthetic-development-1",
+  "sourceUrl": "https://example.invalid/riftassist/mock-cards",
+  "cards": [
+    { "id": "practice-unit", "englishName": "Practice Unit", "koreanName": "연습 유닛", "englishText": "This is a synthetic development card. It has no official game effect.", "koreanText": "개발용 합성 카드입니다. 공식 게임 효과가 없습니다.", "type": "Unit", "stats": { "might": 1 } },
+    { "id": "practice-spell", "englishName": "Practice Spell", "englishText": "This synthetic spell exists only to test card selection and translation.", "type": "Spell", "preview": true }
+  ]
+}

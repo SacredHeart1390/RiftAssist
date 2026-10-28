@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: legal navigation and exact Riot notice at 1280px, Korean/English and JavaScript off
+ok 1 - legal navigation and exact Riot notice at 1280px, Korean/English and JavaScript off
+  ---
+  duration_ms: 2332.675369
+  type: 'test'
+  ...
+# Subtest: legal navigation and exact Riot notice at 390px, Korean/English and JavaScript off
+ok 2 - legal navigation and exact Riot notice at 390px, Korean/English and JavaScript off
+  ---
+  duration_ms: 2529.74417
+  type: 'test'
+  ...
+# Subtest: legal navigation and exact Riot notice at 320px, Korean/English and JavaScript off
+ok 3 - legal navigation and exact Riot notice at 320px, Korean/English and JavaScript off
+  ---
+  duration_ms: 2126.541305
+  type: 'test'
+  ...
+# Subtest: report dialog submits successfully alongside the legal footer
+ok 4 - report dialog submits successfully alongside the legal footer
+  ---
+  duration_ms: 1300.005868
+  type: 'test'
+  ...
+# Subtest: PWA precaches the new legal documents; offline navigation works and APIs stay uncached
+ok 5 - PWA precaches the new legal documents; offline navigation works and APIs stay uncached
+  ---
+  duration_ms: 1384.289229
+  type: 'test'
+  ...
+# Subtest: v0.2.0 mobile default restriction explains the pause and preserves evidence/report access
+ok 6 - v0.2.0 mobile default restriction explains the pause and preserves evidence/report access
+  ---
+  duration_ms: 1387.823373
+  type: 'test'
+  ...
+# Subtest: v0.2.0 synthetic cards and unreleased previews are clearly labeled in search
+ok 7 - v0.2.0 synthetic cards and unreleased previews are clearly labeled in search
+  ---
+  duration_ms: 1342.042361
+  type: 'test'
+  ...
+# Subtest: 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+ok 8 - 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호
+  ---
+  duration_ms: 1586.221852
+  type: 'test'
+  ...
+# Subtest: 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+ok 9 - 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문
+  ---
+  duration_ms: 3046.475021
+  type: 'test'
+  ...
+# Subtest: 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+ok 10 - 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도
+  ---
+  duration_ms: 3312.053791
+  type: 'test'
+  ...
+# Subtest: 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+ok 11 - 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복
+  ---
+  duration_ms: 1212.030501
+  type: 'test'
+  ...
+# Subtest: 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+ok 12 - 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음
+  ---
+  duration_ms: 1422.788203
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23638.499916
