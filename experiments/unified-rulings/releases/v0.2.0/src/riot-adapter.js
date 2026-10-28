@@ -1,11 +1,12 @@
 // The mock contract is ours, not a claim about Riot's production response schema.
 const mock = require('../dev-fixtures/mock-cards.json');
+const { assertPublication } = require('./card-publication');
 function createRiotAdapter({ mode = 'mock', config = {}, fetchImpl = globalThis.fetch,
   getApiKey = () => process.env.RIOT_API_KEY, decodeOfficial } = {}) {
   if (!['mock', 'riot-api'].includes(mode)) throw new Error('Unknown Riot adapter mode.');
   return {
     async collect() {
-      if (mode === 'mock') return structuredClone(mock);
+      if (mode === 'mock') { mock.cards.forEach(card => assertPublication(card, 'mock')); return structuredClone(mock); }
       // Neither approval nor finding a key can automatically turn this mode on.
       if (config.enabled !== true || !config.approvedAppReference || !config.mappingVersion || typeof decodeOfficial !== 'function') {
         throw new Error('A reviewed endpoint/schema mapper and explicit app approval configuration are required.');
@@ -24,6 +25,7 @@ function createRiotAdapter({ mode = 'mock', config = {}, fetchImpl = globalThis.
         decoded = await decodeOfficial(await response.json());
       } catch { throw new Error('Riot collection failed. No response body or credential was logged.'); }
       if (!decoded || !Array.isArray(decoded.cards) || typeof decoded.version !== 'string' || !decoded.version) throw new Error('The reviewed mapper returned an invalid canonical catalog.');
+      decoded.cards.forEach(card => assertPublication(card, 'riot-api'));
       return { schema: 'riftassist-canonical-1', origin: 'riot-api', version: decoded.version,
         sourceUrl: url.href, mappingVersion: config.mappingVersion, cards: decoded.cards };
     },

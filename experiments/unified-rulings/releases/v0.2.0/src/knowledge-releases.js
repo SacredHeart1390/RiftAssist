@@ -56,6 +56,7 @@ async function activateRelease(root,nextId,expectedId,{acknowledgeReview=false}=
     catch(error){if(error.code!=='ENOENT')throw error;}
     if(previous.releaseId!==expectedId)throw new Error('Active version changed; refresh before applying.');
     const next=await loadRelease(root,nextId);
+    if(next.manifest.sources?.cardTranslation?.baseReleaseId && next.manifest.sources.cardTranslation.baseReleaseId!==previous.releaseId)throw new Error('Translation candidate base changed; rebuild and review it.');
     if(next.manifest.reviewRequired&&!acknowledgeReview)throw new Error('This release requires operator review.');
     const value={releaseId:nextId,previousReleaseId:previous.releaseId,activatedAt:new Date().toISOString()};
     const temporary=path.join(folder,`active.${crypto.randomUUID()}.tmp`);

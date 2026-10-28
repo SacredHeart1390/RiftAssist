@@ -2,7 +2,7 @@
   "name": "riftassist-rules-regression",
   "private": true,
   "scripts": {
-    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs",
+    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs",
     "test:legacy": "node helpers/test-legacy.cjs",
     "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs"
   },

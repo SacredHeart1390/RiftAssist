@@ -21,3 +21,4 @@ private/
 # v0.2.0's isolated runtime, fixtures prepared at runtime, and local config.
 releases/v0.2.0/.dev-data/
 releases/v0.2.0/riot.config.local.json
+releases/v0.2.0/card-translation.config.local.json

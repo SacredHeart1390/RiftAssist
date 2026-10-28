@@ -1,6 +1,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { jsonValue, strings, normalizeRecord } = require('./card-translation-core');
 
 const MAX_SELECTED_CARDS = 8;
 const ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$/u;
@@ -46,12 +47,19 @@ function normalizeCatalog(data) {
       version: text(entry.source?.version, 120), updatedAt: text(entry.source?.updatedAt, 80),
       fetchedAt: text(entry.source?.fetchedAt, 80), verification: text(entry.source?.verification, 80),
     };
-    const permissions = { display: entry.permissions?.display === true, modelInput: entry.permissions?.modelInput === true };
+    const permissions = { display: entry.permissions?.display === true, modelInput: entry.permissions?.modelInput === true, translation: entry.permissions?.translation === true };
     // Prototype settings record the user's local use decision, not a license from the source owner.
     const prototypeUse = { enabled: entry.prototypeUse?.enabled === true, modelInput: entry.prototypeUse?.modelInput === true, redistribution: false, rightsConfirmed: false };
     const textEn = text(entry.textEn, 12000);
     const textKo = text(entry.textKo, 12000);
     const textVerified = entry.textVerified === true;
+    const officialKorean = entry.officialKorean == null ? null : {
+      name: text(entry.officialKorean.name), text: text(entry.officialKorean.text, 12000), keywords: strings(entry.officialKorean.keywords),
+      version: text(entry.officialKorean.version, 120), englishVersion: text(entry.officialKorean.englishVersion, 120), url: httpsUrl(entry.officialKorean.url),
+    };
+    const translationHistory = strings(entry.translationHistory, 1000);
+    if (translationHistory.some(id => !/^[a-f0-9]{64}$/u.test(id))) throw new Error('Translation history must reference immutable record IDs.');
+    if (entry.keywordsKo != null && (!Array.isArray(entry.keywordsKo) || entry.keywordsKo.length > 100)) throw new Error('Invalid Korean keyword list.');
     const localNaru = prototypeUse.enabled && source.kind === 'riftnaru-public' && source.url && new URL(source.url).hostname === 'www.riftnaru.com' && new URL(source.url).pathname.startsWith('/cards/');
     if ((textEn || textKo || entry.imageUrl) && !permissions.display && !localNaru && !['riot-api', 'licensed', 'mock'].includes(source.kind)) throw new Error('Card text needs recorded provenance.');
     if (textVerified && (!textEn || !source.url || !source.version || !['riot-api', 'licensed', 'mock'].includes(source.kind))) throw new Error('Verified card text needs an English original and a versioned source.');
@@ -66,6 +74,13 @@ function normalizeCatalog(data) {
       id, nameKo, nameEn, aliases, subtitle: text(entry.subtitle), set: text(entry.set, 120), code: text(entry.code, 120),
       type: text(entry.type, 120), domains, textEn, textKo, translationStatus: text(entry.translationStatus, 80) || 'unverified',
       translationSource: { kind: text(entry.translationSource?.kind, 80), reference: text(entry.translationSource?.reference, 300), englishHash: text(entry.translationSource?.englishHash, 64) },
+      cost: jsonValue(entry.cost || {}), keywordsEn: strings(entry.keywordsEn), symbols: strings(entry.symbols), officialKorean,
+      officialKoreanCheck: { status: ['available', 'absent'].includes(entry.officialKoreanCheck?.status) ? entry.officialKoreanCheck.status : 'unknown',
+        englishVersion: text(entry.officialKoreanCheck?.englishVersion, 120), url: httpsUrl(entry.officialKoreanCheck?.url),
+        checkedAt: text(entry.officialKoreanCheck?.checkedAt, 80), reference: text(entry.officialKoreanCheck?.reference) },
+      keywordsKo: (entry.keywordsKo || []).map(t => ({ en: text(t.en, 100), ko: text(t.ko, 100) })),
+      translationRecord: normalizeRecord(entry.translationRecord), translationProposal: normalizeRecord(entry.translationProposal), translationHistory,
+      publication: { publiclyRevealed: entry.publication?.publiclyRevealed === true, url: httpsUrl(entry.publication?.url), version: text(entry.publication?.version, 120) },
       textVerified, permissions, prototypeUse, source, stats, imageUrl: permissions.display || localNaru ? artUrl(entry.imageUrl) : '',
       errata: text(entry.errata, 6000), status: text(entry.status, 80) || 'unknown',
     };

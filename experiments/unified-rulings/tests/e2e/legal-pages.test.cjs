@@ -98,7 +98,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-card-access-20261028');
+    const cache = await caches.open('riftassi-v0.2.0-card-translation-20261028');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -142,4 +142,48 @@ test('v0.2.0 synthetic cards and unreleased previews are clearly labeled in sear
   await page.locator('#question').press('Tab');
   await page.locator('#selected-cards .selected-card').waitFor();
   assert.match(await page.locator('#selected-cards').innerText(), /개발용 합성 카드/);
+});
+
+test('reviewed card translations display separate English/Korean text and an explicit unofficial AI label', async t => {
+  const os = require('node:os');
+  const { convertCatalog } = require(path.join(release, 'src/riot-converter'));
+  const { normalizeCatalog } = require(path.join(release, 'src/cards'));
+  const { createTranslationStore } = require(path.join(release, 'src/card-translation-store'));
+  const { createTranslationProvider, createCardTranslationEngine, reviewTranslation } = require(path.join(release, 'src/card-translation'));
+  const { englishSource, hash } = require(path.join(release, 'src/card-translation-core'));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-ui-translation-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  const provider = createTranslationProvider({ id: 'synthetic-ui-adapter', model: 'synthetic-ui-model', mode: 'operator-adapter', enabled: true, approvalReference: 'synthetic-ui-test',
+    generate: async request => ({ nameKo: '번역 시험 카드', clauses: request.clauses.map(row => ({ id: row.id, textKo: '카드 번역 화면을 시험합니다.' })),
+      keywordsKo: [], cost: request.source.cost, stats: request.source.stats, symbols: request.source.symbols, uncertainties: [] }) });
+  const catalog = convertCatalog({ schema: 'riftassist-canonical-1', origin: 'mock', version: 'synthetic-ui-v1', sourceUrl: 'https://example.invalid/ui-test', cards: [
+    { id: 'translation-ui', englishName: 'Translation Display Fixture', englishText: 'Test the translation display.', releaseStatus: 'released' },
+  ] });
+  const engine = createCardTranslationEngine({ store: await createTranslationStore(root), provider, maxNewCalls: 1 });
+  const candidate = await engine.proposeCatalog(catalog), card = candidate.catalog.cards[0];
+  const reviewed = reviewTranslation(card, { proposalId: card.translationProposal.id, expectedEnglishHash: hash(englishSource(card)), reviewReference: 'synthetic-ui-review' });
+  const cards = normalizeCatalog({ ...catalog, cards: [reviewed] });
+  const { server, page } = await openBrowser(t, { serverOptions: { cards } });
+  await page.goto(server.baseURL);
+  await page.waitForFunction(() => !document.querySelector('#submit-button').disabled);
+  await page.locator('#question').fill('번역 시험 카드');
+  await page.locator('#card-options [role="option"]').first().waitFor({ state: 'visible' });
+  await page.locator('#question').press('Tab');
+  const detail = page.locator('#selected-cards details'); await detail.waitFor();
+  await detail.locator('summary').click();
+  assert.match(await detail.innerText(), /RiftAssist AI 번역 · 비공식/);
+  assert.ok((await detail.innerText()).includes('Test the translation display.'));
+  assert.ok((await detail.innerText()).includes('카드 번역 화면을 시험합니다.'));
+  assert.ok((await detail.innerText()).includes('synthetic-ui-model'));
+  assert.ok((await detail.innerText()).includes('synthetic-ui-v1'));
+  await noOverflow(page);
+  await screen(page, 'reviewed-unofficial-card-translation.png');
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await detail.isVisible(), true);
+  assert.match(await detail.innerText(), /RiftAssist AI 번역 · 비공식/);
+  await noOverflow(page); await screen(page, 'reviewed-unofficial-card-translation-mobile.png');
+  await page.locator('#language-select').selectOption('en');
+  await page.locator('#selected-cards details summary').click();
+  assert.match(await page.locator('#selected-cards details').innerText(), /RiftAssist AI translation · unofficial/);
 });

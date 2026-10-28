@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: translation is a candidate: separates mechanics and provenance and requires explicit review
+ok 1 - translation is a candidate: separates mechanics and provenance and requires explicit review
+  ---
+  duration_ms: 24.623393
+  type: 'test'
+  ...
+# Subtest: official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+ok 2 - official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+  ---
+  duration_ms: 5.60541
+  type: 'test'
+  ...
+# Subtest: official locale availability must be confirmed, and injected lookups prefer official text without AI
+ok 3 - official locale availability must be confirmed, and injected lookups prefer official text without AI
+  ---
+  duration_ms: 15.526043
+  type: 'test'
+  ...
+# Subtest: explicit absent-locale lookup permits a candidate; fan-source locale claims are rejected
+ok 4 - explicit absent-locale lookup permits a candidate; fan-source locale claims are rejected
+  ---
+  duration_ms: 9.301258
+  type: 'test'
+  ...
+# Subtest: official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+ok 5 - official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+  ---
+  duration_ms: 0.729131
+  type: 'test'
+  ...
+# Subtest: persistent cache survives engine restart and source-version-only changes without retranslating
+ok 6 - persistent cache survives engine restart and source-version-only changes without retranslating
+  ---
+  duration_ms: 7.005433
+  type: 'test'
+  ...
+# Subtest: partial official names/keywords override AI fields and reuse the cached effect without a new call
+ok 7 - partial official names/keywords override AI fields and reuse the cached effect without a new call
+  ---
+  duration_ms: 5.859453
+  type: 'test'
+  ...
+# Subtest: official-source anomalies remain official candidates for review, never rewritten or sent to AI
+ok 8 - official-source anomalies remain official candidates for review, never rewritten or sent to AI
+  ---
+  duration_ms: 2.931625
+  type: 'test'
+  ...
+# Subtest: same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+ok 9 - same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+  ---
+  duration_ms: 241.124489
+  type: 'test'
+  ...
+# Subtest: provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+ok 10 - provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+  ---
+  duration_ms: 32.014413
+  type: 'test'
+  ...
+# Subtest: cache publication failure retains its reservation and prevents a second provider attempt
+ok 11 - cache publication failure retains its reservation and prevents a second provider attempt
+  ---
+  duration_ms: 5.270725
+  type: 'test'
+  ...
+# Subtest: blocking number mismatch is a cached review candidate, never approved/published
+ok 12 - blocking number mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.110324
+  type: 'test'
+  ...
+# Subtest: blocking symbol mismatch is a cached review candidate, never approved/published
+ok 13 - blocking symbol mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.359344
+  type: 'test'
+  ...
+# Subtest: blocking cost mismatch is a cached review candidate, never approved/published
+ok 14 - blocking cost mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 6.766783
+  type: 'test'
+  ...
+# Subtest: blocking stat mismatch is a cached review candidate, never approved/published
+ok 15 - blocking stat mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 3.635487
+  type: 'test'
+  ...
+# Subtest: blocking keyword mismatch is a cached review candidate, never approved/published
+ok 16 - blocking keyword mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 6.618745
+  type: 'test'
+  ...
+# Subtest: blocking shape mismatch is a cached review candidate, never approved/published
+ok 17 - blocking shape mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.527452
+  type: 'test'
+  ...
+# Subtest: checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+ok 18 - checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+  ---
+  duration_ms: 19.319348
+  type: 'test'
+  ...
+# Subtest: inconsistent keywords across a batch block both proposals without rewriting cache evidence
+ok 19 - inconsistent keywords across a batch block both proposals without rewriting cache evidence
+  ---
+  duration_ms: 7.538052
+  type: 'test'
+  ...
+# Subtest: rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+ok 20 - rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+  ---
+  duration_ms: 11.916154
+  type: 'test'
+  ...
+# Subtest: oversized translation prompts are cached as blocked work without invoking the provider
+ok 21 - oversized translation prompts are cached as blocked work without invoking the provider
+  ---
+  duration_ms: 9.419416
+  type: 'test'
+  ...
+# Subtest: unrevealed or unofficial previews are rejected by collection/conversion before translation
+ok 22 - unrevealed or unofficial previews are rejected by collection/conversion before translation
+  ---
+  duration_ms: 33.50968
+  type: 'test'
+  ...
+# Subtest: later official translation creates a replacement candidate, preserves old records and requires review
+ok 23 - later official translation creates a replacement candidate, preserves old records and requires review
+  ---
+  duration_ms: 14.902677
+  type: 'test'
+  ...
+# Subtest: unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+ok 24 - unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+  ---
+  duration_ms: 6.357976
+  type: 'test'
+  ...
+# Subtest: knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+ok 25 - knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+  ---
+  duration_ms: 40.241226
+  type: 'test'
+  ...
+# Subtest: cache/candidate stores refuse links and never use an unmarked or shared production root
+ok 26 - cache/candidate stores refuse links and never use an unmarked or shared production root
+  ---
+  duration_ms: 2.419262
+  type: 'test'
+  ...
+# Subtest: reviewed translation retains English authority and provenance in the existing AI question API
+ok 27 - reviewed translation retains English authority and provenance in the existing AI question API
+  ---
+  duration_ms: 150.208832
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 27
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 753.485171

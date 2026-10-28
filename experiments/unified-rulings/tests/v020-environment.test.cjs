@@ -61,7 +61,7 @@ test('real adapter requires explicit approval/config and a reviewed mapper, sani
   await assert.rejects(createRiotAdapter({ mode: 'riot-api', config, decodeOfficial: () => ({}), getApiKey: () => 'synthetic-token', fetchImpl: noCalls }).collect(), error => !error.message.includes('SYNTHETIC_SENSITIVE_ERROR'));
   const input = await createRiotAdapter({ mode: 'riot-api', config, getApiKey: () => 'synthetic-token',
     fetchImpl: async (_url, options) => { assert.equal(options.redirect, 'error'); return Response.json({ synthetic: true }); },
-    decodeOfficial: () => ({ version: 'synthetic-decoded-1', cards: [{ id: 'test', englishName: 'Synthetic official-mapper test', englishText: 'Synthetic English source.', officialKoreanText: '합성 공식 번역 경로 시험' }] }),
+    decodeOfficial: () => ({ version: 'synthetic-decoded-1', cards: [{ id: 'test', englishName: 'Synthetic official-mapper test', englishText: 'Synthetic English source.', officialKoreanText: '합성 공식 번역 경로 시험', releaseStatus: 'released' }] }),
   }).collect();
   const converted = convertCatalog(input);
   assert.equal(converted.cards[0].permissions.display, false);
@@ -91,6 +91,12 @@ test('prepared development release runs behind its own gateway with mock AI and 
   const preview = spawnSync(process.execPath, [path.join(release, 'scripts/preview-riot-import.cjs')], { env: { RIFTASSI_DATA_ROOT: root }, encoding: 'utf8' });
   assert.equal(preview.status, 0, preview.stderr);
   assert.equal(JSON.parse(preview.stdout).activated, false);
+  assert.equal(JSON.parse(preview.stdout).newMockCalls, 2);
+  const repeat = spawnSync(process.execPath, [path.join(release, 'scripts/preview-card-translations.cjs')], { env: { RIFTASSI_DATA_ROOT: root }, encoding: 'utf8' });
+  assert.equal(repeat.status, 0, repeat.stderr);
+  assert.equal(JSON.parse(repeat.stdout).newMockCalls, 0);
+  assert.equal(JSON.parse(repeat.stdout).cacheHits, 2);
+  assert.equal(JSON.parse(repeat.stdout).activated, false);
   assert.equal(await fs.readFile(path.join(root, 'knowledge-releases/active.json'), 'utf8'), pointer);
   const port = await freePort(), one = await freePort(), two = await freePort();
   const driver = path.join(root, 'smoke.cjs');

@@ -1,6 +1,7 @@
 // Runtime views only. Never change knowledge files, permissions, releases or backups.
 const crypto = require('node:crypto');
 const { resolveCards } = require('./cards');
+const { hash, englishSource } = require('./card-translation-core');
 const VERSION = 'card-access-1';
 
 function createCardAccess(configuredMode, { allowMock = false } = {}) {
@@ -15,7 +16,20 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
     const cards = mode === 'restricted' ? [] : raw.cards.filter(card =>
       card.status !== 'withdrawn' && card.textVerified && card.textEn && card.source.url && card.source.version
       && (['riot-api', 'licensed'].includes(card.source.kind) || (allowMock && card.source.kind === 'mock' && card.source.verification === 'synthetic-fixture')) && card.permissions.display
-    ).map(card => ({ ...card, modelReady: Boolean(card.modelReady && card.permissions.modelInput) }));
+    ).map(card => {
+      const { translationProposal, translationHistory, officialKorean, officialKoreanCheck, ...safe } = card;
+      const record = safe.translationRecord;
+      const approved = record && record.review.status === 'approved' && record.englishHash === hash(englishSource(card))
+        && !record.validation.issues.some(issue => issue.severity === 'error')
+        && !(record.authority === 'mock' && !allowMock) && !(record.authority === 'official' && card.source.kind !== 'riot-api');
+      if ((translationProposal || record) && !approved) {
+        safe.nameKo = ''; safe.textKo = ''; safe.keywordsKo = []; safe.translationRecord = null; safe.translationStatus = 'translation-review-pending';
+      } else if (approved) {
+        safe.nameKo = record.nameKo; safe.textKo = record.textKo; safe.keywordsKo = record.keywordsKo;
+        safe.translationStatus = record.authority === 'official' ? 'official' : record.authority === 'mock' ? 'mock' : record.authority === 'ai' ? 'unofficial-ai-reviewed' : 'unofficial-reviewed';
+      }
+      return { ...safe, modelReady: Boolean(card.modelReady && card.permissions.modelInput) };
+    });
     const access = Object.freeze({ mode, configurationValid, retainedTotal: raw.cards.length,
       restrictedTotal: raw.cards.length - cards.length, visibleTotal: cards.length,
       modelReadyTotal: cards.filter(card => card.modelReady).length });

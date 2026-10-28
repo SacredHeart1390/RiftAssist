@@ -8,7 +8,8 @@
     "manager": "node src/manager.js",
     "knowledge:status": "node scripts/knowledge.js status",
     "dev:prepare": "node scripts/prepare-development.cjs",
-    "riot:preview": "node scripts/preview-riot-import.cjs"
+    "riot:preview": "node scripts/preview-riot-import.cjs",
+    "translations:preview": "node scripts/preview-card-translations.cjs"
   },
   "engines": {
     "node": ">=22.13"

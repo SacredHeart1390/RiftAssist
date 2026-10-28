@@ -7,6 +7,7 @@
       community: '참고 원문', communityNote: '공개 카드 페이지에서 수집한 참고 자료입니다. 한국어는 비공식 번역이며 공식 최신 원문·정오표와의 대조가 필요합니다.', collected: '수집일',
       missing: '분석에 사용할 영문 효과 본문이 없습니다. 원래 효과가 없는 카드인지, 자료가 빠진 것인지 확인하기 전에는 해당 카드의 AI 판정을 보류합니다.',
       original: '영문 원문', koreanOfficial: '공식 한국어', koreanOther: '한국어 번역 · 공식 여부 확인 필요',
+      koreanAI: 'RiftAssist AI 번역 · 비공식', koreanMock: '개발용 모의 번역 · 공식 번역 아님', translationPending: '한국어 번역은 관리자 검토 대기 중입니다. 영문 원문을 확인하세요.', translationSource: '번역 출처·검토',
       errata: '정오표', source: '원문 출처', version: '자료 버전', updated: '갱신일',
       energy: '에너지', power: '힘', might: '위력', selectedNotice: '카드를 선택했습니다.',
       limit: '한 질문에는 서로 다른 카드 8장까지 연결할 수 있습니다.', tooLong: '질문은 10,000자까지 작성할 수 있습니다.',
@@ -23,6 +24,7 @@
       community: 'Reference text', communityNote: 'Reference data collected from a public card page. Korean text is an unofficial translation; compare with current official text and errata.', collected: 'Collected',
       missing: 'English effect text is unavailable. Analysis is paused until we confirm whether this card has no effect or the source text is missing.',
       original: 'English original', koreanOfficial: 'Official Korean', koreanOther: 'Korean translation · official status unconfirmed',
+      koreanAI: 'RiftAssist AI translation · unofficial', koreanMock: 'Mock translation · not official', translationPending: 'Korean translation awaits operator review. Check the English original.', translationSource: 'Translation source and review',
       errata: 'Errata', source: 'Original source', version: 'Data version', updated: 'Updated',
       energy: 'Energy', power: 'Power', might: 'Might', selectedNotice: 'Card selected.',
       limit: 'Select at most 8 different cards per question.', tooLong: 'Questions must be 10,000 characters or fewer.',
@@ -367,8 +369,14 @@
       // Source provenance remains in the response and operations record.
       const stats = ['energy', 'power', 'might'].filter((key) => card.stats?.[key] != null).map((key) => `${this.t(key)} ${card.stats[key]}`);
       if (stats.length) details.append(element('p', 'card-stats', stats.join(' · ')));
-      for (const [key, label] of [['textEn', this.t('original')], ['textKo', this.t(card.translationStatus === 'official' ? 'koreanOfficial' : 'koreanOther')], ['errata', this.t('errata')]]) {
+      const koreanLabel = card.translationStatus === 'official' ? 'koreanOfficial' : card.translationStatus === 'unofficial-ai-reviewed' ? 'koreanAI' : card.translationStatus === 'mock' ? 'koreanMock' : 'koreanOther';
+      for (const [key, label] of [['textEn', this.t('original')], ['textKo', this.t(koreanLabel)], ['errata', this.t('errata')]]) {
         if (card[key]) details.append(element('strong', 'quote-label', label), element('p', 'card-original', card[key]));
+      }
+      if (card.translationStatus === 'translation-review-pending') details.append(element('p', 'card-pending', this.t('translationPending')));
+      if (card.translationRecord) {
+        const record = card.translationRecord;
+        details.append(element('p', 'card-source-meta', `${this.t('translationSource')}: ${[record.provider, record.model, record.generatedAt || record.createdAt, record.sourceVersion, record.review.reference].filter(Boolean).join(' · ')}`));
       }
       if (card.authority !== 'community-source' && card.source?.label) details.append(element('p', 'card-source-meta', card.source.label));
       if (card.authority !== 'community-source' && card.source?.version) details.append(element('p', 'card-source-meta', `${this.t('version')}: ${card.source.version}`));
