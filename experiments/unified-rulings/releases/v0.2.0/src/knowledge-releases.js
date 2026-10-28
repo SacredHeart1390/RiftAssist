@@ -3,6 +3,8 @@ const path=require('node:path');
 const crypto=require('node:crypto');
 const {validateRules,loadRelease,digest,safeId}=require('./knowledge-provider');
 const {normalizeCatalog}=require('./cards');
+const {checkReviewAuthorization}=require('./card-review-authorization');
+const {hash}=require('./card-translation-core');
 
 async function stageRelease(root,{rules,cards,judgeCases=[],sources={},effectiveFrom=null,parserVersion='unknown',reviewRequired=false}) {
   validateRules(rules);normalizeCatalog(cards);
@@ -32,7 +34,7 @@ async function stageRelease(root,{rules,cards,judgeCases=[],sources={},effective
   return manifest;
 }
 
-async function activateRelease(root,nextId,expectedId,{acknowledgeReview=false}={}) {
+async function activateRelease(root,nextId,expectedId,{acknowledgeReview=false,reviewAuthorization=null}={}) {
   if(!safeId(nextId)||typeof expectedId!=='string')throw new Error('An explicit expected version is required.');
   const folder=path.join(root,'knowledge-releases');await fs.mkdir(folder,{recursive:true});
   const lock=path.join(folder,'.activation-lock');
@@ -56,8 +58,19 @@ async function activateRelease(root,nextId,expectedId,{acknowledgeReview=false}=
     catch(error){if(error.code!=='ENOENT')throw error;}
     if(previous.releaseId!==expectedId)throw new Error('Active version changed; refresh before applying.');
     const next=await loadRelease(root,nextId);
-    if(next.manifest.sources?.cardTranslation?.baseReleaseId && next.manifest.sources.cardTranslation.baseReleaseId!==previous.releaseId)throw new Error('Translation candidate base changed; rebuild and review it.');
+    const reviewAction=checkReviewAuthorization(reviewAuthorization,root,nextId,expectedId,hash(next.manifest));
+    if(reviewAction!=='rollback' && next.manifest.sources?.cardTranslation?.baseReleaseId && next.manifest.sources.cardTranslation.baseReleaseId!==previous.releaseId)throw new Error('Translation candidate base changed; rebuild and review it.');
     if(next.manifest.reviewRequired&&!acknowledgeReview)throw new Error('This release requires operator review.');
+    const marked=await fs.stat(path.join(root,'.riftassist-environment.json')).then(()=>true,error=>{if(error.code==='ENOENT')return false;throw error;});
+    let cardChange=false;
+    if(marked) {
+      if(previous.releaseId==='legacy-unvalidated')cardChange=next.cardCatalog.cards.length>0;
+      else {
+        const current=await loadRelease(root,previous.releaseId);
+        cardChange=digest(JSON.stringify(current.cardCatalog.cards))!==digest(JSON.stringify(next.cardCatalog.cards));
+      }
+    }
+    if((cardChange || next.manifest.sources?.cardTranslation || next.manifest.sources?.cardSync || next.manifest.sources?.cardReview || /^review-[a-f0-9]{64}$/u.test(previous.releaseId)) && !reviewAction)throw new Error('Card candidates require the authenticated final review interface.');
     const value={releaseId:nextId,previousReleaseId:previous.releaseId,activatedAt:new Date().toISOString()};
     const temporary=path.join(folder,`active.${crypto.randomUUID()}.tmp`);
     await fs.writeFile(temporary,JSON.stringify(value));

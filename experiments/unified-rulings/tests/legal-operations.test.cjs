@@ -77,7 +77,7 @@ test('legal pages are public static documents; private/admin routes stay inacces
     const html = await res.text();
     assert.ok(html.includes('RiftAssist was created under Riot Games\' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.'));
   }
-  for (const route of ['/.env', '/private/storage.key', '/private/operations.sqlite', '/api/status', '/api/knowledge']) {
+  for (const route of ['/.env', '/private/storage.key', '/private/operations.sqlite', '/api/status', '/api/knowledge', '/api/card-reviews', '/api/card-review/activate']) {
     assert.equal((await fetch(server.baseURL + route)).status, 404);
   }
   assert.equal((await fetch(server.baseURL + '/api/reports')).status, 401);

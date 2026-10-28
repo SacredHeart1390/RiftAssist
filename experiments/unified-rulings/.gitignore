@@ -23,3 +23,4 @@ releases/v0.2.0/.dev-data/
 releases/v0.2.0/riot.config.local.json
 releases/v0.2.0/card-translation.config.local.json
 releases/v0.2.0/card-sync.config.local.json
+releases/v0.2.0/card-review.config.local.json

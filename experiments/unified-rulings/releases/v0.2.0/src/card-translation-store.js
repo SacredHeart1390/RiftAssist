@@ -71,8 +71,9 @@ async function createTranslationStore(root, { waitMs = 5000 } = {}) {
     }
   }
   const syncId = id => typeof id === 'string' && /^sync-[a-f0-9]{64}$/u.test(id);
+  const candidateId = id => syncId(id) || (typeof id === 'string' && /^translation-\d{4}-\d{2}-\d{2}-[a-f0-9]{12}$/u.test(id));
   async function readCandidate(id) {
-    if (!syncId(id)) throw fail('translation-candidate-id');
+    if (!candidateId(id)) throw fail('translation-candidate-id');
     const folder = path.join(candidates, id);
     async function file(name) {
       const target = path.join(folder, name), stat = await fs.lstat(target);
@@ -84,7 +85,7 @@ async function createTranslationStore(root, { waitMs = 5000 } = {}) {
     const manifest = JSON.parse(await file('manifest.json'));
     if (manifest.candidateId !== id || manifest.reviewRequired !== true || manifest.activated !== false) throw fail('translation-candidate-invalid');
     const values = {};
-    for (const name of ['cards.json', 'translation-review.json', 'sync-review.json']) {
+    for (const name of ['cards.json', 'translation-review.json', ...(syncId(id) || manifest.hashes?.['sync-review.json'] ? ['sync-review.json'] : [])]) {
       const bytes = await file(name);
       if (hash(bytes) !== manifest.hashes?.[name]) throw fail('translation-candidate-invalid');
       values[name] = JSON.parse(bytes);
