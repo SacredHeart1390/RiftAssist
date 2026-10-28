@@ -1,0 +1,13 @@
+{
+  "mode": "mock",
+  "enabled": false,
+  "intervalMs": 21600000,
+  "retryBaseMs": 60000,
+  "maxPages": 100,
+  "timeoutMs": 15000,
+  "deletionPolicy": "retain-and-review",
+  "manualReviewRequired": true,
+  "automaticActivation": false,
+  "storage": "DATA_ROOT/card-sync",
+  "note": "Configuration contract only. The CLI is mock-only, performs one check, and starts no scheduler. Official synchronization is blocked pending API approval and a reviewed paging/locale/version/rights mapper. No credentials belong here."
+}

@@ -18,6 +18,7 @@ function convertCatalog(input, { permissions = { display: false, modelInput: fal
     return { id: `${synthetic ? 'mock' : 'riot'}:${card.id}`, nameEn: card.englishName,
       nameKo: alignedKo ? card.officialKoreanName || '' : synthetic ? card.koreanName || '' : '',
       textEn: card.englishText, textKo: alignedKo ? officialKo : synthetic ? card.koreanText || '' : '',
+      sourceKorean: synthetic ? { name: card.koreanName || '', text: card.koreanText || '', keywords: card.koreanKeywords || [] } : null,
       cost: card.cost || {}, keywordsEn: card.keywords || [], symbols: [...new Set([...(card.symbols || []), ...symbolTokens(card.englishText)])], publication,
       officialKorean: officialKo || card.officialKoreanName || card.officialKoreanKeywords?.length ? { name: card.officialKoreanName || '', text: officialKo, keywords: card.officialKoreanKeywords || [],
         version: card.officialKoreanVersion || input.version, englishVersion: card.officialKoreanEnglishVersion || input.version,
@@ -30,9 +31,11 @@ function convertCatalog(input, { permissions = { display: false, modelInput: fal
       translationSource: { kind: officialKo ? 'riot-api' : synthetic ? 'mock' : 'none', reference: officialKo ? input.mappingVersion : synthetic ? 'synthetic-fixture' : '' },
       permissions: synthetic ? { display: true, modelInput: true, translation: true } : { display: permissions.display === true, modelInput: permissions.modelInput === true, translation: permissions.translation === true },
       source: { kind: input.origin, url: input.sourceUrl, version: input.version,
+        cardId: card.id, cardVersion: card.cardVersion || input.version, cardRevision: card.cardRevision ?? null,
+        publishedAt: card.publishedAt || '', updatedAt: card.updatedAt || input.publishedAt || '', fetchedAt: input.collectedAt || '',
         label: synthetic ? 'Synthetic development fixture; not a Riot card' : 'Riot API via a reviewed schema mapper',
         verification: synthetic ? 'synthetic-fixture' : `mapper:${input.mappingVersion}` },
-      status: publication.state === 'preview-unreleased' ? 'preview-unreleased' : 'source-observed' };
+      errata: card.errata || '', status: card.withdrawn === true ? 'withdrawn' : publication.state === 'preview-unreleased' ? 'preview-unreleased' : 'source-observed' };
   });
   return normalizeCatalog({ schemaVersion: 1, version: input.version, coverage: synthetic ? 'synthetic-fixtures-only' : 'review-required', cards });
 }

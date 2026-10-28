@@ -1,4 +1,4 @@
-const CACHE_NAME = 'riftassi-v0.2.0-card-translation-20261028';
+const CACHE_NAME = 'riftassi-v0.2.0-card-sync-20261028';
 const APP_SHELL = ['/', '/styles-ui5.css', '/reports.css', '/legal.css', '/privacy.html', '/terms.html', '/card-composer-ui3.js', '/evidence-view.js', '/app-ui5.js', '/reports-ui3.js', '/manifest.webmanifest', '/icon.svg'];
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL.map((url) => new Request(url, { cache: 'reload' })))));

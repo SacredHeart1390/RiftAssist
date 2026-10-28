@@ -97,6 +97,11 @@ test('prepared development release runs behind its own gateway with mock AI and 
   assert.equal(JSON.parse(repeat.stdout).newMockCalls, 0);
   assert.equal(JSON.parse(repeat.stdout).cacheHits, 2);
   assert.equal(JSON.parse(repeat.stdout).activated, false);
+  const sync = spawnSync(process.execPath, [path.join(release, 'scripts/sync-mock-cards.cjs')], { env: { RIFTASSI_DATA_ROOT: root }, encoding: 'utf8' });
+  assert.equal(sync.status, 0, sync.stderr); assert.equal(JSON.parse(sync.stdout).status, 'candidate');
+  const synced = spawnSync(process.execPath, [path.join(release, 'scripts/sync-mock-cards.cjs')], { env: { RIFTASSI_DATA_ROOT: root }, encoding: 'utf8' });
+  assert.equal(synced.status, 0, synced.stderr); assert.equal(JSON.parse(synced.stdout).status, 'unchanged');
+  assert.equal(JSON.parse(synced.stdout).candidateId, JSON.parse(sync.stdout).candidateId);
   assert.equal(await fs.readFile(path.join(root, 'knowledge-releases/active.json'), 'utf8'), pointer);
   const port = await freePort(), one = await freePort(), two = await freePort();
   const driver = path.join(root, 'smoke.cjs');

@@ -98,7 +98,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-card-translation-20261028');
+    const cache = await caches.open('riftassi-v0.2.0-card-sync-20261028');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -177,6 +177,8 @@ test('reviewed card translations display separate English/Korean text and an exp
   assert.ok((await detail.innerText()).includes('카드 번역 화면을 시험합니다.'));
   assert.ok((await detail.innerText()).includes('synthetic-ui-model'));
   assert.ok((await detail.innerText()).includes('synthetic-ui-v1'));
+  await page.locator('#question').dispatchEvent('input');
+  assert.equal(await detail.evaluate(node => node.open), true, 'Rerendering preserves an open translation review.');
   await noOverflow(page);
   await screen(page, 'reviewed-unofficial-card-translation.png');
   await page.setViewportSize({ width: 390, height: 844 });
@@ -184,6 +186,6 @@ test('reviewed card translations display separate English/Korean text and an exp
   assert.match(await detail.innerText(), /RiftAssist AI 번역 · 비공식/);
   await noOverflow(page); await screen(page, 'reviewed-unofficial-card-translation-mobile.png');
   await page.locator('#language-select').selectOption('en');
-  await page.locator('#selected-cards details summary').click();
+  assert.equal(await detail.evaluate(node => node.open), true);
   assert.match(await page.locator('#selected-cards details').innerText(), /RiftAssist AI translation · unofficial/);
 });

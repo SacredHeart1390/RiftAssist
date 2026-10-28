@@ -346,6 +346,7 @@
 
     cardPanel(card, removable, cited) {
       const panel = element('article', `selected-card${cited ? ' cited-card' : ''}`);
+      panel.dataset.cardId = card.id;
       const header = element('div', 'selected-card-heading');
       const identity = element('div', 'selected-card-identity');
       identity.append(element('strong', '', this.name(card)), element('span', 'card-data-status', [card.code, card.subtitle, this.statusLabel(card), cited ? this.t('citation') : ''].filter(Boolean).join(' · ')));
@@ -392,9 +393,14 @@
     }
 
     renderSelected() {
+      const opened = new Set([...this.cardsNode.querySelectorAll('.selected-card')]
+        .filter(panel => panel.querySelector('details')?.open).map(panel => panel.dataset.cardId));
       this.cardsNode.replaceChildren();
       const unique = new Map(this.mentions.map((mention) => [mention.card.id, mention.card]));
-      for (const card of unique.values()) this.cardsNode.append(this.cardPanel(card, true, false));
+      for (const card of unique.values()) {
+        const panel = this.cardPanel(card, true, false); panel.querySelector('details').open = opened.has(card.id);
+        this.cardsNode.append(panel);
+      }
     }
 
     renderAnswer(container, cards, citedIds = []) {

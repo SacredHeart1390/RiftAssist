@@ -70,10 +70,33 @@ async function createTranslationStore(root, { waitMs = 5000 } = {}) {
       catch (error) { if (error.code !== 'ENOENT') throw fail('translation-lock-cleanup'); }
     }
   }
-  async function writeCandidate(candidate) {
-    const id = `translation-${new Date().toISOString().slice(0, 10)}-${crypto.randomBytes(6).toString('hex')}`;
+  const syncId = id => typeof id === 'string' && /^sync-[a-f0-9]{64}$/u.test(id);
+  async function readCandidate(id) {
+    if (!syncId(id)) throw fail('translation-candidate-id');
+    const folder = path.join(candidates, id);
+    async function file(name) {
+      const target = path.join(folder, name), stat = await fs.lstat(target);
+      if (stat.isSymbolicLink() || !stat.isFile() || stat.size > 64000000) throw fail('translation-candidate-invalid');
+      return fs.readFile(target, 'utf8');
+    }
+    try { if ((await fs.lstat(folder)).isSymbolicLink()) throw fail('translation-candidate-invalid'); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+    const manifest = JSON.parse(await file('manifest.json'));
+    if (manifest.candidateId !== id || manifest.reviewRequired !== true || manifest.activated !== false) throw fail('translation-candidate-invalid');
+    const values = {};
+    for (const name of ['cards.json', 'translation-review.json', 'sync-review.json']) {
+      const bytes = await file(name);
+      if (hash(bytes) !== manifest.hashes?.[name]) throw fail('translation-candidate-invalid');
+      values[name] = JSON.parse(bytes);
+    }
+    return { id, folder, manifest, candidate: { catalog: values['cards.json'], review: values['translation-review.json'], syncReview: values['sync-review.json'] } };
+  }
+  async function writeCandidate(candidate, { candidateId = null } = {}) {
+    if (candidateId != null && !syncId(candidateId)) throw fail('translation-candidate-id');
+    const id = candidateId || `translation-${new Date().toISOString().slice(0, 10)}-${crypto.randomBytes(6).toString('hex')}`;
     const folder = path.join(candidates, id); await fs.mkdir(folder);
     const files = { 'cards.json': candidate.catalog, 'translation-review.json': candidate.review };
+    if (candidate.syncReview) files['sync-review.json'] = candidate.syncReview;
     const hashes = {};
     for (const [name, value] of Object.entries(files)) {
       const bytes = JSON.stringify(value, null, 2); hashes[name] = hash(bytes);
@@ -84,7 +107,7 @@ async function createTranslationStore(root, { waitMs = 5000 } = {}) {
     await fs.writeFile(path.join(folder, 'manifest.json'), JSON.stringify(manifest, null, 2), { flag: 'wx' });
     return { id, folder, manifest };
   }
-  return { environment, persistent: true, cached, writeCandidate };
+  return { root: realRoot, environment, persistent: true, cached, writeCandidate, readCandidate };
 }
 function memoryTranslationStore() {
   const records = new Map(), pending = new Map();

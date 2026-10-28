@@ -1,12 +1,19 @@
 // The mock contract is ours, not a claim about Riot's production response schema.
 const mock = require('../dev-fixtures/mock-cards.json');
 const { assertPublication } = require('./card-publication');
+const { collectMockSnapshot } = require('./riot-snapshot');
 function createRiotAdapter({ mode = 'mock', config = {}, fetchImpl = globalThis.fetch,
-  getApiKey = () => process.env.RIOT_API_KEY, decodeOfficial } = {}) {
+  getApiKey = () => process.env.RIOT_API_KEY, decodeOfficial, mockCatalog = mock, mockPageSource, now } = {}) {
   if (!['mock', 'riot-api'].includes(mode)) throw new Error('Unknown Riot adapter mode.');
   return {
+    mode,
+    async collectSnapshot({ maxPages, timeoutMs } = {}) {
+      // No production paging endpoint is guessed or contacted by the sync path.
+      if (mode !== 'mock') throw Object.assign(new Error('Official synchronization awaits API approval and a reviewed paging mapper.'), { code: 'sync-official-disabled' });
+      return collectMockSnapshot({ catalog: mockCatalog, pageSource: mockPageSource, maxPages, timeoutMs, now });
+    },
     async collect() {
-      if (mode === 'mock') { mock.cards.forEach(card => assertPublication(card, 'mock')); return structuredClone(mock); }
+      if (mode === 'mock') { mockCatalog.cards.forEach(card => assertPublication(card, 'mock')); return structuredClone(mockCatalog); }
       // Neither approval nor finding a key can automatically turn this mode on.
       if (config.enabled !== true || !config.approvedAppReference || !config.mappingVersion || typeof decodeOfficial !== 'function') {
         throw new Error('A reviewed endpoint/schema mapper and explicit app approval configuration are required.');

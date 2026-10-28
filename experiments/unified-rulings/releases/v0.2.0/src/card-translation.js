@@ -17,6 +17,14 @@ function createTranslationProvider({ id, model, mode = 'operator-adapter', enabl
   return Object.freeze({ id, model, mode, enabled: mode === 'mock' || (enabled === true && Boolean(approvalReference)), generate });
 }
 function safeHistory(card) { return [...new Set([...(card?.translationHistory || []), ...[card?.translationRecord?.id, card?.translationProposal?.id].filter(Boolean)])]; }
+function reuseCardTranslation(card, old) {
+  const officialText = row => row.officialKorean ? { name: row.officialKorean.name, text: row.officialKorean.text, keywords: row.officialKorean.keywords } : null;
+  if (!old || hash(englishSource(old)) !== hash(englishSource(card)) || stable(officialText(old)) !== stable(officialText(card))) throw new Error('Changed English/official text cannot skip translation review.');
+  const refresh = record => record ? normalizeRecord({ ...structuredClone(record), appliedToVersion: card.source.version }) : null;
+  return { ...card, nameKo: old.nameKo, textKo: old.textKo, keywordsKo: structuredClone(old.keywordsKo),
+    translationStatus: old.translationStatus, translationSource: structuredClone(old.translationSource),
+    translationRecord: refresh(old.translationRecord), translationProposal: refresh(old.translationProposal), translationHistory: [...old.translationHistory] };
+}
 function createCardTranslationEngine({ store, provider, glossary = buildGlossary(), retryRevision = 'initial',
   maxNewCalls = provider?.mode === 'mock' ? 1000 : 0, timeoutMs = 30000, officialLookup = null, now = () => new Date().toISOString() }) {
   if (!store || typeof store.cached !== 'function' || !provider || !bounded(retryRevision, 100)
@@ -129,15 +137,25 @@ function createCardTranslationEngine({ store, provider, glossary = buildGlossary
       return respond({ record: failure(card, code, key), cacheHit: false, called });
     }
   }
-  async function proposeCatalog(catalog, { previousCatalog = null } = {}) {
+  async function proposeCatalog(catalog, { previousCatalog = null, changedCardIds = null, invalidateTranslationIds = [] } = {}) {
     const normalized = normalizeCatalog(catalog), before = previousCatalog ? normalizeCatalog(previousCatalog) : normalized;
     const previous = new Map(before.cards.map(c => [c.id, c])), rows = [], cards = [];
+    const changed = changedCardIds == null ? null : new Set(changedCardIds);
+    const invalidated = new Set(invalidateTranslationIds);
     for (const card of normalized.cards) {
-      const old = previous.get(card.id), result = await translateCard(card), proposed = result.record;
+      const old = previous.get(card.id);
+      if (changed && !changed.has(card.id) && !invalidated.has(card.id) && old) {
+        const carried = reuseCardTranslation(card, old);
+        cards.push(carried);
+        rows.push({ cardId: card.id, english: englishSource(card), previousEnglish: englishSource(old), before: old.translationRecord,
+          proposal: carried.translationProposal, previousProposal: old.translationProposal, change: 'reused', cacheHit: false, called: false });
+        continue;
+      }
+      const result = await translateCard(card), proposed = result.record;
       const legacy = !old?.translationRecord && old?.textKo ? normalizeRecord({ ...base(old, 'legacy', { english: englishSource(old), nameKo: old.nameKo, textKo: old.textKo, sourceVersion: old.source.version }),
         provider: 'legacy-unverified', model: null, generatedAt: null, nameKo: old.nameKo, textKo: old.textKo,
         validation: { status: 'needs-review', issues: [{ code: 'legacy-provenance-unconfirmed', severity: 'review', clauseId: null }], manualReviewRequired: true } }) : null;
-      const current = old?.translationRecord?.review.status === 'approved' && old.translationRecord.englishHash === hash(englishSource(card))
+      const current = !invalidated.has(card.id) && old?.translationRecord?.review.status === 'approved' && old.translationRecord.englishHash === hash(englishSource(card))
         ? normalizeRecord({ ...old.translationRecord, appliedToVersion: card.source.version }) : null;
       const noChange = current?.id === proposed.id;
       const next = { ...card, officialKorean: result.officialKorean, officialKoreanCheck: result.officialCheck, nameKo: current?.nameKo || '', textKo: current?.textKo || '',
@@ -176,4 +194,4 @@ function reviewTranslation(card, { proposalId, expectedEnglishHash, reviewRefere
     translationSource: { kind: record.authority === 'official' ? 'riot-api' : record.authority === 'mock' ? 'mock' : 'unofficial', reference: reviewReference, englishHash: actualHash },
     translationRecord: record, translationProposal: null, translationHistory: safeHistory(card) };
 }
-module.exports = { createTranslationProvider, createCardTranslationEngine, reviewTranslation, INSTRUCTIONS };
+module.exports = { createTranslationProvider, createCardTranslationEngine, reviewTranslation, reuseCardTranslation, INSTRUCTIONS };

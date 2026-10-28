@@ -46,7 +46,10 @@ function normalizeCatalog(data) {
       kind: text(entry.source?.kind, 80), label: text(entry.source?.label), url: httpsUrl(entry.source?.url),
       version: text(entry.source?.version, 120), updatedAt: text(entry.source?.updatedAt, 80),
       fetchedAt: text(entry.source?.fetchedAt, 80), verification: text(entry.source?.verification, 80),
+      cardId: text(entry.source?.cardId, 120), cardVersion: text(entry.source?.cardVersion, 120),
+      cardRevision: entry.source?.cardRevision ?? null, publishedAt: text(entry.source?.publishedAt, 80),
     };
+    if (source.cardRevision != null && (!Number.isSafeInteger(source.cardRevision) || source.cardRevision < 0)) throw new Error('Invalid source card revision.');
     const permissions = { display: entry.permissions?.display === true, modelInput: entry.permissions?.modelInput === true, translation: entry.permissions?.translation === true };
     // Prototype settings record the user's local use decision, not a license from the source owner.
     const prototypeUse = { enabled: entry.prototypeUse?.enabled === true, modelInput: entry.prototypeUse?.modelInput === true, redistribution: false, rightsConfirmed: false };
@@ -75,6 +78,7 @@ function normalizeCatalog(data) {
       type: text(entry.type, 120), domains, textEn, textKo, translationStatus: text(entry.translationStatus, 80) || 'unverified',
       translationSource: { kind: text(entry.translationSource?.kind, 80), reference: text(entry.translationSource?.reference, 300), englishHash: text(entry.translationSource?.englishHash, 64) },
       cost: jsonValue(entry.cost || {}), keywordsEn: strings(entry.keywordsEn), symbols: strings(entry.symbols), officialKorean,
+      sourceKorean: entry.sourceKorean == null ? null : { name: text(entry.sourceKorean.name), text: text(entry.sourceKorean.text, 12000), keywords: strings(entry.sourceKorean.keywords) },
       officialKoreanCheck: { status: ['available', 'absent'].includes(entry.officialKoreanCheck?.status) ? entry.officialKoreanCheck.status : 'unknown',
         englishVersion: text(entry.officialKoreanCheck?.englishVersion, 120), url: httpsUrl(entry.officialKoreanCheck?.url),
         checkedAt: text(entry.officialKoreanCheck?.checkedAt, 80), reference: text(entry.officialKoreanCheck?.reference) },

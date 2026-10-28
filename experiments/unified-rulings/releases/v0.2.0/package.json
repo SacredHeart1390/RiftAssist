@@ -9,7 +9,9 @@
     "knowledge:status": "node scripts/knowledge.js status",
     "dev:prepare": "node scripts/prepare-development.cjs",
     "riot:preview": "node scripts/preview-riot-import.cjs",
-    "translations:preview": "node scripts/preview-card-translations.cjs"
+    "translations:preview": "node scripts/preview-card-translations.cjs",
+    "sync:mock": "node scripts/sync-mock-cards.cjs",
+    "sync:status": "node scripts/sync-mock-cards.cjs status"
   },
   "engines": {
     "node": ">=22.13"

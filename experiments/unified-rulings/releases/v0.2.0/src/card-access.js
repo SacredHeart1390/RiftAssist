@@ -17,7 +17,7 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
       card.status !== 'withdrawn' && card.textVerified && card.textEn && card.source.url && card.source.version
       && (['riot-api', 'licensed'].includes(card.source.kind) || (allowMock && card.source.kind === 'mock' && card.source.verification === 'synthetic-fixture')) && card.permissions.display
     ).map(card => {
-      const { translationProposal, translationHistory, officialKorean, officialKoreanCheck, ...safe } = card;
+      const { translationProposal, translationHistory, officialKorean, officialKoreanCheck, sourceKorean, ...safe } = card;
       const record = safe.translationRecord;
       const approved = record && record.review.status === 'approved' && record.englishHash === hash(englishSource(card))
         && !record.validation.issues.some(issue => issue.severity === 'error')
