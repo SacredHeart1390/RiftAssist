@@ -80,7 +80,14 @@ public sealed record StagePlan(string BundleId, int Revision, IReadOnlyList<stri
 }
 public sealed record AuditRow(int Sequence, string Actor, string At, string Type, string Reason, string RequestId)
 {
-    public static AuditRow Read(JsonElement v) => new(v.Field("sequence").Number(), v.Field("actor").Text(), v.Field("at").Text(), v.Field("type").Text(), v.Field("reason").Text(), v.Field("requestId").Text());
+    public static AuditRow Read(JsonElement v)
+    {
+        var reason = v.Field("reason").Text(); var decisions = v.Field("decisions");
+        // Bulk decision reasons are nested per item in the existing audit contract.
+        if (reason.Length == 0 && decisions.ValueKind == JsonValueKind.Object)
+            reason = string.Join(" · ", decisions.EnumerateObject().Select(p => $"{p.Name}: {p.Value.Field("decision").Text()} — {p.Value.Field("reason").Text()}"));
+        return new(v.Field("sequence").Number(), v.Field("actor").Text(), v.Field("at").Text(), v.Field("type").Text(), reason, v.Field("requestId").Text());
+    }
 }
 public sealed record FinalApproval(string TypedPhrase, string Reason, bool RisksAcknowledged)
 {

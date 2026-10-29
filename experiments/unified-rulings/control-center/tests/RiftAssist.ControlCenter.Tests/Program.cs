@@ -118,6 +118,7 @@ try
     });
     await suite.CheckAsync("audit records show Korean decisions without credentials or raw signed requests", async () => {
         var audit = await review!.AuditAsync(0); ProofSuite.True(audit.Rows.Count > 0);
+        ProofSuite.True(audit.Rows.Any(row => row.Reason.Contains("합성 카드 전체 보류", StringComparison.Ordinal)));
         var files = Directory.GetFiles(Path.Combine(sandbox!.Root, "card-reviews/events"));
         var bytes = string.Join("", files.Select(File.ReadAllText));
         ProofSuite.True(bytes.Contains("영문과 에라타", StringComparison.Ordinal));
