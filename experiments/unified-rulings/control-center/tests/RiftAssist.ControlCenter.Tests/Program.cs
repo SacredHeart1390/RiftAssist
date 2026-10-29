@@ -47,7 +47,10 @@ try
     suite.Check("future integrations are explicitly unavailable", () => {
         ProofSuite.True(FeatureCatalog.Modules.Where(m => m.Id != "cards").All(m => m.State is "미연결" or "확장 예정"));
     });
-    suite.Check("backend source integrity verified", () => { backend = new BackendLayout(release, node, manifest); });
+    suite.Check("backend source integrity verified", () => {
+        backend = args.Length > 3 ? BackendLayout.Installed(Path.GetFullPath(Path.Combine(release, "../.."))) : new BackendLayout(release, node, manifest);
+        ProofSuite.Equal(backend.Node, node);
+    });
     suite.Check("empty or traversing backend manifests rejected", () => {
         var file = Path.Combine(temporary, "bad-manifest.json");
         File.WriteAllText(file, "{\"schemaVersion\":1,\"files\":{}}");

@@ -13,10 +13,13 @@ Linux 클라우드에서 실제로 실행한 검사와 Windows에서 확인할 �
 | 수정하지 않은 v0.1.7 호환성 | 11/11 통과 |
 | C# 직렬화/HMAC·Node 통합 | 30/30 통과 |
 | WPF 앱/창 검사 도구 교차 빌드 | 오류 0, 경고 0 |
-| Windows 네이티브 실행 | 로컬 Linux에서 실행하지 않음 |
+| Windows Server 2025 runner의 네이티브 실행 | WPF 창 로드/binding 검사 통과 |
+| Windows C# 소스/포터블 패키지 검증 | 각 30/30 통과 |
 | 실제 Windows 10 수동 실행 | 미실시 |
 
-로컬 자동 검사는 총 **178/178**, 실패/취소/skip 0이다. .NET SDK 10.0.403 / 런타임 10.0.14, Node 24.19.0을 사용했다. 실제 Riot·유료 OpenAI 호출은 0건이다. v0.1.7 파일 65개가 원격 main과 같고, 공유 포인터/활성 자료/추적 SQLite 3개를 합친 8개 해시가 보존됐다. v0.2.0 소스 manifest 106개를 검증했고 `ready=false`를 유지했다. GitHub Windows runner의 결과는 별도 보고서에 확정해 기록하며 실제 Windows 10 PC의 수동 검증을 대신하지 않는다.
+로컬 자동 검사는 총 **178/178**, 실패/취소/skip 0이다. .NET SDK 10.0.403 / 런타임 10.0.14, Node 24.19.0을 사용했다. 실제 Riot·유료 OpenAI 호출은 0건이다. v0.1.7 파일 65개가 원격 main과 같고, 공유 포인터/활성 자료/추적 SQLite 3개를 합친 8개 해시가 보존됐다. v0.2.0 소스 manifest 106개를 검증했고 `ready=false`를 유지했다.
+
+Windows 앱 코드 `006b63e`는 [Windows Actions 실행](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40800286124)에서 네이티브 WPF 창과 한글/영문 비교 자료를 표시하고 binding 오류 0건, 소스/패키지 C# 검증 각 30/30을 통과했다. 패키지 생성도 성공했다. [OS·로그 발췌·아티팩트 집계](../artifacts/control-center-2026-10-29/windows-ci.json)를 보존한다. 이후 패키지 검사는 GUI와 동일한 `BackendLayout.Installed`를 사용하도록 강화했으며 최신 브랜치 검사는 [기존 PR #1](https://github.com/SacredHeart1390/RiftAssist/pull/1)에서 확인한다. **이 runner는 Windows Server 2025이며 Windows 10 PC를 검증한 결과가 아니다.**
 
 - C# 프로토콜/Node 모의 통합: 30개. 공개 합성 벡터 6개, 한국어/이모지/제어문자/정수 직렬화, 무결성/소유 경로/기본 권한, 실제 Node 프로세스의 승인·보류·거절·후보 구성·활성화·롤백·재접속/감사, 잘못된 요청 ID·과대 응답·시간초과·환경 격리를 검사한다.
 - WPF 앱 및 WPF smoke 도구: Linux에서 `win-x64` 대상으로 교차 컴파일한다. 네이티브 창 로드/렌더링은 별도 Windows runner에서 검사한다.

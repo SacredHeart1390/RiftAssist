@@ -24,11 +24,13 @@
 
 총 178개 통과, 실패/취소/skip 0. 실제 API 호출 0건. 네이티브 Windows/WPF 실행은 이 Linux 결과에 포함하지 않았다. JSON 서명 골든 벡터에서 발견한 큰 정수 C# 포맷 차이를 수정했고 JS 기준 최대 안전 정수·한글·이모지·결합 문자·제어문자·키 순서를 검증했다. 테스트는 전부 임시 합성 자료이며 운영 키/DB/사용자 기록을 열지 않았다.
 
-v0.1.7의 main 대비 65개 파일 변경 0, shared active/활성 manifest·카드·규칙·저지와 SQLite 3개의 총 8개 해시 불변. 기존 `AGENTS.md` 미커밋 변경은 유지하고 이번 커밋에서 제외한다. `bin/obj/dist`, runtime, 로컬 설정·키·DB는 Git 제외 대상이다. 기존 추적 SQLite의 추적 제외/이력 정리는 실행하지 않았다.
+v0.1.7의 main 대비 65개 파일 변경 0, shared active/활성 manifest·카드·규칙·저지와 SQLite 3개의 총 8개 해시 불변. 기존 `AGENTS.md` 미커밋 변경은 유지하고 이번 커밋에서 제외한다. `bin/obj/dist`, runtime, 로컬 설정·키·DB는 Git 제외 대상이다. 기존 추적 SQLite의 추적 제외/이력 정리는 실행하지 않았다. 최초 구현 staged 58개 파일의 경로·DB magic·토큰/개인키/자격증명 패턴 검사에서 검출 0건이었다(집계 파일 추가 전 [57개 검사 기록](secret-scan.json), 최종 58개 검사는 별도 재확인). 감사 사유 보완 4개도 검출 0건이었다. 이 검사는 전체 Git 이력이나 모든 비밀정보 부재를 보장하지 않는다.
 
 ## Windows 검증·배포 제한
 
-Windows GitHub Actions를 추가했다. WPF 창을 실제 로드해 binding/비교 텍스트/PNG를 확인하고, C# 30개를 소스와 자체 포함 포터블 패키지 양쪽에서 실행한다. 결과가 나오면 이곳에 링크와 OS를 기록한다. Windows runner는 Windows 10 실기기 검증이 아니다. 일반 사용자 계정의 Windows 10 22H2 x64, DPI/한글 입력·키보드·버튼·동시 검토·네트워크 차단·복구·설치 경로 검증이 남아 있다.
+앱 코드 `006b63e`의 [Windows Actions 실행](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40800286124)이 **성공**했다. Windows Server 2025 runner에서 네이티브 WPF 창을 실제 로드해 비교 텍스트와 PNG를 확인했고 binding 오류는 0건이었다. C# 30개가 소스와 자체 포함 포터블 패키지 양쪽에서 각각 통과했다. [OS/로그 발췌/아티팩트 증거](windows-ci.json)를 보존한다. [해당 개발 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40800286124/artifacts/12864999963)는 GitHub 계정 접근 권한이 필요하며 만료될 수 있다. 최신 브랜치 검사/패키지는 기존 PR #1에서 확인한다. 패키지 시험은 이어서 GUI와 동일한 Installed 경로·runtime metadata·Node 해시 검사를 사용하도록 강화했다.
+
+Windows runner는 Windows 10 실기기 검증이 아니다. 일반 사용자 계정의 Windows 10 22H2 x64, DPI/한글 입력·키보드·버튼·동시 검토·네트워크 차단·복구·한글/공백이 있는 설치 경로 검증이 남아 있다. 일괄 결정 사유가 기존 감사 계약의 항목별 필드에 저장되는 점을 확인해 GUI 감사 목록에도 사유를 펼쳐 표시하고 C# 검증을 보완했다.
 
 포터블 개발 패키지만 준비하며 서명 설치 프로그램/자동 업데이트/공개 Release는 만들지 않는다. Azure·실제 관리자 인증·DPAPI/ACL·사용량/제보/Codex/GitHub 원격 기능은 미연결이다. 실제 Riot 승인 후 매퍼·권리/출처·한국어 계약을 확인하고 검토 후보로만 연결해야 한다. 실제 번역 의미 검증·공식 문체 자료 권한·활성화 이후 동기화 rebase는 후속 작업이다.
 
