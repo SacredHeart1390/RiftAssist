@@ -6,6 +6,8 @@
 
 아래 기존 표는 **1차**의 확정 기록이다. 2차는 [새 기능·검사 설명](PHASE2.md)과 [2차 검증 보고서](../artifacts/control-center-phase2-2026-10-29/README.md)에 별도 기록한다. 현재 C# 프로그램은 기존 30개+추가 33개=63개이며 Windows smoke는 운영 7개 탭과 Azure 제어 비활성도 검사한다. 실제 Azure/OpenSSH 연결과 Windows 10 실기기 수동 검증은 실행하지 않는다.
 
+2차 앱 코드 `2127b79`는 [Windows Server 2025 Actions](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40835470491)에서 C# 소스/패키지 각 63/63, 실제 운영 7개 탭/기존 카드 비교의 binding 오류 0건, **패키지 exe 직접 시작·자동 자식 0개·정상 종료**를 통과했다. [증거](../artifacts/control-center-phase2-2026-10-29/windows-ci.json)를 보존한다. 실제 Azure 연결이나 Windows 10 실기기 검증을 수행한 결과가 아니다.
+
 Linux 클라우드에서 실제로 실행한 검사와 Windows에서 확인할 검사를 구분한다. WPF의 Windows 대상 빌드는 Windows 실행 성공을 뜻하지 않는다. 검사 결과 원본은 [검증 아티팩트](../artifacts/control-center-2026-10-29/)에 보존한다.
 
 | 로컬 검사 | 결과 |

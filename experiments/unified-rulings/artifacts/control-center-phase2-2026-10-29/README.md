@@ -26,7 +26,7 @@ Azure는 Windows 시스템 OpenSSH의 **고정 읽기 전용 조회 구조만** 
 
 합계 **219/219**, 실패/취소/skip 0. Node 24.19.0, .NET SDK 10.0.403/런타임 10.0.14, Chromium 격리 프로필을 사용했다. C# SSH 검사는 모의 runner이며 실제 ssh.exe를 실행하지 않았다. 개발 API 검사는 임시 루트의 합성 데이터만 사용했고 백업 내용/인증 키를 출력하지 않았다. 설정 JSON의 파생 URL 필드가 저장되는 문제를 검사로 찾아 6개 메타데이터만 저장하도록 수정했다. 웹/legacy 결과는 해당 코드에 변경이 없는 동일 작업의 회귀 기록이다.
 
-Windows Actions는 실제 WPF 7개 탭·기존 카드 비교/binding, 소스·포터블 패키지 C# 각 63개, **패키지 exe 직접 시작/기본 창/자동 Node·SSH·브라우저 자식 0개/정상 종료** 검사를 수행하도록 준비했다. 로컬 Linux 교차 빌드를 실제 Windows 실행으로 주장하지 않는다. Windows 결과/실행 패키지는 실행 완료 후 기존 PR #1에 확정해 기록한다. Windows runner 성공도 Windows 10 실기기·실제 Azure SSH 접속 검증을 대신하지 않는다.
+앱 코드 `2127b79`의 [Windows Actions](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40835470491)가 **성공**했다. Windows Server 2025 runner에서 실제 WPF 7개 탭·기존 카드 비교를 로드했고 binding 오류는 0건이었다. 소스·포터블 패키지 C# 검사가 각각 63/63 통과했다. **설치 패키지 exe를 직접 실행해 기본 창·자동 Node/SSH/브라우저 자식 0개·정상 종료**까지 확인했다. [OS/로그 발췌/아티팩트 집계](windows-ci.json)를 보존한다. [새 Windows 실행 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40835470491/artifacts/12879554678)는 약 102MB이며 GitHub 접근 권한이 필요하고 만료될 수 있다. 전체 파일을 풀고 RiftAssist.ControlCenter.exe를 실행한다. 최신 브랜치 상태는 기존 PR #1에서 확인한다. Windows runner 성공도 Windows 10 실기기·실제 Azure SSH 접속 검증을 대신하지 않는다.
 
 ## 보존과 남은 작업
 
