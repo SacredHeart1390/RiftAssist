@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting><ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>RiftAssist.ControlCenter</AssemblyName><Version>0.2.0</Version>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>false</SelfContained>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="../../../releases/v0.2.0/src/**/*"><Link>backend/v0.2.0/src/%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../../releases/v0.2.0/public/**/*"><Link>backend/v0.2.0/public/%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../../releases/v0.2.0/manager-ui/**/*"><Link>backend/v0.2.0/manager-ui/%(RecursiveDir)%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../../releases/v0.2.0/dev-fixtures/*.json"><Link>backend/v0.2.0/dev-fixtures/%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../../releases/v0.2.0/scripts/prepare-development.cjs;../../../releases/v0.2.0/scripts/card-review-control.cjs;../../../releases/v0.2.0/scripts/prepare-control-center-demo.cjs"><Link>backend/v0.2.0/scripts/%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../../releases/v0.2.0/app-release.json"><Link>backend/v0.2.0/app-release.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+    <Content Include="../../backend-manifest.json"><Link>backend-manifest.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content>
+  </ItemGroup>
+</Project>

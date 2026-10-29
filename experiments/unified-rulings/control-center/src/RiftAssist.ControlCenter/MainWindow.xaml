@@ -1,0 +1,77 @@
+<Window x:Class="RiftAssist.ControlCenter.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="RiftAssist Control Center · 로컬 MVP" Width="1280" Height="900" MinWidth="980" MinHeight="700">
+ <DockPanel Margin="14">
+  <Border DockPanel.Dock="Top" Background="#173B35" CornerRadius="5" Padding="14" Margin="0,0,0,8"><StackPanel>
+   <TextBlock Text="RiftAssist Control Center" Foreground="White" FontSize="23" FontWeight="SemiBold"/>
+   <TextBlock Text="v0.2.0 · 로컬 합성자료 전용 · Riot/Azure/유료 API 미연결" Foreground="#D5E8DF" Margin="0,4,0,0"/>
+  </StackPanel></Border>
+  <StackPanel DockPanel.Dock="Bottom" Margin="0,6,0,0">
+   <TextBlock Text="작업 결과 (현재 실행의 최근 100개 · 원시 요청/인증정보 미표시)" Foreground="#44515E"/>
+   <ListBox ItemsSource="{Binding Results}" Height="76" FontSize="12"/>
+   <TextBlock Text="{Binding Status}" TextWrapping="Wrap" FontWeight="SemiBold" Margin="3" AutomationProperties.Name="연결과 작업 상태"/>
+   <TextBox Text="{Binding Location, Mode=OneWay}" IsReadOnly="True" Padding="2" Background="Transparent" BorderThickness="0" FontSize="11"/>
+  </StackPanel>
+  <Grid x:Name="Body"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+   <WrapPanel Margin="0,0,0,8">
+    <Button x:Name="CreateButton" Content="새 합성자료 만들기(_N)" Click="Create_Click"/>
+    <ComboBox x:Name="SandboxCombo" ItemsSource="{Binding Sandboxes}" Width="220" SelectionChanged="Sandbox_Changed" ToolTip="이 앱이 만든 개발 폴더만 표시합니다."/>
+    <Button Content="환경 목록" Click="Environments_Click"/>
+    <Button x:Name="ConnectButton" Content="연결(_C)" Click="Connect_Click"/>
+    <Button x:Name="DisconnectButton" Content="연결 해제" Click="Disconnect_Click"/>
+    <CheckBox x:Name="FinalRole" Content="최종 승인 권한 (로컬)" VerticalAlignment="Center" Margin="12,0,0,0" Checked="FinalRole_Checked"/>
+   </WrapPanel>
+   <TabControl Grid.Row="1">
+    <TabItem Header="카드·번역 검토"><Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="190"/><RowDefinition Height="5"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <DockPanel><StackPanel DockPanel.Dock="Right" Orientation="Horizontal"><Button x:Name="RefreshButton" Content="새로고침 (Ctrl+R)" Click="Refresh_Click"/><Button x:Name="PreviousButton" Content="이전" Click="Previous_Click"/><Button x:Name="NextButton" Content="다음 10개" Click="Next_Click"/></StackPanel>
+      <ComboBox x:Name="BundleCombo" ItemsSource="{Binding Bundles}" MinWidth="220" SelectionChanged="Bundle_Changed"/>
+     </DockPanel>
+     <Grid Grid.Row="1"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <DockPanel><TextBox x:Name="FilterBox" Width="220" DockPanel.Dock="Right" TextChanged="Filter_Changed" ToolTip="현재 페이지 안에서 이름·본문·변경 종류 검색"/><TextBlock Text="현재 페이지의 항목 선택 · 비교 후 사유와 함께 검토" VerticalAlignment="Center"/></DockPanel>
+      <DataGrid Grid.Row="1" x:Name="ReviewGrid" ItemsSource="{Binding Items}" SelectionMode="Single" SelectionChanged="Review_Changed">
+       <DataGrid.Columns>
+        <DataGridCheckBoxColumn Header="선택" Binding="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="48"/>
+        <DataGridTextColumn Header="카드" Binding="{Binding Title}" IsReadOnly="True" Width="*"/>
+        <DataGridTextColumn Header="구분" Binding="{Binding TypeLabel}" IsReadOnly="True" Width="90"/>
+        <DataGridTextColumn Header="변경" Binding="{Binding Kinds}" IsReadOnly="True" Width="240"/>
+        <DataGridTextColumn Header="검토 상태" Binding="{Binding DecisionLabel}" IsReadOnly="True" Width="90"/>
+       </DataGrid.Columns>
+      </DataGrid>
+      <WrapPanel Grid.Row="2"><Button Content="표시 항목 전체 선택" Click="SelectAll_Click"/><Button Content="선택 해제" Click="ClearSelection_Click"/>
+       <Button x:Name="ApproveButton" Content="선택 승인" Click="Approve_Click"/><Button x:Name="RejectButton" Content="선택 거절" Click="Reject_Click"/><Button x:Name="HoldButton" Content="선택 보류" Click="Hold_Click"/>
+       <Button x:Name="StageButton" Content="승인 항목으로 별도 후보 구성" Click="Stage_Click"/>
+      </WrapPanel>
+     </Grid>
+     <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" ResizeDirection="Rows"/>
+     <TabControl Grid.Row="3"><TabItem Header="효과 비교"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="*"/><RowDefinition Height="90"/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+      <TextBlock Text="변경 전 · 영어 / 한국어" Margin="8" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="후보 · 영어 / 한국어 (모의·비공식 구분 확인)" Margin="8" FontWeight="SemiBold"/>
+      <TextBox x:Name="BeforeEnglish" Grid.Row="1" Style="{StaticResource Quote}"/><TextBox x:Name="AfterEnglish" Grid.Row="1" Grid.Column="1" Style="{StaticResource Quote}"/>
+      <TextBox x:Name="BeforeKorean" Grid.Row="2" Style="{StaticResource Quote}"/><TextBox x:Name="AfterKorean" Grid.Row="2" Grid.Column="1" Style="{StaticResource Quote}"/>
+      <TextBox x:Name="Warnings" Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource Quote}" Foreground="#8B3F18"/>
+     </Grid></TabItem><TabItem Header="출처·비용·기호·미발매·에라타"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+      <TextBox x:Name="BeforeMetadata" Style="{StaticResource Quote}"/><TextBox x:Name="AfterMetadata" Grid.Column="1" Style="{StaticResource Quote}"/>
+     </Grid></TabItem></TabControl>
+    </Grid></TabItem>
+    <TabItem Header="최종 승인·롤백·복구"><Grid Margin="14"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <TextBlock Text="카드 검토 승인과 실제 활성화는 별개입니다. 여기의 작업은 현재 연결한 앱 소유 합성자료 폴더만 대상으로 합니다. 원격 운영 서버는 연결되지 않았습니다." TextWrapping="Wrap" Foreground="#873820" FontWeight="SemiBold"/>
+     <ComboBox x:Name="PackageCombo" Grid.Row="1" ItemsSource="{Binding Packages}" SelectionChanged="Package_Changed"/>
+     <TextBox x:Name="PackageDetails" Grid.Row="2" Style="{StaticResource Quote}"/>
+     <WrapPanel Grid.Row="3"><Button x:Name="ActivateButton" Content="별도 최종 활성화…" Background="#8C3030" Foreground="White" Click="Activate_Click"/><Button x:Name="RollbackButton" Content="이전 정상 자료로 되돌리기…" Click="Rollback_Click"/></WrapPanel>
+     <StackPanel Grid.Row="4"><TextBlock Text="미완료 작업 (잠금/자료 점검 뒤 결과만 복구 · 자동 재활성화 안 함)" Margin="3"/>
+      <ComboBox x:Name="IntentCombo" ItemsSource="{Binding PendingIntents}" DisplayMemberPath="Description" SelectionChanged="Intent_Changed"/>
+      <Button x:Name="RecoverButton" Content="미완료 작업 결과 확인…" HorizontalAlignment="Left" Click="Recover_Click"/>
+     </StackPanel>
+    </Grid></TabItem>
+    <TabItem Header="감사 기록"><DockPanel Margin="8"><WrapPanel DockPanel.Dock="Top"><Button x:Name="AuditButton" Content="감사 기록 새로고침" Click="Audit_Click"/><Button x:Name="AuditPreviousButton" Content="이전 20개" Click="AuditPrevious_Click"/><Button x:Name="AuditNextButton" Content="다음 20개" Click="AuditNext_Click"/></WrapPanel>
+     <DataGrid ItemsSource="{Binding AuditRows}" IsReadOnly="True"><DataGrid.Columns>
+      <DataGridTextColumn Header="#" Binding="{Binding Sequence}" Width="50"/><DataGridTextColumn Header="구분" Binding="{Binding Type}" Width="85"/>
+      <DataGridTextColumn Header="관리자 식별자 (개발)" Binding="{Binding Actor}" Width="180"/><DataGridTextColumn Header="시각" Binding="{Binding At}" Width="180"/>
+      <DataGridTextColumn Header="사유" Binding="{Binding Reason}" Width="*"/><DataGridTextColumn Header="요청 ID" Binding="{Binding RequestId}" Width="245"/>
+     </DataGrid.Columns></DataGrid>
+    </DockPanel></TabItem>
+    <TabItem Header="확장 예정"><DockPanel Margin="14"><TextBlock DockPanel.Dock="Top" Text="아래 영역은 확장 경계만 정의했습니다. 연결·비용 조회·수정 요청·배포를 실행하지 않습니다." TextWrapping="Wrap" Margin="0,0,0,12"/>
+     <DataGrid ItemsSource="{Binding Modules}" IsReadOnly="True"><DataGrid.Columns><DataGridTextColumn Header="모듈" Binding="{Binding Title}" Width="200"/><DataGridTextColumn Header="상태" Binding="{Binding State}" Width="100"/><DataGridTextColumn Header="범위" Binding="{Binding Description}" Width="*"/></DataGrid.Columns></DataGrid>
+    </DockPanel></TabItem>
+   </TabControl>
+  </Grid>
+ </DockPanel>
+</Window>

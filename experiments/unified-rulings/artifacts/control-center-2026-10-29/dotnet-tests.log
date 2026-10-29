@@ -1,0 +1,31 @@
+PASS golden: korean-and-quotes
+PASS golden: emoji-and-combining
+PASS golden: control-characters
+PASS golden: integer-property-order
+PASS golden: safe-integers
+PASS golden: arrays-null-booleans
+PASS duplicate JSON keys rejected
+PASS fractional and unsafe request numbers rejected
+PASS Unicode is not normalized and invalid surrogates fail
+PASS session credentials are random, ephemeral, and final scopes opt-in
+PASS typed final phrases, acknowledgement and reason all required
+PASS future integrations are explicitly unavailable
+PASS backend source integrity verified
+PASS empty or traversing backend manifests rejected
+PASS arbitrary data folders cannot be opened
+PASS owned mock sandbox prepared with existing Node engine
+PASS owned sandbox listing and reparse boundaries
+PASS Node verifies C# HMAC and returns bilingual structured comparisons
+PASS local validation blocks incomplete warning acknowledgement before writes
+PASS bulk hold/reject decisions and Korean reasons persist
+PASS individual approval and explicit partial-stage plan
+PASS default session cannot activate and backend scopes independently enforce it
+PASS fresh privileged local session activates exact staged package
+PASS rollback is separate, version-bound and preserves original files
+PASS audit records show Korean decisions without credentials or raw signed requests
+PASS reconnect restores review history without re-seeding or reactivating
+PASS pipe boundary: wrong-id
+PASS pipe boundary: oversize
+PASS pipe boundary: hang
+PASS pipe boundary: environment
+C# proof suite: 30/30 passed; native WPF execution: false.

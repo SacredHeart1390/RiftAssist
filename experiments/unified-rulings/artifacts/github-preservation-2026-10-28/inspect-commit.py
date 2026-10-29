@@ -22,8 +22,10 @@ PREFIXES = (
     'experiments/unified-rulings/artifacts/card-translation-2026-10-28/',
     'experiments/unified-rulings/artifacts/card-sync-2026-10-28/',
     'experiments/unified-rulings/artifacts/card-review-2026-10-28/',
+    'experiments/unified-rulings/control-center/',
+    'experiments/unified-rulings/artifacts/control-center-2026-10-29/',
 )
-EXACT = {'.github/workflows/rules-tests.yml', 'experiments/unified-rulings/.gitignore'}
+EXACT = {'.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
 PATTERNS = {
     'provider-token': rb'\b(?:sk-(?:proj-|admin-)?[A-Za-z0-9_-]{20,}|RGAPI-[A-Za-z0-9-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,})',
     'private-key': rb'-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----',

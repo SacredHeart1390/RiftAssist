@@ -1,9 +1,11 @@
 const { createTranslationProvider } = require('./card-translation');
-const names = { 'Practice Unit': '연습 유닛', 'Practice Spell': '연습 주문' };
+const names = { 'Practice Unit': '연습 유닛', 'Practice Spell': '연습 주문', 'Practice New': '새 연습 카드' };
 const effects = {
   'This is a synthetic development card.': '개발용 합성 카드입니다.',
   'It has no official game effect.': '공식 게임 효과가 없습니다.',
   'This synthetic spell exists only to test card selection and translation.': '이 합성 주문은 카드 선택과 번역 시험에만 사용합니다.',
+  'Draw 2 cards after combat.': '전투 후 카드 2장을 뽑습니다.',
+  'Draw 1 card.': '카드 1장을 뽑습니다.',
 };
 function createMockCardTranslator() {
   return createTranslationProvider({ id: 'mock-card-ko', model: 'synthetic-ko-1', mode: 'mock',

@@ -1,0 +1,34 @@
+param(
+    [Parameter(Mandatory = $true)][string]$NodePath,
+    [Parameter(Mandatory = $true)][string]$OutputDirectory,
+    [string]$NodeLicensePath,
+    [switch]$RequireTrustedNodeSignature
+)
+$ErrorActionPreference = 'Stop'
+$project = Split-Path $PSScriptRoot -Parent
+$node = (Resolve-Path -LiteralPath $NodePath).Path
+if (Test-Path -LiteralPath $OutputDirectory) { throw 'Choose a new output directory. Existing files are not replaced.' }
+if ((Get-Item -LiteralPath $node).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Node executable links are not allowed.' }
+$version = (& $node --version).Trim()
+if ($LASTEXITCODE -ne 0 -or $version -notmatch '^v24\.\d+\.\d+$') { throw 'A trusted Node.js 24 x64 distribution is required.' }
+$architecture = (& $node -p 'process.arch').Trim()
+if ($LASTEXITCODE -ne 0 -or $architecture -ne 'x64') { throw 'Only the x64 Node distribution can be packaged.' }
+if ($RequireTrustedNodeSignature -and (Get-AuthenticodeSignature -LiteralPath $node).Status -ne 'Valid') { throw 'Node Authenticode validation failed.' }
+if (!$NodeLicensePath) { $NodeLicensePath = Join-Path (Split-Path $node -Parent) 'LICENSE' }
+if (!(Test-Path -LiteralPath $NodeLicensePath -PathType Leaf)) { throw 'Supply the LICENSE from the same official Node distribution using -NodeLicensePath.' }
+& $node (Join-Path $PSScriptRoot 'backend-manifest.cjs')
+if ($LASTEXITCODE -ne 0) { throw 'Backend source manifest check failed.' }
+Push-Location $project
+try {
+    & dotnet publish 'src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj' --configuration Release --runtime win-x64 --self-contained true --output $OutputDirectory
+    if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
+} finally { Pop-Location }
+$runtime = Join-Path $OutputDirectory 'runtime'
+New-Item -ItemType Directory -Path $runtime | Out-Null
+Copy-Item -LiteralPath $node -Destination (Join-Path $runtime 'node.exe')
+Copy-Item -LiteralPath $NodeLicensePath -Destination (Join-Path $runtime 'NODE-LICENSE.txt')
+$runtimeMetadata = @{ major = 24; version = $version; sha256 = (Get-FileHash -LiteralPath (Join-Path $runtime 'node.exe') -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json
+[IO.File]::WriteAllText((Join-Path $runtime 'runtime.json'), $runtimeMetadata, (New-Object Text.UTF8Encoding $false))
+Copy-Item -LiteralPath (Join-Path $project 'README.md') -Destination (Join-Path $OutputDirectory 'CONTROL-CENTER-README.md')
+Copy-Item -LiteralPath (Join-Path $project 'WINDOWS-VALIDATION.md') -Destination (Join-Path $OutputDirectory 'WINDOWS-VALIDATION.md')
+Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

@@ -1,0 +1,59 @@
+# RiftAssist Control Center — 검증 및 Windows 후속 확인
+
+2026-10-29 · 로컬/격리 개발 MVP · 운영 배포 승인 자료가 아님
+
+## 현재 검증 범위
+
+Linux 클라우드에서 실제로 실행한 검사와 Windows에서 확인할 검사를 구분한다. WPF의 Windows 대상 빌드는 Windows 실행 성공을 뜻하지 않는다. 검사 결과 원본은 [검증 아티팩트](../artifacts/control-center-2026-10-29/)에 보존한다.
+
+| 로컬 검사 | 결과 |
+| --- | --- |
+| Node 회귀 (기존 119 + 신규 파이프/번들 5) | 124/124 통과 |
+| PC·모바일 웹 E2E | 13/13 통과 |
+| 수정하지 않은 v0.1.7 호환성 | 11/11 통과 |
+| C# 직렬화/HMAC·Node 통합 | 30/30 통과 |
+| WPF 앱/창 검사 도구 교차 빌드 | 오류 0, 경고 0 |
+| Windows 네이티브 실행 | 로컬 Linux에서 실행하지 않음 |
+| 실제 Windows 10 수동 실행 | 미실시 |
+
+로컬 자동 검사는 총 **178/178**, 실패/취소/skip 0이다. .NET SDK 10.0.403 / 런타임 10.0.14, Node 24.19.0을 사용했다. 실제 Riot·유료 OpenAI 호출은 0건이다. v0.1.7 파일 65개가 원격 main과 같고, 공유 포인터/활성 자료/추적 SQLite 3개를 합친 8개 해시가 보존됐다. v0.2.0 소스 manifest 106개를 검증했고 `ready=false`를 유지했다. GitHub Windows runner의 결과는 별도 보고서에 확정해 기록하며 실제 Windows 10 PC의 수동 검증을 대신하지 않는다.
+
+- C# 프로토콜/Node 모의 통합: 30개. 공개 합성 벡터 6개, 한국어/이모지/제어문자/정수 직렬화, 무결성/소유 경로/기본 권한, 실제 Node 프로세스의 승인·보류·거절·후보 구성·활성화·롤백·재접속/감사, 잘못된 요청 ID·과대 응답·시간초과·환경 격리를 검사한다.
+- WPF 앱 및 WPF smoke 도구: Linux에서 `win-x64` 대상으로 교차 컴파일한다. 네이티브 창 로드/렌더링은 별도 Windows runner에서 검사한다.
+- Node 회귀·웹 E2E·v0.1.7 호환성: 격리된 임시 자료/DB/키와 모의 응답으로 검사한다. 웹 E2E는 기존 사이트 호환성 검사이며 WPF GUI 검사와 다르다.
+- `v0.1.7`의 main 대비 파일 일치, 공유 knowledge 포인터/자료와 추적 SQLite 3개 해시 보존, 선택 커밋 비밀/DB 패턴 검사 결과를 별도 기록한다.
+
+## 재현 명령
+
+이 디렉터리에서 실행한다. Node 경로는 자신의 신뢰한 Node 24 실행 파일의 절대 경로를 사용한다.
+
+```powershell
+node scripts/protocol-vectors.cjs
+node scripts/backend-manifest.cjs
+dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj -c Release -- ../releases/v0.2.0 'C:\Tools\node-v24\node.exe' 'C:\Temp\control-center-proof.json'
+dotnet build src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj -c Release
+# 아래 창 검사는 Windows에서만 실행
+dotnet run --project tests/RiftAssist.ControlCenter.WpfSmoke/RiftAssist.ControlCenter.WpfSmoke.csproj -c Release -- 'C:\Temp\control-center-smoke'
+```
+
+기존 웹/서버 검사는 `../tests`에서 `npm test`, `npm run test:legacy`, `npm run test:e2e`로 실행한다. E2E에는 설치된 Playwright/Chromium이 필요하다. 테스트는 운영 실행 명령이나 Azure로 연결하지 않는다. C# 증명 프로그램은 통과 개수와 실행 OS를 JSON으로 남기며 하나라도 실패하면 종료 코드가 0이 아니다. Windows smoke는 실제 WPF 창에 합성 비교 자료를 표시하고 binding 오류/영문 효과 표시를 검사하며 PNG를 남긴다. 이것만으로 모든 버튼·접근성·설치 호환성을 검증했다고 주장하지 않는다.
+
+## Windows 10 PC에서 필요한 수동 검사
+
+검증된 **전체** 포터블 패키지를 일반 사용자 계정으로 실행한다. 관리자 권한·서버 주소·운영 키는 필요하지 않다. 실제 운영 자료를 넣지 않는다.
+
+1. Windows 10 22H2 x64 실제 PC에서 시작/종료, 한글/이모지, 100%·150%·200% DPI, 1280×900/최소 창 크기, 키보드/스크린리더·스크롤·창 크기 변경을 확인한다.
+2. 새 합성자료를 만들고 경로가 LocalAppData의 새 GUID인지, 기존 운영 폴더나 shared active 포인터가 변하지 않는지 확인한다. 생성 실패 시 기존 폴더를 지우거나 재사용하지 않는다.
+3. 신규/에라타/한국어/미발매 경고와 전후 효과·비용·기호·출처를 비교한다. 현재 페이지 필터·전체 선택과 다음 페이지 선택 초기화를 확인한다.
+4. 사유 없는 결정은 막히고, 경고 체크 없는 승인은 막히는지 확인한다. 개별/일괄 승인·거절·보류 후 재접속하여 사유/상태가 유지되는지 확인한다. 번역 데이터 선행 승인 오류도 확인한다.
+5. 기본 세션에서 활성화/롤백이 비활성인지 확인한다. 최종 권한을 선택한 새 세션에서만 정확한 문구·체크·사유를 요구하는지, 취소 시 변화가 없는지 확인한다. 합성 후보를 구성한 뒤 그 개발 폴더에서만 활성화/이전 버전 롤백을 시험한다.
+6. 두 앱에서 같은 개발 환경을 열어 오래된 revision·후보 승인이 거절되는지 확인한다. 파일을 수동으로 덮어쓰지 않는다. 포인터/패키지 해시 충돌은 재조회한다.
+7. Node 종료·응답 지연/불명확 결과 발생 시 자동 쓰기 재시도가 없고 재접속 뒤 감사 로그로 결과를 확인할 수 있는지 확인한다. 프로세스 종료 시험은 앱의 합성 환경에서만 한다. 운영 프로세스를 종료하지 않는다.
+8. 한글 사유와 감사 로그/최근 결과가 표시되고 키/원시 요청이 화면/출력 파일에 없는지 확인한다. 미완료 의도·잠금 복구는 복사한 합성 fixture에서만 시험하며 파일 삭제로 우회하지 않는다.
+9. 배포본 설치/압축 해제 위치, Node LICENSE, 해시 일치, .NET 자체 포함 실행, 오프라인 실행을 확인한다. 기업 보안 정책에 따른 코드 서명·MSI/MSIX 검증은 후속 단계다.
+
+## 현재 한계와 출고 전 조건
+
+로컬 HMAC의 actor는 개발 식별자이며 운영자 실명 인증이 아니다. 로컬 관리자/같은 사용자에 의한 메모리·파일 변조를 막는 보안 경계는 아니다. manifest는 서명되지 않았다. 현재 임시 세션의 기본 유효시간은 1시간이므로 만료 후 재접속한다. 운영자 다중 인증·역할 발급·원격 접근·키 저장·서명 설치·자동 업데이트·활성화 후 동기화 rebase는 구현하지 않았다.
+
+서버 연결, 비용 조회, 실제 API 수집/번역, 운영 후보 가져오기, 라이브 배포는 다음 단계다. 사용자 승인 없는 main 병합·Azure 수정/재시작·운영 배포는 금지한다. 실제 데이터 검증·권리 확인·백업/복구 및 Windows 수동 검증을 통과하고 별도 배포 승인을 받아야 운영 사용을 논의할 수 있다.

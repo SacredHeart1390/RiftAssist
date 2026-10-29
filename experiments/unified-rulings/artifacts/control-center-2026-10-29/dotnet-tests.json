@@ -1,0 +1,161 @@
+{
+  "Tests": [
+    {
+      "Name": "golden: korean-and-quotes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: emoji-and-combining",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: control-characters",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: integer-property-order",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: safe-integers",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: arrays-null-booleans",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "duplicate JSON keys rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fractional and unsafe request numbers rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Unicode is not normalized and invalid surrogates fail",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "session credentials are random, ephemeral, and final scopes opt-in",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "typed final phrases, acknowledgement and reason all required",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "future integrations are explicitly unavailable",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "backend source integrity verified",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "empty or traversing backend manifests rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "arbitrary data folders cannot be opened",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "owned mock sandbox prepared with existing Node engine",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "owned sandbox listing and reparse boundaries",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Node verifies C# HMAC and returns bilingual structured comparisons",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "local validation blocks incomplete warning acknowledgement before writes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "bulk hold/reject decisions and Korean reasons persist",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "individual approval and explicit partial-stage plan",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "default session cannot activate and backend scopes independently enforce it",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fresh privileged local session activates exact staged package",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "rollback is separate, version-bound and preserves original files",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "audit records show Korean decisions without credentials or raw signed requests",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "reconnect restores review history without re-seeding or reactivating",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: wrong-id",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: oversize",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: hang",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: environment",
+      "Passed": true,
+      "Error": null
+    }
+  ],
+  "passed": 30,
+  "failed": 0,
+  "os": "Debian GNU/Linux 13 (trixie)",
+  "framework": ".NET 10.0.14",
+  "nativeWpfExecuted": false,
+  "realRiotCalls": 0,
+  "paidApiCalls": 0
+}
