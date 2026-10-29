@@ -136,7 +136,7 @@ public partial class MainWindow : Window
     private async void CloseWindow(object? sender, CancelEventArgs e)
     {
         if (closing) return; e.Cancel = true;
-        if (Model.Busy) { MessageBox.Show(this, "진행 중 작업이 끝나거나 시간 초과 결과를 확인한 뒤 종료해 주세요."); return; }
-        await Model.DisposeAsync(); closing = true; _ = Dispatcher.BeginInvoke(new Action(Close));
+        if (Model.Busy || OperationsPanel.Model.Busy) { MessageBox.Show(this, "진행 중 작업이 끝나거나 SSH 조회를 취소한 뒤 종료해 주세요."); return; }
+        await OperationsPanel.DisposeAsync(); await Model.DisposeAsync(); closing = true; _ = Dispatcher.BeginInvoke(new Action(Close));
     }
 }

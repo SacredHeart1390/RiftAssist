@@ -103,10 +103,10 @@ public static class FeatureCatalog
 {
     public static IReadOnlyList<FeatureModule> Modules { get; } = [
         new("cards", "카드 검토", "로컬 MVP", "합성 카드 검토·승인·감사"),
-        new("manager", "기존 관리자 전체 기능", "확장 예정", "서버/AI 설정 통합은 아직 연결하지 않았습니다."),
-        new("azure", "Azure 원격 관리", "미연결", "원격 주소·인증·서버 제어는 구현하지 않았습니다."),
-        new("usage", "API 비용·사용량", "미연결", "실제 과금/사용량을 조회하지 않습니다."),
-        new("reports", "오류 제보 분석", "미연결", "운영 사용자 기록을 읽지 않습니다."),
+        new("manager", "기존 관리자 기능", "격리 개발", "기존 인증 API로 합성 관리자 제어만 통합했습니다."),
+        new("azure", "Azure 원격 상태", "수동 조회 준비", "별도 승인 후 OpenSSH 읽기 전용 · 운영 제어 차단 · 실제 접속 미검증"),
+        new("usage", "API 비용·사용량", "합성 개발", "개발 호출/토큰만 표시 · 실제 과금 조회 미연결"),
+        new("reports", "오류 제보 분석", "합성 개발", "합성 제보/연결 질문만 표시 · 운영 사용자 기록 미연결"),
         new("codex", "Codex 수정 요청", "미연결", "자동 코드 변경/메시지 전송은 없습니다."),
         new("github", "GitHub 배포·롤백", "미연결", "push/merge/운영 배포를 실행하지 않습니다.") ];
 }

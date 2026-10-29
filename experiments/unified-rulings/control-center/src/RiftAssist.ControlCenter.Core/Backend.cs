@@ -7,6 +7,7 @@ namespace RiftAssist.ControlCenter.Core;
 
 public sealed class BackendLayout
 {
+    private readonly HashSet<string> verifiedFiles = new(StringComparer.Ordinal);
     public string Root { get; }
     public string Node { get; }
     public BackendLayout(string root, string node, string manifestPath)
@@ -27,11 +28,13 @@ public sealed class BackendLayout
             SafePath.NoLinks(file);
             if (!File.Exists(file) || Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(file))) != entry.Value.GetString())
                 throw new ControlException("client-backend-integrity");
+            verifiedFiles.Add(entry.Name);
         }
     }
     public string Script(string name)
     {
-        if (name is not ("prepare-development.cjs" or "prepare-control-center-demo.cjs" or "card-review-control.cjs")) throw new ControlException("client-script-denied");
+        if (name is not ("prepare-development.cjs" or "prepare-control-center-demo.cjs" or "card-review-control.cjs" or "control-center-operations.cjs")) throw new ControlException("client-script-denied");
+        if (!verifiedFiles.Contains("scripts/" + name)) throw new ControlException("client-backend-integrity");
         return Path.Combine(Root, "scripts", name);
     }
     public static BackendLayout Installed(string appRoot)
@@ -128,11 +131,15 @@ public sealed class NodeReviewTransport : IReviewTransport
     public string? LastRequestId { get; private set; }
     private NodeReviewTransport(Process process, SessionSigner signer) { this.process = process; this.signer = signer; errors = ChildProcess.DrainAsync(process.StandardError); }
     public static async Task<NodeReviewTransport> ConnectAsync(BackendLayout layout, OwnedSandbox sandbox, bool finalActions, CancellationToken cancellation = default)
+        => await ConnectPrivateAsync(layout, sandbox, new SessionSigner(finalActions), "card-review-control.cjs", cancellation);
+    public static async Task<NodeReviewTransport> ConnectOperationsAsync(BackendLayout layout, OwnedSandbox sandbox, CancellationToken cancellation = default)
+        => await ConnectPrivateAsync(layout, sandbox, new SessionSigner(false, operations: true), "control-center-operations.cjs", cancellation);
+    private static async Task<NodeReviewTransport> ConnectPrivateAsync(BackendLayout layout, OwnedSandbox sandbox, SessionSigner signer, string script, CancellationToken cancellation)
     {
         sandbox.Validate();
         var version = await ChildProcess.RunAsync(layout, sandbox.Root, null, cancellation);
         if (!version.StartsWith("v24.", StringComparison.Ordinal)) throw new ControlException("client-node-version");
-        var signer = new SessionSigner(finalActions); var process = ChildProcess.Start(layout, sandbox.Root, "card-review-control.cjs", true);
+        var process = ChildProcess.Start(layout, sandbox.Root, script, true);
         var client = new NodeReviewTransport(process, signer);
         try { await process.StandardInput.WriteLineAsync(signer.Bootstrap().AsMemory(), cancellation); await process.StandardInput.FlushAsync(cancellation); return client; }
         catch { await client.DisposeAsync(); throw new ControlException("client-worker-start"); }

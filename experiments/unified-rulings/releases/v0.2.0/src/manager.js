@@ -14,6 +14,19 @@ const { knowledgeStatus } = require('./knowledge-admin');
 const { activateRelease } = require('./knowledge-releases');
 const PORT = Number(process.env.MANAGER_PORT || 3200), APP_PORT = Number(process.env.APP_PORT || 3201);
 if (![PORT, APP_PORT].every((port) => Number.isInteger(port) && port >= 1024 && port <= 65535) || PORT === APP_PORT) throw new Error('Invalid or conflicting local ports.');
+// Only the owned Control Center development child supplies ephemeral worker ports.
+let controlCenterWorkerPorts;
+if (process.env.RIFTASSI_CC_WORKER_PORTS) {
+  if (environment !== 'development') throw new Error('Control Center worker ports require development mode.');
+  const markerFile = path.join(ROOT, '.riftassist-control-center.json');
+  if (fs.lstatSync(markerFile).isSymbolicLink()) throw new Error('Invalid Control Center owner.');
+  const marker = JSON.parse(fs.readFileSync(markerFile, 'utf8'));
+  if (marker.schemaVersion !== 1 || marker.purpose !== 'synthetic-control-center' || marker.id !== path.basename(ROOT)) throw new Error('Invalid Control Center owner.');
+  controlCenterWorkerPorts = JSON.parse(process.env.RIFTASSI_CC_WORKER_PORTS);
+  if (!Array.isArray(controlCenterWorkerPorts) || controlCenterWorkerPorts.length !== 2
+    || controlCenterWorkerPorts.some(p => !Number.isInteger(p) || p < 1024 || p > 65535)
+    || new Set([PORT, APP_PORT, ...controlCenterWorkerPorts]).size !== 4) throw new Error('Invalid development worker ports.');
+}
 const store = createStore(ROOT);
 const secret = localSecret(store.directory, 'manager.key');
 const sessions = new Map();
@@ -21,7 +34,7 @@ const origins = new Set([`http://127.0.0.1:${PORT}`, `http://localhost:${PORT}`]
 const hosts = new Set([...origins].map((item) => new URL(item).host));
 let app = null, tunnel = null, changing = false, appReady = false, errorMessage = '', tunnelState = 'off';
 let activeOrigin = '';
-const appHost = createAppHost({ root: ROOT, port: APP_PORT, onFailure: message => { app = null; appReady = false; errorMessage = message; } });
+const appHost = createAppHost({ root: ROOT, port: APP_PORT, ...(controlCenterWorkerPorts ? { workerPorts: controlCenterWorkerPorts } : {}), onFailure: message => { app = null; appReady = false; errorMessage = message; } });
 const config = () => store.setting('hosting', { provider: 'none', publicOrigin: '' });
 function ensureSourceMonitor() {
   // v0.2.0 imports are explicit. Never launch legacy network collectors automatically.
@@ -239,6 +252,7 @@ server.listen(PORT, '127.0.0.1', () => {
   fs.writeFileSync(path.join(ROOT, 'tmp', 'manager.json'), JSON.stringify({ pid: process.pid, port: PORT, script: __filename }));
   ensureSourceMonitor();
   console.log(`리프트어시 관리 화면: http://127.0.0.1:${PORT}/ (프로젝트의 실행 파일로 인증)`);
+  if (controlCenterWorkerPorts && process.send) process.send({ type: 'control-center-manager-ready', port: PORT, rootId: path.basename(ROOT) });
 });
 const cleanup = setInterval(() => { try { store.purge(); } catch { /* next run retries */ } }, 3600000);
 cleanup.unref();

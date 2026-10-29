@@ -1,0 +1,68 @@
+<UserControl x:Class="RiftAssist.ControlCenter.OperationsView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <DockPanel Margin="8">
+  <StackPanel DockPanel.Dock="Top">
+   <WrapPanel><TextBlock Text="대상" VerticalAlignment="Center" Margin="4"/><ComboBox x:Name="ModeCombo" Width="230" SelectedIndex="0" SelectionChanged="Mode_Changed"><ComboBoxItem Content="합성 개발 관리자"/><ComboBoxItem Content="Azure · SSH 읽기 전용"/></ComboBox><TextBlock Text="{Binding TargetLabel}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="8"/></WrapPanel>
+   <TextBlock Text="{Binding State}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="4"/>
+   <WrapPanel><Button x:Name="CancelQueryButton" Content="진행 중 SSH 조회 취소" IsEnabled="False" Click="Cancel_Click"/><TextBlock Text="실제 Azure 접속은 별도 승인 전 금지 · 운영 변경은 항상 차단" VerticalAlignment="Center" Foreground="#8B3F18"/></WrapPanel>
+  </StackPanel>
+  <Grid x:Name="OpsBody"><TabControl x:Name="OperationsTabs">
+   <TabItem Header="대시보드"><ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="12">
+    <TextBlock Text="합성 개발 관리자 (실제 운영 서버 아님)" FontWeight="SemiBold"/>
+    <WrapPanel IsEnabled="{Binding CanPrepareDevelopment}"><Button Content="새 개발 관리자 준비/연결" Click="New_Click"/><ComboBox x:Name="EnvironmentCombo" ItemsSource="{Binding Environments}" Width="260"/><Button Content="기존 개발 환경 연결" Click="Connect_Click"/><Button Content="개발 환경 목록" Click="List_Click"/></WrapPanel>
+    <Button Content="연결 해제" HorizontalAlignment="Left" Click="Disconnect_Click"/>
+    <TextBox Text="{Binding LocalRoot, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent"/>
+    <Button Content="개발 관리자 상태 새로고침" HorizontalAlignment="Left" IsEnabled="{Binding CanControl}" Click="Refresh_Click"/>
+    <Separator Margin="0,10"/>
+    <TextBlock Text="Azure SSH 조회: 설정 탭의 주소/계정/known_hosts를 확인하세요. 자동 연결·자동 새로고침은 없습니다." TextWrapping="Wrap"/>
+    <CheckBox x:Name="RemoteApproved" Content="실제 서버 접속의 별도 승인을 받았습니다 (이번 수동 조회용)" Margin="6"/>
+    <Button x:Name="QuerySshButton" Content="SSH로 고정 읽기 전용 상태 조회…" IsEnabled="{Binding AzureMode}" HorizontalAlignment="Left" Click="Query_Click"/>
+    <TextBox Text="{Binding Dashboard, Mode=OneWay}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MinHeight="185" Margin="3,12"/>
+   </StackPanel></ScrollViewer></TabItem>
+   <TabItem Header="서버 관리"><ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="12">
+    <TextBlock Text="아래 모든 명령은 합성 개발 관리자에서만 실행됩니다. Azure 모드에서는 UI와 명령 계층 양쪽에서 차단합니다. systemd 운영 서비스 제어는 구현하지 않았습니다." TextWrapping="Wrap" Foreground="#873820"/>
+    <StackPanel x:Name="ServerControlPanel" IsEnabled="{Binding CanControl}">
+     <WrapPanel><Button Content="개발 앱 시작…" Tag="start" Click="Server_Click"/><Button Content="개발 앱 중지…" Tag="stop" Click="Server_Click"/><Button Content="개발 앱 재시작…" Tag="restart" Click="Server_Click"/></WrapPanel>
+     <TextBlock Text="공개 연결은 none만 허용합니다. 관리자/앱은 임의 loopback 포트이며 외부 터널을 열지 않습니다." TextWrapping="Wrap"/>
+     <Button Content="개발 hosting=none 저장…" HorizontalAlignment="Left" Click="Hosting_Click"/>
+     <Separator Margin="0,12"/><TextBlock Text="개발 백업은 DB와 개발 암호화 키를 포함합니다. 선택한 개발 폴더 내부에만 보관하며 외부 반출·Git 포함을 금지합니다." TextWrapping="Wrap"/>
+     <Button Content="개발 DB 백업 생성…" HorizontalAlignment="Left" Click="Backup_Click"/>
+     <Separator Margin="0,12"/><TextBlock Text="준비된 개발 앱 버전 적용 / 되돌리기 (별도 최종 확인)" FontWeight="SemiBold"/>
+     <WrapPanel><ComboBox x:Name="AppReleaseCombo" ItemsSource="{Binding AppReleases}" Width="260"/><Button Content="개발 앱 버전 적용…" Click="AppRelease_Click"/></WrapPanel>
+     <TextBlock Text="관리자 자료 조회/수집 요청/전환 (카드 검토·승인 경계를 우회하지 않음)" FontWeight="SemiBold" Margin="0,12,0,4"/>
+     <WrapPanel><Button Content="기존 재수집 API 차단 확인…" Click="Discover_Click"/><ComboBox x:Name="KnowledgeCombo" ItemsSource="{Binding KnowledgeReleases}" Width="260"/><Button Content="개발 자료 적용…" Click="Knowledge_Click"/></WrapPanel>
+    </StackPanel>
+    <TextBox Text="{Binding LastResult, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MinHeight="70" MaxHeight="140"/>
+   </StackPanel></ScrollViewer></TabItem>
+   <TabItem Header="AI 운영"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <TextBox Text="{Binding Ai, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MinHeight="110"/>
+    <Button Grid.Row="1" Content="개발 AI 허용/중지 전환…" HorizontalAlignment="Left" IsEnabled="{Binding CanControl}" Click="Ai_Click"/>
+    <DataGrid Grid.Row="2" x:Name="LimitsGrid" ItemsSource="{Binding Limits}" IsEnabled="{Binding CanControl}"><DataGrid.Columns><DataGridTextColumn Header="호출 한도 (합성 개발 환경)" Binding="{Binding Label}" IsReadOnly="True" Width="*"/><DataGridTextColumn Header="값" Binding="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" Width="130"/></DataGrid.Columns></DataGrid>
+    <Button Grid.Row="3" Content="개발 한도 저장…" HorizontalAlignment="Left" IsEnabled="{Binding CanControl}" Click="Limits_Click"/>
+   </Grid></TabItem>
+   <TabItem Header="질문·오류 제보"><Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="150"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <DockPanel><TextBox x:Name="ReportFilter" DockPanel.Dock="Right" Width="220" TextChanged="ReportFilter_Changed" ToolTip="ID/분류/상태 검색"/><TextBlock Text="합성 제보와 연결된 질문/답변만 표시 · 독립 질문 목록 API 없음 · 실제 사용자 기록 미연결" TextWrapping="Wrap"/></DockPanel>
+    <DataGrid x:Name="ReportsGrid" Grid.Row="1" ItemsSource="{Binding Reports}" IsReadOnly="True" SelectionChanged="Report_Changed"><DataGrid.Columns><DataGridTextColumn Header="제보 ID" Binding="{Binding Id}" Width="*"/><DataGridTextColumn Header="분류" Binding="{Binding Category}" Width="90"/><DataGridTextColumn Header="상태" Binding="{Binding Status}" Width="110"/><DataGridTextColumn Header="접수 시각" Binding="{Binding Created}" Width="160"/></DataGrid.Columns></DataGrid>
+    <TextBox x:Name="ReportDetailText" Grid.Row="2" Text="{Binding ReportDetail, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+    <WrapPanel Grid.Row="3" IsEnabled="{Binding CanControl}"><ComboBox x:Name="ReportState" ItemsSource="{Binding ReportStates}" SelectedIndex="0" Width="125"/><TextBox x:Name="ReportNote" Width="280" MaxLength="3000" ToolTip="개발 처리 메모 · 개인정보/키 입력 금지"/><Button Content="개발 제보 처리 저장…" Click="ReportUpdate_Click"/><Button Content="합성 제보 JSON 내보내기" Click="Export_Click"/></WrapPanel>
+   </Grid></TabItem>
+   <TabItem Header="카드 관리"><StackPanel Margin="18"><TextBlock Text="기존 카드·번역 검토는 상위 ‘카드·번역 검토’, ‘최종 승인·롤백·복구’, ‘감사 기록’ 탭에서 계속 사용합니다." TextWrapping="Wrap" FontSize="16"/><TextBlock Text="개발 관리자와 카드 검토는 별도 GUID 폴더를 사용합니다. Azure 카드 DB 조회·교체는 연결하지 않았습니다." TextWrapping="Wrap" Margin="0,15"/></StackPanel></TabItem>
+   <TabItem Header="시스템 로그"><Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="80"/><RowDefinition Height="110"/></Grid.RowDefinitions>
+    <DockPanel><Button DockPanel.Dock="Right" Content="개발 감사 기록 갱신" IsEnabled="{Binding CanControl}" Click="Logs_Click"/><TextBlock Text="Control Center 개발 작업 기록 + 현재 실행의 연결 결과입니다. 운영 journal/파일 로그는 읽지 않습니다." TextWrapping="Wrap"/></DockPanel>
+    <DataGrid x:Name="EventsGrid" Grid.Row="1" ItemsSource="{Binding Events}" IsReadOnly="True"><DataGrid.Columns><DataGridTextColumn Header="시각" Binding="{Binding At}" Width="200"/><DataGridTextColumn Header="작업" Binding="{Binding Action}" Width="130"/><DataGridTextColumn Header="결과" Binding="{Binding Outcome}" Width="110"/><DataGridTextColumn Header="사유" Binding="{Binding Reason}" Width="*"/></DataGrid.Columns></DataGrid>
+    <TextBox Grid.Row="2" Text="{Binding SelectedItem.Reason, ElementName=EventsGrid, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+    <ListBox Grid.Row="3" ItemsSource="{Binding LocalEvents}" FontSize="12"/>
+   </Grid></TabItem>
+   <TabItem Header="설정"><ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="16">
+    <TextBlock Text="SSH 키의 내용·관리자 인증키를 입력하거나 저장하는 필드는 없습니다. 아래에는 연결 메타데이터와 파일 경로만 저장합니다." TextWrapping="Wrap" FontWeight="SemiBold"/>
+    <TextBlock Text="Azure SSH 호스트 (실제 주소는 운영자가 입력)"/><TextBox x:Name="HostInput" Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" TextChanged="Profile_Changed"/>
+    <WrapPanel><StackPanel Width="280"><TextBlock Text="SSH 사용자"/><TextBox Text="{Binding User, UpdateSourceTrigger=PropertyChanged}" TextChanged="Profile_Changed"/></StackPanel><StackPanel Width="130"><TextBlock Text="SSH 포트"/><TextBox Text="{Binding Port, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" TextChanged="Profile_Changed"/></StackPanel></WrapPanel>
+    <TextBlock Text="개인키 경로 (선택 · 키 내용 저장 안 함 · Windows ssh-agent 사전 준비)"/><DockPanel><Button DockPanel.Dock="Right" Content="경로 선택" Tag="identity" Click="Browse_Click"/><TextBox Text="{Binding IdentityFile, UpdateSourceTrigger=PropertyChanged}" TextChanged="Profile_Changed"/></DockPanel>
+    <TextBlock Text="검증된 known_hosts 파일 경로 (필수 · 호스트 키 자동 등록/변경 금지)"/><DockPanel><Button DockPanel.Dock="Right" Content="경로 선택" Tag="known" Click="Browse_Click"/><TextBox Text="{Binding KnownHostsFile, UpdateSourceTrigger=PropertyChanged}" TextChanged="Profile_Changed"/></DockPanel>
+    <TextBlock Text="HTTPS 앱 origin (예: https://example.invalid · /api/health는 고정)"/><TextBox Text="{Binding HttpsOrigin, UpdateSourceTrigger=PropertyChanged}" TextChanged="Profile_Changed"/>
+    <Button Content="로컬 설정 저장 (연결하지 않음)" HorizontalAlignment="Left" Click="SaveSettings_Click"/>
+    <TextBlock Text="보안 고정값: StrictHostKeyChecking=yes · BatchMode=yes · 포워딩/SSH 로컬 명령 차단 · 운영 변경 차단 · 원시 stdout/stderr 미저장. 사용자 SSH config는 -F NUL로 읽지 않습니다. 알려진 호스트 파일과 키/Windows agent만 사용합니다." TextWrapping="Wrap" Margin="0,15"/>
+    <TextBlock Text="관리자 3100 외부 공개·SSH 터널은 구현하지 않았습니다. 별도 승인 전 실제 연결 버튼을 실행하지 마세요." Foreground="#873820" TextWrapping="Wrap"/>
+   </StackPanel></ScrollViewer></TabItem>
+  </TabControl></Grid>
+ </DockPanel>
+</UserControl>

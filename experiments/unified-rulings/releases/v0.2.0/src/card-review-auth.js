@@ -4,7 +4,7 @@ const { safeEqual } = require('./access-control');
 const contexts = new WeakSet();
 const uuid = value => typeof value === 'string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/u.test(value);
 const label = value => typeof value === 'string' && /^[A-Za-z0-9._-]{1,80}$/u.test(value);
-const scopes = ['review:read', 'review:decide', 'cards:stage', 'cards:activate', 'cards:rollback', 'audit:read'];
+const scopes = ['review:read', 'review:decide', 'cards:stage', 'cards:activate', 'cards:rollback', 'audit:read', 'operations:read', 'operations:write'];
 const error = (code, status = 400) => Object.assign(new Error(code), { code, status, expected: true });
 function signRequest(request, secret) {
   const { signature, ...payload } = request;

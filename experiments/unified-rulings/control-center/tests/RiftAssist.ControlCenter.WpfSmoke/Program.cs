@@ -27,6 +27,15 @@ internal static class Program
         """);
         model.Items.Add(new ReviewItem(json.RootElement));
         var window = new MainWindow(model); window.Show(); window.UpdateLayout();
+        var mainTabs = (TabControl)window.FindName("MainTabs");
+        var operations = (OperationsView)window.FindName("OperationsPanel");
+        var operationTabs = (TabControl)operations.FindName("OperationsTabs");
+        if (operationTabs.Items.Count != 7 || operations.Model.CanControl || operations.Model.AzureMode) return 1;
+        foreach (TabItem tab in operationTabs.Items) { tab.IsSelected = true; window.UpdateLayout(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); }
+        ((ComboBox)operations.FindName("ModeCombo")).SelectedIndex = 1;
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+        if (!operations.Model.AzureMode || ((StackPanel)operations.FindName("ServerControlPanel")).IsEnabled || ((CheckBox)operations.FindName("RemoteApproved")).IsChecked == true) return 1;
+        operationTabs.SelectedIndex = 0; mainTabs.SelectedIndex = 1; window.UpdateLayout();
         var grid = (DataGrid)window.FindName("ReviewGrid"); grid.SelectedIndex = 0;
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         if (!window.IsLoaded || ((TextBox)window.FindName("AfterEnglish")).Text != "Draw 2 cards after combat." || trace.Errors.Count != 0) return 1;
@@ -36,10 +45,14 @@ internal static class Program
             var image = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32); image.Render(window);
             var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(image));
             using var file = File.Create(Path.Combine(args[0], "wpf-native-smoke.png")); encoder.Save(file);
+            mainTabs.SelectedIndex = 0; window.UpdateLayout(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+            var dashboard = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32); dashboard.Render(window);
+            var dashboardEncoder = new PngBitmapEncoder(); dashboardEncoder.Frames.Add(BitmapFrame.Create(dashboard));
+            using var dashboardFile = File.Create(Path.Combine(args[0], "wpf-operations-smoke.png")); dashboardEncoder.Save(dashboardFile);
         }
         window.Close(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); app.Shutdown();
         var report = JsonSerializer.Serialize(new { nativeWpfWindowLoaded = true, bindingErrors = trace.Errors.Count,
-            backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
+            operationsTabsLoaded = 7, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
         if (args.Length > 0) File.WriteAllText(Path.Combine(args[0], "wpf-native-smoke.json"), report + Environment.NewLine);
         Console.WriteLine(report);
         return 0;

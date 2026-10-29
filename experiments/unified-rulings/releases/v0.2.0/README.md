@@ -1,5 +1,7 @@
 # RiftAssist v0.2.0 개발 릴리스
 
+[Control Center 2차](../../control-center/PHASE2.md)는 별도의 합성 관리자 GUID 환경에서 기존 로그인/쿠키 API를 재사용한다. `operations:read`/`operations:write`는 카드 권한과 분리하며 임의 loopback 포트만 사용한다. Azure는 별도 승인 후 고정 읽기 전용 OpenSSH 조회 구조만 준비했고 실제 접속하지 않았다. 관리자 3100 공개·운영 제어/DB 접근·실제 API 호출은 없다. 기존 재수집 거절과 카드 승인 우회 방지는 유지한다.
+
 운영 v0.1.7과 분리한 차기 개발 코드다. 앱 승인, 실제 공식 데이터 검증, 배포 승인을 받은 릴리스가 아니며 루트 `app-release.json`의 `ready`는 false다.
 
 ## 로컬 개발

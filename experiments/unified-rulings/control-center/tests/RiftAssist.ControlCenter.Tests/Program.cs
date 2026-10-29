@@ -44,8 +44,9 @@ try
         new FinalApproval("개발 자료 활성화", "한글 최종 확인", true).Validate("activate");
         new FinalApproval("개발 자료 되돌리기", "한글 복귀", true).Validate("rollback");
     });
-    suite.Check("future integrations are explicitly unavailable", () => {
-        ProofSuite.True(FeatureCatalog.Modules.Where(m => m.Id != "cards").All(m => m.State is "미연결" or "확장 예정"));
+    suite.Check("live integrations remain unavailable while mock operations are explicit", () => {
+        ProofSuite.True(FeatureCatalog.Modules.Where(m => m.Id is "github" or "codex").All(m => m.State == "미연결"));
+        ProofSuite.True(FeatureCatalog.Modules.Single(m => m.Id == "azure").Description.Contains("운영 제어 차단", StringComparison.Ordinal));
     });
     suite.Check("backend source integrity verified", () => {
         backend = args.Length > 3 ? BackendLayout.Installed(Path.GetFullPath(Path.Combine(release, "../.."))) : new BackendLayout(release, node, manifest);
@@ -148,6 +149,7 @@ try
             catch (ControlException e) { ProofSuite.True(e.Uncertain && transport.IsFaulted); ProofSuite.Equal(e.Code, "client-result-uncertain"); }
         }
     });
+    await PhaseTwoProofs.RunAsync(suite, backend!, temporary);
 }
 finally
 {

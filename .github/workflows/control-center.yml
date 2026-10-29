@@ -48,6 +48,31 @@ jobs:
         run: |
           $bundle = "$env:RUNNER_TEMP/RiftAssist-ControlCenter-win-x64"
           dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- "$bundle/backend/v0.2.0" "$bundle/runtime/node.exe" "$env:RUNNER_TEMP/control-center-packaged-proof.json" "$bundle/backend-manifest.json"
+      - name: Start and close the actual packaged native executable
+        run: |
+          $executable = Join-Path $env:RUNNER_TEMP 'RiftAssist-ControlCenter-win-x64/RiftAssist.ControlCenter.exe'
+          $owned = Start-Process -FilePath $executable -PassThru
+          try {
+            if (!$owned.WaitForInputIdle(15000)) { throw 'Packaged native window did not become idle.' }
+            $deadline = [DateTime]::UtcNow.AddSeconds(10)
+            do {
+              $owned.Refresh()
+              if ($owned.HasExited) { throw 'Packaged application exited before its main window.' }
+              if ($owned.MainWindowHandle -ne [IntPtr]::Zero) { break }
+              Start-Sleep -Milliseconds 100
+            } while ([DateTime]::UtcNow -lt $deadline)
+            if ($owned.MainWindowHandle -eq [IntPtr]::Zero -or $owned.MainWindowTitle -notlike 'RiftAssist Control Center*') { throw 'Expected packaged native window was not found.' }
+            $children = @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($owned.Id)")
+            if ($children.Count -ne 0) { throw 'Opening the app must not auto-start Node, SSH or a browser.' }
+            if (!$owned.CloseMainWindow() -or !$owned.WaitForExit(15000)) { throw 'Packaged native window did not close cleanly.' }
+            if ($owned.ExitCode -ne 0) { throw 'Packaged application returned a failing exit code.' }
+            $report = @{ packagedNativeExeStarted = $true; closedCleanly = $true; automaticChildProcesses = 0; realAzureConnections = 0; os = $PSVersionTable.OS } | ConvertTo-Json
+            [IO.File]::WriteAllText("$env:RUNNER_TEMP/control-center-native-package.json", $report)
+            Write-Output $report
+          } finally {
+            if (!$owned.HasExited) { $owned.Kill($true) }
+            $owned.Dispose()
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: RiftAssist-ControlCenter-win-x64-development
@@ -55,5 +80,6 @@ jobs:
             ${{ runner.temp }}/RiftAssist-ControlCenter-win-x64/
             ${{ runner.temp }}/control-center-proof.json
             ${{ runner.temp }}/control-center-packaged-proof.json
+            ${{ runner.temp }}/control-center-native-package.json
             ${{ runner.temp }}/control-center-smoke/
           if-no-files-found: error

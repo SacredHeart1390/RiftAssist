@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const project = path.resolve(__dirname, '..'), release = path.resolve(project, '../releases/v0.2.0');
-const names = ['app-release.json', 'scripts/prepare-development.cjs', 'scripts/prepare-control-center-demo.cjs', 'scripts/card-review-control.cjs'];
+const names = ['app-release.json', 'scripts/prepare-development.cjs', 'scripts/prepare-control-center-demo.cjs', 'scripts/card-review-control.cjs', 'scripts/control-center-operations.cjs'];
 function walk(relative) {
   for (const item of fs.readdirSync(path.join(release, relative), { withFileTypes: true })) {
     const name = `${relative}/${item.name}`;

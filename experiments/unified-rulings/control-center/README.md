@@ -1,10 +1,10 @@
-# RiftAssist Control Center — 로컬 Windows MVP
+# RiftAssist Control Center — Windows 관리 MVP
 
 2026-10-29 · v0.2.0 · 개발 브랜치 `feature/riot-api-v0.2` · 기존 Draft PR #1
 
 Windows 10 22H2(build 19045 이상) x64를 대상으로 하는 C# WPF/.NET 10 데스크톱 앱이다. 브라우저·WebView·Electron을 사용하지 않는다. .NET 10 LTS와 기존 Node.js 24 검토 엔진을 조합했다. 카드 동기화·번역·승인 알고리즘을 C#으로 중복 구현하지 않고, 기존 `card-review-control`의 서명 메시지를 전용 자식 프로세스 파이프로 호출한다.
 
-현재는 **앱이 직접 만든 로컬 합성자료만** 다룬다. Azure 주소/원격 관리자 포트, 실제 Riot/OpenAI, 운영 DB·키·사용자 기록, GitHub 배포 기능은 연결하지 않았다. `v0.1.7`을 시작·정지하거나 운영 버전을 바꾸지 않는다. 개발 릴리스는 계속 `ready: false`다.
+카드 검토·관리자 제어는 **앱이 직접 만든 별도 로컬 합성자료만** 다룬다. 2차에서는 WPF 운영 7개 탭과 기존 인증을 보존한 개발 관리자 API, Windows OpenSSH의 고정 읽기 전용 상태 조회 구조를 추가했다. 실제 Azure 접속은 별도 승인 전 실행하지 않으며 운영 관리자 포트·DB·키·사용자 기록·실제 Riot/OpenAI·GitHub 배포는 미연결이다. `v0.1.7`을 시작·정지하거나 운영 버전을 바꾸지 않는다. `ready: false`를 유지한다. [2차 기능 목록·인증 조사·SSH 설정/보안·미구현 항목](PHASE2.md)을 먼저 확인한다.
 
 ## 실행 및 패키징
 
@@ -55,6 +55,6 @@ GitHub Actions의 **Control Center validation**은 Windows runner에서 빌드·
 | `tests` / `fixtures` | C# 검증, WPF 창 검사, 공개 합성 서명 벡터 |
 | `scripts` | 고정 번들 해시, 벡터 재생성, Windows 개발 패키징 |
 
-`IReviewTransport`와 `ReviewCoordinator`로 화면과 전송/검토를 분리했다. 확장 탭의 기존 관리자 전체 기능·Azure·API 사용량·오류 제보·Codex·GitHub 배포는 기능 경계 목록일 뿐 실행 구현이 없다. 원격 확장 전에는 서버 측 신원·역할·최소 권한, 비밀 저장(DPAPI/Credential Manager 등), TLS/기기 신뢰, 재생 방지·감사 보관, 명령 허용 목록, 승인/배포 분리, 서버 백업·복구를 별도로 설계·검증해야 한다.
+`IReviewTransport`와 `ReviewCoordinator`로 화면과 전송/검토를 분리했다. 2차의 `DevelopmentOperations`는 별도 operations 권한으로 기존 개발 관리자 인증 API를 호출하고 `RemoteMonitor`/`ISshRunner`는 명령이 고정된 SSH 상태 조회만 제공한다. 실제 운영 관리자·원격 제어·실제 과금/제보·Codex·GitHub 배포는 미연결이다. 원격 제어 확장 전에는 서버 측 신원·역할·최소 권한, 비밀 저장(DPAPI/Credential Manager 등), TLS/기기 신뢰, 재생 방지·감사 보관, 명령 허용 목록, 승인/배포 분리, 서버 백업·복구를 별도로 설계·검증해야 한다.
 
 실제 Riot 승인 후 endpoint/매퍼·출처/이미지 이용 조건·공개 상태·한국어 제공 계약을 검증하고 후보 경로에 연결해야 한다. 실제 번역 공급자는 호출 예산·캐시·비용 동의와 독립적인 의미 검토가 필요하다. 승인만으로 카드/운영 버전을 전환하지 않는다. 기존 리프트나루 카드/번역을 공식 자료·용어집·데모로 혼합하지 않았다. 번들에는 기존 고정 규칙 회귀 fixture가 포함되므로 공개 재배포 전 관련 이용 조건도 별도 확인한다. 합성 번역 결과는 실제 카드 번역 정확성의 증거가 아니다.

@@ -105,10 +105,10 @@ public sealed class SessionSigner : IDisposable
     public string SessionId { get; } = Guid.NewGuid().ToString("D");
     public string Actor { get; }
     public IReadOnlyList<string> Scopes { get; }
-    public SessionSigner(bool allowFinalActions)
+    public SessionSigner(bool allowFinalActions, bool operations = false)
     {
         Actor = "local-development-operator";
-        Scopes = ["review:read", "review:decide", "cards:stage", "audit:read", ..allowFinalActions ? new[] { "cards:activate", "cards:rollback" } : []];
+        Scopes = operations ? ["operations:read", "operations:write"] : ["review:read", "review:decide", "cards:stage", "audit:read", ..allowFinalActions ? new[] { "cards:activate", "cards:rollback" } : []];
     }
     public string Bootstrap() => JsonSerializer.Serialize(new { sessionId = SessionId, credentials = new[] { new { id = "control-center", actor = Actor, scopes = Scopes, secret } } }, ProtocolJson.Options);
     public string Request(string method, object parameters, string requestId, long? issuedAt = null, string? nonce = null)

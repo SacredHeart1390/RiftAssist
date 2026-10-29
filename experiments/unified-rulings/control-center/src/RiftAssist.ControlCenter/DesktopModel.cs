@@ -86,6 +86,20 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-ssh-profile" => "SSH 주소·사용자·포트·known_hosts·HTTPS origin과 경로 형식을 확인하세요. 키 내용은 입력하지 마세요.",
+            "client-ssh-approval-required" => "실제 접속은 별도 승인 후 수동으로만 실행할 수 있습니다.",
+            "client-ssh-missing" or "client-ssh-windows-only" => "Windows OpenSSH 클라이언트를 운영자가 준비해야 합니다. 이 환경에서 실제 연결하지 않았습니다.",
+            "client-ssh-file-missing" => "선택한 known_hosts 또는 개인키 경로를 확인하세요. 앱은 키를 복사하거나 호스트 키를 자동 등록하지 않습니다.",
+            "client-ssh-host-key-changed" or "client-ssh-host-key-unverified" => "SSH 호스트 키를 검증하지 못했습니다. 신뢰한 별도 경로로 fingerprint를 확인하세요. 검증을 끄거나 기존 키를 임의로 지우지 마세요.",
+            "client-ssh-authentication" => "SSH 인증에 실패했습니다. Windows 계정·개인키 경로와 ssh-agent의 잠금 해제 상태를 운영자가 확인해야 합니다.",
+            "client-ssh-timeout" or "client-ssh-cancelled" or "client-ssh-disconnected" => "SSH 조회가 끝나지 않았습니다. 이전 값은 현재 상태를 보장하지 않습니다. 자동 재접속하지 않습니다.",
+            "client-ssh-response-invalid" or "client-ssh-response-limit" => "서버 응답 형식 또는 크기를 확인하지 못했습니다. SSH 조회 명령과 서버 도구를 별도로 점검하세요.",
+            "client-production-control-blocked" => "Azure 운영 변경과 실제 관리자 데이터 접근은 이 버전에서 차단됩니다.",
+            "client-operations-disconnected" => "먼저 합성 개발 관리자에 연결하세요. 운영 관리자 연결은 구현하지 않았습니다.",
+            "client-operations-limits" => "한도 8개를 모두 입력하세요. 동시 호출은 1–3, 나머지는 1–1,000의 정수입니다.",
+            "review-operations-result-uncertain" => "개발 작업의 완료 여부가 불명확합니다. 상태·작업 기록을 확인하고 자동 재시도하거나 감사 기록을 지우지 마세요.",
+            "review-operations-request-rejected" => "기존 개발 관리자 API가 요청을 거절했습니다. 앱 실행 상태·선행 조건·검토 경계를 확인하세요.",
+            "review-operations-authentication" => "개발 관리자 세션 인증이 필요합니다. 운영 키를 입력하지 말고 해당 합성 환경에 다시 연결하세요.",
             "client-node-missing" or "client-runtime-integrity" => "Node.js 실행 파일이 포함된 패키지가 필요합니다. 배포 안내의 Publish-Windows.ps1을 실행해 주세요.",
             "client-backend-integrity" => "백엔드 파일 해시가 다릅니다. 검증된 소스로 다시 빌드해 주세요.",
             "client-result-uncertain" => "작업 결과를 확인하지 못했습니다. 같은 쓰기를 자동 재시도하지 마세요. 재연결 후 버전·감사 기록을 확인해 주세요.",

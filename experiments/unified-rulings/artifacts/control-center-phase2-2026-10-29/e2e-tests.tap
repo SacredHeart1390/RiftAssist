@@ -1,0 +1,25 @@
+
+> test:e2e
+> node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs
+
+✔ legal navigation and exact Riot notice at 1280px, Korean/English and JavaScript off (5663.289755ms)
+✔ legal navigation and exact Riot notice at 390px, Korean/English and JavaScript off (6888.95408ms)
+✔ legal navigation and exact Riot notice at 320px, Korean/English and JavaScript off (5388.810415ms)
+✔ report dialog submits successfully alongside the legal footer (2971.036563ms)
+✔ PWA precaches the new legal documents; offline navigation works and APIs stay uncached (2308.313609ms)
+✔ v0.2.0 mobile default restriction explains the pause and preserves evidence/report access (2548.080248ms)
+✔ v0.2.0 synthetic cards and unreleased previews are clearly labeled in search (3428.510154ms)
+✔ reviewed card translations display separate English/Korean text and an explicit unofficial AI label (3197.200438ms)
+✔ 01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호 (2109.461586ms)
+✔ 02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식 근거 → 새 질문 (3158.207401ms)
+✔ 03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재시도 (3751.931498ms)
+✔ 04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침으로 회복 (1349.20662ms)
+✔ 05 모바일: 질문·답변 사용 및 HTTP 장애 후 재시도, 가로 넘침 없음 (1505.582101ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45504.465124
