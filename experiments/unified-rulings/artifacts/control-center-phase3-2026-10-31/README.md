@@ -24,12 +24,12 @@
 
 합계 **227/227**, 실패/취소/skip 0. Node 24, .NET SDK 10.0.403을 사용했다. SSH는 모의 runner이고 실제 Azure·Riot/OpenAI 호출은 0건이다. 기존 카드 승인과 개발 관리자 인증/권한·중복 차단·백업·감사·영속 상태 테스트를 유지했다. 정상 자동 사유를 전달하되 내부 API가 빈 사유·미확인 변경·권한 없는 요청을 계속 거절하는 것도 확인한다.
 
-Windows CI는 실제 UI에서 간단 확인 예/아니요·보호 확인 구조, 잘못된 포트 저장 차단, 설정 저장 취소/실행, 추가 확인 없는 모의 SSH 버튼 조회·오류·이전 값·프로필 초기화, 기존 카드·운영 7개 탭/binding을 검사하도록 확장했다. 소스/패키지 C# 검사와 실제 패키지 exe 시작·자동 자식 0개·정상 종료도 유지한다. Windows 결과는 실행 후 확정해 기록하며 Linux 교차 빌드를 Windows 실행으로 주장하지 않는다.
+앱 코드 `79fa3c9`의 [Windows CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41084056447)가 **성공**했다. Windows Server 2025에서 간단 확인 예/아니요·보호 확인 구조, 잘못된 포트 저장 차단, 설정 저장 취소/실행, 추가 확인 없는 모의 SSH 버튼 조회·오류·이전 값·프로필 초기화, 기존 카드·운영 7개 탭을 실제 WPF로 확인했으며 binding 오류는 0건이었다. 소스/패키지 C# 검사는 각각 71/71 통과했고 실제 패키지 exe 시작·자동 자식 0개·정상 종료도 확인했다. [OS/로그/아티팩트 증거](windows-ci.json)를 보존한다. [Windows 실행 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41084056447/artifacts/12990733202)는 약 102MB이며 GitHub 접근 권한이 필요하고 만료될 수 있다. 전체 파일을 풀고 RiftAssist.ControlCenter.exe를 실행한다. 실제 Azure 접속과 Windows 10 실기기를 검증한 결과가 아니다.
 
 ## 보존·한계
 
 [보존 집계](preservation.json)·[읽기 전용 검사기](verify-preservation.py): main 대비 v0.1.7 65개 파일 변경 0, 공유 active/활성 manifest·카드·규칙·저지/추적 SQLite 3개의 합계 8개 해시 불변. v0.2.0 소스 107개와 Node payload 83개 해시가 그대로이며 ready=false다. Node 런타임/API/DB 스키마와 SSH 명령은 이번 작업에서 수정하지 않았다. 기존 AGENTS.md 미커밋 변경은 보존하고 제외한다.
 
-선택 커밋에 bin/obj/runtime·개발 DB/키·운영 기록·SSH 설정을 포함하지 않고 경로/DB magic·토큰/개인키/자격증명 패턴을 검사한다. 이 검사는 전체 이력이나 모든 비밀 부재를 보장하지 않는다.
+선택 구현 커밋 32개 파일의 경로/DB magic·토큰/개인키/자격증명 패턴 검사에서 검출 0건이었다. [집계 추가 전 31개 검사](secret-scan.json)를 보존하고 집계를 포함한 32개도 확인했다. bin/obj/runtime·개발 DB/키·운영 기록·SSH 설정은 포함하지 않았다. 이 검사는 전체 이력이나 모든 비밀 부재를 보장하지 않는다.
 
 Windows 10 실기기·실제 Azure/OpenSSH 인증/host key/네트워크는 사용자 측 별도 시험이다. 실제 unit명·기본 앱3001/health·HTTPS 경로·서버 도구 존재는 미확인이다. 운영 서비스 제어·관리자 AI/제보/로그·백업/복원·배포·서명 설치본은 미구현 상태를 유지한다. main 병합·Azure 변경/재시작·운영 DB/키 접근·실제 유료 호출은 하지 않았다. Windows 실행 패키지는 기존 PR #1의 Control Center validation 아티팩트에서 제공한다.
