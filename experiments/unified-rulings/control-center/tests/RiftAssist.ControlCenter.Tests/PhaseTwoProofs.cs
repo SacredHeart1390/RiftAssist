@@ -136,7 +136,7 @@ internal static class PhaseTwoProofs
             });
             await suite.CheckAsync("development AI toggle and usage are actual local API state, not paid calls", async () => {
                 var status = await operations!.ReadAsync("status"); ProofSuite.True(status.Field("stats").Field("calls").Rows().Any(c => c.Field("count").Number() == 1));
-                await operations.ChangeAsync("ai", new { enabled = false }, "합성 AI 일시 중지 🙂", true);
+                await operations.ChangeAsync("ai", new { enabled = false }, UserInteraction.AuditReason("ai", sandbox!.Id), true);
                 status = await operations.ReadAsync("status"); ProofSuite.True(status.Field("stats").Field("aiEnabled").ValueKind == JsonValueKind.False);
             });
             await suite.CheckAsync("development limits use the unchanged admin API validation", async () => {
@@ -159,7 +159,7 @@ internal static class PhaseTwoProofs
                 await operations.ChangeAsync("app-release", new { releaseId = "v0.2.0" }, "이전 합성 버전 복귀", true); status = await operations.ReadAsync("status"); ProofSuite.Equal(status.Field("appHost").Field("releaseId").Text(), "v0.2.0");
             });
             await suite.CheckAsync("development report status and Korean notes persist through existing API", async () => {
-                await operations!.ChangeAsync("update-report", new { id = report!.Id, status = "triaged", note = "합성 제보를 분류했습니다 🙂" }, "합성 제보 처리", true); await operations.ReadAsync("status");
+                await operations!.ChangeAsync("update-report", new { id = report!.Id, status = "triaged", note = "합성 제보를 분류했습니다 🙂" }, UserInteraction.AuditReason("update-report", $"{sandbox!.Id}/{report.Id}/triaged"), true); await operations.ReadAsync("status");
                 var detail = await operations.ReadAsync("report", new { id = report.Id }); ProofSuite.Equal(detail.Field("status").Text(), "triaged");
                 ProofSuite.True(detail.Field("history").Rows().Any(h => h.Field("note").Text().Contains("합성 제보를 분류", StringComparison.Ordinal)));
             });
@@ -176,7 +176,9 @@ internal static class PhaseTwoProofs
             });
             await suite.CheckAsync("development operation journal stores reasons and outcomes, never keys/cookies/signatures", async () => {
                 var rows = (await operations!.ReadAsync("logs")).Field("events").Rows().Select(OperationEvent.Read).ToArray();
-                ProofSuite.True(rows.Any(r => r.Action == "restart" && r.Outcome == "completed")); ProofSuite.True(rows.Any(r => r.Reason.Contains("합성 AI", StringComparison.Ordinal)));
+                ProofSuite.True(rows.Any(r => r.Action == "restart" && r.Outcome == "completed"));
+                ProofSuite.True(rows.Any(r => r.Action == "ai" && r.Reason.Contains("자동 기록", StringComparison.Ordinal) && r.Reason.Contains(sandbox!.Id, StringComparison.Ordinal)));
+                ProofSuite.True(rows.Any(r => r.Action == "update-report" && r.Reason.Contains(report!.Id, StringComparison.Ordinal) && r.Reason.Contains("triaged", StringComparison.Ordinal)));
                 var json = (await operations.ReadAsync("logs")).GetRawText(); ProofSuite.True(!json.Contains("manager.key", StringComparison.Ordinal) && !json.Contains("signature", StringComparison.Ordinal) && !json.Contains("cookie", StringComparison.OrdinalIgnoreCase));
             });
             await suite.CheckAsync("development stop/reconnect preserves reports and settings without auto-starting", async () => {

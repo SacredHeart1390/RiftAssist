@@ -24,14 +24,20 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     private string reportDetail = "제보를 선택하세요. 실제 사용자 자료는 연결하지 않습니다.";
     private string lastResult = "개발 제어 작업 결과 없음";
     private SshProfile profile;
-    private readonly SshProfileStore settings = SshProfileStore.Local();
-    private readonly RemoteMonitor monitor = new(new WindowsOpenSshRunner());
+    private readonly SshProfileStore settings;
+    private readonly RemoteMonitor monitor;
     private DevelopmentOperations? operations;
     private OwnedSandbox? sandbox;
     private JsonElement status;
     private CancellationTokenSource? query;
     public SandboxCatalog Catalog { get; } = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter", "OperationsSandboxes"));
     public ObservableCollection<OwnedSandbox> Environments { get; } = [];
+    public ObservableCollection<StatusTile> Metrics { get; } = [];
+    private string connectionStatus = "미연결", snapshotInfo = "아직 조회하지 않았습니다.", settingsFeedback = "";
+    public string ConnectionStatus { get => connectionStatus; private set { connectionStatus = value; Changed(); } }
+    public string SnapshotInfo { get => snapshotInfo; private set { snapshotInfo = value; Changed(); } }
+    public string SettingsFeedback { get => settingsFeedback; set { settingsFeedback = value; Changed(); } }
+    public string OperationTarget => sandbox?.Id ?? "미연결";
     public ObservableCollection<LimitRow> Limits { get; } = [];
     public ObservableCollection<OperationsReport> Reports { get; } = [];
     public ObservableCollection<OperationEvent> Events { get; } = [];
@@ -40,7 +46,7 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public ObservableCollection<string> KnowledgeReleases { get; } = [];
     public IReadOnlyList<string> ReportStates => OperationsPolicy.ReportStates;
     public bool AzureMode { get => azureMode; private set { azureMode = value; Changed(); Changed(nameof(CanControl)); Changed(nameof(CanPrepareDevelopment)); Changed(nameof(TargetLabel)); } }
-    public string TargetLabel => AzureMode ? "Azure · SSH 읽기 전용 · 실제 제어/관리자 데이터 미연결" : "합성 개발 관리자 · 운영 서버와 별개";
+    public string TargetLabel => AzureMode ? "Azure · 상태 조회" : "합성 개발 환경";
     public bool CanControl => !Busy && !AzureMode && operations?.Connected == true;
     public bool CanPrepareDevelopment => !Busy && !AzureMode;
     public bool Busy { get => busy; set { busy = value; Changed(); Changed(nameof(CanControl)); Changed(nameof(CanPrepareDevelopment)); } }
@@ -52,28 +58,47 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public string LastResult { get => lastResult; private set { lastResult = value; Changed(); } }
     public string LocalRoot => sandbox?.Root ?? "개발 관리자 데이터 위치: 미연결";
     public string ActiveKnowledgeId { get; private set; } = "";
-    public string Host { get => profile.Host; set { profile = profile with { Host = value }; Changed(); } }
-    public string User { get => profile.User; set { profile = profile with { User = value }; Changed(); } }
-    public int Port { get => profile.Port; set { profile = profile with { Port = value }; Changed(); } }
-    public string IdentityFile { get => profile.IdentityFile; set { profile = profile with { IdentityFile = value }; Changed(); } }
-    public string KnownHostsFile { get => profile.KnownHostsFile; set { profile = profile with { KnownHostsFile = value }; Changed(); } }
-    public string HttpsOrigin { get => profile.HttpsOrigin; set { profile = profile with { HttpsOrigin = value }; Changed(); } }
+    public string Host { get => profile.Host; set => SetProfile(profile with { Host = value }); }
+    public string User { get => profile.User; set => SetProfile(profile with { User = value }); }
+    public int Port { get => profile.Port; set => SetProfile(profile with { Port = value }); }
+    public string IdentityFile { get => profile.IdentityFile; set => SetProfile(profile with { IdentityFile = value }); }
+    public string KnownHostsFile { get => profile.KnownHostsFile; set => SetProfile(profile with { KnownHostsFile = value }); }
+    public string HttpsOrigin { get => profile.HttpsOrigin; set => SetProfile(profile with { HttpsOrigin = value }); }
     public event PropertyChangedEventHandler? PropertyChanged;
     private void Changed([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new(name));
-    public OperationsModel()
+    public OperationsModel(ISshRunner? runner = null, SshProfileStore? settingsStore = null)
     {
-        profile = new SshProfile();
-        try { profile = settings.Load(); ReloadEnvironments(); }
-        catch { State = "로컬 설정/개발 환경 목록 점검 필요 · 자동 연결하지 않음"; }
+        settings = settingsStore ?? SshProfileStore.Local(); monitor = new(runner ?? new WindowsOpenSshRunner()); profile = new SshProfile();
+        ResetMetrics();
+        try { LoadSettings(); ReloadEnvironments(); }
+        catch { SettingsFeedback = "저장된 설정을 불러오지 못했습니다. 연결 정보를 확인해 주세요."; }
+    }
+    private void SetProfile(SshProfile next, [CallerMemberName] string? name = null)
+    {
+        if (profile == next) return; profile = next; Changed(name); InvalidateRemote(); SettingsFeedback = "저장하지 않은 변경사항이 있습니다.";
+    }
+    public void LoadSettings()
+    {
+        profile = settings.Load();
+        foreach (var name in new[] { nameof(Host), nameof(User), nameof(Port), nameof(IdentityFile), nameof(KnownHostsFile), nameof(HttpsOrigin) }) Changed(name);
+        InvalidateRemote(); SettingsFeedback = "로컬 설정을 불러왔습니다. 조회는 자동으로 시작하지 않습니다.";
+    }
+    public void ValidateSettings() => profile.Validate();
+    private void ResetMetrics() { Metrics.Clear(); foreach (var tile in StatusDashboard.Empty) Metrics.Add(tile); SnapshotInfo = "아직 조회하지 않았습니다."; ConnectionStatus = "미연결"; }
+    private void PresentSnapshot(RemoteSnapshot? sample, bool stale = false, bool mock = false)
+    {
+        Metrics.Clear(); foreach (var tile in sample is null ? StatusDashboard.Empty : StatusDashboard.From(sample, stale))
+            Metrics.Add(mock ? tile with { Value = "모의 · " + tile.Value, Detail = "합성 개발 값" } : tile);
+        SnapshotInfo = sample is null ? "정상 조회값이 없습니다." : $"{(mock ? "모의 값" : stale ? "이전 정상값 · 현재 상태 미확인" : "마지막 조회")} · {sample.ObservedAt.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
     }
     public void ReloadEnvironments() { Environments.Clear(); foreach (var item in Catalog.List()) Environments.Add(item); }
-    public void SaveSettings() { settings.Save(profile); Log("settings", "경로/접속 메타데이터만 저장 · 자동 연결 안 함"); }
+    public void SaveSettings() { settings.Save(profile); SettingsFeedback = "저장했습니다. 서버 상태 조회 버튼을 눌러 연결하세요."; Log("settings", UserInteraction.AuditReason("settings", "이 컴퓨터의 SSH 연결 설정")); }
     public async Task SetModeAsync(bool remote)
     {
         if (remote == AzureMode) return;
         await DisconnectAsync(); AzureMode = remote;
-        Dashboard = remote ? "Azure 미연결 · 별도 승인과 수동 조회가 필요합니다." : "합성 개발 관리자 미연결";
-        State = remote ? "운영 제어·실제 제보/AI 설정 조회 차단" : "개발 관리자 연결 안 됨";
+        Dashboard = remote ? "설정을 확인하고 서버 상태 조회를 누르세요." : "합성 개발 관리자 미연결";
+        State = remote ? "서버 상태 미조회" : "개발 관리자 연결 안 됨";
     }
     public async Task ConnectMockAsync(OwnedSandbox? existing)
     {
@@ -103,6 +128,9 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         var knowledge = await operations.ReadAsync("knowledge"); ActiveKnowledgeId = knowledge.Field("active").Field("releaseId").Text();
         KnowledgeReleases.Clear(); foreach (var row in knowledge.Field("releases").Rows()) KnowledgeReleases.Add(row.Field("releaseId").Text());
         if (ActiveKnowledgeId.Length != 0 && !KnowledgeReleases.Contains(ActiveKnowledgeId)) KnowledgeReleases.Add(ActiveKnowledgeId);
+        var running = status.Field("appRunning").ValueKind == JsonValueKind.True;
+        PresentSnapshot(new RemoteSnapshot(DateTimeOffset.UtcNow, 12.5, 4194304, 3145728, 67108864, 54525952, 3600, running ? "active" : "inactive", running ? 200 : 0, 0), mock: true);
+        ConnectionStatus = "개발 관리자 연결됨";
         await RefreshLogsAsync(); State = "합성 개발 관리자 상태 갱신 완료 · 운영 미연결";
     }
     public async Task SelectReportAsync(OperationsReport report)
@@ -121,13 +149,21 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public async Task QueryRemoteAsync(bool separatelyApproved)
     {
         if (!AzureMode) throw new ControlException("client-ssh-profile");
-        query = new CancellationTokenSource();
-        try { var sample = await monitor.ReadAsync(profile, separatelyApproved, query.Token); Dashboard = sample.Display; State = monitor.State; Log("ssh-status", "고정 읽기 전용 상태 조회 완료"); }
-        catch { Dashboard = (monitor.LastGood?.Display ?? "정상 조회값 없음") + (monitor.Stale ? "\n이전 정상값 · 현재 연결/상태를 보장하지 않음" : ""); State = monitor.State; Log("ssh-status", monitor.State); throw; }
+        query = new CancellationTokenSource(); ConnectionStatus = "SSH 조회 중…";
+        PresentSnapshot(monitor.LastGood, stale: true);
+        try {
+            var sample = await monitor.ReadAsync(profile, separatelyApproved, query.Token);
+            Dashboard = sample.Display; PresentSnapshot(sample); ConnectionStatus = "SSH 연결됨"; State = "조회 완료";
+            Log("ssh-status", "사용자 요청으로 읽기 전용 조회 완료");
+        }
+        catch (Exception error) {
+            PresentSnapshot(monitor.LastGood, monitor.Stale); Dashboard = monitor.LastGood?.Display ?? "정상 조회값 없음";
+            ConnectionStatus = "연결 확인 필요"; State = UserErrors.Explain(error); Log("ssh-status", monitor.State); throw;
+        }
         finally { query.Dispose(); query = null; }
     }
     public void CancelQuery() => query?.Cancel();
-    public void InvalidateRemote() { monitor.Reset(); if (AzureMode) { Dashboard = "접속 설정 변경 · 재조회 전 상태 미확인"; State = "별도 승인/수동 조회 필요"; } }
+    public void InvalidateRemote() { monitor.Reset(); if (AzureMode) { ResetMetrics(); Dashboard = "설정이 변경되었습니다. 다시 조회해 주세요."; State = "미조회"; } }
     public async Task RefreshLogsAsync()
     { if (operations is null || AzureMode) return; Events.Clear(); foreach (var e in (await operations.ReadAsync("logs")).Field("events").Rows()) Events.Add(OperationEvent.Read(e)); }
     public void Log(string action, string outcome)
@@ -138,7 +174,7 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         Reports.Clear(); Limits.Clear(); AppReleases.Clear(); KnowledgeReleases.Clear(); Events.Clear(); Ai = "실제 AI 운영 미연결";
         ReportDetail = "실제 사용자 자료 미연결"; Changed(nameof(CanControl)); Changed(nameof(LocalRoot)); State = "연결 해제 · 개발 자료 보존";
         LastResult = "연결 해제 · 이전 작업은 개발 감사 기록에서 확인하세요.";
-        if (AzureMode) { monitor.Reset(); Dashboard = "Azure 연결 해제 · 현재 서버 상태 미확인"; }
+        monitor.Reset(); ResetMetrics(); Dashboard = "연결 해제 · 현재 상태 미확인";
     }
     public async ValueTask DisposeAsync() => await DisconnectAsync();
 }

@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using Microsoft.Win32;
 using RiftAssist.ControlCenter.Core;
 
@@ -10,16 +11,17 @@ namespace RiftAssist.ControlCenter;
 public partial class OperationsView : UserControl, IAsyncDisposable
 {
     public OperationsModel Model { get; }
-    public OperationsView() { Model = new OperationsModel(); InitializeComponent(); DataContext = Model; }
+    public OperationsView() : this(new OperationsModel()) { }
+    public OperationsView(OperationsModel model) { Model = model; InitializeComponent(); DataContext = Model; }
     private async Task Run(string name, Func<Task> work, bool ssh = false)
     {
         if (Model.Busy) return; Model.Busy = true; OpsBody.IsEnabled = false; ModeCombo.IsEnabled = false; CancelQueryButton.IsEnabled = ssh;
         try { await work(); }
-        catch (Exception error) { Model.Log(name, error is ControlException c ? c.Code : "client-local-failed"); MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), name, MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception error) { Model.Log(name, error is ControlException c ? c.Code : "client-local-failed"); if (!ssh) MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), name, MessageBoxButton.OK, MessageBoxImage.Warning); }
         finally { Model.Busy = false; OpsBody.IsEnabled = true; ModeCombo.IsEnabled = true; CancelQueryButton.IsEnabled = false; }
     }
     private async void Mode_Changed(object sender, SelectionChangedEventArgs e)
-    { if (IsInitialized && !Model.Busy) { RemoteApproved.IsChecked = false; await Run("대상 변경", () => Model.SetModeAsync(ModeCombo.SelectedIndex == 1)); } }
+    { if (IsInitialized && !Model.Busy) { await Run("대상 변경", () => Model.SetModeAsync(ModeCombo.SelectedIndex == 1)); } }
     private async void New_Click(object sender, RoutedEventArgs e) => await Run("합성 개발 관리자 준비", () => Model.ConnectMockAsync(null));
     private async void Connect_Click(object sender, RoutedEventArgs e)
     { if (EnvironmentCombo.SelectedItem is OwnedSandbox sandbox) await Run("개발 관리자 연결", () => Model.ConnectMockAsync(sandbox)); }
@@ -29,21 +31,27 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     private void Cancel_Click(object sender, RoutedEventArgs e) => Model.CancelQuery();
     private async void Query_Click(object sender, RoutedEventArgs e)
     {
-        if (RemoteApproved.IsChecked != true) { MessageBox.Show("실제 서버 접속의 별도 승인 전에는 실행할 수 없습니다."); return; }
-        var dialog = new ReviewDialog(Window.GetWindow(this), "Azure 읽기 전용 조회 · 별도 승인 필요",
-            "Windows OpenSSH가 설정한 호스트로 연결합니다. CPU/RAM/루트 디스크/가동시간, riftassist.service 상태와 앱3001·설정 HTTPS /api/health의 응답 코드만 읽습니다.\n\n호스트 키는 사전에 독립적인 경로로 검증해야 합니다. 호스트 키 자동 등록·SSH 터널·sudo·서비스 제어·운영 데이터/로그 조회는 없습니다. 실제 연결의 별도 승인을 받은 경우에만 진행하세요.", true, "읽기 전용 조회");
-        if (dialog.ShowDialog() != true) return;
-        RemoteApproved.IsChecked = false;
+        if (!ValidateSettingsInputs()) { OperationsTabs.SelectedIndex = 6; return; }
+        // The user's explicit button click authorizes this one read. Never invoked on load/save/timer.
         await Run("SSH 상태 조회", () => Model.QueryRemoteAsync(true), ssh: true);
     }
     private async Task<bool> Change(string method, object parameters, string label, string? phrase = null)
     {
         if (!Model.CanControl) return false;
-        var extra = method == "backup" ? "\n\n백업은 개발 DB와 개발 암호화 키를 함께 포함합니다. 개발 폴더 내부 전용이며 외부 반출/Git 포함을 금지합니다." : "";
-        var dialog = new ReviewDialog(Window.GetWindow(this), label, $"대상: 합성 개발 환경\n{Model.LocalRoot}\n\n{label}\n이 명령은 운영 Azure 서버로 전달되지 않습니다. 결과가 불명확하면 자동 재시도하지 말고 상태와 감사 기록을 확인하세요.{extra}", true, phrase);
-        if (dialog.ShowDialog() != true) return false;
+        var target = Model.OperationTarget;
+        var fields = ProtocolJson.Element(parameters);
+        foreach (var name in new[] { "id", "status", "releaseId" })
+            if (fields.Field(name).Text() is { Length: > 0 } value) target += " / " + value;
+        var reason = UserInteraction.AuditReason(method, target);
+        if (UserInteraction.ConfirmationFor(method) == ConfirmationKind.Protected)
+        {
+            var detail = method == "backup" ? "개발 DB와 복호화 키를 함께 백업합니다. 개발 폴더 밖으로 공유하지 마세요." : "선택한 개발 버전을 변경합니다. 대상과 복귀 기준을 확인하세요.";
+            var dialog = new ReviewDialog(Window.GetWindow(this), label, target + "\n\n" + detail, true, phrase, reason);
+            if (dialog.ShowDialog() != true) return false;
+        }
+        else if (!ActionConfirmation.Confirm(Window.GetWindow(this), label, target)) return false;
         var saved = false;
-        await Run(label, async () => { await Model.ChangeAsync(method, parameters, dialog.Reason, dialog.Acknowledged); saved = true; });
+        await Run(label, async () => { await Model.ChangeAsync(method, parameters, reason, true); saved = true; });
         return saved;
     }
     private async void Server_Click(object sender, RoutedEventArgs e)
@@ -80,15 +88,32 @@ public partial class OperationsView : UserControl, IAsyncDisposable
         await Run("합성 제보 내보내기", async () => { await Model.SelectReportAsync(report); await File.WriteAllTextAsync(dialog.FileName, Model.ReportDetail, ProtocolJson.Utf8); Model.Log("export-synthetic-report", "선택 파일에 저장"); });
     }
     private async void Logs_Click(object sender, RoutedEventArgs e) => await Run("개발 로그 조회", Model.RefreshLogsAsync);
-    private void Profile_Changed(object sender, TextChangedEventArgs e) { if (RemoteApproved is not null) RemoteApproved.IsChecked = false; Model.InvalidateRemote(); }
+    private void OpenSettings_Click(object sender, RoutedEventArgs e) => OperationsTabs.SelectedIndex = 6;
     private void Browse_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Title = "기존 SSH 파일 경로만 선택 (파일 내용 복사/저장 안 함)", CheckFileExists = true };
         if (dialog.ShowDialog(Window.GetWindow(this)) != true) return;
         if ((string)((Button)sender).Tag == "identity") Model.IdentityFile = dialog.FileName; else Model.KnownHostsFile = dialog.FileName;
-        RemoteApproved.IsChecked = false; Model.InvalidateRemote();
+    }
+    public static bool HasInvalidInput(DependencyObject root)
+    {
+        if (Validation.GetHasError(root)) return true;
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            if (HasInvalidInput(VisualTreeHelper.GetChild(root, i))) return true;
+        return false;
+    }
+    private bool ValidateSettingsInputs()
+    {
+        if (HasInvalidInput(SettingsForm)) { Model.SettingsFeedback = "포트 등 입력값을 확인하세요. SSH 포트는 1–65,535의 정수입니다."; return false; }
+        try { Model.ValidateSettings(); return true; }
+        catch (Exception error) { Model.SettingsFeedback = UserErrors.Explain(error); return false; }
     }
     private void SaveSettings_Click(object sender, RoutedEventArgs e)
-    { try { Model.SaveSettings(); RemoteApproved.IsChecked = false; } catch (Exception error) { MessageBox.Show(UserErrors.Explain(error)); } }
+    {
+        if (!ValidateSettingsInputs() || !ActionConfirmation.Confirm(Window.GetWindow(this), "SSH 연결 설정 저장", "이 컴퓨터의 연결 설정")) return;
+        try { Model.SaveSettings(); } catch (Exception error) { Model.SettingsFeedback = UserErrors.Explain(error); }
+    }
+    private void ReloadSettings_Click(object sender, RoutedEventArgs e)
+    { try { Model.LoadSettings(); } catch (Exception error) { Model.SettingsFeedback = UserErrors.Explain(error); } }
     public async ValueTask DisposeAsync() => await Model.DisposeAsync();
 }

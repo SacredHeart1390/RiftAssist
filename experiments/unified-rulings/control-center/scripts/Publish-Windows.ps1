@@ -32,4 +32,5 @@ $runtimeMetadata = @{ major = 24; version = $version; sha256 = (Get-FileHash -Li
 Copy-Item -LiteralPath (Join-Path $project 'README.md') -Destination (Join-Path $OutputDirectory 'CONTROL-CENTER-README.md')
 Copy-Item -LiteralPath (Join-Path $project 'WINDOWS-VALIDATION.md') -Destination (Join-Path $OutputDirectory 'WINDOWS-VALIDATION.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE2.md') -Destination (Join-Path $OutputDirectory 'PHASE2.md')
+Copy-Item -LiteralPath (Join-Path $project 'PHASE3.md') -Destination (Join-Path $OutputDirectory 'PHASE3.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

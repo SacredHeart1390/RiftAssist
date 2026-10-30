@@ -4,6 +4,8 @@
 
 ## 현재 검증 범위
 
+3차의 [UI 변경과 실제 Azure 시험 방법](PHASE3.md), [검사 기록](../artifacts/control-center-phase3-2026-10-31/README.md)을 별도로 제공한다. Windows 10 실기기는 사용자 측에서 검증하며 실제 Azure 접속은 개발/CI에서 실행하지 않는다. 기존 표는 1·2차 이력이다.
+
 아래 기존 표는 **1차**의 확정 기록이다. 2차는 [새 기능·검사 설명](PHASE2.md)과 [2차 검증 보고서](../artifacts/control-center-phase2-2026-10-29/README.md)에 별도 기록한다. 현재 C# 프로그램은 기존 30개+추가 33개=63개이며 Windows smoke는 운영 7개 탭과 Azure 제어 비활성도 검사한다. 실제 Azure/OpenSSH 연결과 Windows 10 실기기 수동 검증은 실행하지 않는다.
 
 2차 앱 코드 `2127b79`는 [Windows Server 2025 Actions](https://github.com/SacredHeart1390/RiftAssist/actions/runs/40835470491)에서 C# 소스/패키지 각 63/63, 실제 운영 7개 탭/기존 카드 비교의 binding 오류 0건, **패키지 exe 직접 시작·자동 자식 0개·정상 종료**를 통과했다. [증거](../artifacts/control-center-phase2-2026-10-29/windows-ci.json)를 보존한다. 실제 Azure 연결이나 Windows 10 실기기 검증을 수행한 결과가 아니다.

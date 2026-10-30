@@ -34,7 +34,7 @@ internal static class Program
         foreach (TabItem tab in operationTabs.Items) { tab.IsSelected = true; window.UpdateLayout(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); }
         ((ComboBox)operations.FindName("ModeCombo")).SelectedIndex = 1;
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
-        if (!operations.Model.AzureMode || ((StackPanel)operations.FindName("ServerControlPanel")).IsEnabled || ((CheckBox)operations.FindName("RemoteApproved")).IsChecked == true) return 1;
+        if (!operations.Model.AzureMode || ((StackPanel)operations.FindName("ServerControlPanel")).IsEnabled || operations.FindName("RemoteApproved") is not null) return 1;
         operationTabs.SelectedIndex = 0; mainTabs.SelectedIndex = 1; window.UpdateLayout();
         var grid = (DataGrid)window.FindName("ReviewGrid"); grid.SelectedIndex = 0;
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
@@ -50,9 +50,12 @@ internal static class Program
             var dashboardEncoder = new PngBitmapEncoder(); dashboardEncoder.Frames.Add(BitmapFrame.Create(dashboard));
             using var dashboardFile = File.Create(Path.Combine(args[0], "wpf-operations-smoke.png")); dashboardEncoder.Save(dashboardFile);
         }
+        PhaseThreeSmoke.Run(app, window, args.Length > 0 ? args[0] : null);
+        if (trace.Errors.Count != 0) return 1;
         window.Close(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); app.Shutdown();
         var report = JsonSerializer.Serialize(new { nativeWpfWindowLoaded = true, bindingErrors = trace.Errors.Count,
-            operationsTabsLoaded = 7, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
+            operationsTabsLoaded = 7, simpleConfirmationTested = true, automaticReasonTested = true, manualMockSshQueryTested = true,
+            invalidPortSaveBlocked = true, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
         if (args.Length > 0) File.WriteAllText(Path.Combine(args[0], "wpf-native-smoke.json"), report + Environment.NewLine);
         Console.WriteLine(report);
         return 0;

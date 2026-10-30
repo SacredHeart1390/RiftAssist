@@ -60,9 +60,8 @@ public partial class MainWindow : Window
     private void Sandbox_Changed(object sender, SelectionChangedEventArgs e) => UpdateButtons();
     private void FinalRole_Checked(object sender, RoutedEventArgs e)
     {
-        if (!IsLoaded) return;
-        if (MessageBox.Show(this, "이 세션에 앱 소유 합성자료의 최종 활성화/롤백 권한을 추가합니다. 각 작업에는 별도 사유와 확인 문구가 필요합니다. 운영 서버 권한을 부여하지 않습니다. 계속할까요?", "로컬 최종 승인 권한", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
-            FinalRole.IsChecked = false;
+        // Opt-in remains explicit; final actions retain their own protected confirmation.
+        if (IsLoaded) UpdateButtons();
     }
     private async void Bundle_Changed(object sender, SelectionChangedEventArgs e) { if (!Model.Busy && BundleCombo.SelectedItem is BundleSummary b) await Run("후보 조회", () => Load(b.Id)); }
     private async void Refresh_Click(object sender, RoutedEventArgs e) => await Refresh();
@@ -90,11 +89,10 @@ public partial class MainWindow : Window
         if (items.Length == 0) { MessageBox.Show(this, "현재 페이지에서 항목을 선택해 주세요."); return; }
         var label = decision switch { "approve" => "승인", "reject" => "거절", _ => "보류" };
         var warnings = items.SelectMany(i => i.Warnings).Select(w => w.Code).ToHashSet(StringComparer.Ordinal);
-        var detail = string.Join(Environment.NewLine, items.Select(i => $"{i.Title} · {i.TypeLabel}\n{i.WarningText}"));
-        var dialog = new ReviewDialog(this, $"선택 {items.Length}개 {label}", detail, decision == "approve");
-        if (dialog.ShowDialog() != true) return;
+        var detail = decision == "approve" && warnings.Count != 0 ? "확인할 검증 경고:\n" + string.Join("\n", warnings.Order(StringComparer.Ordinal)) : "";
+        if (!ActionConfirmation.Confirm(this, $"선택 {items.Length}개 {label}", "현재 카드·번역 후보", detail)) return;
         await Run(label, async () => { var review = Model.Review!; var id = review.Current!.BundleId; var offset = review.Current.Offset;
-            await review.DecideAsync(items, decision, dialog.Reason, dialog.Acknowledged ? warnings : new HashSet<string>());
+            await review.DecideAsync(items, decision, UserInteraction.AuditReason(decision, $"{id} / {items.Length}개"), warnings);
             Model.Log(label, "결정 저장됨 · 활성화 안 함"); await Load(id, offset); });
     }
     private async void Approve_Click(object sender, RoutedEventArgs e) => await Decide("approve");
@@ -102,9 +100,8 @@ public partial class MainWindow : Window
     private async void Hold_Click(object sender, RoutedEventArgs e) => await Decide("hold");
     private async void Stage_Click(object sender, RoutedEventArgs e) => await Run("승인본 구성", async () => {
         var review = Model.Review!; var plan = await review.PlanStageAsync();
-        var dialog = new ReviewDialog(this, "승인 항목으로 별도 후보 구성", plan.Description + "\n\n현재 활성 자료는 바뀌지 않습니다.", true);
-        if (dialog.ShowDialog() != true) return;
-        var result = await review.StageAsync(plan, dialog.Reason, dialog.Acknowledged); Model.Log("승인본 구성", result.Field("status").Text() == "no-changes" ? "실제 변경 없음" : "새 후보 저장 · 활성화 안 함");
+        if (!ActionConfirmation.Confirm(this, "승인 후보 구성", $"승인 {plan.ApprovedCount}개 · 제외 {plan.ExcludedIds.Count}개", "현재 활성 자료는 바뀌지 않습니다.")) return;
+        var result = await review.StageAsync(plan, UserInteraction.AuditReason("stage", plan.BundleId), true); Model.Log("승인본 구성", result.Field("status").Text() == "no-changes" ? "실제 변경 없음" : "새 후보 저장 · 활성화 안 함");
         await Load(plan.BundleId, Model.Review!.Current!.Offset);
     });
     private void Package_Changed(object sender, SelectionChangedEventArgs e) { PackageDetails.Text = (PackageCombo.SelectedItem as ReviewPackage)?.Description ?? "구성된 승인본이 없습니다."; UpdateButtons(); }
@@ -116,7 +113,7 @@ public partial class MainWindow : Window
         var detail = $"대상은 아래 앱 소유 로컬 합성자료입니다.\n{Model.Location}\n\n{package.Description}\n\n"
             + (activate ? "승인된 내용으로 이 개발 폴더의 활성 포인터가 바뀝니다. 보류/거절/미검토 항목은 구성 범위에서 제외됩니다." : "이 승인본이 현재 활성 상태일 때만 정확한 이전 정상 자료로 되돌립니다.")
             + "\n\nRiot/Azure/운영 DB는 연결되지 않았습니다. 자료 손상/미완료 감사 이력이 있으면 자동 재시도하지 마세요.";
-        var dialog = new ReviewDialog(this, phrase + " · 별도 최종 확인", detail, true, phrase); if (dialog.ShowDialog() != true) return;
+        var dialog = new ReviewDialog(this, phrase + " · 별도 최종 확인", detail, true, phrase, UserInteraction.AuditReason(action, package.ReleaseId)); if (dialog.ShowDialog() != true) return;
         await Run(phrase, async () => { var approval = new FinalApproval(dialog.Phrase, dialog.Reason, dialog.Acknowledged);
             if (activate) await Model.Review!.ActivateAsync(package, approval); else await Model.Review!.RollbackAsync(package, approval);
             Model.Log(action, "로컬 포인터 전환 완료"); await Load(snapshot.BundleId, snapshot.Offset); });
@@ -126,7 +123,7 @@ public partial class MainWindow : Window
     private async void Recover_Click(object sender, RoutedEventArgs e)
     {
         if (IntentCombo.SelectedItem is not PendingIntent intent || Model.Review?.Current is not { } snapshot) return;
-        var dialog = new ReviewDialog(this, "미완료 작업 결과 확인", intent.Description + "\n\n먼저 개발 폴더의 잠금·자료를 점검해야 합니다. 이 명령은 현재 포인터를 확인해 결과만 기록하며 자동 재활성화/롤백하지 않습니다.", true, "복구 상태 확인");
+        var dialog = new ReviewDialog(this, "미완료 작업 결과 확인", intent.Description + "\n\n현재 포인터와 결과를 대조합니다. 잠금·자료를 먼저 점검하세요.", true, "복구 상태 확인", UserInteraction.AuditReason("recover", intent.Id));
         if (dialog.ShowDialog() != true) return;
         await Run("복구 확인", async () => { await Model.Review!.RecoverAsync(intent, new FinalApproval(dialog.Phrase, dialog.Reason, dialog.Acknowledged)); Model.Log("recover", "의도/포인터 확인 완료"); await Load(snapshot.BundleId, snapshot.Offset); });
     }

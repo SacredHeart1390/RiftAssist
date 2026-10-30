@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+현재 3차의 확인창·자동 감사 사유·대시보드·실제 연결 시험 방법은 [PHASE3.md](PHASE3.md)를 확인한다. 일반 변경은 예/아니요, 조회는 확인창 없이 수동 실행하며 최종 전환/백업 보호는 유지한다. 아래의 기존 카드/2차 절차 중 사유 입력·반복 확인 설명은 3차 안내로 대체한다.
+
 2026-10-29 · v0.2.0 · 개발 브랜치 `feature/riot-api-v0.2` · 기존 Draft PR #1
 
 Windows 10 22H2(build 19045 이상) x64를 대상으로 하는 C# WPF/.NET 10 데스크톱 앱이다. 브라우저·WebView·Electron을 사용하지 않는다. .NET 10 LTS와 기존 Node.js 24 검토 엔진을 조합했다. 카드 동기화·번역·승인 알고리즘을 C#으로 중복 구현하지 않고, 기존 `card-review-control`의 서명 메시지를 전용 자식 프로세스 파이프로 호출한다.

@@ -88,7 +88,7 @@ try
     });
     await suite.CheckAsync("bulk hold/reject decisions and Korean reasons persist", async () => {
         var items = review!.Current!.Items;
-        await review.DecideAsync(items, "hold", "합성 카드 전체 보류 🙂", new HashSet<string>()); ProofSuite.True(review.NeedsRefresh);
+        await review.DecideAsync(items, "hold", UserInteraction.AuditReason("hold", bundleId!), new HashSet<string>()); ProofSuite.True(review.NeedsRefresh);
         await review.LoadAsync(bundleId!); ProofSuite.True(review.Current!.Items.All(i => i.Decision == "hold"));
         var reject = review.Current.Items.Where(i => i.CardId == "mock:practice-new").ToArray();
         await review.DecideAsync(reject, "reject", "신규 합성 카드 제외", new HashSet<string>()); await review.LoadAsync(bundleId!);
@@ -122,7 +122,7 @@ try
     });
     await suite.CheckAsync("audit records show Korean decisions without credentials or raw signed requests", async () => {
         var audit = await review!.AuditAsync(0); ProofSuite.True(audit.Rows.Count > 0);
-        ProofSuite.True(audit.Rows.Any(row => row.Reason.Contains("합성 카드 전체 보류", StringComparison.Ordinal)));
+        ProofSuite.True(audit.Rows.Any(row => row.Reason.Contains("카드/번역 보류", StringComparison.Ordinal) && row.Reason.Contains("자동 기록", StringComparison.Ordinal)));
         var files = Directory.GetFiles(Path.Combine(sandbox!.Root, "card-reviews/events"));
         var bytes = string.Join("", files.Select(File.ReadAllText));
         ProofSuite.True(bytes.Contains("영문과 에라타", StringComparison.Ordinal));
@@ -150,6 +150,7 @@ try
         }
     });
     await PhaseTwoProofs.RunAsync(suite, backend!, temporary);
+    PhaseThreeProofs.Run(suite);
 }
 finally
 {
