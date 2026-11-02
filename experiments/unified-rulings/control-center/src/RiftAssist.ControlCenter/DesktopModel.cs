@@ -102,6 +102,7 @@ public static class UserErrors
             "client-ssh-configuration" => "Windows OpenSSH가 실행 옵션을 거절했습니다. 설치된 OpenSSH 버전을 확인하세요.",
             "client-ssh-dns" => "SSH 서버 이름을 찾지 못했습니다. 서버 주소와 DNS를 확인하세요.",
             "client-ssh-refused" => "서버가 SSH 접속을 거절했습니다. 주소·포트와 SSH 서비스 상태를 확인하세요.",
+            "client-ssh-environment" => "Windows의 ProgramData 기본 경로를 확인하지 못했습니다. Windows 계정 환경과 프로그램 실행 정책을 확인하세요.",
             "client-ssh-start" => "Windows ssh.exe를 시작하지 못했습니다. OpenSSH 설치와 회사 PC의 프로그램 실행 정책을 확인하세요.",
             "client-ssh-pipe-failed" => "로컬 ssh.exe의 표준 입출력 처리에 실패했습니다. 서버 연결 실패와 구분되는 로컬 실행 오류입니다.",
             "client-ssh-local-failed" => "로컬 SSH 조회 처리 중 예상하지 못한 오류가 발생했습니다. 서버가 중단됐다는 의미는 아닙니다.",

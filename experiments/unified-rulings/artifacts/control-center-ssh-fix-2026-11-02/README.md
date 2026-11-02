@@ -4,7 +4,7 @@
 
 분석·수동 Windows 시험 방법: [SSH-TROUBLESHOOTING.md](../../control-center/SSH-TROUBLESHOOTING.md).
 
-회사 PC에서 발생한 정확한 실패 단계는 미확정입니다. 재현한 원격 비정상 종료·stdin 조기 종료·로컬 실행 예외의 잘못된 `client-ssh-disconnected` 분류를 수정하고 안전한 진단 항목을 추가했습니다. `sh -s`는 유지하며 필수 도구/자료를 확인하고 optional HTTP/systemd 실패는 경고로 분리합니다. 개인키/원시 stderr를 로그에 기록하지 않습니다.
+Windows CI에서 ProgramData 누락으로 ssh.exe가 접속 전 종료 255/빈 stderr가 되는 결함을 발견했습니다. Windows OpenSSH 초기화 소스의 필수 조건과 일치하며 ProgramData를 필요한 환경에 복원했습니다. 회사 PC에서 동일 수정으로 해결되는지는 사용자 수동 확인이 필요합니다. 재현한 원격 비정상 종료·stdin 조기 종료·로컬 실행 예외의 잘못된 `client-ssh-disconnected` 분류를 수정하고 안전한 진단 항목을 추가했습니다. `sh -s`는 유지하며 필수 도구/자료를 확인하고 optional HTTP/systemd 실패는 경고로 분리합니다. 개인키/원시 stderr를 로그에 기록하지 않습니다.
 
 ## 로컬 검증
 
@@ -18,7 +18,7 @@
 | 수정하지 않은 v0.1.7 호환성 | 11/11 |
 | Windows 대상 WPF 교차 빌드 | 오류·경고 0 |
 
-**총 257/257**, 실패/취소/skip 0. Linux 검증기는 Debian 13이며 Ubuntu 실행 검증은 추가한 Ubuntu 24.04 CI에서 수행합니다. C#의 새 30개 검사는 분류 15 + 실제 프로세스 파이프 6 + Linux 스크립트 3 + 루프백 OpenSSH 6입니다. Windows에서는 Linux 전용 3개를 제외한 98개를 실행합니다. 서로 다른 OS의 검사 수 차이를 숨기지 않습니다.
+**총 257/257**, 실패/취소/skip 0. Linux 검증기는 Debian 13이며 Ubuntu 실행 검증은 추가한 Ubuntu 24.04 CI에서 수행합니다. C#의 새 30개 검사는 분류 15 + 실제 프로세스 파이프 6 + Linux 스크립트 3 + 루프백 OpenSSH 6입니다. Windows에서는 Linux 전용 3개를 제외하고 ProgramData 누락/복원 회귀 1개를 추가한 99개를 실행합니다. 서로 다른 OS의 검사 수 차이를 숨기지 않습니다.
 
 루프백 SSH는 Paramiko 4.0.0과 **매번 임시 생성하는 합성 키/known_hosts**, `127.0.0.1` 임의 포트만 사용합니다. 실제 Azure·운영 키·사용자 기록·실제 HTTP/API는 사용하지 않습니다. mock SSH 서버는 전달받은 명령을 실행하지 않고 `sh -s`와 UTF-8/LF 입력 바이트를 검증한 뒤 합성 응답/오류만 보냅니다. Linux 스크립트 시험은 실제 /proc 및 awk/df를 사용하되 curl/systemctl을 임시 stub으로 대체해 외부 조회를 차단합니다. 임시 fixture 키/서버는 테스트 종료 후 제거합니다.
 

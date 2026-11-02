@@ -106,6 +106,14 @@ public sealed class WindowsOpenSshRunner : ISshRunner
         info.Environment.Clear();
         foreach (var key in new[] { "SystemRoot", "WINDIR", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "TEMP", "TMP" })
             if (Environment.GetEnvironmentVariable(key) is { } value) info.Environment[key] = value;
+        // Win32 OpenSSH init_prog_paths requires ProgramData before stdio initialization.
+        // Omitting it can terminate ssh.exe with 255 and empty stderr, even for -V.
+        if (OperatingSystem.IsWindows()) {
+            var programData = Environment.GetEnvironmentVariable("ProgramData");
+            if (string.IsNullOrWhiteSpace(programData)) programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            if (string.IsNullOrWhiteSpace(programData) || !Path.IsPathFullyQualified(programData)) throw new ControlException("client-ssh-environment");
+            info.Environment["ProgramData"] = programData;
+        }
         // Explicit Windows OpenSSH agent endpoint only, no SSH config, executable search or provider credentials.
         if (Environment.GetEnvironmentVariable("SSH_AUTH_SOCK") is { } agent && agent.StartsWith(@"\\.\pipe\", StringComparison.Ordinal)) info.Environment["SSH_AUTH_SOCK"] = agent;
         foreach (var argument in command.Arguments) info.ArgumentList.Add(argument);

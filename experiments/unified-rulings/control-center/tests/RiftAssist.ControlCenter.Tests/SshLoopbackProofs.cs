@@ -43,26 +43,22 @@ internal static class SshLoopbackProofs
     }
     private static async Task LocalWindowsStartup(ProofSuite suite, string root)
     {
-        await suite.CheckAsync("Windows OpenSSH no-network startup matrix", async () => {
+        await suite.CheckAsync("Windows OpenSSH ProgramData omission reproduces silent startup failure; fixed env starts", async () => {
             var profile = new SshProfile("127.0.0.1", "synthetic_user", 22, "", Path.Combine(root, "known hosts"), "https://example.invalid");
             var exe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "OpenSSH", "ssh.exe");
-            foreach (var variant in new[] { "default", "windows-metadata", "console-flag", "no-stdin" }) {
+            foreach (var omitProgramData in new[] { true, false }) {
                 var info = WindowsOpenSshRunner.StartInfo(exe, SshCommandPolicy.Build(profile)); info.ArgumentList.Clear(); info.ArgumentList.Add("-V");
-                if (variant == "windows-metadata") {
-                    foreach (var key in new[] { "USERNAME", "USERDOMAIN", "USERDNSDOMAIN", "PROGRAMDATA", "ALLUSERSPROFILE", "APPDATA", "LOCALAPPDATA", "SystemDrive", "OS", "PROCESSOR_ARCHITECTURE", "COMSPEC" })
-                        if (Environment.GetEnvironmentVariable(key) is { } value) info.Environment[key] = value;
-                    info.Environment["PATH"] = Environment.GetFolderPath(Environment.SpecialFolder.System) + ";" + Path.GetDirectoryName(exe);
-                }
-                if (variant == "console-flag") info.CreateNoWindow = false;
-                if (variant == "no-stdin") info.RedirectStandardInput = false;
+                ProofSuite.True(info.Environment.ContainsKey("ProgramData"));
+                if (omitProgramData) info.Environment.Remove("ProgramData");
                 using var process = Process.Start(info) ?? throw new InvalidOperationException();
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 try {
                     var output = process.StandardOutput.ReadToEndAsync(timeout.Token); var error = process.StandardError.ReadToEndAsync(timeout.Token);
-                    if (info.RedirectStandardInput) process.StandardInput.Close();
-                    await process.WaitForExitAsync(timeout.Token);
+                    process.StandardInput.Close(); await process.WaitForExitAsync(timeout.Token);
                     var stdout = await output; var stderr = await error;
-                    Console.WriteLine($"WINDOWS_SSH_STARTUP {variant} exit={process.ExitCode} stdoutChars={stdout.Length} stderrChars={stderr.Length} versionSeen={stderr.Contains("OpenSSH", StringComparison.Ordinal)}");
+                    Console.WriteLine($"WINDOWS_SSH_PROGRAMDATA omitted={omitProgramData} exit={process.ExitCode} stdoutChars={stdout.Length} stderrChars={stderr.Length} versionSeen={stderr.Contains("OpenSSH", StringComparison.Ordinal)}");
+                    if (omitProgramData) ProofSuite.True(process.ExitCode != 0);
+                    else { ProofSuite.Equal(process.ExitCode, 0); ProofSuite.True(stderr.Contains("OpenSSH", StringComparison.Ordinal)); }
                 } finally { if (!process.HasExited) process.Kill(entireProcessTree: true); }
             }
         });
