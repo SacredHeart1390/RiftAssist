@@ -26,10 +26,23 @@
 
 총352/352. 합성 제보·모의 AI/Codex 응답·임시 AES 보호 구현으로 projection/비밀 제거·동의 대상/내용·offline 기존 모듈·캐시/암호문·CAS/잠금/손상·실제 합성 Node 전후 테스트·lane분리·실패/취소/단절·재시작 미확정/활동 잠금·복사 작업ID 재사용·JSONL 완료와 검증 구분·게시 차단을 검사합니다. 실제 v017/서비스 회귀도 유지합니다. 모든 SSH는 합성 loopback입니다.
 
-Windows는 기존 OS별 차이와 analysis symlink 대신 실제 analysis DPAPI 재열기/수동 제보 entropy 격리를 실행하므로 C#195개를 예상합니다. native WPF에는 미리보기 승인/거절·비밀 제거·복사·합성 작업 결과/이력·stale revision 거절을 추가했습니다. Linux 교차 빌드를 Windows 실행 통과라고 주장하지 않습니다. Windows CI 결과와 패키지는 성공 확인 후 추가합니다.
+Windows는 기존 OS별 차이와 analysis symlink 대신 실제 analysis DPAPI 재열기/수동 제보 entropy 격리를 실행하므로 C#195개를 예상합니다. native WPF에는 미리보기 승인/거절·비밀 제거·복사·합성 작업 결과/이력·stale revision 거절을 추가했습니다. Linux 교차 빌드를 Windows 실행 통과라고 주장하지 않습니다. 아래 Windows CI에서 실제 실행을 확인했습니다.
 
 ## 보존·후속
 
 main a69dff6 대비 v0.1.7 65파일 불변. 공유 active/manifest/cards/rules/judge·추적 SQLite3개 합계8해시 불변. v0.2.0 Node107개/payload83개·ready=false 유지. 공개 자료/캐시 해시만 비교하며 운영 DB/키·실제 사용자 기록은 접근하지 않았습니다. AGENTS.md 기존 미커밋 변경은 보존/제외합니다.
 
 실제 AI/Codex/유료 API·Azure 접속/제어/설치/배포·main 병합·런타임 자동 GitHub 반영은 없습니다. 개발 코드만 기존 feature 브랜치/PR에 반영합니다. 실제 CLI 프로세스/격리 복제·공식 근거 연결·실제 오류 재현/회귀·외부 응답 검증·수동 클라우드 결과 가져오기·실제 GitHub 게시 어댑터는 후속입니다. 실제 외부 실행·비용·전송과 GitHub 반영/배포는 각각 별도 승인이 필요합니다. 실제 Windows10 기기 확인은 사용자 후속 단계입니다.
+
+## Windows 실행 검증과 새 패키지
+
+헤더 비밀 제거를 보강한 최종 실행 코드 **65b619dd8f7e0fc7c08494975700222bd2262b84**의 [Control Center CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257)와 [규칙 회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048209)가 성공했습니다.
+
+- Windows Server2025 C# 소스/추출 패키지 각각 **195/195**, Ubuntu24.04 **196/196** 통과.
+- native WPF: 분석 미리보기 승인/거절·비밀 제거·승인 후 모의 클립보드 복사·수정/테스트 상태·분석/수정 DPAPI 이력 재열기·stale revision 차단을 확인했습니다. 기존 자동 SSH/DPAPI/제보/카드·수동 제보 검사를 유지하며 **binding 오류0**입니다. 실제 사용자 클립보드는 사용하지 않았습니다.
+- 모의 수정의 실제 Node 재현/회귀 전후 실행은 C# 소스/패키지 검사에 포함합니다. 실제 RiftAssist 코드/오류를 수정하거나 프로덕션 회귀를 실행한 결과가 아닙니다.
+- ZIP 루트 EXE·runtime/backend·아이콘, 추출 EXE 직접 실행·정상 종료를 확인했습니다. 설정 없는 기본 시작은 자동 자식0개이며 자동 SSH는 별도 모의 WPF 시험입니다. EXE는 NotSigned·asInvoker/uiAccess=false입니다.
+
+**[새 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257/artifacts/13126617448)** — `RiftAssist-ControlCenter-v0.2.0-win-x64.zip`, 101,710,558바이트(약102MB), GitHub 권한 필요. 전체를 새 폴더에 풀어 최상위 EXE를 실행하고 기존 LocalAppData 설정/수동 제보 저장소는 유지하세요. SHA256 `4e667ead22593910d523ebcc2e7cae08299c4057ed3d80f594bd392bfb94a59b`, 만료 UTC2027-01-31.
+
+[windows-ci.json](windows-ci.json)에 검사·패키지와 미구현 경계를 보존했습니다. 이후 문서/증거 커밋은 실행 코드를 변경하지 않습니다. 실제 Windows10 기기/운영 읽기는 사용자 후속 검증이며 실제 외부 AI/Codex·GitHub 게시/배포 활성화는 별도 구현·승인 단계입니다. 문서는 Markdown 원본으로 보존하며 클라우드에서 사용자 바탕화면에 직접 저장하지 않았습니다.
