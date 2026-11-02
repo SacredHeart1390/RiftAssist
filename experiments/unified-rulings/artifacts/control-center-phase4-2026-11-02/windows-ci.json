@@ -1,0 +1,87 @@
+{
+  "sourceCommit": "af08e1c1716a3b771e404c1ce429f0a633823fe5",
+  "workflow": {
+    "runId": 41381921364,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364",
+    "conclusion": "success",
+    "windowsJob": 125074374100,
+    "ubuntuJob": 125074373765
+  },
+  "regressionWorkflow": {
+    "runId": 41381921478,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921478",
+    "conclusion": "success"
+  },
+  "windows": {
+    "runner": "Windows Server 2025",
+    "sourceProofs": {
+      "passed": 118,
+      "failed": 0
+    },
+    "extractedPackageProofs": {
+      "passed": 118,
+      "failed": 0
+    },
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "layout": {
+      "archiveName": "RiftAssist-ControlCenter-v0.2.0-win-x64.zip",
+      "rootExecutable": true,
+      "nestedExecutable": false,
+      "runtimeAndBackendPresent": true,
+      "nativeChecksUseExtractedArchive": true,
+      "uploadUsesOnlyExtractedPackageDirectory": true,
+      "validationReportsUploadedSeparately": true
+    },
+    "nativePackage": {
+      "started": true,
+      "closedCleanly": true,
+      "automaticChildProcesses": 0,
+      "explorerIconResource": true,
+      "windowAndTaskbarIconHandles": true,
+      "realAzureConnections": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "Ubuntu 24.04",
+    "passed": 120,
+    "failed": 0,
+    "loopbackSyntheticSshOnly": true
+  },
+  "package": {
+    "id": 13113727371,
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64",
+    "bytes": 101612502,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364/artifacts/13113727371",
+    "digest": "sha256:a25d9a952618aaf93f620ae1f8e21e3ac8332606838677e0b55fe69b1d3018e6",
+    "expiresAt": "2027-01-31T03:13:43Z"
+  },
+  "validationArtifact": {
+    "id": 13114170489,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364/artifacts/13114170489"
+  },
+  "windows10RealDeviceTestedByDeveloper": false,
+  "productionAdminAccessed": false,
+  "realAzureConnected": false,
+  "paidApiCalls": 0,
+  "limits": [
+    "New read-only admin integration tested with synthetic data only; existing phase-three Azure status success was reported by the user.",
+    "Existing administrator credential has full server authority; read-only routes are enforced by this client, not a dedicated server role.",
+    "No new remote program, manager startup, SSH configuration change or live deployment performed."
+  ]
+}

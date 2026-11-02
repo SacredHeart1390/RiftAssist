@@ -36,4 +36,13 @@ Windows 10 회사 PC의 새 패키지/Explorer·작업표시줄 캐시/DPI 및 �
 
 ## Windows 패키지
 
-Windows CI 완료 후 실행 코드 SHA, 실제 native·아이콘·추출 ZIP 검사 결과와 다운로드 링크를 이 문서와 windows-ci.json에 기록합니다. 현재 로컬 교차 빌드만으로 Windows 실행 성공을 주장하지 않습니다.
+실행 코드 **af08e1c1716a3b771e404c1ce429f0a633823fe5**의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364)와 [회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921478)가 모두 성공했습니다.
+
+- Windows Server 2025 소스/추출 패키지 C# 각각 **118/118**. 기존 검토/관리 기능과 새 관리자 인증·SSH -W·실패 경로 포함.
+- native WPF 7개 탭·관리자 조회/한글 제보·만료 정리·쓰기 차단·ICO 프레임/창 아이콘: **binding 오류0**.
+- ZIP 루트 EXE·중첩 EXE 없음·runtime/backend 존재를 검사하고 새 폴더에 푼 패키지에서 검사했습니다. EXE의 shell 아이콘 리소스, WM_GETICON 큰/작은 창·작업표시줄 아이콘 핸들, 실제 EXE 시작/정상 종료·자동 자식 **0개**를 확인했습니다.
+- Ubuntu 24.04 **120/120**. 기존 v0.1.7 HTTP 라우터는 합성 모듈과 격리 루프백에 연결해 인증/조회만 검사하며 실제 수집기를 실행하지 않습니다.
+
+**[새 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364/artifacts/13113727371)** — RiftAssist-ControlCenter-v0.2.0-win-x64.zip, 약102MB, GitHub 저장소 접근 권한 필요. 전체 파일을 풀면 최상위에 RiftAssist.ControlCenter.exe가 있습니다. SHA256 a25d9a952618aaf93f620ae1f8e21e3ac8332606838677e0b55fe69b1d3018e6, artifact 만료 UTC 2027-01-31. 검증 보고서는 별도 [validation artifact](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41381921364/artifacts/13114170489)입니다.
+
+[windows-ci.json](windows-ci.json)에 기계 판독 집계를 기록했습니다. 패키지 원본은 위 실행 코드 SHA이며 이후 증거/문서만 추가한 커밋과 실행 코드는 동일합니다. Windows 10 실제 기기/Explorer·작업표시줄 캐시·DPI와 실제 운영 관리자 API 조회는 개발자가 시험하지 않았습니다. 사용자의 3차 실제 Azure 상태 조회 성공과 이번 4차 합성 검증을 구분합니다.
