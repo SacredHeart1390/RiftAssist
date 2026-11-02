@@ -27,6 +27,7 @@ PREFIXES = (
     'experiments/unified-rulings/artifacts/control-center-phase2-2026-10-29/',
     'experiments/unified-rulings/artifacts/control-center-phase3-2026-10-31/',
     'experiments/unified-rulings/artifacts/control-center-ssh-fix-2026-11-02/',
+    'experiments/unified-rulings/artifacts/control-center-phase4-2026-11-02/',
 )
 EXACT = {'.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
 PATTERNS = {
@@ -74,6 +75,9 @@ def main():
             if not data.startswith(b'\x89PNG\r\n\x1a\n'):
                 findings.append({'path': name, 'rule': 'unexpected-binary'})
             png += 1
+        elif name == 'experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/Assets/RiftAssist.ico':
+            if not data.startswith(b'\x00\x00\x01\x00'):
+                findings.append({'path': name, 'rule': 'unexpected-icon'})
         else:
             try:
                 data.decode('utf-8')

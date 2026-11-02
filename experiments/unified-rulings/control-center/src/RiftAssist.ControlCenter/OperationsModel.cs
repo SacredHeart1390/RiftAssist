@@ -27,6 +27,14 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     private readonly SshProfileStore settings;
     private readonly RemoteMonitor monitor;
     private DevelopmentOperations? operations;
+    private IRemoteAdminReader? remoteAdmin;
+    private readonly Func<SshProfile, IRemoteAdminReader> adminFactory;
+    private string adminState = "운영 관리자 미연결", adminSummary = "운영 관리자 상태 미조회";
+    public string AdminState { get => adminState; private set { adminState = value; Changed(); } }
+    public string AdminSummary { get => adminSummary; private set { adminSummary = value; Changed(); } }
+    public bool CanReadAdmin => AzureMode && !Busy && remoteAdmin?.Authenticated == true;
+    public bool LimitsReadOnly => !CanControl;
+
     private OwnedSandbox? sandbox;
     private JsonElement status;
     private CancellationTokenSource? query;
@@ -49,7 +57,7 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public string TargetLabel => AzureMode ? "Azure · 상태 조회" : "합성 개발 환경";
     public bool CanControl => !Busy && !AzureMode && operations?.Connected == true;
     public bool CanPrepareDevelopment => !Busy && !AzureMode;
-    public bool Busy { get => busy; set { busy = value; Changed(); Changed(nameof(CanControl)); Changed(nameof(CanPrepareDevelopment)); } }
+    public bool Busy { get => busy; set { busy = value; Changed(); Changed(nameof(CanControl)); Changed(nameof(CanPrepareDevelopment)); Changed(nameof(CanReadAdmin)); Changed(nameof(LimitsReadOnly)); } }
     public bool AiEnabled => status.Field("stats").Field("aiEnabled").ValueKind == JsonValueKind.True;
     public string State { get => state; set { state = value; Changed(); } }
     public string Dashboard { get => dashboard; private set { dashboard = value; Changed(); } }
@@ -66,8 +74,9 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public string HttpsOrigin { get => profile.HttpsOrigin; set => SetProfile(profile with { HttpsOrigin = value }); }
     public event PropertyChangedEventHandler? PropertyChanged;
     private void Changed([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new(name));
-    public OperationsModel(ISshRunner? runner = null, SshProfileStore? settingsStore = null)
+    public OperationsModel(ISshRunner? runner = null, SshProfileStore? settingsStore = null, Func<SshProfile, IRemoteAdminReader>? remoteAdminFactory = null)
     {
+        adminFactory = remoteAdminFactory ?? (p => new RemoteAdminReader(new SshAdminStreamConnector(p)));
         settings = settingsStore ?? SshProfileStore.Local(); monitor = new(runner ?? new WindowsOpenSshRunner()); profile = new SshProfile();
         ResetMetrics();
         try { LoadSettings(); ReloadEnvironments(); }
@@ -134,7 +143,63 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         await RefreshLogsAsync(); State = "합성 개발 관리자 상태 갱신 완료 · 운영 미연결";
     }
     public async Task SelectReportAsync(OperationsReport report)
-    { if (operations is not null && !AzureMode) ReportDetail = (await operations.ReadAsync("report", new { id = report.Id })).Pretty(); }
+    {
+        if (AzureMode) {
+            var session = remoteAdmin ?? throw new ControlException("client-admin-authentication");
+            ReportDetail = "운영 제보 조회 중…";
+            try {
+                var detail = await session.ReadAsync("/api/reports/" + report.Id);
+                if (session != remoteAdmin || !AzureMode) throw new ControlException("client-admin-disconnected");
+                ReportDetail = RemoteAdminData.Detail(detail, report.Id);
+            } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
+        } else if (operations is not null) ReportDetail = (await operations.ReadAsync("report", new { id = report.Id })).Pretty();
+    }
+    public async Task ConnectAdminAsync(string key)
+    {
+        if (!AzureMode) throw new ControlException("client-production-control-blocked");
+        profile.Validate(); DropAdmin(); var session = adminFactory(profile); remoteAdmin = session;
+        try {
+            await session.LoginAsync(key);
+            if (session != remoteAdmin || !AzureMode) throw new ControlException("client-admin-disconnected");
+            await RefreshAdminAsync(); AdminState = "운영 관리자 인증됨 · 읽기 전용";
+            Changed(nameof(CanReadAdmin)); Log("admin-login", "기존 인증 완료 · 읽기 전용");
+        } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
+    }
+    public async Task RefreshAdminAsync()
+    {
+        var session = remoteAdmin ?? throw new ControlException("client-admin-authentication");
+        try {
+            var value = await session.ReadAsync("/api/status"); var view = RemoteAdminData.Status(value);
+            if (session != remoteAdmin || !AzureMode) throw new ControlException("client-admin-disconnected");
+            AdminSummary = view.Summary; Ai = view.Ai; Limits.Clear(); foreach (var pair in view.Limits) Limits.Add(new(pair.Key, pair.Value));
+            AdminState = "운영 관리자 조회 완료 · 읽기 전용"; Log("admin-status", "상태/사용량 조회 완료");
+        } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
+    }
+    public async Task ReadAdminReportsAsync()
+    {
+        var session = remoteAdmin ?? throw new ControlException("client-admin-authentication");
+        Reports.Clear(); ReportDetail = "운영 제보를 선택하세요. 화면에서만 조회하며 파일로 내보내지 않습니다.";
+        try {
+            var rows = RemoteAdminData.Reports(await session.ReadAsync("/api/reports"));
+            if (session != remoteAdmin || !AzureMode) throw new ControlException("client-admin-disconnected");
+            foreach (var row in rows) Reports.Add(row);
+            AdminState = $"운영 제보 {rows.Count}개 조회 (기존 API 최대 200개)"; Log("admin-reports", "목록 조회 완료");
+        } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
+    }
+    public void ExpireAdminIfNeeded()
+    {
+        if (remoteAdmin is not null && !remoteAdmin.Authenticated) { DropAdmin(); AdminState = "운영 관리자 세션 만료 · 다시 인증하세요."; }
+    }
+    private void AdminFailure(Exception error) { DropAdmin(); AdminState = UserErrors.Explain(error); Log("admin-read", error is ControlException c ? c.Code : "client-admin-disconnected"); }
+    private void DropAdmin()
+    {
+        var previous = remoteAdmin; remoteAdmin = null;
+        if (previous is not null) _ = DisposeAdminAsync(previous);
+        if (AzureMode) { Reports.Clear(); Limits.Clear(); ReportDetail = "운영 제보 미조회"; Ai = "운영 AI 집계 미조회"; }
+        AdminState = "운영 관리자 미연결"; AdminSummary = "운영 관리자 상태 미조회"; Changed(nameof(CanReadAdmin));
+    }
+    private static async Task DisposeAdminAsync(IRemoteAdminReader session) { try { await session.DisposeAsync(); } catch { } }
+
     public async Task ChangeAsync(string method, object parameters, string reason, bool confirmed)
     {
         if (AzureMode) SshCommandPolicy.DenyOperationalMutation();
@@ -163,14 +228,14 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         finally { query.Dispose(); query = null; }
     }
     public void CancelQuery() => query?.Cancel();
-    public void InvalidateRemote() { monitor.Reset(); if (AzureMode) { ResetMetrics(); Dashboard = "설정이 변경되었습니다. 다시 조회해 주세요."; State = "미조회"; } }
+    public void InvalidateRemote() { DropAdmin(); monitor.Reset(); if (AzureMode) { ResetMetrics(); Dashboard = "설정이 변경되었습니다. 다시 조회해 주세요."; State = "미조회"; } }
     public async Task RefreshLogsAsync()
     { if (operations is null || AzureMode) return; Events.Clear(); foreach (var e in (await operations.ReadAsync("logs")).Field("events").Rows()) Events.Add(OperationEvent.Read(e)); }
     public void Log(string action, string outcome)
     { LocalEvents.Insert(0, $"{DateTime.Now:HH:mm:ss} · {action} · {outcome}"); while (LocalEvents.Count > 100) LocalEvents.RemoveAt(LocalEvents.Count - 1); }
     public async Task DisconnectAsync()
     {
-        CancelQuery(); if (operations is not null) await operations.DisposeAsync(); operations = null; sandbox = null;
+        CancelQuery(); DropAdmin(); if (operations is not null) await operations.DisposeAsync(); operations = null; sandbox = null;
         Reports.Clear(); Limits.Clear(); AppReleases.Clear(); KnowledgeReleases.Clear(); Events.Clear(); Ai = "실제 AI 운영 미연결";
         ReportDetail = "실제 사용자 자료 미연결"; Changed(nameof(CanControl)); Changed(nameof(LocalRoot)); State = "연결 해제 · 개발 자료 보존";
         LastResult = "연결 해제 · 이전 작업은 개발 감사 기록에서 확인하세요.";

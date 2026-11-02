@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using RiftAssist.ControlCenter.Core;
 
@@ -11,22 +12,29 @@ namespace RiftAssist.ControlCenter;
 public partial class OperationsView : UserControl, IAsyncDisposable
 {
     public OperationsModel Model { get; }
+    private readonly DispatcherTimer expiryTimer = new() { Interval = TimeSpan.FromSeconds(30) };
     public OperationsView() : this(new OperationsModel()) { }
-    public OperationsView(OperationsModel model) { Model = model; InitializeComponent(); DataContext = Model; }
+    public OperationsView(OperationsModel model) {
+        Model = model; InitializeComponent(); DataContext = Model;
+        expiryTimer.Tick += (_, _) => Model.ExpireAdminIfNeeded();
+        Loaded += (_, _) => { Model.ExpireAdminIfNeeded(); expiryTimer.Start(); };
+        Unloaded += (_, _) => expiryTimer.Stop();
+        Model.PropertyChanged += (_, e) => { if (e.PropertyName is nameof(Model.Host) or nameof(Model.User) or nameof(Model.Port) or nameof(Model.IdentityFile) or nameof(Model.KnownHostsFile) or nameof(Model.HttpsOrigin) or nameof(Model.AzureMode)) AdminKeyInput.Clear(); };
+    }
     private async Task Run(string name, Func<Task> work, bool ssh = false)
     {
         if (Model.Busy) return; Model.Busy = true; OpsBody.IsEnabled = false; ModeCombo.IsEnabled = false; CancelQueryButton.IsEnabled = ssh;
         try { await work(); }
-        catch (Exception error) { Model.Log(name, error is ControlException c ? c.Code : "client-local-failed"); if (!ssh) MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), name, MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception error) { Model.Log(name, error is ControlException c ? c.Code : "client-local-failed"); if (Model.AzureMode) Model.State = UserErrors.Explain(error); else if (!ssh) MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), name, MessageBoxButton.OK, MessageBoxImage.Warning); }
         finally { Model.Busy = false; OpsBody.IsEnabled = true; ModeCombo.IsEnabled = true; CancelQueryButton.IsEnabled = false; }
     }
     private async void Mode_Changed(object sender, SelectionChangedEventArgs e)
-    { if (IsInitialized && !Model.Busy) { await Run("대상 변경", () => Model.SetModeAsync(ModeCombo.SelectedIndex == 1)); } }
+    { if (IsInitialized && !Model.Busy) { AdminKeyInput?.Clear(); await Run("대상 변경", () => Model.SetModeAsync(ModeCombo.SelectedIndex == 1)); } }
     private async void New_Click(object sender, RoutedEventArgs e) => await Run("합성 개발 관리자 준비", () => Model.ConnectMockAsync(null));
     private async void Connect_Click(object sender, RoutedEventArgs e)
     { if (EnvironmentCombo.SelectedItem is OwnedSandbox sandbox) await Run("개발 관리자 연결", () => Model.ConnectMockAsync(sandbox)); }
     private void List_Click(object sender, RoutedEventArgs e) { try { Model.ReloadEnvironments(); } catch (Exception error) { MessageBox.Show(UserErrors.Explain(error)); } }
-    private async void Disconnect_Click(object sender, RoutedEventArgs e) => await Run("연결 해제", Model.DisconnectAsync);
+    private async void Disconnect_Click(object sender, RoutedEventArgs e) { AdminKeyInput.Clear(); await Run("연결 해제", Model.DisconnectAsync); }
     private async void Refresh_Click(object sender, RoutedEventArgs e) => await Run("개발 상태 갱신", Model.RefreshMockAsync);
     private void Cancel_Click(object sender, RoutedEventArgs e) => Model.CancelQuery();
     private async void Query_Click(object sender, RoutedEventArgs e)
@@ -71,8 +79,16 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     private async void Discover_Click(object sender, RoutedEventArgs e) => await Change("knowledge-discover", new { }, "기존 재수집 API 차단 확인 (v0.2.0 정책상 거절 · 수집 접수로 표시하지 않음)");
     private async void Knowledge_Click(object sender, RoutedEventArgs e)
     { if (KnowledgeCombo.SelectedItem is string id) await Change("knowledge-activate", new { releaseId = id, expectedId = Model.ActiveKnowledgeId, reviewed = true }, "개발 knowledge 버전 적용 (기존 카드 승인 경계 유지)", "개발 자료 활성화"); }
+    private async void AdminConnect_Click(object sender, RoutedEventArgs e)
+    {
+        if (!ValidateSettingsInputs()) { AdminKeyInput.Clear(); OperationsTabs.SelectedIndex = 6; return; }
+        var key = AdminKeyInput.Password; AdminKeyInput.Clear();
+        await Run("운영 관리자 인증", async () => { try { await Model.ConnectAdminAsync(key); } finally { key = ""; } });
+    }
+    private async void AdminRefresh_Click(object sender, RoutedEventArgs e) => await Run("운영 상태 조회", Model.RefreshAdminAsync);
+    private async void AdminReports_Click(object sender, RoutedEventArgs e) => await Run("운영 제보 목록", Model.ReadAdminReportsAsync);
     private async void Report_Changed(object sender, SelectionChangedEventArgs e)
-    { if (!Model.Busy && ReportsGrid.SelectedItem is OperationsReport report) await Run("합성 제보 상세", async () => { await Model.SelectReportAsync(report); ReportState.SelectedItem = report.Status; }); }
+    { if (!Model.Busy && ReportsGrid.SelectedItem is OperationsReport report) await Run("제보 상세", async () => { await Model.SelectReportAsync(report); ReportState.SelectedItem = report.Status; }); }
     private void ReportFilter_Changed(object sender, TextChangedEventArgs e)
     {
         if (ReportFilter is null) return; var filter = ReportFilter.Text;
@@ -115,5 +131,5 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     }
     private void ReloadSettings_Click(object sender, RoutedEventArgs e)
     { try { Model.LoadSettings(); } catch (Exception error) { Model.SettingsFeedback = UserErrors.Explain(error); } }
-    public async ValueTask DisposeAsync() => await Model.DisposeAsync();
+    public async ValueTask DisposeAsync() { expiryTimer.Stop(); AdminKeyInput.Clear(); await Model.DisposeAsync(); }
 }

@@ -86,6 +86,16 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-admin-authentication" => "운영 관리자 인증이 필요하거나 실패했습니다. 기존 관리자 키와 세션 만료를 확인하세요. 키는 저장하지 않습니다.",
+            "client-admin-forward-denied" => "SSH 서버가 loopback 관리자 연결을 허용하지 않습니다. 서버 설정을 임의로 바꾸지 말고 별도 승인을 받으세요.",
+            "client-admin-forward-failed" => "SSH의 관리자 연결에 실패했습니다. 서버의 forwarding 허용 여부와 loopback 3100 상태를 별도로 확인하세요. 설정을 자동 변경하지 않습니다.",
+            "client-admin-unavailable" => "서버의 loopback 3100 관리자에 연결하지 못했습니다. 기존 관리자 실행 여부를 별도로 확인해야 합니다.",
+            "client-admin-http" => "운영 관리자 API가 조회를 완료하지 못했습니다. 서버 오류 원문은 보호합니다.",
+            "client-admin-not-found" => "운영 관리자 API 또는 선택한 제보를 찾지 못했습니다. 보관 기간과 실제 API 구성을 확인하세요.",
+            "client-admin-response" => "운영 관리자 응답 형식이나 크기를 검증하지 못했습니다. 화면의 민감 자료를 지웠습니다.",
+            "client-admin-timeout" => "운영 관리자 응답 시간이 초과됐습니다. 자동 재시도하지 않으며 다시 인증해야 합니다.",
+            "client-admin-cancelled" => "운영 관리자 조회를 취소했습니다.",
+            "client-admin-disconnected" => "운영 관리자 연결이 끊겼습니다. 화면의 자료와 인증 세션을 지웠습니다. SSH와 기존 관리자 상태를 확인하세요.",
             "client-ssh-profile" => "SSH 주소·사용자·포트·known_hosts·HTTPS origin과 경로 형식을 확인하세요. 키 내용은 입력하지 마세요.",
             "client-ssh-approval-required" => "실제 접속은 별도 승인 후 수동으로만 실행할 수 있습니다.",
             "client-ssh-missing" or "client-ssh-windows-only" => "Windows OpenSSH Client가 필요합니다. Windows 선택적 기능에서 설치 상태를 확인하세요.",

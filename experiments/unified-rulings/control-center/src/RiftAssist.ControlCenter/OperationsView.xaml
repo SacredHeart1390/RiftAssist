@@ -7,7 +7,7 @@
   <StackPanel DockPanel.Dock="Top">
    <WrapPanel><TextBlock Text="대상" VerticalAlignment="Center" Margin="4"/><ComboBox x:Name="ModeCombo" Width="230" SelectedIndex="0" SelectionChanged="Mode_Changed"><ComboBoxItem Content="합성 개발 관리자"/><ComboBoxItem Content="Azure · SSH 읽기 전용"/></ComboBox><TextBlock Text="{Binding TargetLabel}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="8"/></WrapPanel>
    <TextBlock Text="{Binding State}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="4"/>
-   <WrapPanel><Button x:Name="CancelQueryButton" Content="진행 중 SSH 조회 취소" IsEnabled="False" Click="Cancel_Click"/><TextBlock Text="Azure는 상태 조회만 지원합니다." VerticalAlignment="Center" Foreground="#8B3F18"/></WrapPanel>
+   <WrapPanel><Button x:Name="CancelQueryButton" Content="진행 중 SSH 조회 취소" IsEnabled="False" Click="Cancel_Click"/><TextBlock Text="Azure는 읽기 전용입니다." VerticalAlignment="Center" Foreground="#8B3F18"/></WrapPanel>
   </StackPanel>
   <Grid x:Name="OpsBody"><TabControl x:Name="OperationsTabs">
    <TabItem Header="대시보드"><ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="12">
@@ -18,6 +18,11 @@
     </StackPanel>
     <StackPanel Style="{StaticResource AzureOnly}">
      <WrapPanel><Button x:Name="QuerySshButton" Content="서버 상태 조회" IsEnabled="{Binding AzureMode}" Click="Query_Click"/><Button Content="연결 설정" Click="OpenSettings_Click"/></WrapPanel>
+     <Separator Margin="0,10"/><TextBlock Text="운영 관리자 · 읽기 전용" FontWeight="SemiBold"/>
+     <TextBlock Text="승인받은 기존 관리자 키로 연결합니다. 키는 저장하지 않으며 제보 내용은 화면에서만 조회합니다." TextWrapping="Wrap"/>
+     <WrapPanel><PasswordBox x:Name="AdminKeyInput" Width="270" MaxLength="1024" ToolTip="기존 관리자 키 · 메모리에서만 사용"/><Button x:Name="ConnectAdminButton" Content="관리자 읽기 연결" Click="AdminConnect_Click"/><Button x:Name="RefreshAdminButton" Content="운영 상태·AI 사용량 조회" IsEnabled="{Binding CanReadAdmin}" Click="AdminRefresh_Click"/></WrapPanel>
+     <TextBlock x:Name="AdminStateText" Text="{Binding AdminState}" TextWrapping="Wrap" Margin="4"/><TextBlock x:Name="AdminSummaryText" Text="{Binding AdminSummary}" TextWrapping="Wrap" Margin="4"/>
+
     </StackPanel>
     <DockPanel Margin="4,10"><Button DockPanel.Dock="Right" Content="연결 해제" Click="Disconnect_Click"/><StackPanel><TextBlock x:Name="ConnectionText" Text="{Binding ConnectionStatus}" FontWeight="SemiBold" FontSize="18"/><TextBlock Text="{Binding SnapshotInfo}" TextWrapping="Wrap" Margin="0,5,0,0"/></StackPanel></DockPanel>
     <ItemsControl x:Name="MetricCards" ItemsSource="{Binding Metrics}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
@@ -43,11 +48,11 @@
    <TabItem Header="AI 운영"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
     <TextBox Text="{Binding Ai, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MinHeight="110"/>
     <Button Grid.Row="1" Content="개발 AI 허용/중지 전환…" HorizontalAlignment="Left" IsEnabled="{Binding CanControl}" Click="Ai_Click"/>
-    <DataGrid Grid.Row="2" x:Name="LimitsGrid" ItemsSource="{Binding Limits}" IsEnabled="{Binding CanControl}"><DataGrid.Columns><DataGridTextColumn Header="호출 한도 (합성 개발 환경)" Binding="{Binding Label}" IsReadOnly="True" Width="*"/><DataGridTextColumn Header="값" Binding="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" Width="130"/></DataGrid.Columns></DataGrid>
+    <DataGrid Grid.Row="2" x:Name="LimitsGrid" ItemsSource="{Binding Limits}" IsReadOnly="{Binding LimitsReadOnly}"><DataGrid.Columns><DataGridTextColumn Header="호출 한도" Binding="{Binding Label}" IsReadOnly="True" Width="*"/><DataGridTextColumn Header="값" Binding="{Binding Value, ValidatesOnExceptions=True, UpdateSourceTrigger=LostFocus}" Width="130"/></DataGrid.Columns></DataGrid>
     <Button Grid.Row="3" Content="개발 한도 저장…" HorizontalAlignment="Left" IsEnabled="{Binding CanControl}" Click="Limits_Click"/>
    </Grid></TabItem>
    <TabItem Header="질문·오류 제보"><Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="150"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-    <DockPanel><TextBox x:Name="ReportFilter" DockPanel.Dock="Right" Width="220" TextChanged="ReportFilter_Changed" ToolTip="ID/분류/상태 검색"/><TextBlock Text="개발 제보와 연결된 질문·답변" TextWrapping="Wrap"/></DockPanel>
+    <DockPanel><TextBox x:Name="ReportFilter" DockPanel.Dock="Right" Width="220" TextChanged="ReportFilter_Changed" ToolTip="ID/분류/상태 검색"/><StackPanel><TextBlock Text="제보와 연결된 질문·답변 · Azure에서는 읽기 전용" TextWrapping="Wrap"/><Button x:Name="ReadAdminReportsButton" Content="운영 제보 목록 조회 (최대 200개)" HorizontalAlignment="Left" IsEnabled="{Binding CanReadAdmin}" Click="AdminReports_Click"/></StackPanel></DockPanel>
     <DataGrid x:Name="ReportsGrid" Grid.Row="1" ItemsSource="{Binding Reports}" IsReadOnly="True" SelectionChanged="Report_Changed"><DataGrid.Columns><DataGridTextColumn Header="제보 ID" Binding="{Binding Id}" Width="*"/><DataGridTextColumn Header="분류" Binding="{Binding Category}" Width="90"/><DataGridTextColumn Header="상태" Binding="{Binding Status}" Width="110"/><DataGridTextColumn Header="접수 시각" Binding="{Binding Created}" Width="160"/></DataGrid.Columns></DataGrid>
     <TextBox x:Name="ReportDetailText" Grid.Row="2" Text="{Binding ReportDetail, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
     <WrapPanel Grid.Row="3" IsEnabled="{Binding CanControl}"><ComboBox x:Name="ReportState" ItemsSource="{Binding ReportStates}" SelectedIndex="0" Width="125"/><TextBox x:Name="ReportNote" Width="280" MaxLength="3000" ToolTip="개발 처리 메모 · 개인정보/키 입력 금지"/><Button Content="개발 제보 처리 저장…" Click="ReportUpdate_Click"/><Button Content="합성 제보 JSON 내보내기" Click="Export_Click"/></WrapPanel>
@@ -69,7 +74,7 @@
     <TextBlock Text="웹사이트 HTTPS 주소" Margin="0,8,0,0"/><TextBox x:Name="OriginInput" MaxLength="2048" Text="{Binding HttpsOrigin, UpdateSourceTrigger=PropertyChanged}" ToolTip="예: https://example.invalid (경로 없이 입력)"/>
     <WrapPanel Margin="0,12"><Button x:Name="SaveSshSettings" Content="설정 저장" Click="SaveSettings_Click"/><Button Content="저장된 설정 불러오기" Click="ReloadSettings_Click"/></WrapPanel>
     <TextBlock x:Name="SettingsMessage" Text="{Binding SettingsFeedback}" TextWrapping="Wrap" Margin="4"/>
-    <Expander Header="연결 도움말" Margin="4,14"><TextBlock Text="Windows OpenSSH Client와 기존 키/agent를 준비하세요. 호스트 키는 사전에 확인한 known_hosts로 검증하며 미등록·변경 키는 거절합니다. HTTPS /api/health와 앱 기본 3001을 조회합니다. 설정 저장은 연결을 시작하지 않습니다. 관리자 데이터와 운영 변경은 지원하지 않습니다." TextWrapping="Wrap"/></Expander>
+    <Expander Header="연결 도움말" Margin="4,14"><TextBlock Text="Windows OpenSSH Client와 기존 키/agent를 준비하세요. 호스트 키는 사전에 확인한 known_hosts로 검증하며 미등록·변경 키는 거절합니다. HTTPS /api/health와 앱 기본 3001을 조회합니다. 설정 저장은 연결을 시작하지 않습니다. 별도 관리자 읽기 연결은 SSH 표준입출력으로 원격 loopback 3100의 기존 로그인/API를 사용합니다. 운영 변경은 차단합니다." TextWrapping="Wrap"/></Expander>
    </StackPanel></ScrollViewer></TabItem>
   </TabControl></Grid>
  </DockPanel>

@@ -12,6 +12,7 @@ import socket
 import subprocess
 import sys
 import threading
+import selectors
 import time
 import paramiko
 
@@ -47,6 +48,11 @@ class MockServer(paramiko.ServerInterface):
         return 'publickey'
     def check_channel_request(self, kind, channel_id):
         return paramiko.OPEN_SUCCEEDED if kind == 'session' else paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
+    def check_channel_direct_tcpip_request(self, channel_id, origin, destination):
+        if mode == 'admin-proxy' and destination == ('127.0.0.1', 3100):
+            self.ready.set()
+            return paramiko.OPEN_SUCCEEDED
+        return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
     def check_channel_exec_request(self, channel, command):
         self.command = command
         self.ready.set()
@@ -61,6 +67,26 @@ try:
     transport.start_server(server=server)
     channel = transport.accept(15)
     if channel is not None and server.ready.wait(10):
+        if mode == 'admin-proxy':
+            # Only the local synthetic Node server supplied by the test runner; never production.
+            upstream = socket.create_connection(('127.0.0.1', int(sys.argv[3])), timeout=10)
+            selector = selectors.DefaultSelector()
+            selector.register(channel, selectors.EVENT_READ, upstream)
+            selector.register(upstream, selectors.EVENT_READ, channel)
+            active = True
+            while active:
+                for entry, _ in selector.select(15):
+                    data = entry.fileobj.recv(8192)
+                    if not data:
+                        active = False
+                        break
+                    entry.data.sendall(data)
+            upstream.close()
+            selector.close()
+            channel.close()
+            transport.close()
+            time.sleep(30)
+            sys.exit(0)
         channel.settimeout(10)
         chunks = []
         while True:

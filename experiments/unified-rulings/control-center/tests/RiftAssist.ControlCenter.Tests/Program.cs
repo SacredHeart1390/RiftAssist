@@ -152,6 +152,7 @@ try
     await PhaseTwoProofs.RunAsync(suite, backend!, temporary);
     PhaseThreeProofs.Run(suite);
     await SshRegressionProofs.RunAsync(suite, node, temporary);
+    await PhaseFourProofs.RunAsync(suite, node, temporary);
 }
 finally
 {

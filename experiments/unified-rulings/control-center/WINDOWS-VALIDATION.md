@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+4차 검증 기록은 [최신 보고서](../artifacts/control-center-phase4-2026-11-02/README.md)를 따릅니다. 패키지 루트 EXE·ICO/창 아이콘·추출본 실행과 기존 관리자 인증의 합성 검사를 추가했습니다. 아래는 이전 결과 이력입니다.
+
 2026-11-02 SSH 수정의 최신 검증: [보고서](../artifacts/control-center-ssh-fix-2026-11-02/README.md), [수동 시험/오류 분류](SSH-TROUBLESHOOTING.md). 실행 코드 d159f92의 Windows/Ubuntu CI 성공: Windows 소스/패키지 C# 각 101/101, Ubuntu 103/103, native WPF binding 오류0, 패키지 exe 시작/정상 종료/자동 자식0. [새 Windows 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092735/artifacts/13110095652). ProgramData 누락 시 ssh -V 종료255/빈 출력, 복원 시 정상0을 확인했습니다. Windows Server 2025 시험이며 Windows 10 실제 기기·실제 Azure는 별도입니다. 아래 이전 결과는 각 당시 소스의 이력입니다.
 
 2026-10-29 · 로컬/격리 개발 MVP · 운영 배포 승인 자료가 아님

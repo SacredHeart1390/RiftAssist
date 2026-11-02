@@ -100,6 +100,10 @@ public sealed class WindowsOpenSshRunner : ISshRunner
     internal static ProcessStartInfo StartInfo(string executable, SshCommand command)
     {
         SshCommandPolicy.Validate(command);
+        return ProcessInfo(executable, command.Arguments);
+    }
+    internal static ProcessStartInfo ProcessInfo(string executable, IReadOnlyList<string> arguments)
+    {
         var info = new ProcessStartInfo(executable) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardInput = true,
             RedirectStandardOutput = true, RedirectStandardError = true, StandardInputEncoding = ProtocolJson.Utf8,
             StandardOutputEncoding = ProtocolJson.Utf8, StandardErrorEncoding = new System.Text.UTF8Encoding(false, false) };
@@ -116,18 +120,23 @@ public sealed class WindowsOpenSshRunner : ISshRunner
         }
         // Explicit Windows OpenSSH agent endpoint only, no SSH config, executable search or provider credentials.
         if (Environment.GetEnvironmentVariable("SSH_AUTH_SOCK") is { } agent && agent.StartsWith(@"\\.\pipe\", StringComparison.Ordinal)) info.Environment["SSH_AUTH_SOCK"] = agent;
-        foreach (var argument in command.Arguments) info.ArgumentList.Add(argument);
+        foreach (var argument in arguments) info.ArgumentList.Add(argument);
         return info;
     }
     public async Task<SshProcessResult> RunAsync(SshCommand command, CancellationToken cancellation)
     {
         SshCommandPolicy.Validate(command);
+        var executable = Executable(command.Profile);
+        return await SshProcessIo.RunAsync(StartInfo(executable, command), command.StandardInput, cancellation);
+    }
+    internal static string Executable(SshProfile profile)
+    {
         if (!OperatingSystem.IsWindows()) throw new ControlException("client-ssh-windows-only");
         var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "OpenSSH", "ssh.exe");
         if (!File.Exists(executable)) throw new ControlException("client-ssh-missing");
-        foreach (var path in new[] { executable, command.Profile.KnownHostsFile, command.Profile.IdentityFile }.Where(p => p.Length != 0))
+        foreach (var path in new[] { executable, profile.KnownHostsFile, profile.IdentityFile }.Where(p => p.Length != 0))
         { SafePath.NoLinks(path); if (!File.Exists(path)) throw new ControlException("client-ssh-file-missing"); }
-        return await SshProcessIo.RunAsync(StartInfo(executable, command), command.StandardInput, cancellation);
+        return executable;
     }
 }
 
