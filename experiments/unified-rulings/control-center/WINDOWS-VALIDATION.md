@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+자동 SSH 인증 실행 코드6632479의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570) 성공: Windows 소스/추출 C# 각각154/154, Ubuntu155/155, native WPF 자동 시작/재실행/만료 재인증/실패/복구·제보 상세·운영 변경 차단과 binding 오류0. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570/artifacts/13120938158), [기록](../artifacts/control-center-zero-input-2026-11-02/windows-ci.json). ZIP 루트 EXE·아이콘·실행/종료를 확인했습니다. 설정 없는 기본 시작은 자동 자식0개, 저장된 SSH 자동 연결은 별도 WPF 모의 시험입니다. Windows Server2025이며 실제 Windows10/Azure는 사용자 후속 확인입니다.
+
 현재 실행 동작은 [SSH 기반 관리자 자동 인증](ZERO-INPUT.md)이 우선합니다. 저장된 SSH 설정이 있으면 키 입력/버튼 없이 시작 시 상태·인증·AI 집계·제보 목록을 조회합니다. 이전 DPAPI 선택 저장은 호환용으로 유지합니다. [최신 검증 보고서](../artifacts/control-center-zero-input-2026-11-02/README.md). 아래 이전 자동 연결 조건은 당시 버전의 기록입니다.
 
 로그인 저장·제보 수정의 최신 검증은 [보고서](../artifacts/control-center-saved-login-2026-11-02/README.md)를 따릅니다. Linux mock 검사/Windows 교차 빌드와 실제 Windows DPAPI·WPF 실행을 구분합니다. 실행 코드 e3800eb의 Windows/Ubuntu CI 성공: Windows 소스/추출 C# 각136/136, 실제 사용자 DPAPI·entropy/ACL·삭제 통과, WPF 저장/자동 시작1회/업데이트/삭제·실패 해제 및 binding 오류0, Ubuntu135/135. 기본 EXE 시작 자식0/정상 종료·루트 ZIP/아이콘 유지. [새 실행 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466124/artifacts/13118297862). Windows Server2025 시험이며 실제 Windows10·운영 키/제보 조회는 별도 사용자 확인입니다. 아래는 각 이전 소스의 이력입니다.
