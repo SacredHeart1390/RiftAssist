@@ -11,5 +11,6 @@
     128,
     256
   ],
-  "method": "Inkscape SVG rasterization at 256px and Pillow ICO downsampling; no artwork modification"
+  "method": "Inkscape SVG rasterization at 256px and Pillow ICO downsampling; no artwork modification",
+  "sourceHashNormalization": "Git canonical LF text; CRLF checkout normalized in memory only"
 }

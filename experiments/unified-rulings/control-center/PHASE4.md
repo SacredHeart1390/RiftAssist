@@ -42,7 +42,7 @@ HttpClient는 이 SSH 스트림만 사용하고 직접 HTTP 접속/프록시/리
 
 Publish-Windows.ps1의 Node 버전/아키텍처·라이선스·manifest 검증을 유지합니다. CI에서 includeBaseDirectory=false ZIP을 만들고 루트 경로를 검사한 뒤 새 폴더에 풀어, 그 추출본의 backend/Node 통합 검사와 실제 EXE 시작/종료를 수행합니다. GitHub에는 추출본 단일 디렉터리의 내용만 실행 아티팩트로 업로드합니다.
 
-운영 v0.1.7 public/index.html의 rel=icon은 /icon.svg입니다. 이 원본을 수정하지 않고 Inkscape SVG 래스터화/Pillow 크기 변환으로 **16/24/32/48/64/128/256px** ICO를 만들었습니다. 출처/해시는 Assets/icon-origin.json에 기록합니다. EXE ApplicationIcon과 WPF Window 스타일(창·작업표시줄)에 같은 ICO를 사용합니다. Chrome 로고를 사용하지 않습니다. Windows CI는 ICO 리소스 프레임·WM_GETICON·EXE shell 아이콘 추출을 검사합니다. 실제 Windows 10 Explorer/작업표시줄의 아이콘 캐시·DPI는 사용자 기기 확인 사항입니다.
+운영 v0.1.7 public/index.html의 rel=icon은 /icon.svg입니다. 이 원본을 수정하지 않고 Inkscape SVG 래스터화/Pillow 크기 변환으로 **16/24/32/48/64/128/256px** ICO를 만들었습니다. 출처/해시는 Assets/icon-origin.json에 기록합니다. 텍스트 원본 해시는 Git LF 기준이며 Windows CRLF 체크아웃은 비교할 때만 메모리에서 정규화합니다. ICO 해시는 원시 바이트 기준입니다. EXE ApplicationIcon과 WPF Window 스타일(창·작업표시줄)에 같은 ICO를 사용합니다. Chrome 로고를 사용하지 않습니다. Windows CI는 ICO 리소스 프레임·WM_GETICON·EXE shell 아이콘 추출을 검사합니다. 실제 Windows 10 Explorer/작업표시줄의 아이콘 캐시·DPI는 사용자 기기 확인 사항입니다.
 
 ## 검증 범위와 한계
 

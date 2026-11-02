@@ -10,7 +10,8 @@ assets = project / 'src/RiftAssist.ControlCenter/Assets'
 origin = json.loads((assets / 'icon-origin.json').read_text())
 source = repo / origin['source']
 data = (assets / 'RiftAssist.ico').read_bytes()
-assert hashlib.sha256(source.read_bytes()).hexdigest() == origin['sourceSha256']
+# Git text=auto checks out SVG as CRLF on some Windows runners; compare canonical Git LF bytes.
+assert hashlib.sha256(source.read_bytes().replace(b'\r\n', b'\n')).hexdigest() == origin['sourceSha256']
 assert hashlib.sha256(data).hexdigest() == origin['icoSha256']
 reserved, kind, count = struct.unpack_from('<HHH', data)
 assert reserved == 0 and kind == 1 and count == len(origin['sizes'])
