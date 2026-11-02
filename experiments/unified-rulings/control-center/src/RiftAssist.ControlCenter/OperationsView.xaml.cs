@@ -123,6 +123,14 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     }
     private async void ReportUpdate_Click(object sender, RoutedEventArgs e)
     { if (ReportsGrid.SelectedItem is OperationsReport report && report.Source != "수동 · 로컬" && ReportState.SelectedItem is string state && await Change("update-report", new { id = report.Id, status = state, note = ReportNote.Text }, "개발 제보 처리 저장")) ReportNote.Clear(); }
+    private async void AnalyzeIncident_Click(object sender, RoutedEventArgs e)
+    {
+        if (ReportsGrid.SelectedItem is not OperationsReport report) return;
+        await Run("제보 분석 준비", async () => {
+            var input = await Model.ReadIncidentInputAsync(report); var backend = BackendLayout.Installed(AppContext.BaseDirectory);
+            new IncidentAnalysisWindow(Window.GetWindow(this), input, () => Model.ReadIncidentInputAsync(report), AnalysisLedger.Local(), new OfflineIncidentAnalyzer(backend), new MockRepairWorker(backend)).Show();
+        });
+    }
     private void NewManualReport_Click(object sender, RoutedEventArgs e) => EditManual(null);
     private void EditManualReport_Click(object sender, RoutedEventArgs e)
     { try { if (ReportsGrid.SelectedItem is OperationsReport { Source: "수동 · 로컬" } report) EditManual(Model.ReadManualReport(report)); } catch (Exception error) { MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), "수동 제보"); } }

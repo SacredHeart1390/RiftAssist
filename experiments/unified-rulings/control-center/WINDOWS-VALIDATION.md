@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+6차 최신: [제보 분석·Codex 요청·개인정보/비용·활성화 조건](PHASE6.md), [검증 보고서](../artifacts/control-center-phase6-2026-11-02/README.md). 현재는 로컬 예비 분석·수동 프롬프트 복사·합성 수정/테스트이며 실제 LLM/Codex/GitHub 자동 실행은 비활성입니다.
+
 5차 실행 코드5856e6c의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41404472071) 성공: Windows 소스/추출 C# 각각176/176, Ubuntu177/177. native WPF 실제 DPAPI 수동 제보 등록/수정/새 저장소 재열기·통합 목록·기존 자동 인증과 binding 오류0, ZIP 루트 EXE·아이콘·실행/정상 종료 통과. 실제 EXE는 NotSigned·내장 asInvoker/uiAccess=false입니다. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41404472071/artifacts/13122623874), [증거](../artifacts/control-center-phase5-2026-11-02/windows-ci.json). Windows Server2025이며 실제 Windows10 물리 기기/운영 Azure는 사용자 후속 검증입니다.
 
 5차 최신: [제어 계약·로컬 암호화 수동 제보·게시자 경고/서명 비용](PHASE5.md), [검사 보고서](../artifacts/control-center-phase5-2026-11-02/README.md). 기존 자동 SSH 인증을 유지하며 운영 변경은 계속 차단합니다.

@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+6차 최신: [제보 분석·Codex 요청·개인정보/비용·활성화 조건](PHASE6.md), [검증 보고서](../artifacts/control-center-phase6-2026-11-02/README.md). 현재는 로컬 예비 분석·수동 프롬프트 복사·합성 수정/테스트이며 실제 LLM/Codex/GitHub 자동 실행은 비활성입니다.
+
 5차 최신: [제어 계약·로컬 암호화 수동 제보·게시자 경고/서명 비용](PHASE5.md), [검사 보고서](../artifacts/control-center-phase5-2026-11-02/README.md). 기존 자동 SSH 인증을 유지하며 운영 변경은 계속 차단합니다.
 
 현재 실행 동작은 [SSH 기반 관리자 자동 인증](ZERO-INPUT.md)이 우선합니다. 저장된 SSH 설정이 있으면 키 입력/버튼 없이 시작 시 상태·인증·AI 집계·제보 목록을 조회합니다. 이전 DPAPI 선택 저장은 호환용으로 유지합니다. [최신 검증 보고서](../artifacts/control-center-zero-input-2026-11-02/README.md). 아래 이전 자동 연결 조건은 당시 버전의 기록입니다.

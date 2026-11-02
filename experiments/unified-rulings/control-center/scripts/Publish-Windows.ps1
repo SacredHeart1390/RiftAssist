@@ -39,4 +39,5 @@ Copy-Item -LiteralPath (Join-Path $project 'src/RiftAssist.ControlCenter/Assets/
 Copy-Item -LiteralPath (Join-Path $project 'AUTOLOGIN.md') -Destination (Join-Path $OutputDirectory 'AUTOLOGIN.md')
 Copy-Item -LiteralPath (Join-Path $project 'ZERO-INPUT.md') -Destination (Join-Path $OutputDirectory 'ZERO-INPUT.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE5.md') -Destination (Join-Path $OutputDirectory 'PHASE5.md')
+Copy-Item -LiteralPath (Join-Path $project 'PHASE6.md') -Destination (Join-Path $OutputDirectory 'PHASE6.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

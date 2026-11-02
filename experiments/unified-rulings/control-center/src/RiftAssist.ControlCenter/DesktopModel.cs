@@ -86,6 +86,18 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-analysis-clipboard" => "프롬프트 복사에 실패했습니다. 해당 작업은 자동 재시도하지 않습니다.",
+            "client-analysis-external-disabled" => "실제 외부 AI/Codex 실행과 GitHub 게시는 비활성입니다. 별도 승인·인증/비용·격리 검증 후 연동이 필요합니다.",
+            "client-analysis-consent" => "미리보기의 현재 내용과 대상에 대한 명시적 승인이 필요합니다. 내용이 바뀌면 다시 확인하세요.",
+            "client-analysis-stale" => "제보 또는 연결 대상이 바뀌었습니다. 최신 제보를 다시 열어 분석하세요.",
+            "client-analysis-selection" => "먼저 현재 제보의 분석 이력을 선택하세요.",
+            "client-analysis-conflict" => "다른 작업/창이 이력을 변경했습니다. 다시 읽고 진행 상태를 확인하세요. 자동 재실행하지 않습니다.",
+            "client-analysis-storage" => "분석 이력을 안전하게 읽거나 암호화 저장하지 못했습니다. 기존 파일을 보존하고 계정·권한·용량을 확인하세요.",
+            "client-analysis-cancelled" => "로컬 분석을 취소했습니다. 외부 요청은 보내지 않았습니다.",
+            "client-analysis-worker" => "격리된 로컬 검색 검사를 완료하지 못했습니다. 실제 AI/운영 서비스는 호출하지 않았습니다.",
+            "client-analysis-not-verified" => "검토 후보를 만들려면 작업 결과와 테스트 확인이 필요합니다.",
+            "client-analysis-limit" => "분석 입력 크기가 제한을 초과했습니다. 필요한 내용만 남기세요.",
+
             "client-manual-validation" => "수동 제보 제목·오류 내용·분류·상태와 입력 길이를 확인하세요.",
             "client-manual-protection" => "로컬 제보를 안전하게 읽거나 암호화 저장하지 못했습니다. 기존 파일을 덮어쓰지 말고 Windows 계정·권한을 확인하세요.",
             "client-manual-conflict" => "다른 창/프로그램이 제보를 먼저 수정했습니다. 목록을 새로 읽은 뒤 변경을 다시 확인하세요.",
