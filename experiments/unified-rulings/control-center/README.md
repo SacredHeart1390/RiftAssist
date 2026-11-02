@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+현재 SSH 조회 문제 수정 안내: [SSH-TROUBLESHOOTING.md](SSH-TROUBLESHOOTING.md). 실제 Azure에는 접속하지 않고 읽기 전용 명령·오류 분류·임시 루프백 SSH를 검증합니다.
+
 현재 3차의 확인창·자동 감사 사유·대시보드·실제 연결 시험 방법은 [PHASE3.md](PHASE3.md)를 확인한다. 일반 변경은 예/아니요, 조회는 확인창 없이 수동 실행하며 최종 전환/백업 보호는 유지한다. 아래의 기존 카드/2차 절차 중 사유 입력·반복 확인 설명은 3차 안내로 대체한다.
 
 2026-10-29 · v0.2.0 · 개발 브랜치 `feature/riot-api-v0.2` · 기존 Draft PR #1

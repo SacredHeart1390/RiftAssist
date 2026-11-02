@@ -55,7 +55,7 @@ internal static class Program
         window.Close(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); app.Shutdown();
         var report = JsonSerializer.Serialize(new { nativeWpfWindowLoaded = true, bindingErrors = trace.Errors.Count,
             operationsTabsLoaded = 7, simpleConfirmationTested = true, automaticReasonTested = true, manualMockSshQueryTested = true,
-            invalidPortSaveBlocked = true, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
+            sshFailureCategoriesDisplayed = true, sanitizedSshDiagnostics = true, invalidPortSaveBlocked = true, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
         if (args.Length > 0) File.WriteAllText(Path.Combine(args[0], "wpf-native-smoke.json"), report + Environment.NewLine);
         Console.WriteLine(report);
         return 0;

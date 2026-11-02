@@ -58,6 +58,20 @@ internal static class PhaseThreeSmoke
             }
             runner.Fail = true; ((Button)view.FindName("QuerySshButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Idle(app);
             Check(runner.Calls == 2 && model.SnapshotInfo.Contains("이전 정상값", StringComparison.Ordinal) && model.State.Contains("인증", StringComparison.Ordinal));
+            foreach (var (result, hint) in new[] {
+                (new SshProcessResult(2, "", "sh: syntax error synthetic-sensitive-output"), "원격 상태 조회 명령"),
+                (new SshProcessResult(70, "", "RIFTASSIST_STATUS_STARTED\nRIFTASSIST_STATUS_ERROR=awk\n"), "필수 조회 도구"),
+                (new SshProcessResult(255, "", "RIFTASSIST_STATUS_STARTED\nConnection reset synthetic-sensitive-output"), "조회 도중 세션"),
+                (new SshProcessResult(0, "invalid output", "synthetic-sensitive-output"), "해석하지 못했습니다")
+            }) {
+                runner.Response = result;
+                ((Button)view.FindName("QuerySshButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); Idle(app);
+                Check(model.State.Contains(hint, StringComparison.Ordinal));
+                Check(model.Dashboard.Contains("종료 코드", StringComparison.Ordinal));
+                Check(!model.State.Contains("synthetic-sensitive-output", StringComparison.Ordinal) && !model.Dashboard.Contains("synthetic-sensitive-output", StringComparison.Ordinal));
+                Check(model.LocalEvents.All(e => !e.Contains("synthetic-sensitive-output", StringComparison.Ordinal)));
+                Check(!((StackPanel)view.FindName("ServerControlPanel")).IsEnabled);
+            }
             model.Host = "other.invalid"; Check(model.Metrics.All(t => t.Value == "미조회"));
         } finally { window.Close(); view.DisposeAsync().AsTask().GetAwaiter().GetResult(); Directory.Delete(home, recursive: true); }
     }
@@ -69,9 +83,11 @@ internal static class PhaseThreeSmoke
     {
         public int Calls { get; private set; }
         public bool Fail { get; set; }
+        public SshProcessResult? Response { get; set; }
         public Task<SshProcessResult> RunAsync(SshCommand command, CancellationToken cancellation)
         {
             SshCommandPolicy.Validate(command); Calls++;
+            if (Response is not null) return Task.FromResult(Response);
             return Task.FromResult(Fail ? new SshProcessResult(255, "", "Permission denied (publickey).") : new SshProcessResult(0,
                 "protocol=riftassist-status-1\nuptime_seconds=90061\nmemory_total_kib=4194304\nmemory_available_kib=3145728\ndisk_total_kib=67108864\ndisk_available_kib=54525952\ncpu_percent=12.50\nservice=active\napp_http=200\nhttps_http=200\n", ""));
         }

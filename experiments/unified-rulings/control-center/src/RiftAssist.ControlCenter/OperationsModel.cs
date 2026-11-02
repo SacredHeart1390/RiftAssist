@@ -153,12 +153,12 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         PresentSnapshot(monitor.LastGood, stale: true);
         try {
             var sample = await monitor.ReadAsync(profile, separatelyApproved, query.Token);
-            Dashboard = sample.Display; PresentSnapshot(sample); ConnectionStatus = "SSH 연결됨"; State = "조회 완료";
+            Dashboard = sample.Display + "\n" + monitor.Diagnostic; PresentSnapshot(sample); ConnectionStatus = "SSH 연결됨"; State = "조회 완료";
             Log("ssh-status", "사용자 요청으로 읽기 전용 조회 완료");
         }
         catch (Exception error) {
-            PresentSnapshot(monitor.LastGood, monitor.Stale); Dashboard = monitor.LastGood?.Display ?? "정상 조회값 없음";
-            ConnectionStatus = "연결 확인 필요"; State = UserErrors.Explain(error); Log("ssh-status", monitor.State); throw;
+            PresentSnapshot(monitor.LastGood, monitor.Stale); Dashboard = (monitor.LastGood?.Display ?? "정상 조회값 없음") + "\n" + monitor.Diagnostic;
+            ConnectionStatus = "연결 확인 필요"; State = UserErrors.Explain(error); Log("ssh-status", monitor.State + " · " + monitor.Diagnostic); throw;
         }
         finally { query.Dispose(); query = null; }
     }

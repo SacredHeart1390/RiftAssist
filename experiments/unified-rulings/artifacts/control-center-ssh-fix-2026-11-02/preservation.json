@@ -1,0 +1,10 @@
+{
+  "mainSha": "a69dff678ccd92ea3cc5cc58767ff13e7179f630",
+  "v017ComparedFiles": 65,
+  "v017ChangedFiles": 0,
+  "sharedPublicDataAndCacheHashesUnchanged": 8,
+  "v020VerifiedSourceHashes": 107,
+  "ready": false,
+  "operationalRecordsOrKeysOpened": false,
+  "preExistingAgentsChangePreservedOutsideCommit": true
+}

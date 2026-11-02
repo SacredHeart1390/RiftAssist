@@ -33,4 +33,5 @@ Copy-Item -LiteralPath (Join-Path $project 'README.md') -Destination (Join-Path 
 Copy-Item -LiteralPath (Join-Path $project 'WINDOWS-VALIDATION.md') -Destination (Join-Path $OutputDirectory 'WINDOWS-VALIDATION.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE2.md') -Destination (Join-Path $OutputDirectory 'PHASE2.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE3.md') -Destination (Join-Path $OutputDirectory 'PHASE3.md')
+Copy-Item -LiteralPath (Join-Path $project 'SSH-TROUBLESHOOTING.md') -Destination (Join-Path $OutputDirectory 'SSH-TROUBLESHOOTING.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

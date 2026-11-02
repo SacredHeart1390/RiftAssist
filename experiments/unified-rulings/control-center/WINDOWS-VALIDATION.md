@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+2026-11-02 SSH 수정의 최신 검증: [보고서](../artifacts/control-center-ssh-fix-2026-11-02/README.md), [수동 시험/오류 분류](SSH-TROUBLESHOOTING.md). 아래 이전 결과는 각 당시 소스의 이력입니다.
+
 2026-10-29 · 로컬/격리 개발 MVP · 운영 배포 승인 자료가 아님
 
 ## 현재 검증 범위

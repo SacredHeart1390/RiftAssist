@@ -61,35 +61,56 @@ public static class SshCommandPolicy
         string QuotedPath(string value) => "\"" + value.Replace('\\', '/') + "\"";
         var arguments = new List<string> { "-F", "NUL", "-T", "-p", profile.Port.ToString(CultureInfo.InvariantCulture),
             "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes", "-o", "UpdateHostKeys=no", "-o", "GlobalKnownHostsFile=NUL",
-            "-o", "UserKnownHostsFile=" + QuotedPath(profile.KnownHostsFile), "-o", "ConnectTimeout=8", "-o", "ConnectionAttempts=1",
+            "-o", "UserKnownHostsFile=" + QuotedPath(profile.KnownHostsFile), "-o", "ConnectTimeout=10", "-o", "ConnectionAttempts=1",
             "-o", "ServerAliveInterval=5", "-o", "ServerAliveCountMax=1", "-o", "ForwardAgent=no", "-o", "ForwardX11=no",
             "-o", "ClearAllForwardings=yes", "-o", "PermitLocalCommand=no", "-o", "LogLevel=ERROR" };
         if (profile.IdentityFile.Length != 0) arguments.AddRange(["-o", "IdentitiesOnly=yes", "-i", profile.IdentityFile]);
         var destination = profile.Host.Contains(':', StringComparison.Ordinal) ? $"[{profile.Host}]" : profile.Host;
         arguments.AddRange([profile.User + "@" + destination, "sh -s"]);
+        // LF-only POSIX sh input; no BOM, user script, interactive shell, sudo or remote file write.
         var script = "LC_ALL=C\nexport LC_ALL\n" +
+            "printf 'RIFTASSIST_STATUS_STARTED\\n' >&2\n" +
+            "fail() { printf 'RIFTASSIST_STATUS_ERROR=%s\\n' \"$1\" >&2; exit 70; }\n" +
+            "for tool in awk df head sleep; do command -v \"$tool\" >/dev/null 2>&1 || fail \"$tool\"; done\n" +
+            "test -r /proc/uptime && test -r /proc/meminfo && test -r /proc/stat || fail proc\n" +
             "printf 'protocol=riftassist-status-1\\n'\n" +
-            "awk '{print \"uptime_seconds=\" $1}' /proc/uptime\n" +
-            "awk '/^MemTotal:/ {print \"memory_total_kib=\" $2} /^MemAvailable:/ {print \"memory_available_kib=\" $2}' /proc/meminfo\n" +
-            "df -Pk / 2>/dev/null | awk 'NR==2 {print \"disk_total_kib=\" $2; print \"disk_available_kib=\" $4}'\n" +
-            "cpu_a=$(head -n 1 /proc/stat); sleep 0.2; cpu_b=$(head -n 1 /proc/stat)\n" +
-            "printf '%s\\n%s\\n' \"$cpu_a\" \"$cpu_b\" | awk 'NR==1 {for(i=2;i<=9;i++) t+=$i; idle=$5+$6; next} {for(i=2;i<=9;i++) u+=$i; d=u-t; if(d>0) printf \"cpu_percent=%.2f\\n\", 100*(1-(($5+$6)-idle)/d); else print \"cpu_percent=0\"}'\n" +
+            "awk '{print \"uptime_seconds=\" $1}' /proc/uptime || fail metrics\n" +
+            "awk '/^MemTotal:/ {print \"memory_total_kib=\" $2} /^MemAvailable:/ {print \"memory_available_kib=\" $2}' /proc/meminfo || fail metrics\n" +
+            "disk=$(df -Pk / 2>/dev/null) || fail disk\n" +
+            "printf '%s\\n' \"$disk\" | awk 'NR==2 {print \"disk_total_kib=\" $2; print \"disk_available_kib=\" $4}' || fail metrics\n" +
+            "cpu_a=$(head -n 1 /proc/stat) || fail metrics\nsleep 0.2\ncpu_b=$(head -n 1 /proc/stat) || fail metrics\n" +
+            "printf '%s\\n%s\\n' \"$cpu_a\" \"$cpu_b\" | awk 'NR==1 {for(i=2;i<=9;i++) t+=$i; idle=$5+$6; next} {for(i=2;i<=9;i++) u+=$i; d=u-t; if(d>0) printf \"cpu_percent=%.2f\\n\", 100*(1-(($5+$6)-idle)/d); else print \"cpu_percent=0\"}' || fail metrics\n" +
             "service=$(systemctl show riftassist.service --property=ActiveState --value 2>/dev/null)\n" +
-            "case \"$service\" in active|inactive|failed|activating|deactivating|reloading) ;; *) service=unknown;; esac\n" +
+            "case \"$service\" in active|inactive|failed|activating|deactivating|reloading) ;; *) service=unknown; printf 'RIFTASSIST_STATUS_WARNING=systemd\\n' >&2;; esac\n" +
             "printf 'service=%s\\n' \"$service\"\n" +
-            "app=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --noproxy '*' http://127.0.0.1:3001/api/health 2>/dev/null)\n" +
+            "app=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --noproxy '*' http://127.0.0.1:3001/api/health 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=app-health\\n' >&2\n" +
             "printf 'app_http=%s\\n' \"${app:-000}\"\n" +
-            "https=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --proto '=https' --noproxy '*' '" + profile.HealthUrl + "' 2>/dev/null)\n" +
-            "printf 'https_http=%s\\n' \"${https:-000}\"\n";
+            "https=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --proto '=https' --noproxy '*' '" + profile.HealthUrl + "' 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=https-health\\n' >&2\n" +
+            "printf 'https_http=%s\\n' \"${https:-000}\"\n" +
+            "printf 'RIFTASSIST_STATUS_COMPLETE\\n' >&2\nexit 0\n";
         return new(profile, arguments, script);
     }
     public static void DenyOperationalMutation() => throw new ControlException("client-production-control-blocked");
 }
 
-public sealed record SshProcessResult(int ExitCode, string Output, string Error);
+public sealed record SshProcessResult(int ExitCode, string Output, string Error, bool InputClosedEarly = false);
 public interface ISshRunner { Task<SshProcessResult> RunAsync(SshCommand command, CancellationToken cancellation); }
 public sealed class WindowsOpenSshRunner : ISshRunner
 {
+    internal static ProcessStartInfo StartInfo(string executable, SshCommand command)
+    {
+        SshCommandPolicy.Validate(command);
+        var info = new ProcessStartInfo(executable) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardInput = true,
+            RedirectStandardOutput = true, RedirectStandardError = true, StandardInputEncoding = ProtocolJson.Utf8,
+            StandardOutputEncoding = ProtocolJson.Utf8, StandardErrorEncoding = new System.Text.UTF8Encoding(false, false) };
+        info.Environment.Clear();
+        foreach (var key in new[] { "SystemRoot", "WINDIR", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "TEMP", "TMP" })
+            if (Environment.GetEnvironmentVariable(key) is { } value) info.Environment[key] = value;
+        // Explicit Windows OpenSSH agent endpoint only, no SSH config, executable search or provider credentials.
+        if (Environment.GetEnvironmentVariable("SSH_AUTH_SOCK") is { } agent && agent.StartsWith(@"\\.\pipe\", StringComparison.Ordinal)) info.Environment["SSH_AUTH_SOCK"] = agent;
+        foreach (var argument in command.Arguments) info.ArgumentList.Add(argument);
+        return info;
+    }
     public async Task<SshProcessResult> RunAsync(SshCommand command, CancellationToken cancellation)
     {
         SshCommandPolicy.Validate(command);
@@ -98,27 +119,7 @@ public sealed class WindowsOpenSshRunner : ISshRunner
         if (!File.Exists(executable)) throw new ControlException("client-ssh-missing");
         foreach (var path in new[] { executable, command.Profile.KnownHostsFile, command.Profile.IdentityFile }.Where(p => p.Length != 0))
         { SafePath.NoLinks(path); if (!File.Exists(path)) throw new ControlException("client-ssh-file-missing"); }
-        var info = new ProcessStartInfo(executable) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardInput = true,
-            RedirectStandardOutput = true, RedirectStandardError = true, StandardInputEncoding = ProtocolJson.Utf8, StandardOutputEncoding = ProtocolJson.Utf8, StandardErrorEncoding = ProtocolJson.Utf8 };
-        info.Environment.Clear();
-        foreach (var key in new[] { "SystemRoot", "WINDIR", "USERPROFILE", "HOMEDRIVE", "HOMEPATH" })
-            if (Environment.GetEnvironmentVariable(key) is { } value) info.Environment[key] = value;
-        foreach (var argument in command.Arguments) info.ArgumentList.Add(argument);
-        using var process = Process.Start(info) ?? throw new ControlException("client-ssh-start");
-        try
-        {
-            var stdout = ReadBounded(process.StandardOutput, cancellation); var stderr = ReadBounded(process.StandardError, cancellation);
-            await process.StandardInput.WriteAsync(command.StandardInput.AsMemory(), cancellation); process.StandardInput.Close();
-            await process.WaitForExitAsync(cancellation); return new(process.ExitCode, await stdout, await stderr);
-        }
-        catch { ChildProcess.Stop(process); throw; }
-    }
-    private static async Task<string> ReadBounded(StreamReader reader, CancellationToken cancellation)
-    {
-        var output = new System.Text.StringBuilder(); var buffer = new char[2048]; int count;
-        while ((count = await reader.ReadAsync(buffer.AsMemory(), cancellation)) != 0)
-        { output.Append(buffer, 0, count); if (output.Length > 32768) throw new ControlException("client-ssh-response-limit"); }
-        return output.ToString();
+        return await SshProcessIo.RunAsync(StartInfo(executable, command), command.StandardInput, cancellation);
     }
 }
 
@@ -159,28 +160,24 @@ public sealed class RemoteMonitor(ISshRunner runner)
     public RemoteSnapshot? LastGood { get; private set; }
     public string State { get; private set; } = "연결되지 않음";
     public bool Stale { get; private set; }
-    public void Reset() { LastGood = null; Stale = false; previousProfile = null; State = "연결되지 않음"; }
+    public string Diagnostic { get; private set; } = "";
+    public void Reset() { LastGood = null; Stale = false; previousProfile = null; Diagnostic = ""; State = "연결되지 않음"; }
     public async Task<RemoteSnapshot> ReadAsync(SshProfile profile, bool separatelyApproved, CancellationToken cancellation = default)
     {
         if (!separatelyApproved) throw new ControlException("client-ssh-approval-required");
         if (previousProfile != profile) { LastGood = null; Stale = false; previousProfile = profile; }
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellation); deadline.CancelAfter(TimeSpan.FromSeconds(25));
-        State = "조회 중";
+        State = "조회 중"; Diagnostic = "";
         try
         {
             var result = await runner.RunAsync(SshCommandPolicy.Build(profile), deadline.Token);
-            if (result.ExitCode != 0)
-            {
-                var code = result.Error.Contains("REMOTE HOST IDENTIFICATION HAS CHANGED", StringComparison.OrdinalIgnoreCase) ? "host-key-changed"
-                    : result.Error.Contains("Host key verification failed", StringComparison.OrdinalIgnoreCase) ? "host-key-unverified"
-                    : result.Error.Contains("Permission denied", StringComparison.OrdinalIgnoreCase) ? "authentication"
-                    : result.Error.Contains("timed out", StringComparison.OrdinalIgnoreCase) ? "timeout" : "disconnected";
-                throw new ControlException("client-ssh-" + code);
-            }
+            Diagnostic = SshDiagnostics.Describe(result);
+            var failure = SshDiagnostics.FailureCode(result);
+            if (failure is not null) throw new ControlException(failure);
             LastGood = RemoteSnapshot.Parse(result.Output); State = "SSH 조회 완료 · 운영 변경 차단"; Stale = false; return LastGood;
         }
         catch (OperationCanceledException) { State = cancellation.IsCancellationRequested ? "client-ssh-cancelled" : "client-ssh-timeout"; Stale = LastGood is not null; throw new ControlException(State); }
         catch (ControlException e) { State = e.Code; Stale = LastGood is not null; throw; }
-        catch { State = "client-ssh-disconnected"; Stale = LastGood is not null; throw new ControlException(State); }
+        catch { State = "client-ssh-local-failed"; Stale = LastGood is not null; throw new ControlException(State); }
     }
 }

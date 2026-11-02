@@ -26,6 +26,7 @@ PREFIXES = (
     'experiments/unified-rulings/artifacts/control-center-2026-10-29/',
     'experiments/unified-rulings/artifacts/control-center-phase2-2026-10-29/',
     'experiments/unified-rulings/artifacts/control-center-phase3-2026-10-31/',
+    'experiments/unified-rulings/artifacts/control-center-ssh-fix-2026-11-02/',
 )
 EXACT = {'.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
 PATTERNS = {
