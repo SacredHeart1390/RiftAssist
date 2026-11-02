@@ -1,0 +1,88 @@
+{
+  "sourceCommit": "d159f9204223807c521d3986a10d9f775e9e9ae3",
+  "workflow": {
+    "runId": 41372092735,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092735",
+    "conclusion": "success",
+    "windowsJob": 125044532238,
+    "ubuntuJob": 125044531962
+  },
+  "regressionWorkflow": {
+    "runId": 41372092727,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092727",
+    "conclusion": "success"
+  },
+  "windows": {
+    "runner": "windows-latest (Windows Server 2025)",
+    "sourceProofs": {
+      "passed": 101,
+      "failed": 0
+    },
+    "packagedProofs": {
+      "passed": 101,
+      "failed": 0
+    },
+    "programDataRegression": {
+      "without": {
+        "exitCode": 255,
+        "stdoutCharacters": 0,
+        "stderrCharacters": 0
+      },
+      "with": {
+        "exitCode": 0,
+        "stdoutCharacters": 0,
+        "stderrCharacters": 43,
+        "versionSeen": true
+      }
+    },
+    "loopbackSshCases": [
+      "good",
+      "remote-error",
+      "denied",
+      "host-mismatch",
+      "bad-output",
+      "drop"
+    ],
+    "loopbackOnly": true,
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "packagedNativeExe": {
+      "started": true,
+      "closedCleanly": true,
+      "automaticChildProcesses": 0,
+      "realAzureConnections": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "ubuntu-24.04",
+    "passed": 103,
+    "failed": 0,
+    "httpAndSystemdStubbed": true,
+    "loopbackOnly": true
+  },
+  "package": {
+    "id": 13110095652,
+    "name": "RiftAssist-ControlCenter-win-x64-development",
+    "bytes": 101690986,
+    "digest": "sha256:c0536e0328a79586e16e39560ffa90c4a82af29185aa234d309456638333eb02",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092735/artifacts/13110095652",
+    "expiresAt": "2027-01-31T01:21:45Z"
+  },
+  "windows10RealDeviceTested": false,
+  "realAzureConnected": false,
+  "paidApiCalls": 0,
+  "limitations": "Windows CI is Server 2025, not the user's Windows 10 PC; real Azure authentication/status was not tested. Loopback SSH uses only freshly generated synthetic keys and mock replies."
+}

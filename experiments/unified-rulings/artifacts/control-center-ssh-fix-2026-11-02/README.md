@@ -33,4 +33,13 @@ Windows CI에서 ProgramData 누락으로 ssh.exe가 접속 전 종료 255/빈 s
 
 ## Windows 패키지/실기기
 
-개발 브랜치 Commit/Push 후 Windows Actions가 동일 소스로 자체 포함 WPF/Node 패키지를 생성합니다. Windows CI 및 패키지 링크·원본 SHA는 검증 완료 후 별도 windows-ci.json과 이 문서에 기록합니다. CI 성공 전 Windows 실행 성공으로 간주하지 않습니다. Windows 10 회사 PC 및 실제 Azure는 사용자 측 수동 검증이며 이번 작업에서 접속하지 않습니다.
+실행 코드 `d159f9204223807c521d3986a10d9f775e9e9ae3`의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092735)와 [Node/v0.1.7 회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092727)가 모두 성공했습니다.
+
+- Windows Server 2025: 소스/패키지 C# 각각 **101/101**. 실제 ssh.exe ↔ 127.0.0.1 합성 서버의 조회·인증 실패·호스트 키 불일치·원격 명령 오류·파싱 오류·연결 후 단절을 모두 통과했습니다.
+- ProgramData만 제거한 **ssh -V**: 종료 **255**, stdout/stderr **0자**. 정상 환경: 종료 **0**, 버전 stderr **43자**. 서버 연결 없이 Windows 초기화 원인을 재현하고 수정 동작을 확인했습니다.
+- native WPF: 기존 운영 7개 탭·카드/확인·설정·오류 분류/진단 표시, **binding 오류 0건**, 운영 제어 비활성. 패키지 exe 직접 시작/정상 종료, 자동 자식 프로세스 **0개**.
+- Ubuntu 24.04: C# **103/103**. /proc·POSIX 스크립트와 HTTP/systemd stub, 합성 루프백 SSH 검사 포함.
+
+**[새 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41372092735/artifacts/13110095652)** — 약 102MB, GitHub 저장소 접근 권한 필요. 전체 파일을 풀고 `RiftAssist.ControlCenter.exe`를 실행합니다. SHA256 `c0536e0328a79586e16e39560ffa90c4a82af29185aa234d309456638333eb02`, artifact 만료 UTC 2027-01-31. 생성 원본은 위 실행 코드 SHA이며 이후 증거/문서만 정리한 커밋과 실행 코드는 동일합니다.
+
+기계 판독 가능한 증거: [windows-ci.json](windows-ci.json). Windows Server의 OS 버전 문자열이 Windows 10.0으로 시작해도 **Windows 10 실기기 시험으로 간주하지 않습니다.** 회사 Windows 10 PC 및 실제 Azure는 사용자 측 수동 검증이며 이번 작업에서 접속하지 않았습니다. 새 패키지에서 기존 SSH 설정을 확인하고 서버 상태 조회를 직접 누르며, 실패하면 표시된 코드/종료 코드/고정 점검 항목만 공유합니다.
