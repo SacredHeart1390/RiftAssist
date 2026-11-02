@@ -86,6 +86,16 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-manual-validation" => "수동 제보 제목·오류 내용·분류·상태와 입력 길이를 확인하세요.",
+            "client-manual-protection" => "로컬 제보를 안전하게 읽거나 암호화 저장하지 못했습니다. 기존 파일을 덮어쓰지 말고 Windows 계정·권한을 확인하세요.",
+            "client-manual-conflict" => "다른 창/프로그램이 제보를 먼저 수정했습니다. 목록을 새로 읽은 뒤 변경을 다시 확인하세요.",
+            "client-manual-busy" => "다른 로컬 저장 작업이 진행 중입니다. 완료 후 다시 시도하세요.",
+            "client-manual-limit" => "로컬 제보 개수·크기·수정 이력 제한에 도달했습니다. 기존 자료를 보존하고 별도 관리가 필요합니다.",
+            "client-admin-plan" => "기존 관리자 API가 지원하는 작업/입력 형식이 아닙니다.",
+            "client-admin-change-refresh" => "변경 전 현재 관리자 상태를 먼저 새로고침하세요. 실패한 요청은 자동 재전송하지 않습니다.",
+            "client-admin-change-busy" => "관리자 변경 확인이 진행 중입니다. 중복 요청을 보내지 않습니다.",
+            "client-admin-change-uncertain" => "변경 결과가 확정되지 않았습니다. 자동 재전송하지 말고 상태 새로고침과 감사 기록을 먼저 확인하세요.",
+
             "client-automatic-settings" => "저장된 SSH 연결 설정이 필요합니다. 주소·계정·known_hosts·키 경로·HTTPS 주소를 확인하고 저장하세요.",
             "client-manager-key-missing" => "서버의 지정 관리자 키 파일이 없거나 경로에 접근할 수 없습니다. 앱은 파일을 만들지 않습니다.",
             "client-manager-key-permission" => "SSH 계정에 지정 관리자 키 파일의 읽기 권한이 없습니다. 권한을 자동 변경하지 않습니다.",

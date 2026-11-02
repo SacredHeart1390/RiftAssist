@@ -59,6 +59,8 @@ jobs:
         run: |
           $bundle = "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified"
           dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- "$bundle/backend/v0.2.0" "$bundle/runtime/node.exe" "$env:RUNNER_TEMP/control-center-packaged-proof.json" "$bundle/backend-manifest.json"
+      - name: Inspect actual EXE signature and embedded non-elevating manifest
+        run: ./scripts/Test-Publisher.ps1 -Executable "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe" -ReportPath "$env:RUNNER_TEMP/control-center-publisher.json"
       - name: Start and close the actual packaged native executable
         run: |
           $executable = Join-Path $env:RUNNER_TEMP 'RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe'
@@ -112,6 +114,7 @@ jobs:
             ${{ runner.temp }}/control-center-proof.json
             ${{ runner.temp }}/control-center-packaged-proof.json
             ${{ runner.temp }}/control-center-native-package.json
+            ${{ runner.temp }}/control-center-publisher.json
             ${{ runner.temp }}/control-center-smoke/
           if-no-files-found: error
 

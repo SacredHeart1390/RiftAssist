@@ -44,7 +44,7 @@ public sealed class DpapiAdminCredentialVault(string directory) : IAdminCredenti
     private static void ValidateKey(string key)
     { if (string.IsNullOrWhiteSpace(key) || key.Length > 1024 || key.Any(char.IsControl)) throw new ControlException("client-credential-protection"); }
     [SupportedOSPlatform("windows")]
-    private static void ProtectDirectory(string path)
+    internal static void ProtectDirectory(string path)
     {
         using var identity = WindowsIdentity.GetCurrent();
         var sid = identity.User ?? throw new ControlException("client-credential-protection");
@@ -58,7 +58,7 @@ public sealed class DpapiAdminCredentialVault(string directory) : IAdminCredenti
     [DllImport("crypt32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)] private static extern bool CryptUnprotectData(ref Blob input, IntPtr description, ref Blob entropy, IntPtr reserved, IntPtr prompt, uint flags, out Blob output);
     [DllImport("kernel32.dll")] private static extern IntPtr LocalFree(IntPtr data);
-    private static byte[] Transform(byte[] data, byte[] entropy, bool protect)
+    internal static byte[] Transform(byte[] data, byte[] entropy, bool protect, int maxOutput = 16384)
     {
         RequireWindows();
         var input = new Blob { Length = data.Length, Data = Marshal.AllocHGlobal(data.Length) };
@@ -68,11 +68,11 @@ public sealed class DpapiAdminCredentialVault(string directory) : IAdminCredenti
             // CRYPTPROTECT_UI_FORBIDDEN=1; CRYPTPROTECT_LOCAL_MACHINE is deliberately never used.
             var ok = protect ? CryptProtectData(ref input, "RiftAssist Control Center", ref extra, IntPtr.Zero, IntPtr.Zero, 1, out result)
                 : CryptUnprotectData(ref input, IntPtr.Zero, ref extra, IntPtr.Zero, IntPtr.Zero, 1, out result);
-            if (!ok || result.Length is < 1 or > 16384) throw new ControlException("client-credential-protection");
+            if (!ok || result.Length < 1 || result.Length > maxOutput) throw new ControlException("client-credential-protection");
             var output = new byte[result.Length]; Marshal.Copy(result.Data, output, 0, output.Length); return output;
         } finally {
             Marshal.Copy(new byte[input.Length], 0, input.Data, input.Length); Marshal.FreeHGlobal(input.Data); Marshal.FreeHGlobal(extra.Data);
-            if (result.Data != IntPtr.Zero) { if (result.Length is > 0 and <= 16384) Marshal.Copy(new byte[result.Length], 0, result.Data, result.Length); LocalFree(result.Data); }
+            if (result.Data != IntPtr.Zero) { if (result.Length > 0 && result.Length <= maxOutput) Marshal.Copy(new byte[result.Length], 0, result.Data, result.Length); LocalFree(result.Data); }
         }
     }
 }

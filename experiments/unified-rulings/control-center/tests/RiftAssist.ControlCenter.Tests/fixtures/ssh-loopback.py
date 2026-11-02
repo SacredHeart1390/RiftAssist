@@ -110,6 +110,10 @@ try:
                 channel.send_exit_status(0)
             channel.shutdown_write()
             channel.close()
+            # Allow OpenSSH to consume exit-status before the mock transport closes.
+            deadline = time.monotonic() + 2
+            while transport.is_active() and time.monotonic() < deadline:
+                time.sleep(0.02)
             transport.close()
             time.sleep(30)
             sys.exit(0)

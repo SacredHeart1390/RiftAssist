@@ -44,7 +44,7 @@ public sealed class DevelopmentOperations(IReviewTransport transport, Operations
     public async ValueTask DisposeAsync() => await transport.DisposeAsync();
 }
 
-public sealed record OperationsReport(string Id, string Category, string Status, string RequestId, string Created)
+public sealed record OperationsReport(string Id, string Category, string Status, string RequestId, string Created, string Source = "운영/개발 API", string Title = "", int Revision = 0)
 {
     public static OperationsReport Read(JsonElement row) => new(row.Field("id").Text(), row.Field("category").Text(), row.Field("status").Text(), row.Field("request_id").Text(),
         row.Field("created").ValueKind == JsonValueKind.Number && row.Field("created").TryGetInt64(out var at) ? DateTimeOffset.FromUnixTimeMilliseconds(at).ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "미확인");

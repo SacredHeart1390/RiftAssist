@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+5차 최신: [제어 계약·로컬 암호화 수동 제보·게시자 경고/서명 비용](PHASE5.md), [검사 보고서](../artifacts/control-center-phase5-2026-11-02/README.md). 기존 자동 SSH 인증을 유지하며 운영 변경은 계속 차단합니다.
+
 자동 SSH 인증 실행 코드6632479의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570) 성공: Windows 소스/추출 C# 각각154/154, Ubuntu155/155, native WPF 자동 시작/재실행/만료 재인증/실패/복구·제보 상세·운영 변경 차단과 binding 오류0. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570/artifacts/13120938158), [기록](../artifacts/control-center-zero-input-2026-11-02/windows-ci.json). ZIP 루트 EXE·아이콘·실행/종료를 확인했습니다. 설정 없는 기본 시작은 자동 자식0개, 저장된 SSH 자동 연결은 별도 WPF 모의 시험입니다. Windows Server2025이며 실제 Windows10/Azure는 사용자 후속 확인입니다.
 
 현재 실행 동작은 [SSH 기반 관리자 자동 인증](ZERO-INPUT.md)이 우선합니다. 저장된 SSH 설정이 있으면 키 입력/버튼 없이 시작 시 상태·인증·AI 집계·제보 목록을 조회합니다. 이전 DPAPI 선택 저장은 호환용으로 유지합니다. [최신 검증 보고서](../artifacts/control-center-zero-input-2026-11-02/README.md). 아래 이전 자동 연결 조건은 당시 버전의 기록입니다.

@@ -155,6 +155,7 @@ try
     await PhaseFourProofs.RunAsync(suite, node, temporary);
     await SavedLoginProofs.RunAsync(suite, temporary);
     await AutomaticAuthProofs.RunAsync(suite, node, temporary);
+    await PhaseFiveProofs.RunAsync(suite, backend!, node, temporary);
 }
 finally
 {

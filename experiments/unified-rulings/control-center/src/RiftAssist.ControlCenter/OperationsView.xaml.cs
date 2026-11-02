@@ -58,13 +58,13 @@ public partial class OperationsView : UserControl, IAsyncDisposable
             var dialog = new ReviewDialog(Window.GetWindow(this), label, target + "\n\n" + detail, true, phrase, reason);
             if (dialog.ShowDialog() != true) return false;
         }
-        else if (!ActionConfirmation.Confirm(Window.GetWindow(this), label, target)) return false;
+        else if (!ActionConfirmation.Confirm(Window.GetWindow(this), label, target, AdminChangeContract.Actions.Contains(method) ? AdminChangeContract.Plan(method, parameters).Impact : "")) return false;
         var saved = false;
         await Run(label, async () => { await Model.ChangeAsync(method, parameters, reason, true); saved = true; });
         return saved;
     }
     private async void Server_Click(object sender, RoutedEventArgs e)
-    { var method = (string)((Button)sender).Tag; await Change(method, new { }, "개발 앱 " + method, method is "stop" or "restart" ? "개발 서버 변경" : null); }
+    { var method = (string)((Button)sender).Tag; await Change(method, new { }, "합성 관리자 앱 " + method); }
     private async void Ai_Click(object sender, RoutedEventArgs e) => await Change("ai", new { enabled = !Model.AiEnabled }, "개발 AI 허용 상태 변경");
     private async void Limits_Click(object sender, RoutedEventArgs e)
     {
@@ -119,13 +119,24 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     private void ReportFilter_Changed(object sender, TextChangedEventArgs e)
     {
         if (ReportFilter is null) return; var filter = ReportFilter.Text;
-        CollectionViewSource.GetDefaultView(Model.Reports).Filter = value => value is OperationsReport report && (filter.Length == 0 || $"{report.Id} {report.Category} {report.Status}".Contains(filter, StringComparison.OrdinalIgnoreCase));
+        CollectionViewSource.GetDefaultView(Model.Reports).Filter = value => value is OperationsReport report && (filter.Length == 0 || $"{report.Id} {report.Category} {report.Status} {report.Source} {report.Title}".Contains(filter, StringComparison.OrdinalIgnoreCase));
     }
     private async void ReportUpdate_Click(object sender, RoutedEventArgs e)
-    { if (ReportsGrid.SelectedItem is OperationsReport report && ReportState.SelectedItem is string state && await Change("update-report", new { id = report.Id, status = state, note = ReportNote.Text }, "개발 제보 처리 저장")) ReportNote.Clear(); }
+    { if (ReportsGrid.SelectedItem is OperationsReport report && report.Source != "수동 · 로컬" && ReportState.SelectedItem is string state && await Change("update-report", new { id = report.Id, status = state, note = ReportNote.Text }, "개발 제보 처리 저장")) ReportNote.Clear(); }
+    private void NewManualReport_Click(object sender, RoutedEventArgs e) => EditManual(null);
+    private void EditManualReport_Click(object sender, RoutedEventArgs e)
+    { try { if (ReportsGrid.SelectedItem is OperationsReport { Source: "수동 · 로컬" } report) EditManual(Model.ReadManualReport(report)); } catch (Exception error) { MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), "수동 제보"); } }
+    private void EditManual(ManualReportDocument? old)
+    {
+        try { var dialog = new ManualReportEditor(Window.GetWindow(this), old?.Draft ?? new ManualReportDraft());
+            if (dialog.ShowDialog() == true) Model.SaveManualReport(dialog.Draft, old?.Id, old?.Revision);
+        } catch (Exception error) { MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), "수동 제보"); }
+    }
+    private void ManualReports_Click(object sender, RoutedEventArgs e)
+    { try { Model.ReloadManualReports(); } catch (Exception error) { Model.State = UserErrors.Explain(error); } }
     private async void Export_Click(object sender, RoutedEventArgs e)
     {
-        if (ReportsGrid.SelectedItem is not OperationsReport report || !Model.CanControl) return;
+        if (ReportsGrid.SelectedItem is not OperationsReport report || report.Source == "수동 · 로컬" || !Model.CanControl) return;
         var dialog = new SaveFileDialog { Title = "합성 제보 내보내기 (실제 사용자 자료 없음)", FileName = "RiftAssist-synthetic-report-" + report.Id + ".json", Filter = "JSON|*.json", OverwritePrompt = true };
         if (dialog.ShowDialog(Window.GetWindow(this)) != true) return;
         await Run("합성 제보 내보내기", async () => { await Model.SelectReportAsync(report); await File.WriteAllTextAsync(dialog.FileName, Model.ReportDetail, ProtocolJson.Utf8); Model.Log("export-synthetic-report", "선택 파일에 저장"); });
