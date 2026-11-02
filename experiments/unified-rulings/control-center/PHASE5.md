@@ -51,7 +51,7 @@ v0.1.7 manager.js/operations-store.js를 읽어 계약을 확인했으며 수정
 
 ## 게시자 경고
 
-프로젝트 매니페스트는 기존부터 `requestedExecutionLevel=asInvoker`, `uiAccess=false`입니다. 불필요한 관리자 권한 상승을 요구하지 않으므로 수정하지 않았습니다. Windows CI에서 **배포용 EXE의 내장 매니페스트와 Get-AuthenticodeSignature 결과**를 검사합니다. 현재 유료/공인 코드 서명을 추가하지 않았으므로 ‘알 수 없는 게시자’/SmartScreen 경고를 제거했다고 주장하지 않습니다. UAC, SmartScreen, 회사 정책/보안 제품의 경고는 서로 구분해야 하며 실제 경고 종류를 개발자가 사용자 PC에서 확인한 것은 아닙니다.
+프로젝트 매니페스트는 기존부터 `requestedExecutionLevel=asInvoker`, `uiAccess=false`입니다. 불필요한 관리자 권한 상승을 요구하지 않으므로 수정하지 않았습니다. Windows CI에서 **배포용 EXE의 내장 매니페스트와 Get-AuthenticodeSignature 결과**를 검사합니다. 실행 코드5856e6c의 실제 패키지 EXE는 Windows CI에서 **NotSigned**, 내장 **asInvoker/uiAccess=false**로 확인했습니다. 현재 유료/공인 코드 서명을 추가하지 않았으므로 ‘알 수 없는 게시자’/SmartScreen 경고를 제거했다고 주장하지 않습니다. UAC, SmartScreen, 회사 정책/보안 제품의 경고는 서로 구분해야 하며 실제 경고 종류를 개발자가 사용자 PC에서 확인한 것은 아닙니다.
 
 2026-11-02 확인한 공식 공개 가격(USD, 세금·지역·추가 요금 제외):
 
