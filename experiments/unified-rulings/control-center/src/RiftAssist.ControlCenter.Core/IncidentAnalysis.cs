@@ -35,7 +35,8 @@ public sealed record PrivacyPacket(string Text,string Digest,int Redactions)
         var text=Replace(input,@"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z ]*PRIVATE KEY-----|$)");
         text=Replace(text,@"\b(?:sk-(?:proj-|admin-)?[\w-]{12,}|RGAPI-[\w-]{12,}|gh[pousr]_[\w]{12,}|github_pat_[\w]{12,}|eyJ[\w-]+\.[\w-]+\.[\w-]+)\b");
         text=Replace(text,@"\b[a-f0-9]{64}\b");
-        text=Replace(text,"(?:[\\\"]?(?:cookie|set-cookie|authorization|session(?:[_-]?id)?|request[_-]?id|admin[_-]?key|manager[_-]?key|api[_-]?key|token|password|owner|user[_-]?id)[\\\"]?\\s*[:=]\\s*)(?:[\\\"][^\\\"\\r\\n]*[\\\"]|[^\\s,;}]+)");
+        text=Replace(text,@"(?:authorization|cookie|set-cookie)[ \t]*[:=][ \t]*[^\r\n]+");
+        text=Replace(text,"(?:[\\\"]?(?:cookie|set-cookie|authorization|session(?:[_-]?id)?|request[_-]?id|admin[_-]?key|manager[_-]?key|api[_-]?key|token|password|secret|owner|user[_-]?id)[\\\"]?\\s*[:=]\\s*)(?:[\\\"][^\\\"\\r\\n]*[\\\"]|[^\\s,;}]+)");
         text=Replace(text,@"[\w.+-]+@[\w.-]+\.[a-z]{2,}");
         text=Replace(text,@"\b(?:\d{1,3}\.){3}\d{1,3}\b|\b\d{8}-\d{4}-\d{4}-\d{4}-\d{12}\b|\b[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\b");
         text=Replace(text,@"(?<!\d)(?:\+?82[ -]?)?0?1[016789][ -]?\d{3,4}[ -]?\d{4}(?!\d)");

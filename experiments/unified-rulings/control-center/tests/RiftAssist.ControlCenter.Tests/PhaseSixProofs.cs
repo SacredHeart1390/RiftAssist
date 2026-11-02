@@ -23,6 +23,8 @@ internal static class PhaseSixProofs
             var secret=new string('b',64);var value=$"합성 내용 manager_key={secret} session_id=synthetic-session-123 email=person@example.invalid 010-1234-5678 192.0.2.99 {Report} https://example.invalid/?token=hidden C:\\Users\\synthetic\\private.key /home/synthetic/operations.sqlite\n"+"-----BEGIN "+"OPENSSH PRIVATE KEY-----\nsynthetic-private-value\n"+"-----END "+"OPENSSH PRIVATE KEY-----";
             var clean=PrivacyPacket.Create(value);foreach(var canary in new[]{secret,"synthetic-session-123","person@example.invalid","010-1234-5678","192.0.2.99",Report,"hidden","private.key","operations.sqlite","synthetic-private-value"})ProofSuite.True(!clean.Text.Contains(canary,StringComparison.Ordinal));
             ProofSuite.Equal(PrivacyPacket.Create(clean.Text).Text,clean.Text);ProofSuite.True(clean.Redactions>5);
+            var headers=PrivacyPacket.Create("Authorization: Bearer synthetic-opaque-value\nCookie: other=sensitive-synthetic; second=another-synthetic\nsecret=synthetic-secret-value");
+            foreach(var headerCanary in new[]{"synthetic-opaque-value","sensitive-synthetic","another-synthetic","synthetic-secret-value"})ProofSuite.True(!headers.Text.Contains(headerCanary,StringComparison.Ordinal));
         });
         s.Check("consent binds exact redacted contents and destination; real execution remains denied",()=>{
             var ok=AnalysisConsent.Approve("local-analysis",packet);ok.Require("local-analysis",packet);
