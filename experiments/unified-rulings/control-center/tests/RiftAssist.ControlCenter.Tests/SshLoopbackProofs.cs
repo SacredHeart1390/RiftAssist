@@ -26,7 +26,10 @@ internal static class SshLoopbackProofs
                 var runner = OperatingSystem.IsWindows() ? (ISshRunner)new WindowsOpenSshRunner() : new LinuxLoopbackRunner(root);
                 var monitor = new RemoteMonitor(runner);
                 try { var snapshot = await monitor.ReadAsync(profile, true, timeout.Token); ProofSuite.True(code is null); ProofSuite.Equal(snapshot.Service, "active"); }
-                catch (ControlException e) { ProofSuite.Equal(e.Code, code); ProofSuite.True(!e.ToString().Contains(root, StringComparison.Ordinal)); }
+                catch (ControlException e) {
+                    if (e.Code != code) throw new ControlException("fixture-expected-" + (code ?? "success") + "-received-" + e.Code);
+                    ProofSuite.True(!e.ToString().Contains(root, StringComparison.Ordinal));
+                }
                 ProofSuite.True(!monitor.Diagnostic.Contains("synthetic-sensitive-output", StringComparison.Ordinal));
                 if (mode is "good" or "remote-error" or "bad-output") ProofSuite.True(File.Exists(Path.Combine(root, "stdin-verified")));
             }
