@@ -32,4 +32,13 @@ main a69dff6 대비 v0.1.7 65파일 불변. 공유 active/manifest/cards/rules/j
 
 ## Windows 패키지/후속 확인
 
-Windows CI에서 실제 DPAPI 암호문·다시 읽기·entropy 거절·사용자 ACL·삭제, native WPF 로그인 옵션/업데이트 재사용/시작1회/삭제/실패 해제, 기존 루트 ZIP·아이콘·추출 EXE 실행/종료를 검증한 후 결과/다운로드 링크를 추가합니다. 실제 회사 Windows10 및 운영 키/제보를 사용한 확인은 사용자 측 후속 단계입니다. 개발자는 실제 Azure 연결을 실행하지 않습니다.
+실행 코드 **e3800ebd22df3d51ab73e81f4236fcce1d7e1285**의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466124)와 [기존 회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466137)가 성공했습니다.
+
+- Windows Server2025 소스/추출 패키지 C# 각각 **136/136**. 실제 현재 사용자 DPAPI protect/unprotect·암호문 평문 부재·재생성 vault 재사용·다른 대상 entropy 거절·사용자 ACL·삭제를 통과했습니다.
+- native WPF: 저장/자동 연결 opt-in·기본 무접속·저장 키 연결·새 창/버전 재사용·시작1회·제보 자동 조회 없음·삭제·연결 후 상태 실패의 자동 해제, 기존 카드/관리 기능·한글/아이콘을 확인했습니다. **binding 오류0**.
+- ZIP 루트 EXE/runtime/backend, 아이콘 리소스와 창/작업표시줄 핸들, 추출 EXE 직접 시작/정상 종료·기본 시작 자동 자식 **0개**를 확인했습니다.
+- Ubuntu24.04 C# **135/135**. OS별3개 POSIX 대 Windows ProgramData1+DPAPI3 차이를 구분합니다. 모든 SSH는 합성 키의 loopback 서버이며 실제 운영 관리자 자료를 사용하지 않았습니다.
+
+**[새 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466124/artifacts/13118297862)** — RiftAssist-ControlCenter-v0.2.0-win-x64.zip, 약102MB, GitHub 권한 필요. 전체 파일을 새 폴더에 풀어 최상위 RiftAssist.ControlCenter.exe를 실행합니다. 기존 Windows 사용자 LocalAppData를 지우지 않으면 새 ZIP에서도 설정/저장 정보를 재사용합니다. SHA256 ad7cc9a252aa46e3e36b717a82d642c19b10895a455923c4f398240c7a9f366a, artifact 만료 UTC 2027-01-31.
+
+[windows-ci.json](windows-ci.json)에 집계와 한계를 기록했습니다. 패키지는 위 실행 코드 SHA이며 이후 증거/문서만 정리한 커밋과 실행 코드는 동일합니다. 실제 회사 Windows10·운영 키·제보로의 확인은 사용자 후속 단계입니다. 개발자는 실제 Azure 연결을 실행하지 않았습니다.
