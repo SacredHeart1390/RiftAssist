@@ -86,6 +86,11 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-credential-missing" => "저장된 로그인 정보가 없습니다. 새 관리자 키를 입력하세요. 자동 연결은 꺼졌습니다.",
+            "client-credential-save" => "로그인 정보를 안전하게 저장하지 못했습니다. 자동 연결은 사용하지 않습니다. Windows 사용자 폴더 권한을 확인하세요.",
+            "client-credential-protection" => "저장된 로그인 정보를 복호화하거나 저장/삭제하지 못했습니다. Windows 계정과 파일 권한을 확인하고 필요하면 새 키를 입력하세요.",
+            "client-credential-settings" => "로그인 옵션을 확인하지 못했습니다. 자동 연결을 실행하지 않습니다.",
+            "client-credential-windows-only" => "로그인 정보의 안전한 저장은 Windows 사용자 범위 DPAPI에서 지원합니다.",
             "client-admin-authentication" => "운영 관리자 인증이 필요하거나 실패했습니다. 기존 관리자 키와 세션 만료를 확인하세요. 키는 저장하지 않습니다.",
             "client-admin-forward-denied" => "SSH 서버가 loopback 관리자 연결을 허용하지 않습니다. 서버 설정을 임의로 바꾸지 말고 별도 승인을 받으세요.",
             "client-admin-forward-failed" => "SSH의 관리자 연결에 실패했습니다. 서버의 forwarding 허용 여부와 loopback 3100 상태를 별도로 확인하세요. 설정을 자동 변경하지 않습니다.",

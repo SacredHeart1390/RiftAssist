@@ -21,7 +21,7 @@ internal static class PhaseFourSmoke
         var decoder=new IconBitmapDecoder(resource.Stream,BitmapCreateOptions.PreservePixelFormat,BitmapCacheOption.OnLoad);
         foreach(var size in new[]{16,24,32,48,256}) Check(decoder.Frames.Any(f=>f.PixelWidth==size&&f.PixelHeight==size));
         var home=System.IO.Path.Combine(System.IO.Path.GetTempPath(),"riftassist-phase4-ui-"+Guid.NewGuid().ToString("N"));System.IO.Directory.CreateDirectory(home);
-        var reader=new FakeAdmin();var model=new OperationsModel(settingsStore:new SshProfileStore(home),remoteAdminFactory:_=>reader);var view=new OperationsView(model);
+        var reader=new FakeAdmin();var model=new OperationsModel(settingsStore:new SshProfileStore(home),remoteAdminFactory:_=>reader, savedAdminLogin:new SavedAdminLogin(new MockCredentialVault(), new AdminLoginPreferences(System.IO.Path.Combine(home,"LoginOptions"))));var view=new OperationsView(model);
         var window=new Window{Content=view,Width=1120,Height=850};
         try{
             window.Show();model.SetModeAsync(true).GetAwaiter().GetResult();
@@ -44,6 +44,8 @@ internal static class PhaseFourSmoke
     }
     private static void Idle(Application app)=>app.Dispatcher.Invoke(()=>{},DispatcherPriority.ApplicationIdle);
     private static void Check(bool value){if(!value)throw new InvalidOperationException("Phase4 native UI assertion failed");}
+    private sealed class MockCredentialVault:IAdminCredentialVault
+    { public string? Read(AdminCredentialReference reference)=>null; public void Write(AdminCredentialReference reference,string key){} public void Delete(AdminCredentialReference reference){} }
     private sealed class FakeAdmin:IRemoteAdminReader
     {
         public bool Authenticated{get;set;}public bool Disposed{get;private set;}public int Calls{get;private set;}

@@ -28,6 +28,7 @@ PREFIXES = (
     'experiments/unified-rulings/artifacts/control-center-phase3-2026-10-31/',
     'experiments/unified-rulings/artifacts/control-center-ssh-fix-2026-11-02/',
     'experiments/unified-rulings/artifacts/control-center-phase4-2026-11-02/',
+    'experiments/unified-rulings/artifacts/control-center-saved-login-2026-11-02/',
 )
 EXACT = {'.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
 PATTERNS = {
@@ -61,7 +62,7 @@ def main():
         p = Path(name)
         denied = (name not in EXACT and not name.startswith(PREFIXES)) or bool(
             set(p.parts).intersection({'private', '.dev-data', '.ssh', '.aws', 'source-updates', 'knowledge-releases'})
-        ) or p.name.startswith('.env') or re.search(r'\.(?:sqlite(?:-wal|-shm)?|db(?:-wal|-shm)?|key|pem|p12|pfx)$', name, re.I)
+        ) or p.name.startswith('.env') or re.search(r'\.(?:sqlite(?:-wal|-shm)?|db(?:-wal|-shm)?|key|pem|p12|pfx|dpapi)$', name, re.I)
         if denied:
             findings.append({'path': name, 'rule': 'excluded-path'}); continue
         target = ROOT / name

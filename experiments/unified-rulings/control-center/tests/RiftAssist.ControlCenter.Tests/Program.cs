@@ -153,6 +153,7 @@ try
     PhaseThreeProofs.Run(suite);
     await SshRegressionProofs.RunAsync(suite, node, temporary);
     await PhaseFourProofs.RunAsync(suite, node, temporary);
+    await SavedLoginProofs.RunAsync(suite, temporary);
 }
 finally
 {

@@ -50,10 +50,19 @@ public static class RemoteAdminData
             var field = v.Field(name); if (field.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined) return "미보관/없음";
             if (field.ValueKind != JsonValueKind.String || field.GetString()!.Length > limit) throw new ControlException("client-admin-response"); return field.GetString()!;
         }
+        var content = result.Field("content");
+        string description;
+        if (content.ValueKind == JsonValueKind.Object) {
+            var tags = content.Field("tags");
+            if (tags.ValueKind is not (JsonValueKind.Undefined or JsonValueKind.Null or JsonValueKind.Array)) throw new ControlException("client-admin-response");
+            var tagRows = tags.Rows().ToArray();
+            if (tagRows.Length > 7 || tagRows.Any(t => t.ValueKind != JsonValueKind.String || !new[] { "display", "error", "translation", "wrong-answer", "wrong-source", "no-answer", "other" }.Contains(t.GetString(), StringComparer.Ordinal))) throw new ControlException("client-admin-response");
+            description = Text(content, "description", 5000) + "\n\n기대 답변\n" + Text(content, "expected", 3000) + "\n태그: " + string.Join(", ", tagRows.Select(t => t.GetString()));
+        } else description = Text(result, "content", 10000); // Legacy synthetic/string records remain readable.
         var snapshot = result.Field("snapshot"); var question = snapshot.Field("question"); var response = snapshot.Field("response");
         var questionText = question.ValueKind == JsonValueKind.String ? question.GetString()! : Text(question, "text");
         if (questionText.Length > 100000) throw new ControlException("client-admin-response");
         var history = result.Field("history").Rows().Take(100).Select(h => $"{Text(h, "status", 100)} · {Text(h, "note", 3000)}");
-        return $"제보: {expectedId}\n분류: {Text(result, "category", 100)} · 상태: {Text(result, "status", 100)}\n\n제보 내용\n{Text(result, "content", 10000)}\n\n연결 질문\n{questionText}\n\n연결 답변\n{Text(response, "recommendation")}\n\n판정 근거\n{Text(response, "reasoning")}\n\n처리 이력\n" + string.Join("\n", history);
+        return $"제보: {expectedId}\n분류: {Text(result, "category", 100)} · 상태: {Text(result, "status", 100)}\n\n제보 내용\n{description}\n\n연결 질문\n{questionText}\n\n연결 답변\n{Text(response, "recommendation")}\n\n판정 근거\n{Text(response, "reasoning")}\n\n처리 이력\n" + string.Join("\n", history);
     }
 }

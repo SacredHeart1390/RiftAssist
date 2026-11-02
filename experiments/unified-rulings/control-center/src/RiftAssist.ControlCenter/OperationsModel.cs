@@ -15,7 +15,7 @@ public sealed class LimitRow(string name, int value) : INotifyPropertyChanged
     public int Value { get => current; set { current = value; PropertyChanged?.Invoke(this, new(nameof(Value))); } }
     public event PropertyChangedEventHandler? PropertyChanged;
 }
-public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
+public sealed partial class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
 {
     private bool busy, azureMode;
     private string state = "개발 관리자 연결 안 됨 · 운영 변경 차단";
@@ -74,8 +74,9 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
     public string HttpsOrigin { get => profile.HttpsOrigin; set => SetProfile(profile with { HttpsOrigin = value }); }
     public event PropertyChangedEventHandler? PropertyChanged;
     private void Changed([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new(name));
-    public OperationsModel(ISshRunner? runner = null, SshProfileStore? settingsStore = null, Func<SshProfile, IRemoteAdminReader>? remoteAdminFactory = null)
+    public OperationsModel(ISshRunner? runner = null, SshProfileStore? settingsStore = null, Func<SshProfile, IRemoteAdminReader>? remoteAdminFactory = null, SavedAdminLogin? savedAdminLogin = null)
     {
+        savedLogin = savedAdminLogin ?? SavedAdminLogin.Local();
         adminFactory = remoteAdminFactory ?? (p => new RemoteAdminReader(new SshAdminStreamConnector(p)));
         settings = settingsStore ?? SshProfileStore.Local(); monitor = new(runner ?? new WindowsOpenSshRunner()); profile = new SshProfile();
         ResetMetrics();
@@ -154,17 +155,6 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
             } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
         } else if (operations is not null) ReportDetail = (await operations.ReadAsync("report", new { id = report.Id })).Pretty();
     }
-    public async Task ConnectAdminAsync(string key)
-    {
-        if (!AzureMode) throw new ControlException("client-production-control-blocked");
-        profile.Validate(); DropAdmin(); var session = adminFactory(profile); remoteAdmin = session;
-        try {
-            await session.LoginAsync(key);
-            if (session != remoteAdmin || !AzureMode) throw new ControlException("client-admin-disconnected");
-            await RefreshAdminAsync(); AdminState = "운영 관리자 인증됨 · 읽기 전용";
-            Changed(nameof(CanReadAdmin)); Log("admin-login", "기존 인증 완료 · 읽기 전용");
-        } catch (Exception e) { if (session == remoteAdmin) AdminFailure(e); throw; }
-    }
     public async Task RefreshAdminAsync()
     {
         var session = remoteAdmin ?? throw new ControlException("client-admin-authentication");
@@ -228,7 +218,7 @@ public sealed class OperationsModel : INotifyPropertyChanged, IAsyncDisposable
         finally { query.Dispose(); query = null; }
     }
     public void CancelQuery() => query?.Cancel();
-    public void InvalidateRemote() { DropAdmin(); monitor.Reset(); if (AzureMode) { ResetMetrics(); Dashboard = "설정이 변경되었습니다. 다시 조회해 주세요."; State = "미조회"; } }
+    public void InvalidateRemote() { DropAdmin(); ReloadLoginChoice(); monitor.Reset(); if (AzureMode) { ResetMetrics(); Dashboard = "설정이 변경되었습니다. 다시 조회해 주세요."; State = "미조회"; } }
     public async Task RefreshLogsAsync()
     { if (operations is null || AzureMode) return; Events.Clear(); foreach (var e in (await operations.ReadAsync("logs")).Field("events").Rows()) Events.Add(OperationEvent.Read(e)); }
     public void Log(string action, string outcome)

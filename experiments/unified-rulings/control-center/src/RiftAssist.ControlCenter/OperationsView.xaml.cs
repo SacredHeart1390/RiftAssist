@@ -12,6 +12,7 @@ namespace RiftAssist.ControlCenter;
 public partial class OperationsView : UserControl, IAsyncDisposable
 {
     public OperationsModel Model { get; }
+    private bool startupHandled;
     private readonly DispatcherTimer expiryTimer = new() { Interval = TimeSpan.FromSeconds(30) };
     public OperationsView() : this(new OperationsModel()) { }
     public OperationsView(OperationsModel model) {
@@ -83,8 +84,18 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     {
         if (!ValidateSettingsInputs()) { AdminKeyInput.Clear(); OperationsTabs.SelectedIndex = 6; return; }
         var key = AdminKeyInput.Password; AdminKeyInput.Clear();
-        await Run("운영 관리자 인증", async () => { try { await Model.ConnectAdminAsync(key); } finally { key = ""; } });
+        await Run("운영 관리자 인증", async () => { try { if (key.Length == 0 && Model.HasSavedLogin) await Model.ConnectSavedAdminAsync(); else await Model.ConnectAdminAsync(key); } finally { key = ""; } });
     }
+    public async Task TryStartupAdminAsync()
+    {
+        if (startupHandled) return; startupHandled = true;
+        if (!Model.StartupAutoRequested) return;
+        await Run("읽기 전용 관리자 자동 연결", async () => { await Model.SetModeAsync(true); ModeCombo.SelectedIndex = 1; await Model.ConnectSavedAdminAsync(startup: true); });
+    }
+    private async void SavedAdminConnect_Click(object sender, RoutedEventArgs e)
+    { AdminKeyInput.Clear(); await Run("저장된 관리자 인증", () => Model.ConnectSavedAdminAsync()); }
+    private async void ForgetSavedAdmin_Click(object sender, RoutedEventArgs e)
+    { AdminKeyInput.Clear(); await Run("저장된 로그인 삭제", () => { Model.ForgetSavedLogin(); return Task.CompletedTask; }); }
     private async void AdminRefresh_Click(object sender, RoutedEventArgs e) => await Run("운영 상태 조회", Model.RefreshAdminAsync);
     private async void AdminReports_Click(object sender, RoutedEventArgs e) => await Run("운영 제보 목록", Model.ReadAdminReportsAsync);
     private async void Report_Changed(object sender, SelectionChangedEventArgs e)

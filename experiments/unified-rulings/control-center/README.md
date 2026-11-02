@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+최신: [관리자 로그인 기억/자동 연결·제보 상세 수정](AUTOLOGIN.md), [검증 보고서](../artifacts/control-center-saved-login-2026-11-02/README.md). 저장/시작 자동 연결은 각각 직접 선택하며 기본 꺼짐입니다.
+
 최신 4차: [운영 관리자 읽기 전용·패키지·아이콘 안내](PHASE4.md), [검증 보고서](../artifacts/control-center-phase4-2026-11-02/README.md). 실제 운영 관리자 조회는 별도 승인 후 수동 실행합니다.
 
 현재 SSH 조회 문제 수정 안내: [SSH-TROUBLESHOOTING.md](SSH-TROUBLESHOOTING.md). 실제 Azure에는 접속하지 않고 읽기 전용 명령·오류 분류·임시 루프백 SSH를 검증합니다.

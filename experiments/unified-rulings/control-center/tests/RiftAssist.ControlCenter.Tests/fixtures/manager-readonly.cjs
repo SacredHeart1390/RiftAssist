@@ -5,10 +5,10 @@ const root=process.argv[2], mode=process.argv[3]||'normal';fs.mkdirSync(path.joi
 const reportId='12345678-1234-1234-1234-123456789abc';
 const limits={questions:100,generations:80,translations:60,sessionQuestions:20,sessionTranslations:10,reports:50,sessionReports:5,concurrent:2};
 const stats={day:'2026-11-02',limits,aiEnabled:true,calls:[{kind:'generation',count:13,inputTokens:50,outputTokens:70,usageUnknown:0}],reports:[{status:'received',count:1}]};
-const row={id:reportId,request_id:'synthetic-request',created:1793577600000,category:'wrong-answer',status:'received'};
+const row={id:reportId,request_id:'synthetic-request',created:1793577600000,category:'ruling',status:'received'};
 const requests=[];let server;
 const forbidden=()=>{throw new Error('Synthetic fixture forbids mutation')};
-const store={directory:root,stats:()=>stats,listReports:()=>[row],reportDetail:()=>({...row,content:'합성 제보입니다',snapshot:{question:{text:'합성 질문'},response:{recommendation:'합성 답변'},trace:{token:'synthetic-token'}},history:[{status:'received',note:'합성 메모'}],token:'synthetic-token'}),setting:()=>({provider:'none',publicOrigin:''}),purge:()=>{},close:()=>{},setSetting:forbidden,updateReport:forbidden,makeBackup:forbidden};
+const store={directory:root,stats:()=>stats,listReports:()=>[row],reportDetail:()=>({...row,content:{description:'합성 제보입니다',expected:'합성 기대 답변',tags:['wrong-answer'],language:'ko'},snapshot:{question:{text:'합성 질문'},response:{recommendation:'합성 답변'},trace:{token:'synthetic-token'}},history:[{status:'received',note:'합성 메모'}],token:'synthetic-token'}),setting:()=>({provider:'none',publicOrigin:''}),purge:()=>{},close:()=>{},setSetting:forbidden,updateReport:forbidden,makeBackup:forbidden};
 const fakeHttp={...http,createServer(handler){
  server=http.createServer((req,res)=>{
   requests.push({method:req.method,path:req.url});fs.writeFileSync(path.join(root,'requests.json'),JSON.stringify(requests));
