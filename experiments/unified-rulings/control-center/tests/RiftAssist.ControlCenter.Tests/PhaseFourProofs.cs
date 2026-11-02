@@ -98,7 +98,7 @@ internal static class PhaseFourProofs
                 }finally{if(!ssh.HasExited)ssh.Kill(true);await ssh.WaitForExitAsync();await errors;}
             });
     }
-    private sealed class TcpConnector(int port):IAdminStreamConnector
+    internal sealed class TcpConnector(int port):IAdminStreamConnector
     {
         public int Calls{get;private set;}
         public async ValueTask<Stream> ConnectAsync(CancellationToken cancellation){Calls++;var tcp=new TcpClient();try{await tcp.ConnectAsync("127.0.0.1",port,cancellation);return tcp.GetStream();}catch{tcp.Dispose();throw;}}
@@ -113,7 +113,7 @@ internal static class PhaseFourProofs
             return ValueTask.FromResult<Stream>(new SshAdminStream(info));
         }
     }
-    private sealed class ManagerFixture(Process process,string root,int port):IAsyncDisposable
+    internal sealed class ManagerFixture(Process process,string root,int port):IAsyncDisposable
     {
         public string Root=>root;public int Port=>port;
         public static async Task<ManagerFixture> Start(string node,string root,string mode){

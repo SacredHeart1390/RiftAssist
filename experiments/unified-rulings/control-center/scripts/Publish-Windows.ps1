@@ -37,4 +37,5 @@ Copy-Item -LiteralPath (Join-Path $project 'SSH-TROUBLESHOOTING.md') -Destinatio
 Copy-Item -LiteralPath (Join-Path $project 'PHASE4.md') -Destination (Join-Path $OutputDirectory 'PHASE4.md')
 Copy-Item -LiteralPath (Join-Path $project 'src/RiftAssist.ControlCenter/Assets/icon-origin.json') -Destination (Join-Path $OutputDirectory 'ICON-ORIGIN.json')
 Copy-Item -LiteralPath (Join-Path $project 'AUTOLOGIN.md') -Destination (Join-Path $OutputDirectory 'AUTOLOGIN.md')
+Copy-Item -LiteralPath (Join-Path $project 'ZERO-INPUT.md') -Destination (Join-Path $OutputDirectory 'ZERO-INPUT.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

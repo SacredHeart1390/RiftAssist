@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+현재 실행 동작은 [SSH 기반 관리자 자동 인증](ZERO-INPUT.md)이 우선합니다. 저장된 SSH 설정이 있으면 키 입력/버튼 없이 시작 시 상태·인증·AI 집계·제보 목록을 조회합니다. 이전 DPAPI 선택 저장은 호환용으로 유지합니다. [최신 검증 보고서](../artifacts/control-center-zero-input-2026-11-02/README.md). 아래 이전 자동 연결 조건은 당시 버전의 기록입니다.
+
 최신: [관리자 로그인 기억/자동 연결·제보 상세 수정](AUTOLOGIN.md), [검증 보고서](../artifacts/control-center-saved-login-2026-11-02/README.md). 저장/시작 자동 연결은 각각 직접 선택하며 기본 꺼짐입니다.
 
 최신 4차: [운영 관리자 읽기 전용·패키지·아이콘 안내](PHASE4.md), [검증 보고서](../artifacts/control-center-phase4-2026-11-02/README.md). 실제 운영 관리자 조회는 별도 승인 후 수동 실행합니다.

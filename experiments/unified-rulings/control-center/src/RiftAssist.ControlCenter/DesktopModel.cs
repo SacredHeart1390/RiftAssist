@@ -86,6 +86,13 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-automatic-settings" => "저장된 SSH 연결 설정이 필요합니다. 주소·계정·known_hosts·키 경로·HTTPS 주소를 확인하고 저장하세요.",
+            "client-manager-key-missing" => "서버의 지정 관리자 키 파일이 없거나 경로에 접근할 수 없습니다. 앱은 파일을 만들지 않습니다.",
+            "client-manager-key-permission" => "SSH 계정에 지정 관리자 키 파일의 읽기 권한이 없습니다. 권한을 자동 변경하지 않습니다.",
+            "client-manager-key-file" => "지정 관리자 키가 일반 파일이 아닙니다. 링크/다른 파일로 우회하지 않습니다.",
+            "client-manager-key-format" => "서버 관리자 키가 64자리 16진수 형식과 일치하지 않습니다. 키 원문은 표시하지 않습니다.",
+            "client-manager-key-timeout" => "SSH 관리자 키 조회 시간이 초과됐습니다. 제한된 재시도 후 연결 복구를 사용할 수 있습니다.",
+            "client-manager-key-read" => "지정 관리자 키를 안전하게 읽지 못했습니다. 파일·SSH 상태를 별도로 확인하세요.",
             "client-credential-missing" => "저장된 로그인 정보가 없습니다. 새 관리자 키를 입력하세요. 자동 연결은 꺼졌습니다.",
             "client-credential-save" => "로그인 정보를 안전하게 저장하지 못했습니다. 자동 연결은 사용하지 않습니다. Windows 사용자 폴더 권한을 확인하세요.",
             "client-credential-protection" => "저장된 로그인 정보를 복호화하거나 저장/삭제하지 못했습니다. Windows 계정과 파일 권한을 확인하고 필요하면 새 키를 입력하세요.",

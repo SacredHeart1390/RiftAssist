@@ -154,6 +154,7 @@ try
     await SshRegressionProofs.RunAsync(suite, node, temporary);
     await PhaseFourProofs.RunAsync(suite, node, temporary);
     await SavedLoginProofs.RunAsync(suite, temporary);
+    await AutomaticAuthProofs.RunAsync(suite, node, temporary);
 }
 finally
 {

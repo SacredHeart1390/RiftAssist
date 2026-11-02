@@ -53,9 +53,10 @@ internal static class Program
         PhaseThreeSmoke.Run(app, window, args.Length > 0 ? args[0] : null);
         PhaseFourSmoke.Run(app, window);
         SavedLoginSmoke.Run(app);
+        AutomaticConnectionSmoke.Run(app);
         if (trace.Errors.Count != 0) return 1;
         window.Close(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); app.Shutdown();
-        var report = JsonSerializer.Serialize(new { nativeWpfWindowLoaded = true, savedLoginOptInAndStartupOnce = true, savedLoginDeleteAndUpdateReuse = true, phaseFourAdminReadOnlyUi = true, iconFramesAndWindowHandles = true, bindingErrors = trace.Errors.Count,
+        var report = JsonSerializer.Serialize(new { nativeWpfWindowLoaded = true, fixedSshKeyStartupNoInput = true, automaticRenewalAndRecoveryBounded = true, automaticReportsMemoryOnly = true, savedLoginOptInAndStartupOnce = true, savedLoginDeleteAndUpdateReuse = true, phaseFourAdminReadOnlyUi = true, iconFramesAndWindowHandles = true, bindingErrors = trace.Errors.Count,
             operationsTabsLoaded = 7, simpleConfirmationTested = true, automaticReasonTested = true, manualMockSshQueryTested = true,
             sshFailureCategoriesDisplayed = true, sanitizedSshDiagnostics = true, invalidPortSaveBlocked = true, productionControlsDisabled = true, backendStarted = false, liveConnections = false, os = System.Runtime.InteropServices.RuntimeInformation.OSDescription });
         if (args.Length > 0) File.WriteAllText(Path.Combine(args[0], "wpf-native-smoke.json"), report + Environment.NewLine);

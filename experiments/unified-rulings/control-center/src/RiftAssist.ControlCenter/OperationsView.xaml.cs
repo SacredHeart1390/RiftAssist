@@ -12,14 +12,14 @@ namespace RiftAssist.ControlCenter;
 public partial class OperationsView : UserControl, IAsyncDisposable
 {
     public OperationsModel Model { get; }
-    private bool startupHandled;
+    private bool startupHandled, automaticStartupHandled, viewDisposed;
     private readonly DispatcherTimer expiryTimer = new() { Interval = TimeSpan.FromSeconds(30) };
     public OperationsView() : this(new OperationsModel()) { }
     public OperationsView(OperationsModel model) {
         Model = model; InitializeComponent(); DataContext = Model;
-        expiryTimer.Tick += (_, _) => Model.ExpireAdminIfNeeded();
+        expiryTimer.Tick += async (_, _) => await RefreshAutomaticSessionIfNeededAsync();
         Loaded += (_, _) => { Model.ExpireAdminIfNeeded(); expiryTimer.Start(); };
-        Unloaded += (_, _) => expiryTimer.Stop();
+        // Keep local session expiry checks alive across tab changes; Dispose stops the timer.
         Model.PropertyChanged += (_, e) => { if (e.PropertyName is nameof(Model.Host) or nameof(Model.User) or nameof(Model.Port) or nameof(Model.IdentityFile) or nameof(Model.KnownHostsFile) or nameof(Model.HttpsOrigin) or nameof(Model.AzureMode)) AdminKeyInput.Clear(); };
     }
     private async Task Run(string name, Func<Task> work, bool ssh = false)
@@ -41,7 +41,7 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     private async void Query_Click(object sender, RoutedEventArgs e)
     {
         if (!ValidateSettingsInputs()) { OperationsTabs.SelectedIndex = 6; return; }
-        // The user's explicit button click authorizes this one read. Never invoked on load/save/timer.
+        // Manual refresh shares the fixed read-only monitor with the automatic connection workflow.
         await Run("SSH 상태 조회", () => Model.QueryRemoteAsync(true), ssh: true);
     }
     private async Task<bool> Change(string method, object parameters, string label, string? phrase = null)
@@ -86,6 +86,22 @@ public partial class OperationsView : UserControl, IAsyncDisposable
         var key = AdminKeyInput.Password; AdminKeyInput.Clear();
         await Run("운영 관리자 인증", async () => { try { if (key.Length == 0 && Model.HasSavedLogin) await Model.ConnectSavedAdminAsync(); else await Model.ConnectAdminAsync(key); } finally { key = ""; } });
     }
+    public async Task RefreshAutomaticSessionIfNeededAsync()
+    {
+        if (viewDisposed) return;
+        if (Model.AutomaticRecoveryDue) await Run("관리자 세션 재인증", Model.ConnectAutomaticallyAsync, ssh: true);
+        else Model.ExpireAdminIfNeeded();
+    }
+    public async Task TryAutomaticStartupAsync()
+    {
+        if (automaticStartupHandled) return; automaticStartupHandled = true;
+        if (!Model.HasSavedSshSettings) return;
+        // An unselected WPF tab may not raise Loaded until first opened.
+        expiryTimer.Start();
+        await Run("SSH 읽기 전용 자동 연결", async () => { await Model.SetModeAsync(true); ModeCombo.SelectedIndex = 1; await Model.ConnectAutomaticallyAsync(); }, ssh: true);
+    }
+    private async void RecoverConnection_Click(object sender, RoutedEventArgs e)
+    { await Run("연결 복구", async () => { await Model.SetModeAsync(true); ModeCombo.SelectedIndex = 1; await Model.ConnectAutomaticallyAsync(); }, ssh: true); }
     public async Task TryStartupAdminAsync()
     {
         if (startupHandled) return; startupHandled = true;
@@ -96,8 +112,8 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     { AdminKeyInput.Clear(); await Run("저장된 관리자 인증", () => Model.ConnectSavedAdminAsync()); }
     private async void ForgetSavedAdmin_Click(object sender, RoutedEventArgs e)
     { AdminKeyInput.Clear(); await Run("저장된 로그인 삭제", () => { Model.ForgetSavedLogin(); return Task.CompletedTask; }); }
-    private async void AdminRefresh_Click(object sender, RoutedEventArgs e) => await Run("운영 상태 조회", Model.RefreshAdminAsync);
-    private async void AdminReports_Click(object sender, RoutedEventArgs e) => await Run("운영 제보 목록", Model.ReadAdminReportsAsync);
+    private async void AdminRefresh_Click(object sender, RoutedEventArgs e) => await Run("운영 상태 조회", () => Model.RefreshAdminAsync());
+    private async void AdminReports_Click(object sender, RoutedEventArgs e) => await Run("운영 제보 목록", () => Model.ReadAdminReportsAsync());
     private async void Report_Changed(object sender, SelectionChangedEventArgs e)
     { if (!Model.Busy && ReportsGrid.SelectedItem is OperationsReport report) await Run("제보 상세", async () => { await Model.SelectReportAsync(report); ReportState.SelectedItem = report.Status; }); }
     private void ReportFilter_Changed(object sender, TextChangedEventArgs e)
@@ -142,5 +158,5 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     }
     private void ReloadSettings_Click(object sender, RoutedEventArgs e)
     { try { Model.LoadSettings(); } catch (Exception error) { Model.SettingsFeedback = UserErrors.Explain(error); } }
-    public async ValueTask DisposeAsync() { expiryTimer.Stop(); AdminKeyInput.Clear(); await Model.DisposeAsync(); }
+    public async ValueTask DisposeAsync() { viewDisposed = true; expiryTimer.Stop(); AdminKeyInput.Clear(); await Model.DisposeAsync(); }
 }

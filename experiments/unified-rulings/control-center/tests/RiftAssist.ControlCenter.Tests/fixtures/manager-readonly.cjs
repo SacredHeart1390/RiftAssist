@@ -12,7 +12,7 @@ const store={directory:root,stats:()=>stats,listReports:()=>[row],reportDetail:(
 const fakeHttp={...http,createServer(handler){
  server=http.createServer((req,res)=>{
   requests.push({method:req.method,path:req.url});fs.writeFileSync(path.join(root,'requests.json'),JSON.stringify(requests));
-  if(req.url==='/api/status'&&mode!=='normal'){
+  if(req.url==='/api/status'&&mode!=='normal'&&mode!=='ssh-automatic'){
    if(mode==='expired'){res.writeHead(401);return res.end('synthetic-sensitive-output')}
    if(mode==='redirect'){res.writeHead(302,{Location:'https://example.invalid/forbidden'});return res.end()}
    if(mode==='disconnect'){return req.socket.destroy()}
@@ -23,6 +23,6 @@ const fakeHttp={...http,createServer(handler){
  });
  const listen=server.listen.bind(server); server.listen=(_port,_host,ready)=>listen(0,'127.0.0.1',()=>{ready();process.stdout.write(JSON.stringify({port:server.address().port})+'\n')});return server;
 }};
-const modules={'http':fakeHttp,'fs':fs,'path':path,'crypto':crypto,'./operations-store':{createStore:()=>store,REPORT_STATES:['received','triaged','reproduced','fixing','review','resolved','duplicate','needs-info']},'./access-control':{localSecret:()=> 'synthetic-token',safeEqual:(a,b)=>typeof a==='string'&&a.length===b.length&&crypto.timingSafeEqual(Buffer.from(a),Buffer.from(b))},'./cloudflare-quick':{startQuickTunnel:forbidden},'./paths':{APP_ROOT:root,DATA_ROOT:root},'./app-host':{createAppHost:()=>({status:()=>({releaseId:'v0.1.7'}),currentChild:()=>null,stop:async()=>{}})},'./knowledge-admin':{knowledgeStatus:forbidden},'./knowledge-releases':{activateRelease:forbidden},'./source-discovery':{atomicJson:forbidden},'child_process':{fork:forbidden,spawn:()=>{const child=new EventEmitter();child.stdout=new EventEmitter();child.stderr=new EventEmitter();child.unref=()=>{};return child}}};
+const modules={'http':fakeHttp,'fs':fs,'path':path,'crypto':crypto,'./operations-store':{createStore:()=>store,REPORT_STATES:['received','triaged','reproduced','fixing','review','resolved','duplicate','needs-info']},'./access-control':{localSecret:()=>mode==='ssh-automatic'?'a'.repeat(64):'synthetic-token',safeEqual:(a,b)=>typeof a==='string'&&a.length===b.length&&crypto.timingSafeEqual(Buffer.from(a),Buffer.from(b))},'./cloudflare-quick':{startQuickTunnel:forbidden},'./paths':{APP_ROOT:root,DATA_ROOT:root},'./app-host':{createAppHost:()=>({status:()=>({releaseId:'v0.1.7'}),currentChild:()=>null,stop:async()=>{}})},'./knowledge-admin':{knowledgeStatus:forbidden},'./knowledge-releases':{activateRelease:forbidden},'./source-discovery':{atomicJson:forbidden},'child_process':{fork:forbidden,spawn:()=>{const child=new EventEmitter();child.stdout=new EventEmitter();child.stderr=new EventEmitter();child.unref=()=>{};return child}}};
 const source=fs.readFileSync(path.join(__dirname,'manager-v017.cjs'),'utf8');
 vm.runInNewContext(source,{require:name=>{name=name.replace(/^node:/,'');if(!(name in modules))throw new Error('Unknown fixture module');return modules[name]},process:{env:{MANAGER_PORT:'3100',APP_PORT:'3001'},on:()=>{},exit:forbidden,kill:forbidden,execPath:process.execPath},__filename:'synthetic-manager.cjs',console:{log:()=>{},error:()=>{}},Buffer,URL,setTimeout,clearTimeout,setInterval:()=>({unref(){}}),clearInterval},{filename:'unmodified-manager-v017.cjs'});

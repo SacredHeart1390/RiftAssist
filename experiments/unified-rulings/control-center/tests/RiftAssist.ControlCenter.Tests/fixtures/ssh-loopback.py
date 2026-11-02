@@ -96,6 +96,23 @@ try:
             chunks.append(part)
             if sum(map(len, chunks)) > 16000:
                 raise ValueError('Oversize fixture input')
+        if mode.startswith('key-'):
+            expected = (root / 'expected-input.txt').read_bytes()
+            if b''.join(chunks) != expected or server.command != b'sh -s':
+                channel.send_exit_status(91)
+            elif mode == 'key-missing':
+                channel.send_exit_status(71)
+            elif mode == 'key-invalid':
+                channel.sendall(b'invalid mock value')
+                channel.send_exit_status(0)
+            else:
+                channel.sendall(b'a' * 64)
+                channel.send_exit_status(0)
+            channel.shutdown_write()
+            channel.close()
+            transport.close()
+            time.sleep(30)
+            sys.exit(0)
         expected = (root / 'expected-input.txt').read_bytes()
         if b''.join(chunks) != expected or server.command != b'sh -s':
             channel.send_exit_status(91)

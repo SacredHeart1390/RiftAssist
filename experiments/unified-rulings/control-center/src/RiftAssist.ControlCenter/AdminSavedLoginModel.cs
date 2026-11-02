@@ -50,9 +50,10 @@ public sealed partial class OperationsModel
     public bool StartupAutoRequested => hasSavedLogin && autoConnectAtStartup;
     public void ForgetSavedLogin()
     {
+        connectionGeneration++; StopAutomaticRecovery();
         try { savedLogin.Forget(AdminCredentialReference.For(profile)); }
         finally { DropAdmin(); ReloadLoginChoice(); }
-        LoginFeedback = "이 대상의 저장된 로그인 정보와 자동 연결을 삭제했습니다. 다시 연결하려면 키를 입력하세요.";
+        LoginFeedback = "이 대상의 DPAPI 로그인 정보를 삭제하고 연결을 해제했습니다. 저장된 SSH 설정은 유지되며 연결 복구/다음 실행에서 자동 인증할 수 있습니다.";
         Log("saved-login-delete", "로컬 로그인 정보 삭제 완료");
     }
     public Task ConnectAdminAsync(string key) => ConnectAdminCoreAsync((reference, authenticate) =>
@@ -61,6 +62,7 @@ public sealed partial class OperationsModel
         savedLogin.AuthenticateSavedAsync(reference, authenticate, startup));
     private async Task ConnectAdminCoreAsync(Func<AdminCredentialReference, Func<string, Task>, Task> login)
     {
+        connectionGeneration++; StopAutomaticRecovery();
         if (!AzureMode) throw new ControlException("client-production-control-blocked");
         var reference = AdminCredentialReference.For(profile); var expectedProfile = profile;
         DropAdmin(); var session = adminFactory(profile); remoteAdmin = session;
