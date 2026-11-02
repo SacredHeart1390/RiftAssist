@@ -14,7 +14,7 @@ Control Center가 자식 환경을 비우면서 **ProgramData를 누락**했습�
 
 기존 코드에서 재현·확인한 결함:
 
-1. SSH는 보통 전송 실패에 255, 원격 프로세스 실패에는 해당 종료 코드를 반환합니다. 기존 구현은 2/70/127 등의 원격 명령 실패도 `client-ssh-disconnected`로 처리했습니다.
+1. SSH는 보통 전송 실패에 255(Windows의 원격 종료 상태 미수신은 -1/0xFFFFFFFF도 가능), 원격 프로세스 실패에는 해당 종료 코드를 반환합니다. 기존 구현은 2/70/127 등의 원격 명령 실패도 `client-ssh-disconnected`로 처리했습니다.
 2. 표준입력 쓰기/닫기에서 파이프 오류가 나면 프로세스의 인증 오류 stderr와 종료 코드를 회수하기 전에 예외가 전파될 수 있었습니다. 이를 일반 catch가 다시 `client-ssh-disconnected`로 바꿨습니다.
 3. 프로세스 시작/기타 로컬 예외도 같은 단절 오류로 처리했습니다. stdout/stderr가 상한을 넘으면 읽기를 중단한 파이프 때문에 자식이 대기하고 제한 초과가 타임아웃으로 보일 가능성도 있었습니다.
 4. .NET Process의 기본 StreamReader는 지정 인코딩과 별개로 BOM을 탐지합니다. UTF-8 프로토콜은 BOM 자동 탐지를 끄고 검증합니다. stderr는 로컬 인코딩 잡음 때문에 인증 오류 분류가 사라지지 않도록 치환 디코딩하고 외부에 출력하지 않습니다.
@@ -41,15 +41,15 @@ Control Center가 자식 환경을 비우면서 **ProgramData를 누락**했습�
 | client-ssh-authentication | 키 로드/권한·계정·agent; 입력 파이프 조기 종료에도 원래 인증 오류 보존 |
 | client-ssh-host-key-changed / unverified | 신뢰 경로로 fingerprint 확인; 검증을 끄거나 자동 삭제하지 않음 |
 | client-ssh-dns / refused / timeout | 이름 조회 / 접속 거절 / 지연 |
-| client-ssh-disconnected | 시작 마커 없는 255; 원인을 특정하지 못한 SSH 세션 실패 |
-| client-ssh-session-lost | 원격 조회 시작 확인 후 255; 원격에서 명시적으로 255를 반환해도 이 분류가 될 수 있음 |
+| client-ssh-disconnected | 시작 마커 없는 255/-1; 원인을 특정하지 못한 SSH 세션 실패 |
+| client-ssh-session-lost | 원격 조회 시작 확인 후 255/-1; 원격에서 명시적으로 255를 반환해도 이 분류가 될 수 있음 |
 | client-ssh-remote-command | 255 외 비정상 종료; 원격 셸/명령/실행 정책 확인 |
 | client-ssh-remote-tools | 고정 서버 오류 마커; awk/df/head/sleep/proc/disk/metrics 중 표시 항목 확인 |
 | client-ssh-input-incomplete / pipe-failed | 스크립트 전송/로컬 표준입출력 문제 |
 | client-ssh-response-invalid / limit | 출력 형식·인코딩·배너 / 허용 크기 초과; 연결 단절로 분류하지 않음 |
 | client-ssh-local-failed | 예상하지 못한 로컬 처리 오류; 서버 중단을 의미하지 않음 |
 
-종료 코드 0이어도 파싱 검증에 실패하면 새 정상값을 게시하지 않습니다. 같은 프로필의 마지막 정상값은 **이전 값**으로만 남기고 프로필 변경 시 지웁니다. 마커가 없고 종료 코드가 255인 경우 인증 전후를 완벽히 구분할 수 없으며 그 한계를 유지합니다.
+종료 코드 0이어도 파싱 검증에 실패하면 새 정상값을 게시하지 않습니다. 같은 프로필의 마지막 정상값은 **이전 값**으로만 남기고 프로필 변경 시 지웁니다. Windows의 -1은 POSIX의 255와 같은 전송/미수신 분기로 정규화하고 다른 음수 네이티브 종료 상태는 로컬 실패로 분류합니다. 마커가 없고 종료 코드가 255/-1인 경우 인증 전후를 완벽히 구분할 수 없으며 그 한계를 유지합니다.
 
 ## 새 패키지로 Windows 10에서 확인
 

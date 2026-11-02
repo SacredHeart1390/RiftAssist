@@ -25,6 +25,8 @@ internal static class SshRegressionProofs
             ("remote shell exit 2", new(2, "", "sh: syntax error synthetic-sensitive-output"), "client-ssh-remote-command"),
             ("missing remote tool", new(70, "", "RIFTASSIST_STATUS_STARTED\nRIFTASSIST_STATUS_ERROR=awk\n"), "client-ssh-remote-tools"),
             ("post-auth session loss", new(255, "", "RIFTASSIST_STATUS_STARTED\nConnection reset"), "client-ssh-session-lost"),
+            ("Windows no-exit-status -1", new(-1, "", "RIFTASSIST_STATUS_STARTED\n"), "client-ssh-session-lost"),
+            ("Windows native crash status", new(unchecked((int)0xC0000005), "", "synthetic-sensitive-output"), "client-ssh-local-failed"),
             ("truncated input success", new(0, Status, "", true), "client-ssh-input-incomplete"),
             ("stdin pipe failure with auth stderr", new(255, "", "Permission denied (publickey). synthetic-sensitive-output", true), "client-ssh-authentication"),
             ("refused", new(255, "", "Connection refused"), "client-ssh-refused"),

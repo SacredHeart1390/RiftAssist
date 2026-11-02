@@ -14,8 +14,9 @@ public static class SshDiagnostics
     }
     public static string? FailureCode(SshProcessResult result)
     {
-        // ssh normally uses 255 for transport failure and otherwise returns the remote process exit code.
-        if (result.ExitCode == 255)
+        // POSIX truncates exit(-1) to 255; Windows preserves it as signed 0xFFFFFFFF.
+        // OpenSSH uses -1 when a channel closes without a remote exit status.
+        if (result.ExitCode is 255 or -1)
         {
             if (SessionStarted(result)) return "client-ssh-session-lost";
             var error = result.Error;
@@ -28,6 +29,7 @@ public static class SshDiagnostics
                 : Has("Connection refused") ? "refused"
                 : Has("timed out") ? "timeout" : "disconnected");
         }
+        if (result.ExitCode < 0) return "client-ssh-local-failed"; // Other native crash/termination status, not a shell exit.
         if (result.ExitCode != 0) return RemoteError(result) is not null ? "client-ssh-remote-tools" : "client-ssh-remote-command";
         if (result.InputClosedEarly) return "client-ssh-input-incomplete";
         return null;

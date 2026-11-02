@@ -381,6 +381,16 @@
       "Error": null
     },
     {
+      "Name": "SSH failure separation: Windows no-exit-status -1",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: Windows native crash status",
+      "Passed": true,
+      "Error": null
+    },
+    {
       "Name": "SSH failure separation: truncated input success",
       "Passed": true,
       "Error": null
@@ -506,7 +516,7 @@
       "Error": null
     }
   ],
-  "passed": 101,
+  "passed": 103,
   "failed": 0,
   "os": "Debian GNU/Linux 13 (trixie)",
   "framework": ".NET 10.0.14",

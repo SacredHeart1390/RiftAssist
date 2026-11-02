@@ -74,6 +74,8 @@ PASS SSH start-info preserves argument boundaries and strips unrelated environme
 PASS SSH failure separation: remote shell exit 2
 PASS SSH failure separation: missing remote tool
 PASS SSH failure separation: post-auth session loss
+PASS SSH failure separation: Windows no-exit-status -1
+PASS SSH failure separation: Windows native crash status
 PASS SSH failure separation: truncated input success
 PASS SSH failure separation: stdin pipe failure with auth stderr
 PASS SSH failure separation: refused
@@ -99,4 +101,4 @@ PASS actual OpenSSH loopback mock: denied
 PASS actual OpenSSH loopback mock: host-mismatch
 PASS actual OpenSSH loopback mock: bad-output
 PASS actual OpenSSH loopback mock: drop
-C# proof suite: 101/101 passed; native WPF execution: false.
+C# proof suite: 103/103 passed; native WPF execution: false.

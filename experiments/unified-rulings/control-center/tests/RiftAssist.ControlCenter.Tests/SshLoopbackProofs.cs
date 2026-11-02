@@ -82,7 +82,7 @@ internal static class SshLoopbackProofs
                 ("Unknown error", "unknown-os-error"), ("handle is invalid", "invalid-handle"), ("Failed to create", "create-failed"),
                 ("invalid characters", "invalid-characters"), ("Bad port", "bad-port"), ("Bad owner or permissions", "key-permissions")
             }) if (result.Error.Contains(pattern, StringComparison.OrdinalIgnoreCase)) labels.Add(label);
-            Hint = labels.Count == 0 ? "unclassified-stderr-length-" + result.Error.Length : string.Join("-", labels);
+            Hint = "exit-" + result.ExitCode + "-" + (labels.Count == 0 ? "unclassified-stderr-length-" + result.Error.Length : string.Join("-", labels));
             return result;
         }
     }

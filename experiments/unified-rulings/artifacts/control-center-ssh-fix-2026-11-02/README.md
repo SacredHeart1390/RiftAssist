@@ -10,7 +10,7 @@ Windows CI에서 ProgramData 누락으로 ssh.exe가 접속 전 종료 255/빈 s
 
 | 검사 | 결과 |
 | --- | --- |
-| C# 기존 기능·새 오류 분류·실제 자식 프로세스 파이프 | 101/101 |
+| C# 기존 기능·새 오류 분류·실제 자식 프로세스 파이프 | 103/103 |
 | 위 C#에 포함된 실제 OpenSSH ↔ 루프백 합성 SSH | 6/6 |
 | 위 C#에 포함된 POSIX sh + /proc + HTTP/systemd stub | 3/3 |
 | Node 회귀 | 132/132 |
@@ -18,7 +18,7 @@ Windows CI에서 ProgramData 누락으로 ssh.exe가 접속 전 종료 255/빈 s
 | 수정하지 않은 v0.1.7 호환성 | 11/11 |
 | Windows 대상 WPF 교차 빌드 | 오류·경고 0 |
 
-**총 257/257**, 실패/취소/skip 0. Linux 검증기는 Debian 13이며 Ubuntu 실행 검증은 추가한 Ubuntu 24.04 CI에서 수행합니다. C#의 새 30개 검사는 분류 15 + 실제 프로세스 파이프 6 + Linux 스크립트 3 + 루프백 OpenSSH 6입니다. Windows에서는 Linux 전용 3개를 제외하고 ProgramData 누락/복원 회귀 1개를 추가한 99개를 실행합니다. 서로 다른 OS의 검사 수 차이를 숨기지 않습니다.
+**총 259/259**, 실패/취소/skip 0. Linux 검증기는 Debian 13이며 Ubuntu 실행 검증은 추가한 Ubuntu 24.04 CI에서 수행합니다. C#의 새 32개 검사는 분류 17 + 실제 프로세스 파이프 6 + Linux 스크립트 3 + 루프백 OpenSSH 6입니다. Windows에서는 Linux 전용 3개를 제외하고 ProgramData 누락/복원 회귀 1개를 추가한 101개를 실행합니다. 서로 다른 OS의 검사 수 차이를 숨기지 않습니다.
 
 루프백 SSH는 Paramiko 4.0.0과 **매번 임시 생성하는 합성 키/known_hosts**, `127.0.0.1` 임의 포트만 사용합니다. 실제 Azure·운영 키·사용자 기록·실제 HTTP/API는 사용하지 않습니다. mock SSH 서버는 전달받은 명령을 실행하지 않고 `sh -s`와 UTF-8/LF 입력 바이트를 검증한 뒤 합성 응답/오류만 보냅니다. Linux 스크립트 시험은 실제 /proc 및 awk/df를 사용하되 curl/systemctl을 임시 stub으로 대체해 외부 조회를 차단합니다. 임시 fixture 키/서버는 테스트 종료 후 제거합니다.
 
