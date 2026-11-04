@@ -1,0 +1,16 @@
+{
+  "releaseBuild": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "developBuild": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "previousAttempt": {
+    "result": "NuGet NU1900 vulnerability index unavailable without sandbox network permission",
+    "resolution": "Reran with permitted network; successful restore/build; no audit/security suppression or product code change"
+  },
+  "realAzureConnection": false,
+  "windows10PhysicalTestThisTask": false
+}
