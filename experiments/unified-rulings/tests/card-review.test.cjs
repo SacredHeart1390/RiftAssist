@@ -216,12 +216,13 @@ test('new collection after staging or a changed active pointer blocks final appr
 
 for (const phase of ['before-pointer', 'after-pointer']) test(`activation failure ${phase} retains a durable intent and requires explicit recovery`, async t => {
   const { s, bundleId, pkg } = await prepared(t), originalRename = fs.rename, originalLink = fs.link;
-  if (phase === 'before-pointer') fs.rename = async (source, target) => { if (target === path.join(s.root, 'knowledge-releases/active.json')) throw new Error('Synthetic pointer write failure.'); return originalRename(source, target); };
+  let injections = 0;
+  if (phase === 'before-pointer') fs.rename = async (source, target) => { if (path.resolve(target) === path.resolve(s.root, 'knowledge-releases/active.json')) { injections++; throw new Error('Synthetic pointer write failure.'); } return originalRename(source, target); };
   else fs.link = async (source, target) => {
-    if (target.includes('/card-reviews/events/') && JSON.parse(await fs.readFile(source, 'utf8')).event.payload.type === 'complete') throw new Error('Synthetic audit completion failure.');
+    if (path.dirname(path.resolve(target)) === path.resolve(s.root, 'card-reviews/events') && JSON.parse(await fs.readFile(source, 'utf8')).event.payload.type === 'complete') { injections++; throw new Error('Synthetic audit completion failure.'); }
     return originalLink(source, target);
   };
-  try { assert.equal((await s.activate(bundleId, pkg)).ok, false); }
+  try { const result = await s.activate(bundleId, pkg); assert.equal(injections, 1, 'The synthetic fault must actually fire once on every supported OS.'); assert.equal(result.ok, false); }
   finally { fs.rename = originalRename; fs.link = originalLink; }
   const entries = await fs.readdir(path.join(s.root, 'card-reviews/events'));
   const intent = (await Promise.all(entries.map(async n => JSON.parse(await fs.readFile(path.join(s.root, 'card-reviews/events', n), 'utf8')).event.payload)))
