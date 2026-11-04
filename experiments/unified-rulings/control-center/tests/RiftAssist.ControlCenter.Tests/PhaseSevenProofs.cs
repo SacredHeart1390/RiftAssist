@@ -83,9 +83,9 @@ internal static class PhaseSevenProofs
             var baseline=await ws.CreateAsync(new(new('a',40),new('b',40),"synthetic",1,files),default);job=Job() with{Baseline=baseline};
             File.WriteAllText(RepairScope.Resolve(ws.Source,Code),"module.exports=2;");File.WriteAllText(RepairScope.Resolve(ws.Source,RepairScope.Repro),"const test=require('node:test'),assert=require('node:assert/strict');test('synthetic source copy',()=>assert.equal(require('../../releases/v0.2.0/src/incident-proof'),2));");
             var changed=await ws.InspectAsync(job,default);ProofSuite.True(changed.Changes.Any(p=>p.Path==Code));
-            var result=await runner.RunAsync(new(backend.Node,[RepairScope.Prefix+"control-center/scripts/backend-manifest.cjs"],ws.Source),default);ProofSuite.Equal(result.Exit,0);
+            var result=await runner.RunAsync(new(backend.Node,[RepairScope.Prefix+"control-center/scripts/backend-manifest.cjs"],ws.Source),default);if(result.Exit!=0)throw new ControlException("client-proof-phase7-manifest");
             await ws.PrepareTestsAsync(job,default);
-            var before=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.TestBefore),default);var after=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.Verify),default);ProofSuite.True(before.Exit!=0&&after.Exit==0);
+            var before=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.TestBefore),default);var after=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.Verify),default);if(before.Exit==0||after.Exit!=0)throw new ControlException("client-proof-phase7-repro");
         });
     }
     private static async Task CoordinatorTests(ProofSuite s,string root)

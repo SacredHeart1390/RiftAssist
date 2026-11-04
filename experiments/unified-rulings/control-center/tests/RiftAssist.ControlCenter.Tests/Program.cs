@@ -163,6 +163,9 @@ finally
 {
     Environment.SetEnvironmentVariable("RIFTASSIST_CC_ENV_CANARY", null);
     if (client is not null) await client.DisposeAsync();
+    // Git for Windows marks loose objects read-only. Only this test-owned root is cleaned.
+    foreach(var file in Directory.EnumerateFiles(temporary,"*",new EnumerationOptions{RecurseSubdirectories=true,AttributesToSkip=FileAttributes.ReparsePoint}))
+        if((File.GetAttributes(file)&FileAttributes.ReadOnly)!=0){SafePath.NoLinks(file);File.SetAttributes(file,File.GetAttributes(file)&~FileAttributes.ReadOnly);}
     Directory.Delete(temporary, recursive: true);
 }
 var report = new { suite.Tests, passed = suite.Tests.Count(t => t.Passed), failed = suite.Tests.Count(t => !t.Passed),

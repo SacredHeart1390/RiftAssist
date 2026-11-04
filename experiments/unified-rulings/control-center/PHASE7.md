@@ -56,7 +56,7 @@ CLI/샌드박스 실행은 셸 없이 ArgumentList·UTF-8 stdin/stdout을 사용
 
 ## 테스트 및 게시 승인
 
-기본 수정 범위는 **v020 src의 js/cjs/json과 incident-tests**이다. 문서/WPF/관리자 쓰기/운영 hotfix 등은 이 경로에서 수정하지 못한다. 원래 테스트·기준 사본을 변경하면 거절한다. 에이전트가 manifest를 임의 수정하지 못하며 앱이 `ready=false`인 app-release와 backend manifest의 해시를 변경 소스에 맞춰 결정적으로 생성하고 검토 diff에 포함한다.
+기본 수정 범위는 **v020 src의 js/cjs/json과 incident-tests**이다. 문서/WPF/관리자 쓰기/운영 hotfix 등은 이 경로에서 수정하지 못한다. 원래 테스트·기준 사본을 변경하면 거절한다. 에이전트가 manifest를 임의 수정하지 못하며 앱이 `ready=false`인 app-release와 backend manifest의 해시를 변경 소스에 맞춰 LF 줄바꿈으로 결정적으로 생성하고 검토 diff에 포함한다.
 
 필수: `tests/incident-tests/repro.test.cjs`가 기준 소스에서 실패하고 변경 소스에서 통과 → 기준에서 고정한 Node 9개 suite(최소132) → v017 판정 회귀(최소11) → 검증 후 재검사/해시 일치. 생성된 테스트도 신뢰하지 않고 **네트워크 차단 sandbox**에서 실행한다. loopback/임시 파일/의존성 문제로 고정 회귀가 실행되지 않으면 게시 후보가 되지 않는다. 오류명 일부만 정제하여 표시한다. WPF·브라우저 E2E·공식 규칙 의미·실제 운영 재현은 작업별 자동 필수 검사에 아직 포함되지 않는다. 녹색 결과만으로 올바른 판정/운영 적용이 입증되지 않는다.
 

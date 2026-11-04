@@ -61,7 +61,7 @@ public sealed class RepairWorkspace(string jobRoot,string git,IToolRunner runner
         var hashes=app["hashes"]!.AsObject();var release=RepairScope.Prefix+"releases/v0.2.0/";
         foreach(var key in hashes.Select(p=>p.Key).ToArray()){if(!files.TryGetValue(release+key,out var bytes)){if(File.Exists(RepairScope.Resolve(Before,release+key)))hashes.Remove(key);continue;}hashes[key]=Convert.ToHexStringLower(SHA256.HashData(bytes));}
         foreach(var pair in files.Where(p=>p.Key.StartsWith(release+"src/",StringComparison.Ordinal)))hashes[pair.Key[release.Length..]]=Convert.ToHexStringLower(SHA256.HashData(pair.Value));
-        var options=new JsonSerializerOptions(ProtocolJson.Options){WriteIndented=true};files[appPath]=ProtocolJson.Utf8.GetBytes(app.ToJsonString(options)+"\n");
+        var options=new JsonSerializerOptions(ProtocolJson.Options){WriteIndented=true,NewLine="\n"};files[appPath]=ProtocolJson.Utf8.GetBytes(app.ToJsonString(options)+"\n");
         var backend=JsonNode.Parse(backendBytes)!.AsObject();var inventory=backend["files"]!.AsObject();
         var names=inventory.Select(p=>p.Key).Concat(files.Keys.Where(p=>p.StartsWith(release+"src/",StringComparison.Ordinal)).Select(p=>p[release.Length..])).Distinct().Order(StringComparer.Ordinal);
         var next=new JsonObject();foreach(var name in names)if(files.TryGetValue(release+name,out var bytes))next[name]=Convert.ToHexStringLower(SHA256.HashData(bytes));backend["files"]=next;files[backendPath]=ProtocolJson.Utf8.GetBytes(backend.ToJsonString(options)+"\n");
