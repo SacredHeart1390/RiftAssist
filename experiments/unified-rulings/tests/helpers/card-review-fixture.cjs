@@ -18,7 +18,8 @@ const allScopes = ['review:read', 'review:decide', 'cards:stage', 'cards:activat
 const card = (id, extra = {}) => ({ id, englishName: `Training ${id}`, englishText: 'Draw 1 card.', cost: { energy: 1 },
   cardVersion: 'card-1', cardRevision: 1, releaseStatus: 'released', publishedAt: at, updatedAt: at, ...extra });
 async function reviewFixture(t, { baseCards = [], cards = [card('alpha'), card('beta')], standalone = false, invalidTranslation = false } = {}) {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-card-review-'));
+  // Match the store's real path, including Windows short/long TEMP aliases.
+  const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-card-review-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   const canonical = list => ({ schema: 'riftassist-canonical-1', origin: 'mock', version: 'source-1', sourceUrl: 'https://example.invalid/review',
