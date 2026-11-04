@@ -15,6 +15,7 @@
     "encryptedBackupRestore": true,
     "routingRollback": true,
     "recordsPreserved": true,
-    "actualAzureDeployment": false
+    "actualAzureDeployment": false,
+    "releaseFamily": "v0.2.0"
   }
 }
