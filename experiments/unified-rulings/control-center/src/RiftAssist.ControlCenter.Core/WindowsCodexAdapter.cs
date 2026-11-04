@@ -78,6 +78,7 @@ public sealed class WindowsCodexAdapter(ToolPaths tools,IToolRunner runner):IRea
         var result=await runner.RunAsync(new(tools.Codex,args,work.Source,packet.Text,1200,16777216,Line,new Dictionary<string,string>{{"TEMP",work.Temp},{"TMP",work.Temp}}),c);
         if(result.Exit!=0||!finished)throw new ControlException("client-real-codex-interrupted");return new(summary,input,output);
     }
+    public static IReadOnlyList<string> RegressionPaths => new[]{"ruling-regression.test.cjs","legal-operations.test.cjs","card-access.test.cjs","v020-environment.test.cjs","card-translation.test.cjs","card-sync.test.cjs","card-review.test.cjs","control-center.test.cjs","control-center-operations.test.cjs","release-readiness.test.cjs","compatibility-matrix.test.cjs"}.Select(p=>RepairScope.Prefix+"tests/"+p).ToArray();
     public async Task<RealTestReport> TestAsync(IRepairWorkspace work,RealRepairJob job,CancellationToken c)
     {
         if(!OperatingSystem.IsWindows())throw new ControlException("client-real-isolation");
@@ -86,12 +87,12 @@ public sealed class WindowsCodexAdapter(ToolPaths tools,IToolRunner runner):IRea
         static string Failures(ToolResult r)=>PrivacyPacket.Create(string.Join("\n",r.Output.Split('\n').Where(l=>l.StartsWith("not ok ",StringComparison.Ordinal)).Take(15))).Text;
         var relative=RepairScope.Repro;var before=await Test(work.TestBefore,["--test","--test-reporter=tap","--test-concurrency=1",relative]);var after=await Test(work.Verify,["--test","--test-reporter=tap","--test-concurrency=1",relative]);
         if(before.Exit==0||Counts(before).Tests<1||Counts(before).Fail<1||after.Exit!=0||Counts(after).Tests<1||Counts(after).Fail!=0)return new(false,"재현 테스트 전후 확인 실패\n"+Failures(before)+"\n"+Failures(after));
-        var tests=new[]{"ruling-regression.test.cjs","legal-operations.test.cjs","card-access.test.cjs","v020-environment.test.cjs","card-translation.test.cjs","card-sync.test.cjs","card-review.test.cjs","control-center.test.cjs","control-center-operations.test.cjs"}.Select(p=>RepairScope.Prefix+"tests/"+p).ToArray();
+        var tests=RegressionPaths;
         var regression=await Test(work.Verify,new[]{"--test","--test-reporter=tap","--test-concurrency=1"}.Concat(tests).ToArray());
-        if(regression.Exit!=0||Counts(regression).Tests<132||Counts(regression).Fail!=0)return new(false,"고정 Node 회귀 실패\n"+Failures(regression));
+        if(regression.Exit!=0||Counts(regression).Tests<143||Counts(regression).Fail!=0)return new(false,"고정 Node 회귀 실패\n"+Failures(regression));
         var legacy=Sandbox(work,work.Verify,[tools.Node,"--test","--test-reporter=tap","--test-concurrency=1",RepairScope.Prefix+"tests/ruling-regression.test.cjs"],180);
         legacy=legacy with{Variables=new Dictionary<string,string>{{"TEMP",work.Temp},{"TMP",work.Temp},{"RIFTASSI_TEST_RELEASE","v0.1.7"}}};
         var old=await runner.RunAsync(legacy,c);if(old.Exit!=0||Counts(old).Tests<11||Counts(old).Fail!=0)return new(false,"v0.1.7 호환성 실패\n"+Failures(old));
-        return new(true,"재현: baseline 실패 / 수정 후 통과. 변경 전 고정한 Node 회귀9개 suite와 v0.1.7 호환성 통과. WPF/브라우저 E2E/실제 Riot·OpenAI·Azure 검증은 미실행. 정답/배포 승인을 의미하지 않음.");
+        return new(true,"재현: baseline 실패 / 수정 후 통과. 변경 전 고정한 Node 회귀11개 suite와 v0.1.7 호환성 통과. WPF/브라우저 E2E/실제 Riot·OpenAI·Azure 검증은 미실행. 정답/배포 승인을 의미하지 않음.");
     }
 }

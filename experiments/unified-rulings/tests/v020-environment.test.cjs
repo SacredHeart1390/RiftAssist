@@ -28,7 +28,9 @@ test('unmarked roots and links to production directories are rejected', async t 
   assert.throws(() => assertEnvironment(dir), /No runtime store was opened/);
   await fs.writeFile(path.join(dir, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
   assert.equal(assertEnvironment(dir), 'development');
-  await fs.symlink(path.join(shared, 'knowledge-releases'), path.join(dir, 'knowledge-releases'), 'dir');
+  const outside = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-isolation-target-'));
+  t.after(() => fs.rm(outside, { recursive: true, force: true }));
+  await fs.symlink(outside, path.join(dir, 'knowledge-releases'), 'dir');
   assert.throws(() => assertEnvironment(dir), /must not link outside/);
 });
 
