@@ -1,12 +1,11 @@
   Determining projects to restore...
-/workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj : error NU1900: Warning As Error: Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json. [/workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj]
-  Failed to restore /workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj (in 5.7 sec).
+  Restored /workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj (in 253 ms).
   1 of 2 projects are up-to-date for restore.
+  RiftAssist.ControlCenter.Core -> /workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/bin/Release/net10.0/RiftAssist.ControlCenter.Core.dll
+  RiftAssist.ControlCenter -> /workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/bin/Release/net10.0-windows/win-x64/RiftAssist.ControlCenter.dll
 
-Build FAILED.
-
-/workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj : error NU1900: Warning As Error: Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json. [/workspace/RiftAssist-release-v020/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj]
+Build succeeded.
     0 Warning(s)
-    1 Error(s)
+    0 Error(s)
 
-Time Elapsed 00:00:06.53
+Time Elapsed 00:00:17.98
