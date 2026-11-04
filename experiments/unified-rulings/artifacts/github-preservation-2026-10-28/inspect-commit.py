@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[4]
 ART = Path(__file__).resolve().parent
 PREFIXES = (
     'experiments/unified-rulings/releases/v0.2.0/',
+    'experiments/unified-rulings/releases/v0.3.0/',
+    'experiments/unified-rulings/artifacts/version-split-2026-11-04/',
     'experiments/unified-rulings/tests/',
     'experiments/unified-rulings/artifacts/riot-production-review-2026-10-28/',
     'experiments/unified-rulings/artifacts/riot-predeploy-hardening-2026-10-28/',
@@ -35,7 +37,7 @@ PREFIXES = (
     'experiments/unified-rulings/artifacts/control-center-phase7-2026-11-04/',
     'experiments/unified-rulings/artifacts/control-center-phase8-2026-11-04/',
 )
-EXACT = {'.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
+EXACT = {'experiments/unified-rulings/BRANCHING.md', 'experiments/unified-rulings/branch-state.json', 'experiments/unified-rulings/scripts/version-development.cjs', '.github/workflows/rules-tests.yml', '.github/workflows/control-center.yml', 'experiments/unified-rulings/.gitignore'}
 PATTERNS = {
     'provider-token': rb'\b(?:sk-(?:proj-|admin-)?[A-Za-z0-9_-]{20,}|RGAPI-[A-Za-z0-9-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,})',
     'private-key': rb'-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----',

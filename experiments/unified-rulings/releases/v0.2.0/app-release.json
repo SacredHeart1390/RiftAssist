@@ -75,7 +75,7 @@
     "src/answer-policy.js": "de1244bf836070321ad34af964cc26965d2568fbdcbf582bd4f164b4eba5d1e9",
     "src/answer-quality.js": "e0151bc59184395a4d8a1a9ec311a611d13df0c5c38af7067a79ba82a5a38ad4",
     "src/app-host.js": "eb2c797c59f7b42f00315d79d0e1a19b4e5475c6fb6bb5fb65a902cd65774974",
-    "src/card-access.js": "c491be761c12233d6ede34d57ad654384cf9582179728f030ca7f33442faaafc",
+    "src/card-access.js": "95cbc6ca6323206aeb863ec4c0651da09c32da79119807972587c97d7d5e4a11",
     "src/card-publication.js": "893aeac9f4a822e087f1ac3310ff620a551f609e2a75cda9060ae45d7d95ce05",
     "src/card-review-auth.js": "1359e9ac72634f4c6b0dfadeae1713d805588d14361fc98b6953eed1b9ada424",
     "src/card-review-authorization.js": "9ec9068082f7fa64fbd18720932b8a8b435d9353bd3ab185cdbea80385de669e",
@@ -89,10 +89,10 @@
     "src/card-translation-core.js": "4b58a981af386256f0f0ac617d25f76ad1efc87afea2f04f118c8c079ba0e86f",
     "src/card-translation-store.js": "dab5a635693e3b967739b922b5e096d95b09c2de9d67b2d39bdcd1a2ba5ab995",
     "src/card-translation.js": "a08dfc113eebcc3ab65799d1bfa7053540065a66034570cfcd39e023f4733a4f",
-    "src/cards.js": "489ae2a113691884ed871aa2a144a325eca322fd28e912b7d7a0e2ea840471b1",
+    "src/cards.js": "5f3126f94efa6b2b849b7e547372b8ac6d4a580b8a30de757f16cefbf5491495",
     "src/cloudflare-quick.js": "477cd5500006633adafcd71506a75d4e8f3e67276c867eb6994fd1795a528cc8",
     "src/content-sync.js": "b8da360b14358228d11aef08350080fda3f35b863f45e07feddf7bb417ec5865",
-    "src/environment.js": "d0b4d20b646e1a10b5ea58637c597cbbb6133b809fc651cdf52ed32dd12363a0",
+    "src/environment.js": "511f01f6212a5dc521f029136f0be549a16b6f5acdea0106e1d8be643977a4f2",
     "src/external-services.js": "50c34e85bed625688cdffd4302b6196e88e4c1516c24a6255035995ea1163099",
     "src/html-content.js": "aec0342889909773c88f64844efc622dbaeed037814145231240162bd7d91c62",
     "src/judge-index.js": "14d47e2e8bc15774a2bb16713326f1b39d1065b3a72462d2b40771d676bdd4b0",
@@ -116,6 +116,9 @@
     "src/sync-judge.js": "e291cb51728785904363f614406e758311cfbb0d8d1b691a754248df5f9ee687",
     "src/sync-official.js": "a0d11a7e17910c9e6661d390a13194aae944b1d302c3a816738c526ed69be232",
     "src/sync-store.js": "80020789e4c6838dfc54ff6cfc0afe3d31b19b0135f2f6fbdeb4fb0ed9e947d8",
-    "src/terminology-ko.js": "22070a946bea64123b4e445741f3084d72eb54b561becb39632448df50f8b835"
+    "src/terminology-ko.js": "22070a946bea64123b4e445741f3084d72eb54b561becb39632448df50f8b835",
+    "src/legacy-card-compatibility.js": "5964fad361557f80c9bc48165a95f9a87db1c83960912f6f6e36c50704cb1261",
+    "src/release-readiness.js": "50e21e206e980f7ddd10f48611c9ec8028f5f1497cba82e3c63aaf39e57d6d9f",
+    "scripts/release-readiness.cjs": "eaef13a728fcfe480249834de575f307eb31af31e8f6ce13f7f440505ce99423"
   }
 }

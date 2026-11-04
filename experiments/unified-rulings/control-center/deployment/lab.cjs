@@ -14,7 +14,7 @@ function atomic(file,value){noLinks(file);const tmp=file+'.'+id()+'.tmp';fs.writ
 function bytes(file){noLinks(file);return fs.readFileSync(file);}
 function packageHash(p){const {digest,...body}=p;return hash(JSON.stringify(body));}
 function checkPackage(p){
- if(!p||p.schemaVersion!==1||p.version!=='v0.2.0'||p.branch!=='feature/riot-api-v0.2'||! /^[a-f0-9]{40}$/.test(p.commit)||p.scope!=='development-only'||p.ready!==false||p.digest!==packageHash(p))fail('package');
+ if(!p||p.schemaVersion!==1||p.version!=='v0.2.0'||p.branch!=='release/v0.2.0'||! /^[a-f0-9]{40}$/.test(p.commit)||p.scope!=='development-only'||p.ready!==false||p.digest!==packageHash(p))fail('package');
  if(!p.tests||p.tests.status!=='success'||p.tests.commit!==p.commit||!['synthetic','github-actions'].includes(p.tests.kind))fail('tests');
  const names=Object.keys(p.files||{});if(!p.files?.['app-release.json'])fail('package');try{if(JSON.parse(Buffer.from(p.files['app-release.json'].content,'base64').toString()).ready!==false)fail('package');}catch{fail('package');}if(!names.length||names.length>150||JSON.stringify(p).length>16777216)fail('package');
  let size=0;for(const name of names){if(name!=='app-release.json'&&!/^(?:src|public|manager-ui|dev-fixtures|scripts)\/[A-Za-z0-9_./-]+\.(?:js|cjs|mjs|json|html|css|svg|ico|png|webmanifest)$/.test(name)||name.split('/').some(s=>['.','..','private','node_modules'].includes(s)))fail('package-path');const b=Buffer.from(p.files[name].content,'base64');if(b.length>524288||hash(b)!==p.files[name].sha256)fail('package-hash');if(b.subarray(0,15).toString()==='SQLite format 3')fail('package');size+=b.length;if(size>8388608)fail('package');}

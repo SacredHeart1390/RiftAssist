@@ -1,7 +1,7 @@
 name: Control Center validation
 on:
   push:
-    branches: [feature/riot-api-v0.2]
+    branches: [feature/riot-api-v0.2, release/v0.2.0, develop/v0.3.0]
   pull_request:
   workflow_dispatch:
 permissions:

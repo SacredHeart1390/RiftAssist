@@ -3,8 +3,8 @@
   "scope": "synthetic-only",
   "files": {
     "control.cjs": "83ccba5588145bbfc17df8c0d0c9566d6f6fead2082e5c6a8d74d7699e256c16",
-    "lab.cjs": "da5bb4eefe3f2585022b95e3007d2fc12130aead76570182965e80963d015ac1",
-    "lab.test.cjs": "4353a3cd61b10f6d436a2468816afca2183ee18f1e7a6d68ab760052fd116d6e",
+    "lab.cjs": "ab8196eaa881578246dc94d61b6717b0033ebac0bed5328c71529705487c040e",
+    "lab.test.cjs": "b497045feee4c3624f7416e1c8ebfb95a9ffcd8cb87e24708eabe7412648c0d1",
     "ubuntu-contract.cjs": "570ebf166a982cc20b1d7c51a058ded095f6b0e15d496bdb6f9d99f202890971"
   }
 }

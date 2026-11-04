@@ -50,7 +50,7 @@ function normalizeCatalog(data) {
       cardRevision: entry.source?.cardRevision ?? null, publishedAt: text(entry.source?.publishedAt, 80),
     };
     if (source.cardRevision != null && (!Number.isSafeInteger(source.cardRevision) || source.cardRevision < 0)) throw new Error('Invalid source card revision.');
-    const permissions = { display: entry.permissions?.display === true, modelInput: entry.permissions?.modelInput === true, translation: entry.permissions?.translation === true };
+    const permissions = { display: entry.permissions?.display === true, modelInput: entry.permissions?.modelInput === true, translation: entry.permissions?.translation === true, image: entry.permissions?.image === true };
     // Prototype settings record the user's local use decision, not a license from the source owner.
     const prototypeUse = { enabled: entry.prototypeUse?.enabled === true, modelInput: entry.prototypeUse?.modelInput === true, redistribution: false, rightsConfirmed: false };
     const textEn = text(entry.textEn, 12000);

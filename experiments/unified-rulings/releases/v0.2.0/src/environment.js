@@ -26,10 +26,21 @@ function assertEnvironment(root) {
     value = JSON.parse(fs.readFileSync(marker, 'utf8'));
   } catch { throw new Error('Prepare a separate v0.2.0 environment before starting. No runtime store was opened.'); }
   if (value.releaseFamily !== 'v0.2.0' || !['development', 'staging', 'production'].includes(value.environment)) throw new Error('Invalid v0.2.0 environment marker.');
+  if (value.environment === 'production') {
+    const manifestFile = path.join(APP_ROOT, 'app-release.json');
+    if (fs.lstatSync(manifestFile).isSymbolicLink()) throw new Error('This release is not ready for production.');
+    const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+    if (manifest.ready !== true || manifest.developmentOnly === true || manifest.runtimeScope === 'development-fixture-only') throw new Error('This release is not ready for production. An environment flag cannot override release readiness.');
+  }
   if (value.environment === 'production' && process.env.RIFTASSI_ALLOW_PRODUCTION_START !== 'true') throw new Error('Production startup requires a separate explicit deployment decision.');
   for (const name of ['private', 'knowledge', 'knowledge-releases', 'source-updates', 'tmp', 'releases']) {
     const target = path.join(location, name);
     if (fs.existsSync(target) && !inside(location, canonical(target))) throw new Error('Runtime directories must not link outside the v0.2.0 data root.');
+  }
+  for (const name of ['operations.sqlite','operations.sqlite-wal','operations.sqlite-shm','storage.key','manager.key','session.key']) {
+    const file=path.join(location,'private',name);let info;
+    try { info=fs.lstatSync(file); } catch(error) { if(error.code==='ENOENT')continue;throw error; }
+    if(info.isSymbolicLink()||!info.isFile()||info.nlink>1)throw new Error('Sensitive runtime files must not be links or shared files.');
   }
   return value.environment;
 }

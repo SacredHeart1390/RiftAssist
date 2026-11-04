@@ -32,5 +32,7 @@ jobs:
           package-manager-cache: false
       - name: Run mocked rules regression tests
         run: npm test
+      - name: Cross-version cards AI and reports (synthetic only)
+        run: npm run test:compat
       - name: Verify unchanged v0.1.7 compatibility
         run: npm run test:legacy
