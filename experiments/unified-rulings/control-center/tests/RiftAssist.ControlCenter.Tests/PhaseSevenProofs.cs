@@ -34,7 +34,7 @@ internal static class PhaseSevenProofs
             var executable=Path.Combine(root,"synthetic-codex.exe");File.WriteAllText(executable,"synthetic-not-executable");var nativeTools=tools with{Codex=executable};var mode="ok";
             var stream=new Runner(q=>{
                 if(q.Arguments.Contains("exec")){if(mode=="malformed")q.Line!("invalid json");else if(mode=="error")q.Line!("{\"type\":\"turn.failed\"}");else{q.Line!("{\"type\":\"thread.started\"}");q.Line!("{\"type\":\"item.completed\",\"item\":{\"type\":\"agent_message\",\"text\":\"합성 결과\"}}");if(mode!="interrupted")q.Line!("{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":7,\"output_tokens\":3}}");}return new(0,"");}
-                var before=q.Directory==work.TestBefore;return new(before?1:0,"# tests "+(q.Arguments.Count(a=>a.EndsWith(".cjs",StringComparison.Ordinal))>1?132:11)+"\n# fail "+(before?1:0)+"\n");
+                var before=q.Directory==work.TestBefore;return new(before?1:0,"# tests "+(q.Arguments.Count(a=>a.EndsWith(".cjs",StringComparison.Ordinal))>1?143:11)+"\n# fail "+(before?1:0)+"\n");
             });
             var adapter=new WindowsCodexAdapter(nativeTools,stream);var ticket=new IsolationTicket(work.Source,WindowsCodexAdapter.ToolHash(executable),DateTimeOffset.UtcNow.AddMinutes(5));var packet=PrivacyPacket.Create("합성 external approval");
             await s.CheckAsync("actual exec adapter streams JSONL via stdin and preserves default model",async()=>{var r=await adapter.ExecuteAsync(work,ticket,packet,_=>{},default);ProofSuite.Equal(r.Summary,"합성 결과");ProofSuite.Equal(r.InputTokens,7L);var q=stream.Calls.Last();ProofSuite.Equal(q.Input,packet.Text);ProofSuite.True(q.Arguments.Contains("--json")&&q.Arguments.Contains("--ephemeral")&&!q.Arguments.Contains("--model")&&!q.Arguments.Contains("--sandbox"));});
@@ -88,7 +88,11 @@ internal static class PhaseSevenProofs
             await ws.PrepareTestsAsync(job,default);
             var before=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.TestBefore),default);var after=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.Verify),default);if(before.Exit==0||after.Exit!=0)throw new ControlException("client-proof-phase7-repro");
             var regression=await runner.RunAsync(new(backend.Node,new[]{"--test","--test-reporter=tap","--test-concurrency=1"}.Concat(WindowsCodexAdapter.RegressionPaths).ToArray(),ws.Verify,Seconds:180),default);
-            if(regression.Exit!=0||!regression.Output.Contains("# fail 0",StringComparison.Ordinal))throw new ControlException("client-proof-phase7-regression");
+            if(regression.Exit!=0||!regression.Output.Contains("# fail 0",StringComparison.Ordinal)){
+                var failures=string.Join("\n",regression.Output.Split('\n').Where(line=>line.StartsWith("not ok ",StringComparison.Ordinal)||new[]{"error:","code:","expected:","actual:","location:"}.Any(p=>line.TrimStart().StartsWith(p,StringComparison.Ordinal))).Take(40));
+                Console.WriteLine("Synthetic snapshot regression diagnostics: "+PrivacyPacket.Create(failures).Text);
+                throw new ControlException("client-proof-phase7-regression");
+            }
         });
     }
     private static async Task CoordinatorTests(ProofSuite s,string root)
