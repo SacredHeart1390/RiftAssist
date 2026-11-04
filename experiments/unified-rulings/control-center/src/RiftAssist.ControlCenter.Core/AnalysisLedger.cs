@@ -17,7 +17,7 @@ public sealed class AnalysisLedger(string directory,IUserDataProtection protecti
 {
     public string Root{get;}=Path.GetFullPath(directory);
     private static JsonSerializerOptions Options=>new(ProtocolJson.Options){UnmappedMemberHandling=JsonUnmappedMemberHandling.Disallow};
-    public static AnalysisLedger Local()=>new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"RiftAssist","ControlCenter","IncidentAnalysis"),new WindowsAnalysisProtection());
+    public static AnalysisLedger Local()=>new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"RiftAssist","ControlCenter-Development-v030","IncidentAnalysis"),new WindowsAnalysisProtection());
     private string FileFor(string id){if(!Guid.TryParseExact(id,"D",out var guid)||guid.ToString("D")!=id)throw new ControlException("client-analysis-storage");var file=Path.Combine(Root,id+".dpapi");SafePath.NoLinks(file);return file;}
     public FileStream? TryJobLock(string id)
     {
@@ -38,7 +38,7 @@ public sealed class AnalysisLedger(string directory,IUserDataProtection protecti
     private static void Validate(AnalysisEntry e)
     {
         if(e.SchemaVersion!=1||e.Revision<1||e.Revision>10000||!Guid.TryParseExact(e.ReportId,"D",out _)||e.Source is not("local-manual" or "azure-api" or "synthetic-development")||e.ReportRevision.Length>100||e.Jobs.Length>20||e.Finding.Cost.ExternalCalls!=0||e.Preview.Length>180000||e.InputHash!=PrivacyPacket.Hash(e.Preview)||e.Jobs.Select(j=>j.Id).Distinct().Count()!=e.Jobs.Length)throw new IOException();
-        foreach(var j in e.Jobs)if(!Guid.TryParseExact(j.Id,"D",out _)||j.Lane is not("v017-emergency" or "v020-improvement")||!RepairCoordinator.States.Contains(j.State)||j.Events.Length>50||!j.Synthetic||j.Cost.ExternalCalls!=0||j.PacketHash.Length!=64)throw new IOException();
+        foreach(var j in e.Jobs)if(!Guid.TryParseExact(j.Id,"D",out _)||j.Lane is not("v017-emergency" or "v030-improvement")||!RepairCoordinator.States.Contains(j.State)||j.Events.Length>50||!j.Synthetic||j.Cost.ExternalCalls!=0||j.PacketHash.Length!=64)throw new IOException();
     }
     public AnalysisEntry Save(AnalysisEntry entry,int expectedRevision)
     {

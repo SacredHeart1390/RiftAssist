@@ -57,7 +57,7 @@ public sealed record IncidentFinding(string Provider,string Reproduction,string 
         string Safe(string value)=>PrivacyPacket.Create(value).Text;
         return this with{Provider=Safe(Provider),Reproduction=Safe(Reproduction),Facts=Safe(Facts),Hypotheses=Safe(Hypotheses),CauseCategories=Safe(CauseCategories),CorrectRulingCandidate=Safe(CorrectRulingCandidate),CodeCandidates=Safe(CodeCandidates),Confidence=Safe(Confidence),Unknowns=Safe(Unknowns),V017Urgency=Safe(V017Urgency),V020Improvements=Safe(V020Improvements),Retrieval=Safe(Retrieval),Cost=Cost with{Provider=Safe(Cost.Provider)}};
     }
-    public string Display()=> $"분석 방식: {Provider}\n재현 가능 여부: {Reproduction}\n\n근거/관찰\n{Facts}\n\n추정 (확정 원인 아님)\n{Hypotheses}\n원인 분류 후보: {CauseCategories}\n\n공식 규칙 기반 판정 후보\n{CorrectRulingCandidate}\n\n코드·데이터·프롬프트 후보\n{CodeCandidates}\n\n신뢰도: {Confidence}\n미확인: {Unknowns}\n\nv0.1.7 긴급 후보: {V017Urgency}\nv0.2.0 개선 후보: {V020Improvements}\n\n로컬 검색 메타데이터\n{Retrieval}\n\n비용: {Cost.Bucket} / {Cost.Provider} · 외부 호출 {Cost.ExternalCalls} · 서비스 API 비용과 별도 (금액 미추정)";
+    public string Display()=> $"분석 방식: {Provider}\n재현 가능 여부: {Reproduction}\n\n근거/관찰\n{Facts}\n\n추정 (확정 원인 아님)\n{Hypotheses}\n원인 분류 후보: {CauseCategories}\n\n공식 규칙 기반 판정 후보\n{CorrectRulingCandidate}\n\n코드·데이터·프롬프트 후보\n{CodeCandidates}\n\n신뢰도: {Confidence}\n미확인: {Unknowns}\n\nv0.1.7 긴급 후보: {V017Urgency}\nv0.3.0 개선 후보: {V020Improvements}\n\n로컬 검색 메타데이터\n{Retrieval}\n\n비용: {Cost.Bucket} / {Cost.Provider} · 외부 호출 {Cost.ExternalCalls} · 서비스 API 비용과 별도 (금액 미추정)";
 }
 public interface IIncidentAnalyzer { Task<IncidentFinding> AnalyzeAsync(PrivacyPacket packet,CancellationToken cancellation); }
 public static class IncidentAnalysisPolicy

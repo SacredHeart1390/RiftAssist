@@ -30,3 +30,9 @@ DeploymentLabs/
 ProcessLeases/
 *.sealed
 *.dpapi
+
+# Independent v0.3 family; never collect runtime/settings in source.
+releases/v0.3.0/.dev-data/
+releases/v0.3.0/*.local.json
+
+.version-update.lock

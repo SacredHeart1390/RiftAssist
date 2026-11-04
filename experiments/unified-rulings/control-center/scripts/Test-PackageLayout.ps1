@@ -8,7 +8,7 @@ try {
   foreach($entry in $zip.Entries) {
     if ($entry.FullName.StartsWith('/') -or $entry.FullName.Contains('\') -or $entry.FullName.Split('/') -contains '..') { throw 'Unexpected archive path.' }
   }
-  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.2.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','PHASE8.md')) {
+  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.3.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','PHASE8.md')) {
     if (!$zip.GetEntry($name)) { throw 'Required file is missing from the archive root/layout.' }
   }
   if (@($zip.Entries | Where-Object { $_.FullName -like '*/RiftAssist.ControlCenter.exe' }).Count -ne 0) { throw 'Executable must not be nested.' }

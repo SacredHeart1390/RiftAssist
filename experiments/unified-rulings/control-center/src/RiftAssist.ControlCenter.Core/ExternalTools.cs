@@ -74,11 +74,11 @@ public sealed class ExternalToolInspector(ToolPaths tools,IToolRunner runner)
 public static class RepairScope
 {
     public const string Repository="SacredHeart1390/RiftAssist";
-    public const string BaseBranch="release/v0.2.0";
+    public const string BaseBranch="develop/v0.3.0";
     public const string Prefix="experiments/unified-rulings/";
     public const string Repro="experiments/unified-rulings/tests/incident-tests/repro.test.cjs";
-    public static readonly string[] WritableDirectories=[Prefix+"releases/v0.2.0/src",Prefix+"tests/incident-tests"];
-    public static readonly string[] Derived=[Prefix+"releases/v0.2.0/app-release.json",Prefix+"control-center/backend-manifest.json"];
+    public static readonly string[] WritableDirectories=[Prefix+"releases/v0.3.0/src",Prefix+"tests/incident-tests"];
+    public static readonly string[] Derived=[Prefix+"releases/v0.3.0/app-release.json",Prefix+"control-center/backend-manifest.json"];
     public static void PathValid(string path)
     {
         if(path.Length>240||path.Contains('\\')||path.Contains(':')||path.Any(char.IsControl)||Path.IsPathRooted(path)||path.Split('/').Any(p=>p is "" or "." or ".."||p.StartsWith('.')&&p is not(".gitignore" or ".gitattributes")))throw new ControlException("client-real-scope");
@@ -90,7 +90,7 @@ public static class RepairScope
         if(path.Split('/').Any(p=>p is "private" or "knowledge-releases" or "source-updates" or "node_modules" or "bin" or "obj" or "logs" or "tmp" or "results" or "Settings" or "RealRepairs" or "ManualReports" or "IncidentAnalysis"))return false;
         if(!Regex.IsMatch(path,@"\.(?:js|cjs|mjs|json|cs|xaml|csproj|props|html|css|md|svg|ico|png|webmanifest)\z",RegexOptions.IgnoreCase)&&!path.EndsWith("/.gitattributes",StringComparison.Ordinal))return false;
         return path.StartsWith(Prefix+"tests/",StringComparison.Ordinal)||path.StartsWith(Prefix+"control-center/",StringComparison.Ordinal)&&!path.Contains("/dist/",StringComparison.Ordinal)
-            ||new[]{"v0.1.7","v0.2.0"}.Any(v=>{var prefix=Prefix+"releases/"+v+"/";if(!path.StartsWith(prefix,StringComparison.Ordinal))return false;var relative=path[prefix.Length..];return new[]{"src/","public/","manager-ui/","scripts/","dev-fixtures/","app-release.json"}.Any(p=>relative.StartsWith(p,StringComparison.Ordinal))||!relative.Contains('/')&&(relative.EndsWith(".md",StringComparison.Ordinal)||relative.EndsWith(".example.json",StringComparison.Ordinal)||relative==".gitattributes");});
+            ||new[]{"v0.1.7","v0.3.0"}.Any(v=>{var prefix=Prefix+"releases/"+v+"/";if(!path.StartsWith(prefix,StringComparison.Ordinal))return false;var relative=path[prefix.Length..];return new[]{"src/","public/","manager-ui/","scripts/","dev-fixtures/","app-release.json"}.Any(p=>relative.StartsWith(p,StringComparison.Ordinal))||!relative.Contains('/')&&(relative.EndsWith(".md",StringComparison.Ordinal)||relative.EndsWith(".example.json",StringComparison.Ordinal)||relative==".gitattributes");});
     }
     public static bool Editable(string path)=>WritableDirectories.Any(p=>path.StartsWith(p+"/",StringComparison.Ordinal))&&Regex.IsMatch(path,@"\.(?:js|cjs|json)\z")&&Exportable(path);
     public static void InspectBytes(string path,byte[] bytes)

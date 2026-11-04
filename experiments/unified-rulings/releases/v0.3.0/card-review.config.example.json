@@ -1,0 +1,18 @@
+{
+  "protocol": "riftassist-control-1",
+  "transport": "private-child-process-stdio",
+  "credentialDelivery": "Dedicated inherited bootstrap pipe fd 3; memory only; never arguments, environment, source config or stdout",
+  "environment": "development",
+  "allowedSourceKinds": ["mock"],
+  "networkListener": false,
+  "automaticActivation": false,
+  "defaultSessionLifetimeMs": 3600000,
+  "requestWindowMs": 30000,
+  "bulkLimit": 50,
+  "maxViewItems": 20,
+  "requestBytes": 1048576,
+  "responseBytes": 2000000,
+  "scopes": ["review:read", "review:decide", "cards:stage", "cards:activate", "cards:rollback", "audit:read"],
+  "storage": "DATA_ROOT/card-reviews/events",
+  "note": "Interface contract only; no startup or credential loading is triggered by this file. Native Windows Control Center identity/ACL/packaging integration and real official-source approval remain pending."
+}

@@ -17,7 +17,7 @@ public sealed class OwnedSandbox
             || value.GetProperty("id").GetString() != Id) throw new ControlException("client-sandbox-owner");
         var environment = Path.Combine(Root, ".riftassist-environment.json"); SafePath.NoLinks(environment);
         using var env = JsonDocument.Parse(File.ReadAllBytes(environment));
-        if (env.RootElement.GetProperty("environment").GetString() != "development" || env.RootElement.GetProperty("releaseFamily").GetString() != "v0.2.0")
+        if (env.RootElement.GetProperty("environment").GetString() != "development" || env.RootElement.GetProperty("releaseFamily").GetString() != "v0.3.0")
             throw new ControlException("client-sandbox-owner");
     }
     public override string ToString() => Id;
@@ -26,7 +26,7 @@ public sealed class OwnedSandbox
 public sealed class SandboxCatalog(string home)
 {
     public string Home { get; } = Path.GetFullPath(home);
-    public static SandboxCatalog Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter", "Sandboxes"));
+    public static SandboxCatalog Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter-Development-v030", "Sandboxes"));
     public IReadOnlyList<OwnedSandbox> List()
     {
         SafePath.NoLinks(Home);

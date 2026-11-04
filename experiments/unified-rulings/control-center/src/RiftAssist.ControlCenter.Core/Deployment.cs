@@ -64,15 +64,15 @@ public sealed class DeploymentCatalog(string gh,string directory,IToolRunner run
     public static JsonElement BundledPackage(BackendLayout backend)
     {
         // The packaged developer build is explicitly synthetic evidence, never a production release approval.
-        var files=backend.VerifiedPaths.Select(p=>new SourceBlob(RepairScope.Prefix+"releases/v0.2.0/"+p,File.ReadAllBytes(RepairScope.Resolve(backend.Root,p)))).ToArray();
+        var files=backend.VerifiedPaths.Select(p=>new SourceBlob(RepairScope.Prefix+"releases/v0.3.0/"+p,File.ReadAllBytes(RepairScope.Resolve(backend.Root,p)))).ToArray();
         return BuildPackage(files,new('0',40),"synthetic",[]);
     }
     private static JsonElement BuildPackage(SourceBlob[] files,string commit,string evidence,long[] runs)
     {
-        const string prefix=RepairScope.Prefix+"releases/v0.2.0/";var entries=new SortedDictionary<string,object>(StringComparer.Ordinal);
+        const string prefix=RepairScope.Prefix+"releases/v0.3.0/";var entries=new SortedDictionary<string,object>(StringComparer.Ordinal);
         foreach(var f in files.Where(f=>f.Path.StartsWith(prefix,StringComparison.Ordinal))){var name=f.Path[prefix.Length..];if(name!="app-release.json"&&!new[]{"src/","public/","manager-ui/","dev-fixtures/","scripts/"}.Any(p=>name.StartsWith(p,StringComparison.Ordinal))||!RepairScope.Exportable(f.Path))continue;RepairScope.InspectBytes(f.Path,f.Bytes);entries.Add(name,new{sha256=Convert.ToHexStringLower(SHA256.HashData(f.Bytes)),content=Convert.ToBase64String(f.Bytes)});}
-        var body=JsonSerializer.SerializeToElement(new{schemaVersion=1,version="v0.2.0",branch=RepairScope.BaseBranch,commit,scope="development-only",ready=false,tests=new{status="success",commit,kind=evidence,runIds=runs},files=entries},ProtocolJson.Options);
+        var body=JsonSerializer.SerializeToElement(new{schemaVersion=1,version="v0.3.0",branch=RepairScope.BaseBranch,commit,scope="development-only",ready=false,tests=new{status="success",commit,kind=evidence,runIds=runs},files=entries},ProtocolJson.Options);
         // Node JSON.stringify serializes raw UTF8 consistently; package includes ASCII/base64 only.
-        var digest=PrivacyPacket.Hash(body.GetRawText());return ProtocolJson.Element(new{schemaVersion=1,version="v0.2.0",branch=RepairScope.BaseBranch,commit,scope="development-only",ready=false,tests=new{status="success",commit,kind=evidence,runIds=runs},files=entries,digest});
+        var digest=PrivacyPacket.Hash(body.GetRawText());return ProtocolJson.Element(new{schemaVersion=1,version="v0.3.0",branch=RepairScope.BaseBranch,commit,scope="development-only",ready=false,tests=new{status="success",commit,kind=evidence,runIds=runs},files=entries,digest});
     }
 }

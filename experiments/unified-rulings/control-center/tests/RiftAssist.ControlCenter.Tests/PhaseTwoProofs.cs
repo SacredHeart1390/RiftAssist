@@ -153,10 +153,10 @@ internal static class PhaseTwoProofs
                 await operations.ChangeAsync("restart", new { }, "합성 앱 재시작", true); status = await operations.ReadAsync("status"); ProofSuite.True(status.Field("appRunning").ValueKind == JsonValueKind.True);
             });
             await suite.CheckAsync("development app update and rollback use ready synthetic releases", async () => {
-                var rows = (await operations!.ReadAsync("app-releases")).Field("releases").Rows().ToArray(); ProofSuite.True(rows.Any(r => r.Field("releaseId").Text() == "v0.2.0-cc-demo"));
-                await operations.ChangeAsync("app-release", new { releaseId = "v0.2.0-cc-demo" }, "합성 버전 적용", true);
-                var status = await operations.ReadAsync("status"); ProofSuite.Equal(status.Field("appHost").Field("releaseId").Text(), "v0.2.0-cc-demo");
-                await operations.ChangeAsync("app-release", new { releaseId = "v0.2.0" }, "이전 합성 버전 복귀", true); status = await operations.ReadAsync("status"); ProofSuite.Equal(status.Field("appHost").Field("releaseId").Text(), "v0.2.0");
+                var rows = (await operations!.ReadAsync("app-releases")).Field("releases").Rows().ToArray(); ProofSuite.True(rows.Any(r => r.Field("releaseId").Text() == "v0.3.0-cc-demo"));
+                await operations.ChangeAsync("app-release", new { releaseId = "v0.3.0-cc-demo" }, "합성 버전 적용", true);
+                var status = await operations.ReadAsync("status"); ProofSuite.Equal(status.Field("appHost").Field("releaseId").Text(), "v0.3.0-cc-demo");
+                await operations.ChangeAsync("app-release", new { releaseId = "v0.3.0" }, "이전 합성 버전 복귀", true); status = await operations.ReadAsync("status"); ProofSuite.Equal(status.Field("appHost").Field("releaseId").Text(), "v0.3.0");
             });
             await suite.CheckAsync("development report status and Korean notes persist through existing API", async () => {
                 await operations!.ChangeAsync("update-report", new { id = report!.Id, status = "triaged", note = "합성 제보를 분류했습니다 🙂" }, UserInteraction.AuditReason("update-report", $"{sandbox!.Id}/{report.Id}/triaged"), true); await operations.ReadAsync("status");

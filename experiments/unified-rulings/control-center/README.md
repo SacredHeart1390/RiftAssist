@@ -1,5 +1,7 @@
 # RiftAssist Control Center — Windows 관리 MVP
 
+현재 branch는 develop/v0.3.0 / 제품0.3.0(완료 차수0)입니다. backend/v0.3.0과 ControlCenter-Development-v030 설정 공간을 사용합니다. 기존0.2 운영 도구/저장 인증을 자동 재사용하지 않습니다. 이전 차수 문서는 역사 기록이며 새 버전 실기기 검증을 의미하지 않습니다.
+
 8차 최신: [배포·백업·롤백 합성 검증 / 운영 활성화 조건 / Codex 프로세스 정리](PHASE8.md), [검사 기록](../artifacts/control-center-phase8-2026-11-04/README.md). 실제 Azure 배포는 차단하며 기존7차 기능·운영 읽기를 유지합니다.
 
 7차 최신: [실제 Codex CLI·격리 소스·작업별 Draft PR·Windows10 준비/비용/제한](PHASE7.md), [검증 보고서](../artifacts/control-center-phase7-2026-11-04/README.md). 실제 어댑터를 구현했으며 실행/게시는 각각 기본 비활성·사용자 별도 승인입니다. 개발 검증은 합성/모의이며 실제 Codex·작업 PR·Azure는 실행하지 않았습니다. 아래 6차 기록의 전체 비활성 설명은 7차의 새 opt-in 경로와 구분합니다.

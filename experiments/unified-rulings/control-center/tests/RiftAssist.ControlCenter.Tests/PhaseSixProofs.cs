@@ -56,22 +56,22 @@ internal static class PhaseSixProofs
             var path=Path.Combine(store.Root,entry!.Id+".dpapi");var bytes=File.ReadAllBytes(path);var bad=bytes.ToArray();bad[^1]^=1;File.WriteAllBytes(path,bad);ProofSuite.Throws(()=>store.Read(entry.Id));ProofSuite.True(bad.SequenceEqual(File.ReadAllBytes(path)));File.WriteAllBytes(path,bytes);
         });
         await s.CheckAsync("mock repair runs actual Node before failure and after pass in owned synthetic workspace",async()=>{
-            var coordinator=new RepairCoordinator(store,new MockRepairWorker(backend));var p=CodexBridge.Prompt(entry!,"v020-improvement");
-            entry=await coordinator.RunMockAsync(entry!.Id,"v020-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);
+            var coordinator=new RepairCoordinator(store,new MockRepairWorker(backend));var p=CodexBridge.Prompt(entry!,"v030-improvement");
+            entry=await coordinator.RunMockAsync(entry!.Id,"v030-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);
             var job=entry.Jobs.Single();ProofSuite.Equal(job.State,"ready-for-review");ProofSuite.True(job.Tests.Contains("수정 전 실패",StringComparison.Ordinal)&&job.Synthetic&&job.Cost.ExternalCalls==0);
             var work=Path.Combine(store.Root,"Workspaces",job.Id);ProofSuite.Equal(File.ReadAllText(Path.Combine(work,"ruling.cjs")),MockRepairWorker.After);ProofSuite.True(job.Diff.StartsWith("diff --git",StringComparison.Ordinal));
-            var again=await coordinator.RunMockAsync(entry.Id,"v020-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);ProofSuite.Equal(again.Jobs.Length,1);ProofSuite.Equal(again.Revision,entry.Revision);
+            var again=await coordinator.RunMockAsync(entry.Id,"v030-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);ProofSuite.Equal(again.Jobs.Length,1);ProofSuite.Equal(again.Revision,entry.Revision);
             ProofSuite.True(CodexBridge.PrCandidate(job).Contains("모의",StringComparison.Ordinal));ProofSuite.Throws(()=>CodexBridge.Publish(job,AnalysisConsent.Approve("github-candidate",CodexBridge.PublicationPreview(job))));ProofSuite.Throws(()=>CodexBridge.Publish(job,AnalysisConsent.Approve("other",packet)));
         });
-        await s.CheckAsync("v017 emergency and v020 improvement jobs have separate IDs and never touch release code",async()=>{
+        await s.CheckAsync("v017 emergency and v030 improvement jobs have separate IDs and never touch release code",async()=>{
             var coordinator=new RepairCoordinator(store,new Worker());var p=CodexBridge.Prompt(entry!,"v017-emergency");entry=await coordinator.RunMockAsync(entry!.Id,"v017-emergency",AnalysisConsent.Approve("synthetic-repair",p),null,default);
             ProofSuite.Equal(entry.Jobs.Length,2);ProofSuite.True(entry.Jobs[0].Id!=entry.Jobs[1].Id&&entry.Jobs.Select(j=>j.Lane).Distinct().Count()==2);ProofSuite.True(p.Text.Contains("v0.1.7 운영 소스는 수정하지",StringComparison.Ordinal));
         });
         foreach(var mode in new[]{"cancelled","disconnected","failed","unsafe-result"})await s.CheckAsync("repair terminal status blocks duplicate execution: "+mode,async()=>{
-            var r=store.Create(Input("manual:"+mode),packet,finding,AnalysisConsent.Approve("local-analysis",packet));var worker=new Worker{Mode=mode};var coordinator=new RepairCoordinator(store,worker);var p=CodexBridge.Prompt(r,"v020-improvement");
-            r=await coordinator.RunMockAsync(r.Id,"v020-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);
+            var r=store.Create(Input("manual:"+mode),packet,finding,AnalysisConsent.Approve("local-analysis",packet));var worker=new Worker{Mode=mode};var coordinator=new RepairCoordinator(store,worker);var p=CodexBridge.Prompt(r,"v030-improvement");
+            r=await coordinator.RunMockAsync(r.Id,"v030-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);
             ProofSuite.Equal(r.Jobs.Single().State,mode=="disconnected"?"uncertain":mode=="unsafe-result"?"failed":mode);
-            await coordinator.RunMockAsync(r.Id,"v020-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);ProofSuite.Equal(worker.Calls,1);ProofSuite.Throws(()=>CodexBridge.PrCandidate(r.Jobs.Single()));
+            await coordinator.RunMockAsync(r.Id,"v030-improvement",AnalysisConsent.Approve("synthetic-repair",p),null,default);ProofSuite.Equal(worker.Calls,1);ProofSuite.Throws(()=>CodexBridge.PrCandidate(r.Jobs.Single()));
         });
         s.Check("restart recovery marks pending jobs uncertain without executing them",()=>{
             var current=store.Read(entry!.Id);var pending=current.Jobs[0] with{Id=Guid.NewGuid().ToString("D"),State="running"};current=store.Save(current with{Jobs=[..current.Jobs,pending]},current.Revision);
@@ -79,11 +79,11 @@ internal static class PhaseSixProofs
             var recovered=new RepairCoordinator(store,worker).Recover(current);ProofSuite.Equal(recovered.Jobs.Last().State,"uncertain");ProofSuite.Equal(worker.Calls,0);
         });
         s.Check("copy requests require bound consent and preserve job identity with prepared and complete states",()=>{
-            var current=store.Read(entry!.Id);var coordinator=new RepairCoordinator(store,new Worker());var p=CodexBridge.Prompt(current,"v020-improvement");
-            ProofSuite.Throws(()=>coordinator.PrepareCopy(current,"v020-improvement",p,AnalysisConsent.Approve("external-codex",p)));
-            current=coordinator.PrepareCopy(current,"v020-improvement",p,AnalysisConsent.Approve("clipboard-codex",p));ProofSuite.Equal(current.Jobs.Last().State,"prompt-prepared");
+            var current=store.Read(entry!.Id);var coordinator=new RepairCoordinator(store,new Worker());var p=CodexBridge.Prompt(current,"v030-improvement");
+            ProofSuite.Throws(()=>coordinator.PrepareCopy(current,"v030-improvement",p,AnalysisConsent.Approve("external-codex",p)));
+            current=coordinator.PrepareCopy(current,"v030-improvement",p,AnalysisConsent.Approve("clipboard-codex",p));ProofSuite.Equal(current.Jobs.Last().State,"prompt-prepared");
             current=coordinator.CompleteCopy(current,current.Jobs.Last().Id,true);ProofSuite.Equal(current.Jobs.Last().State,"prompt-copied");
-            var again=coordinator.PrepareCopy(current,"v020-improvement",p,AnalysisConsent.Approve("clipboard-codex",p));ProofSuite.Equal(again.Revision,current.Revision);ProofSuite.Equal(again.Jobs.Last().Id,current.Jobs.Last().Id);
+            var again=coordinator.PrepareCopy(current,"v030-improvement",p,AnalysisConsent.Approve("clipboard-codex",p));ProofSuite.Equal(again.Revision,current.Revision);ProofSuite.Equal(again.Jobs.Last().Id,current.Jobs.Last().Id);
         });
         s.Check("Codex JSON events are bounded progress only and completion is never verified success",()=>{
             ProofSuite.Equal(CodexBridge.EventState("{\"type\":\"turn.completed\",\"secret\":\"synthetic-token\"}"),"agent-finished-unverified");

@@ -40,7 +40,7 @@ public sealed partial class OperationsModel : INotifyPropertyChanged, IAsyncDisp
     private OwnedSandbox? sandbox;
     private JsonElement status;
     private CancellationTokenSource? query;
-    public SandboxCatalog Catalog { get; } = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter", "OperationsSandboxes"));
+    public SandboxCatalog Catalog { get; } = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter-Development-v030", "OperationsSandboxes"));
     public ObservableCollection<OwnedSandbox> Environments { get; } = [];
     public ObservableCollection<StatusTile> Metrics { get; } = [];
     private string connectionStatus = "미연결", snapshotInfo = "아직 조회하지 않았습니다.", settingsFeedback = "";

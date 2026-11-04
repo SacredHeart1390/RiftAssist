@@ -12,7 +12,7 @@ const { convertCatalog, translateCatalog } = require(path.join(release, 'src/rio
 const { createCardAccess } = require(path.join(release, 'src/card-access.js'));
 const shared = path.resolve(release, '../..');
 
-test('v0.2.0 rejects the shared runtime root before opening DBs and keys', () => {
+test('v0.3.0 rejects the shared runtime root before opening DBs and keys', () => {
   assert.throws(() => assertSafeLocation(shared), /production data tree/);
   for (const script of ['server.js', 'manager.js']) {
     const result = spawnSync(process.execPath, [path.join(release, 'src', script)], {
@@ -26,7 +26,7 @@ test('unmarked roots and links to production directories are rejected', async t 
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-isolation-'));
   t.after(() => fs.rm(dir, { recursive: true, force: true }));
   assert.throws(() => assertEnvironment(dir), /No runtime store was opened/);
-  await fs.writeFile(path.join(dir, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(dir, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   assert.equal(assertEnvironment(dir), 'development');
   await fs.symlink(path.join(shared, 'knowledge-releases'), path.join(dir, 'knowledge-releases'), 'dir');
   assert.throws(() => assertEnvironment(dir), /must not link outside/);
@@ -73,7 +73,7 @@ test('real adapter requires explicit approval/config and a reviewed mapper, sani
 });
 
 test('prepared development release runs behind its own gateway with mock AI and never overwrites its pointer', async t => {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-v020-smoke-'));
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-v030-smoke-'));
   let child;
   t.after(async () => {
     if (child && child.exitCode === null) {
@@ -107,15 +107,15 @@ test('prepared development release runs behind its own gateway with mock AI and 
   const driver = path.join(root, 'smoke.cjs');
   await fs.writeFile(driver, `const {createAppHost}=require(${JSON.stringify(path.join(release, 'src/app-host.js'))});
 const h=createAppHost({root:process.env.RIFTASSI_DATA_ROOT,port:${port},workerPorts:[${one},${two}]});
-h.deploy('v0.2.0').then(()=>process.send('ready')).catch(()=>process.exit(1));
+h.deploy('v0.3.0').then(()=>process.send('ready')).catch(()=>process.exit(1));
 process.on('message',async()=>{await h.stop();process.exit(0);});`);
   child = fork(driver, [], { env: { RIFTASSI_DATA_ROOT: root, RIFTASSI_EXTERNAL_MODE: 'mock', OPENAI_API_KEY: 'development-mock-only', OPENAI_GENERATION_ENABLED: 'true' }, execArgv: [], silent: true });
   child.stdout.resume(); child.stderr.resume();
   await Promise.race([once(child, 'message'), once(child, 'exit').then(() => { throw new Error('Development gateway did not start.'); })]);
   const base = `http://127.0.0.1:${port}`, health = await fetch(base + '/api/health'), cookie = health.headers.get('set-cookie').split(';')[0];
   const data = await health.json();
-  assert.ok(cookie.startsWith('rift_session_v020='));
-  assert.equal(data.version, '0.2.0'); assert.equal(data.providerMode, 'mock'); assert.equal(data.cardCatalog.total, 0);
+  assert.ok(cookie.startsWith('rift_session_v030='));
+  assert.equal(data.version, require('../releases/v0.3.0/app-release.json').version); assert.equal(data.providerMode, 'mock'); assert.equal(data.cardCatalog.total, 0);
   const res = await fetch(base + '/api/ask', { method: 'POST', headers: { Origin: base, Cookie: cookie, 'Content-Type': 'application/json' },
     body: JSON.stringify({ clientKey: require('node:crypto').randomUUID(), question: '같은 턴 같은 전장에서 다시 득점하나요?', language: 'ko' }) });
   const response = await res.json();

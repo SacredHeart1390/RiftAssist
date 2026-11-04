@@ -13,7 +13,7 @@ public sealed class WindowsOwnedProcess:IDisposable
     private IntPtr handle;
     private readonly string? receipt;
     private WindowsOwnedProcess(IntPtr h,string? file){handle=h;receipt=file;}
-    public static string DefaultRoot=>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"RiftAssist","ControlCenter","ProcessLeases");
+    public static string DefaultRoot=>Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"RiftAssist","ControlCenter-Development-v030","ProcessLeases");
     private static byte[] Entropy=>ProtocolJson.Utf8.GetBytes("RiftAssist/owned-child/v1");
     public static WindowsOwnedProcess? Attach(Process process,string executable,string directory,string? root=null)
     {

@@ -40,7 +40,7 @@ function output(request, texts = ['[Action] [E] 2를 지불하고 카드 1장을
 }
 async function sandbox(t) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-translation-test-'));
-  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   return root;
 }

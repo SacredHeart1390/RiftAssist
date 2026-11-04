@@ -1,0 +1,2 @@
+# Payload hashes must have identical bytes in Windows and Linux checkouts.
+* text=auto eol=lf

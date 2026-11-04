@@ -2,10 +2,11 @@
   "name": "riftassist-rules-regression",
   "private": true,
   "scripts": {
-    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs",
+    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs development-line.test.cjs",
     "test:legacy": "node helpers/test-legacy.cjs",
     "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs",
-    "test:compat": "node helpers/run-compatibility.cjs"
+    "test:compat": "node helpers/run-compatibility.cjs",
+    "version:preview": "node ../scripts/version-development.cjs --expected 0.3.0"
   },
   "devDependencies": {
     "playwright": "1.62.1"

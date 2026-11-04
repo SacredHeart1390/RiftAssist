@@ -58,7 +58,7 @@ public sealed class RepairWorkspace(string jobRoot,string git,IToolRunner runner
         var observed=RepairScope.Derived.ToDictionary(p=>p,p=>files[p]);
         var appBytes=File.ReadAllBytes(RepairScope.Resolve(Before,appPath));var backendBytes=File.ReadAllBytes(RepairScope.Resolve(Before,backendPath));
         var app=JsonNode.Parse(appBytes)!.AsObject();if(app["ready"]?.GetValue<bool>()!=false)throw new ControlException("client-real-baseline");
-        var hashes=app["hashes"]!.AsObject();var release=RepairScope.Prefix+"releases/v0.2.0/";
+        var hashes=app["hashes"]!.AsObject();var release=RepairScope.Prefix+"releases/v0.3.0/";
         foreach(var key in hashes.Select(p=>p.Key).ToArray()){if(!files.TryGetValue(release+key,out var bytes)){if(File.Exists(RepairScope.Resolve(Before,release+key)))hashes.Remove(key);continue;}hashes[key]=Convert.ToHexStringLower(SHA256.HashData(bytes));}
         foreach(var pair in files.Where(p=>p.Key.StartsWith(release+"src/",StringComparison.Ordinal)))hashes[pair.Key[release.Length..]]=Convert.ToHexStringLower(SHA256.HashData(pair.Value));
         var options=new JsonSerializerOptions(ProtocolJson.Options){WriteIndented=true,NewLine="\n"};files[appPath]=ProtocolJson.Utf8.GetBytes(app.ToJsonString(options)+"\n");

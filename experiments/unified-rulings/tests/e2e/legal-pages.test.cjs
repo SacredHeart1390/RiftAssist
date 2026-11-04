@@ -98,7 +98,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-card-sync-20261028');
+    const cache = await caches.open('riftassi-v0.3.0-card-sync-20261028');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -112,7 +112,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   assert.equal(await page.evaluate(() => fetch('/api/health').then(() => true, () => false)), false);
 });
 
-test('v0.2.0 mobile default restriction explains the pause and preserves evidence/report access', async t => {
+test('v0.3.0 mobile default restriction explains the pause and preserves evidence/report access', async t => {
   const { server, page } = await openBrowser(t, { width: 390, serverOptions: { cardPolicy: null, cards: fixture.cards } });
   await page.goto(server.baseURL);
   await page.waitForFunction(() => !document.querySelector('#submit-button').disabled);
@@ -125,10 +125,10 @@ test('v0.2.0 mobile default restriction explains the pause and preserves evidenc
   assert.ok(await page.locator('#evidence-list details').count() > 0);
   assert.equal(await page.locator('img.card-thumbnail').count(), 0);
   assert.equal(await page.getByRole('button', { name: '이 답변 제보하기', exact: true }).isVisible(), true);
-  await noOverflow(page); await screen(page, 'v020-restricted-mobile.png');
+  await noOverflow(page); await screen(page, 'v030-restricted-mobile.png');
 });
 
-test('v0.2.0 synthetic cards and unreleased previews are clearly labeled in search', async t => {
+test('v0.3.0 synthetic cards and unreleased previews are clearly labeled in search', async t => {
   const { createRiotAdapter } = require(path.join(release, 'src/riot-adapter.js'));
   const { convertCatalog } = require(path.join(release, 'src/riot-converter.js'));
   const cards = convertCatalog(await createRiotAdapter().collect());
@@ -153,7 +153,7 @@ test('reviewed card translations display separate English/Korean text and an exp
   const { englishSource, hash } = require(path.join(release, 'src/card-translation-core'));
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-ui-translation-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   const provider = createTranslationProvider({ id: 'synthetic-ui-adapter', model: 'synthetic-ui-model', mode: 'operator-adapter', enabled: true, approvalReference: 'synthetic-ui-test',
     generate: async request => ({ nameKo: '번역 시험 카드', clauses: request.clauses.map(row => ({ id: row.id, textKo: '카드 번역 화면을 시험합니다.' })),
       keywordsKo: [], cost: request.source.cost, stats: request.source.stats, symbols: request.source.symbols, uncertainties: [] }) });

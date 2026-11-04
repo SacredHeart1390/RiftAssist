@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "branch": "release/v0.2.0",
-  "line": "release",
+  "branch": "develop/v0.3.0",
+  "line": "development",
   "baseCommit": "955f6e8fb85692e274a3ba919486dacf6440433c",
-  "releaseFamily": "v0.2.0",
-  "appVersion": "0.2.0",
-  "completedIterations": null,
+  "releaseFamily": "v0.3.0",
+  "appVersion": "0.3.0",
+  "completedIterations": 0,
   "productionAllowed": false,
   "userReportedValidation": {
     "dateSeoul": "2026-11-04",
@@ -15,6 +15,7 @@
     "encryptedBackupRestore": true,
     "routingRollback": true,
     "recordsPreserved": true,
-    "actualAzureDeployment": false
+    "actualAzureDeployment": false,
+    "releaseFamily": "v0.2.0"
   }
 }

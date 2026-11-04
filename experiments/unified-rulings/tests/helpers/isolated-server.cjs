@@ -9,7 +9,7 @@ const { DatabaseSync } = require('node:sqlite');
 const { once } = require('node:events');
 const fixture = require('../fixtures/rules-2026-10-09.json');
 const project = path.resolve(__dirname, '../..');
-const releaseId = process.env.RIFTASSI_TEST_RELEASE || 'v0.2.0';
+const releaseId = process.env.RIFTASSI_TEST_RELEASE || 'v0.3.0';
 if (!/^v\d+\.\d+\.\d+$/.test(releaseId)) throw new Error('Expected a release version, not a filesystem path.');
 const release = path.join(project, 'releases', releaseId);
 
@@ -72,7 +72,7 @@ async function isolatedServer(t, plans, options = {}) {
     assert.deepEqual(unexpected, [], 'The test attempted an unplanned external request.');
     if (cleanupError) throw cleanupError;
   });
-  await fs.writeFile(path.join(directory, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(directory, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: releaseId, environment: 'development' }));
   const dataId = 'regression-2026-10-09';
   const dir = path.join(directory, 'knowledge-releases', dataId);
   await fs.mkdir(dir, { recursive: true });

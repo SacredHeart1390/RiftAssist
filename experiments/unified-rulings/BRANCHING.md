@@ -29,3 +29,30 @@ ready=false인 출시 후보는 production 마커와 환경 플래그를 함께 
 ## 보존
 
 기존 feature 작업 폴더의 미커밋 변경은 보존한다. 새 작업 폴더는 코드만 sparse checkout하여 운영 자료/추적 SQLite 캐시를 복사하지 않는다. GitHub push는 새 두 branch에만 하고 원래 feature/main은 이동하지 않는다. 문서는 Markdown 원본이며 사용자 바탕화면은 이 클라우드에서 직접 접근하지 않는다.
+
+## 브랜치별 실제 연결 범위
+
+| 구성 | 현재 동작 | 실제 출시까지 남은 부분 |
+|---|---|---|
+| Azure SSH | Windows OpenSSH 호스트 검증·고정 상태 조회·기존 관리자 읽기 인증 어댑터 유지 | 이번에는 실제 VM에 접속하지 않음. 배포 쓰기 전송은 미구현 |
+| 배포 catalog | gh 인증과 정확한 branch/commit CI 조회 어댑터 | 출시 승인·권리/사이트 inventory 확인을 대체하지 않음 |
+| 제한 서버 브로커 | production target을 전송 전에 거절하는 인터페이스 | 서버 설치/최소권한, 고정 명령·경로 allowlist, operation ID·CAS·감사·조회 계약 구현 필요 |
+| staging/서비스 | 임시 합성 HTTP·상태 머신·오류 주입; 독립 개발 앱 gateway 시험 | 실제 선택 release 코드의 Ubuntu staging unit/포트/manager/DB/키 기동 필요 |
+| 백업/복원 | 임시 SQLite 온라인 snapshot·AES-GCM·별도 복원 probe 실제 실행 | 운영 schema·보관/권한·wrap key 분리·오프호스트 보관과 복구 훈련 필요 |
+| 롤백 | 합성 경로 CAS·이전 앱 라우팅·양쪽 기록 보존 | 실제 Caddy include/CAS·systemd 전환·요청 drain·전환 후 신규 제보 보존 검증 필요 |
+
+서버 조사 승인과 변경 승인은 구분한다. 실제 systemd unit/포트/Caddy 상태를 확인한 후에만 고정 inventory를 작성한다. `makeBackup`은 v017에서 purge를 먼저 수행하므로 읽기 전용 조사에서 호출하지 않는다. 백업은 GitHub/Codex/일반 로그로 보내지 않고 원격 서버 승인 이후의 별도 보안 경로로 보관한다. routing rollback 후 신규 버전 DB는 지우거나 구버전에 덮지 않으며, 후속 읽기/이관 계획과 RPO/RTO를 운영자가 확정한다.
+
+## 다음 개발 버전 운영
+
+`develop/v0.3.0`의 Control Center는 버전0.3.0, backend family v0.3.0, 별도 `%LOCALAPPDATA%\RiftAssist\ControlCenter-Development-v030`를 사용한다. 기존 출시용 설정·DPAPI 기록·실제 Azure 자동 연결 설정은 자동 복사하지 않는다. 개발 프로필은 새로 설정하며 실제 서버 접속은 별도 사용자 작업이다. 모의 환경의 기본 포트는3300/3301, worker3311/3312이고 세션/관리 쿠키도 별도다. 기존 v020 소스는 그대로 둔다.
+
+향후 완료 차수 갱신 도구는 develop branch에만 있다:
+
+```sh
+node experiments/unified-rulings/scripts/version-development.cjs --expected 0.3.0
+# 완료 코드를 commit하고 해당 exact SHA 테스트 증거 JSON을 준비한 뒤에만:
+node experiments/unified-rulings/scripts/version-development.cjs --expected 0.3.0 --apply --proof /path/to/test-proof.json
+```
+
+증거 JSON은 `{ "schemaVersion":1, "version":"0.3.0", "commit":"<현재 40자 SHA>", "passed":1, "failed":0 }` 형식이다. passed에는 실제 통과 수를 기록한다. 도구는 증거의 진위를 독립 검증하지 않으며 CI/검토자가 실제 결과를 확인해야 한다. clean develop worktree와 version/차수/SHA 일치 시에만 코드 metadata·해시를 갱신한다. 자동 push·배포·DB 변경은 하지 않는다. 갱신 후 metadata 변경을 다시 검사·테스트하고 commit한다. crash로 lock이 남으면 자동 재시도하지 말고 metadata/해시와 Git diff를 확인한다. 시작0.3.0→첫 완료0.3.1→둘째0.3.2이며 family 폴더/branch/데이터 namespace는 유지한다.

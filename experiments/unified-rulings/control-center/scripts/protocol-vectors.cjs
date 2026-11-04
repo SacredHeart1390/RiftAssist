@@ -1,8 +1,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const project = path.resolve(__dirname, '..');
-const { stable } = require('../../releases/v0.2.0/src/card-translation-core');
-const { signRequest } = require('../../releases/v0.2.0/src/card-review-auth');
+const { stable } = require('../../releases/v0.3.0/src/card-translation-core');
+const { signRequest } = require('../../releases/v0.3.0/src/card-review-auth');
 // Published nonfunctional test key only; application sessions use fresh random keys.
 const keyText = '0'.repeat(64);
 const samples = [

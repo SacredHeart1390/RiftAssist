@@ -6,7 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawn, spawnSync } = require('node:child_process');
 const { once } = require('node:events');
-const release = path.resolve(__dirname, '../releases/v0.2.0');
+const release = path.resolve(__dirname, '../releases/v0.3.0');
 const { signRequest } = require(path.join(release, 'src/card-review-auth'));
 async function fixture(t) {
   const home = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-cc-ops-'));

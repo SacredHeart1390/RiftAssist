@@ -6,7 +6,7 @@ using RiftAssist.ControlCenter.Core;
 internal static class PhaseSevenProofs
 {
     private const string Prefix=RepairScope.Prefix;
-    private const string Code=Prefix+"releases/v0.2.0/src/incident-proof.js";
+    private const string Code=Prefix+"releases/v0.3.0/src/incident-proof.js";
     private static IncidentInput Input(string rev="manual:1")=>new("12345678-1234-1234-1234-123456789abc","local-manual",rev,true,"합성 질문","합성 답변","합성 오류","합성 기대","합성 메모","미확인 합성 근거","mock:practice","synthetic");
     public static RealRepairJob Job()=>new(Guid.NewGuid().ToString("D"),1,Input().ReportId,"manual:1","합성",PrivacyPacket.Hash("합성"),"review",DateTimeOffset.FromUnixTimeSeconds(1800000000),new('a',40),new('b',40),"synthetic-user",123,new(),[new(Code,"module.exports=2;",new('c',64),new('d',64))],"synthetic diff","synthetic tests passed","",null,null,[]);
     public static async Task RunAsync(ProofSuite s,BackendLayout backend,string temporary)
@@ -15,7 +15,7 @@ internal static class PhaseSevenProofs
         var policy=WindowsCodexAdapter.Policy(work,backend.Node,work.Source);
         s.Check("real Codex permission profile denies root reads and network with elevated backend",()=>{var p=string.Join("\n",policy);ProofSuite.True(p.Contains("windows.sandbox=\"elevated\"",StringComparison.Ordinal)&&p.Contains("filesystem.\":root\"=\"deny\"",StringComparison.Ordinal)&&p.Contains("network.enabled=false",StringComparison.Ordinal));ProofSuite.True(!policy.Contains("--sandbox")&&!p.Contains("dangerously",StringComparison.Ordinal)&&!p.Contains("model=",StringComparison.Ordinal));});
         s.Check("real Codex disables web plugin hooks and uses narrow write grants",()=>{var p=string.Join("\n",policy);foreach(var name in new[]{"apps","plugins","hooks","codex_hooks","plugin_hooks","remote_plugin","in_app_browser","in_app_local_automation"})ProofSuite.True(p.Contains("features."+name+"=false",StringComparison.Ordinal));ProofSuite.True(p.Contains("forced_login_method=\"chatgpt\"",StringComparison.Ordinal)&&p.Contains("incident-tests",StringComparison.Ordinal));var verification=string.Join("\n",WindowsCodexAdapter.Policy(work,backend.Node,work.Verify));ProofSuite.True(!verification.Contains("incident-tests",StringComparison.Ordinal));});
-        foreach(var path in new[]{"experiments/unified-rulings/private/manager.key",Prefix+"content.sqlite",Prefix+"content.sqlite-wal",Prefix+"knowledge-releases/active.json",".git/config","../outside.js",Prefix+"releases/v0.2.0/.env",Prefix+"releases/v0.2.0/src/secret.pem"})s.Check("export refuses sensitive path "+Path.GetFileName(path),()=>ProofSuite.True(!RepairScope.Exportable(path)));
+        foreach(var path in new[]{"experiments/unified-rulings/private/manager.key",Prefix+"content.sqlite",Prefix+"content.sqlite-wal",Prefix+"knowledge-releases/active.json",".git/config","../outside.js",Prefix+"releases/v0.3.0/.env",Prefix+"releases/v0.3.0/src/secret.pem"})s.Check("export refuses sensitive path "+Path.GetFileName(path),()=>ProofSuite.True(!RepairScope.Exportable(path)));
         s.Check("live v017 and integration tests remain read only",()=>{ProofSuite.True(RepairScope.Exportable(Prefix+"releases/v0.1.7/src/server.js"));ProofSuite.True(!RepairScope.Editable(Prefix+"releases/v0.1.7/src/server.js")&&!RepairScope.Editable(Prefix+"tests/ruling-regression.test.cjs")&&RepairScope.Editable(Code));});
         s.Check("source guard refuses provider key and SQLite masquerading as source",()=>{ProofSuite.Throws(()=>RepairScope.InspectBytes(Code,ProtocolJson.Utf8.GetBytes("sk-proj-"+new string('x',30))));ProofSuite.Throws(()=>RepairScope.InspectBytes(Code,"SQLite format 3\0synthetic"u8.ToArray()));ProofSuite.Throws(()=>RepairScope.InspectBytes("synthetic.ico",[1,2,3]));});
         s.Check("source guard allows only specific existing dummy fixture credential",()=>RepairScope.InspectBytes(Code,ProtocolJson.Utf8.GetBytes("const key='sk-regression-dummy-not-a-real-key';")));
@@ -81,7 +81,7 @@ internal static class PhaseSevenProofs
         var ws=new RepairWorkspace(Path.Combine(root,"full-source"),git,runner);RealRepairJob? job=null;
         await s.CheckAsync("complete allowed source snapshot excludes data and passes real bundle manifest verification",async()=>{
             var baseline=await ws.CreateAsync(new(new('a',40),new('b',40),"synthetic",1,files),default);job=Job() with{Baseline=baseline};
-            File.WriteAllText(RepairScope.Resolve(ws.Source,Code),"module.exports=2;");File.WriteAllText(RepairScope.Resolve(ws.Source,RepairScope.Repro),"const test=require('node:test'),assert=require('node:assert/strict');test('synthetic source copy',()=>assert.equal(require('../../releases/v0.2.0/src/incident-proof'),2));");
+            File.WriteAllText(RepairScope.Resolve(ws.Source,Code),"module.exports=2;");File.WriteAllText(RepairScope.Resolve(ws.Source,RepairScope.Repro),"const test=require('node:test'),assert=require('node:assert/strict');test('synthetic source copy',()=>assert.equal(require('../../releases/v0.3.0/src/incident-proof'),2));");
             var changed=await ws.InspectAsync(job,default);ProofSuite.True(changed.Changes.Any(p=>p.Path==Code));
             var result=await runner.RunAsync(new(backend.Node,[RepairScope.Prefix+"control-center/scripts/backend-manifest.cjs"],ws.Source),default);if(result.Exit!=0)throw new ControlException("client-proof-phase7-manifest");
             await ws.PrepareTestsAsync(job,default);
@@ -124,7 +124,7 @@ internal static class PhaseSevenProofs
         public Task<ToolResult> RunAsync(ToolCommand q,CancellationToken c)
         {
             Calls.Add(q);var a=q.Arguments;var method=a[Array.IndexOf(a,"--method")+1];var endpoint=a[Array.IndexOf(a,"--method")+2];var repo="repos/"+RepairScope.Repository;object response;var status=200;if(method=="POST")Writes++;
-            var fixtures=new[]{new SourceBlob(Prefix+"tests/ruling-regression.test.cjs","// test"u8.ToArray()),new SourceBlob(Prefix+"releases/v0.2.0/src/server.js","// server"u8.ToArray())};
+            var fixtures=new[]{new SourceBlob(Prefix+"tests/ruling-regression.test.cjs","// test"u8.ToArray()),new SourceBlob(Prefix+"releases/v0.3.0/src/server.js","// server"u8.ToArray())};
             if(endpoint==repo)response=new{permissions=new{push=Permission}};
             else if(endpoint=="user")response=new{login="synthetic-user",id=123};
             else if(endpoint==repo+"/git/ref/heads/"+RepairScope.BaseBranch)response=new{@object=new{sha=new string(BaseMoved?'f':'a',40)}};

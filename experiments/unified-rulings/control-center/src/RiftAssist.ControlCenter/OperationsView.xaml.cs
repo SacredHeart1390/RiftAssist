@@ -77,7 +77,7 @@ public partial class OperationsView : UserControl, IAsyncDisposable
     private async void Backup_Click(object sender, RoutedEventArgs e) => await Change("backup", new { }, "개발 DB/키 백업", "개발 백업");
     private async void AppRelease_Click(object sender, RoutedEventArgs e)
     { if (AppReleaseCombo.SelectedItem is string id) await Change("app-release", new { releaseId = id }, "개발 앱 버전 적용: " + id, "개발 앱 버전 적용"); }
-    private async void Discover_Click(object sender, RoutedEventArgs e) => await Change("knowledge-discover", new { }, "기존 재수집 API 차단 확인 (v0.2.0 정책상 거절 · 수집 접수로 표시하지 않음)");
+    private async void Discover_Click(object sender, RoutedEventArgs e) => await Change("knowledge-discover", new { }, "기존 재수집 API 차단 확인 (v0.3.0 정책상 거절 · 수집 접수로 표시하지 않음)");
     private async void Knowledge_Click(object sender, RoutedEventArgs e)
     { if (KnowledgeCombo.SelectedItem is string id) await Change("knowledge-activate", new { releaseId = id, expectedId = Model.ActiveKnowledgeId, reviewed = true }, "개발 knowledge 버전 적용 (기존 카드 승인 경계 유지)", "개발 자료 활성화"); }
     private async void AdminConnect_Click(object sender, RoutedEventArgs e)

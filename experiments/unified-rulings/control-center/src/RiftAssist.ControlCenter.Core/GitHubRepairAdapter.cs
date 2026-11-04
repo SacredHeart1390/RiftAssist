@@ -51,7 +51,7 @@ public sealed class GitHubRepairAdapter(string gh,string directory,IToolRunner r
             var sha=Sha(entry);var blob=await Get(Repo+"/git/blobs/"+sha,c);if(blob.GetProperty("encoding").GetString()!="base64")throw new ControlException("client-real-github");
             var bytes=Convert.FromBase64String(blob.GetProperty("content").GetString()??"");if(GitHash("blob",bytes)!=sha)throw new ControlException("client-real-github");RepairScope.InspectBytes(path,bytes);total+=bytes.Length;if(total>33554432)throw new ControlException("client-real-source-limit");files.Add(new(path,bytes));
         }
-        if(!files.Any(f=>f.Path==RepairScope.Prefix+"tests/ruling-regression.test.cjs")||!files.Any(f=>f.Path==RepairScope.Prefix+"releases/v0.2.0/src/server.js"))throw new ControlException("client-real-source-limit");
+        if(!files.Any(f=>f.Path==RepairScope.Prefix+"tests/ruling-regression.test.cjs")||!files.Any(f=>f.Path==RepairScope.Prefix+"releases/v0.3.0/src/server.js"))throw new ControlException("client-real-source-limit");
         return new(commit,tree,actor.Actor,actor.Id,files.ToArray());
     }
     public static string GitHash(string type,byte[] bytes)

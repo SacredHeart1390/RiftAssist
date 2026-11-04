@@ -31,7 +31,7 @@ function page(cards = [card()], changes = {}) {
 async function system(t, { cards = [card()], approved = false, enabled = false, intervalMs = 60000 } = {}) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-card-sync-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   let clock = Date.parse('2026-10-28T12:00:00.000Z'), source = async () => page(cards), pageCalls = 0;
   const now = () => new Date(clock).toISOString();
   const adapter = createRiotAdapter({ now, mockPageSource: async (...args) => { pageCalls++; return source(...args); } });
@@ -308,7 +308,7 @@ test('shared roots, symlinks, damaged state and stale run locks fail closed', as
   await assert.rejects(s.engine.runOnce(), error => error.code === 'sync-store-invalid');
   assert.equal((await s.engine.runOnce()).status, 'busy'); assert.equal(s.pageCalls(), 1);
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-sync-link-')); t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   await fs.symlink(path.join(s.root, 'card-sync'), path.join(root, 'card-sync'), 'dir');
   await assert.rejects(createCardSyncStore(root), error => error.code === 'sync-store-invalid');
 });

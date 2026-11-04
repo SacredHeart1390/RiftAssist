@@ -58,7 +58,7 @@ public sealed class AdminLoginPreferences(string directory)
 public sealed class SavedAdminLogin(IAdminCredentialVault vault, AdminLoginPreferences preferences)
 {
     public static SavedAdminLogin Local() => new(new DpapiAdminCredentialVault(Path.Combine(LocalRoot(), "Credentials")), new AdminLoginPreferences(Path.Combine(LocalRoot(), "LoginOptions")));
-    private static string LocalRoot() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter");
+    private static string LocalRoot() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter-Development-v030");
     public AdminLoginPreference Preference(AdminCredentialReference reference) => preferences.Read(reference);
     public void SetAutoConnect(AdminCredentialReference reference, bool enabled)
     {

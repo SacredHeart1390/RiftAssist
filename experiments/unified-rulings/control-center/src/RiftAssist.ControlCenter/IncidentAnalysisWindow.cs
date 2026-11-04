@@ -38,7 +38,7 @@ public sealed class IncidentAnalysisWindow:Window
     public Button CopyRequest{get;}=new(){Content="Codex에 수정 요청 · 프롬프트 복사"};
     public Button MockRepair{get;}=new(){Content="합성 수정·테스트 흐름 실행"};
     public Button CancelWork{get;}=new(){Content="진행 작업 취소",IsEnabled=false};
-    public ComboBox Lane{get;}=new(){ItemsSource=new[]{"v020-improvement","v017-emergency"},SelectedIndex=0,MinWidth=170};
+    public ComboBox Lane{get;}=new(){ItemsSource=new[]{"v030-improvement","v017-emergency"},SelectedIndex=0,MinWidth=170};
     public AnalysisEntry? Current=>History.SelectedItem as AnalysisEntry;
     public IncidentAnalysisWindow(Window owner,IncidentInput input,Func<Task<IncidentInput>> refresh,AnalysisLedger ledger,IIncidentAnalyzer provider,ISyntheticRepairWorker worker,Action<string>? clipboard=null)
     {

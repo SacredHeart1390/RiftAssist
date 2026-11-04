@@ -68,7 +68,7 @@ internal static class PhaseFiveProofs
     private static void ManualTests(ProofSuite suite,string temporary)
     {
         var root=Path.Combine(temporary,"phase5-reports");using var protection=new TestProtection();var store=new ManualReportStore(root,protection);
-        var draft=new ManualReportDraft{Title="합성 제목",Error="합성 오류",Question="합성 질문",ActualAnswer="합성 답변",Expected="합성 기대",RuleEvidence="합성 규칙 근거",OccurredVersion="v0.2.0-synthetic",Channel="대면",MemorySummary=true,AdminNote="합성 메모"};
+        var draft=new ManualReportDraft{Title="합성 제목",Error="합성 오류",Question="합성 질문",ActualAnswer="합성 답변",Expected="합성 기대",RuleEvidence="합성 규칙 근거",OccurredVersion="v0.3.0-synthetic",Channel="대면",MemorySummary=true,AdminNote="합성 메모"};
         ManualReportDocument? doc=null;
         suite.Check("manual encrypted create preserves Korean fields without plaintext metadata or temp files",()=>{
             doc=store.Save(draft);ProofSuite.Equal(doc.Revision,1);var encrypted=File.ReadAllBytes(Path.Combine(root,doc.Id+".dpapi"));

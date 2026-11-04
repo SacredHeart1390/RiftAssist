@@ -20,7 +20,7 @@ const card = (id, extra = {}) => ({ id, englishName: `Training ${id}`, englishTe
 async function reviewFixture(t, { baseCards = [], cards = [card('alpha'), card('beta')], standalone = false, invalidTranslation = false } = {}) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-card-review-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
+  await fs.writeFile(path.join(root, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.3.0', environment: 'development' }));
   const canonical = list => ({ schema: 'riftassist-canonical-1', origin: 'mock', version: 'source-1', sourceUrl: 'https://example.invalid/review',
     collectedAt: at, publishedAt: at, cards: list });
   const base = path.join(root, 'knowledge-releases/base'); await fs.mkdir(base, { recursive: true }); const hashes = {};

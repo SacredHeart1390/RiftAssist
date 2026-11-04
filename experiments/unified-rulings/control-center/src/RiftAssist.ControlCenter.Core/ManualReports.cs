@@ -54,7 +54,7 @@ public sealed class ManualReportStore(string directory, IUserDataProtection prot
     public const int MaxFileBytes = 262144;
     private readonly string root = Path.GetFullPath(directory);
     private static JsonSerializerOptions Options => new(ProtocolJson.Options) { UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
-    public static ManualReportStore Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter", "ManualReports"), new WindowsReportProtection());
+    public static ManualReportStore Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter-Development-v030", "ManualReports"), new WindowsReportProtection());
     private string PathFor(string id) { if (!Guid.TryParseExact(id,"D",out var value) || value.ToString("D") != id) throw new ControlException("client-manual-validation"); var p=Path.Combine(root,id+".dpapi"); SafePath.NoLinks(p); return p; }
     public IReadOnlyList<ManualReportDocument> List()
     {

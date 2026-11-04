@@ -48,7 +48,7 @@ public sealed class BackendLayout
         if (metadata.RootElement.GetProperty("major").GetInt32() != 24 || !File.Exists(node)
             || metadata.RootElement.GetProperty("sha256").GetString() != Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(node))))
             throw new ControlException("client-runtime-integrity");
-        return new BackendLayout(Path.Combine(appRoot, "backend", "v0.2.0"), node, Path.Combine(appRoot, "backend-manifest.json"));
+        return new BackendLayout(Path.Combine(appRoot, "backend", "v0.3.0"), node, Path.Combine(appRoot, "backend-manifest.json"));
     }
 }
 

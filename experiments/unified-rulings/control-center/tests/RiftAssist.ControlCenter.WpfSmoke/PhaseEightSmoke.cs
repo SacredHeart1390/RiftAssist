@@ -23,7 +23,7 @@ internal static class PhaseEightSmoke
     private sealed class Client:IDeploymentClient
     {
         public int Writes;private readonly string id=Guid.NewGuid().ToString("D");private bool deployed;
-        private JsonElement Status()=>ProtocolJson.Element(new{route=new{version=deployed?"v0.2.0":"v0.1.7",generation=1},operations=deployed?new[]{new{id,kind="deploy",state="completed",backupId=id}}:Array.Empty<object>(),backups=Array.Empty<object>()});
+        private JsonElement Status()=>ProtocolJson.Element(new{route=new{version=deployed?"v0.3.0":"v0.1.7",generation=1},operations=deployed?new[]{new{id,kind="deploy",state="completed",backupId=id}}:Array.Empty<object>(),backups=Array.Empty<object>()});
         public Task<JsonElement> CallAsync(string method,object p,CancellationToken c,Action<string>? progress=null){return Task.FromResult(method switch{
             "init"=>Init(),"status" or "reconcile"=>Status(),"plan"=>ProtocolJson.Element(new{id,kind="deploy",digest="synthetic",target=DeploymentPolicy.Target}),"deploy"=>Deploy(),"rollback-plan"=>ProtocolJson.Element(new{id,kind="rollback",digest="synthetic",target=DeploymentPolicy.Target}),"rollback"=>Rollback(),_=>throw new InvalidOperationException()});}
         private JsonElement Init(){Writes++;return Status();}private JsonElement Deploy(){Writes++;deployed=true;return ProtocolJson.Element(new{id,state="completed"});}private JsonElement Rollback(){Writes++;deployed=false;return ProtocolJson.Element(new{id,state="rolled-back"});}

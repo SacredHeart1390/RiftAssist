@@ -26,7 +26,7 @@ public sealed record SshProfile(string Host = "", string User = "", int Port = 2
 public sealed class SshProfileStore(string directory)
 {
     public string DirectoryPath { get; } = Path.GetFullPath(directory);
-    public static SshProfileStore Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter", "Settings"));
+    public static SshProfileStore Local() => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RiftAssist", "ControlCenter-Development-v030", "Settings"));
     private string FilePath => Path.Combine(DirectoryPath, "ssh.local.json");
     private static JsonSerializerOptions Options => new(ProtocolJson.Options) { UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
     public SshProfile Load()

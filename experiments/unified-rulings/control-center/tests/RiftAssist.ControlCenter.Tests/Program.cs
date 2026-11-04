@@ -4,7 +4,7 @@ using System.Text.Json;
 using RiftAssist.ControlCenter.Core;
 
 if(args.Length>0&&args[0]=="--owned-parent-fixture")return await PhaseEightProofs.OwnedParentFixture(args);
-if (args.Length < 2) { Console.Error.WriteLine("Usage: tests <v0.2.0-source-root> <node-executable> [report.json]"); return 2; }
+if (args.Length < 2) { Console.Error.WriteLine("Usage: tests <v0.3.0-source-root> <node-executable> [report.json]"); return 2; }
 var suite = new ProofSuite();
 var release = Path.GetFullPath(args[0]); var node = Path.GetFullPath(args[1]);
 var manifest = args.Length > 3 ? Path.GetFullPath(args[3]) : Path.GetFullPath(Path.Combine(release, "../../control-center/backend-manifest.json"));
