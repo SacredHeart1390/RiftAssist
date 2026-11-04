@@ -61,6 +61,7 @@ public sealed class RealRepairWindow:Window
     });
     public Task PublishAsync()=>Run(async c=>{
         if(EnablePublication.IsChecked!=true)throw new ControlException("client-real-publication-disabled");await CurrentRevision();var job=Jobs.SelectedItem as RealRepairJob??throw new ControlException("client-real-not-reviewed");
+        if(job.ReportRevision!=original.Revision)throw new ControlException("client-analysis-stale");
         var preview=RealRepairCoordinator.PublicationPreview(job);if(!ActionConfirmation.Confirm(this,"수정 결과 승인 · GitHub Draft PR 생성",RepairScope.Repository+" / "+job.Actor,preview.Text))return;
         await CurrentRevision();var saved=await create(Paths()).PublishAsync(job.Id,AnalysisConsent.Approve("real-github",preview),true,Progress,c);Reload(saved.Id);
     });
@@ -69,6 +70,6 @@ public sealed class RealRepairWindow:Window
     {if(busy&&id is null)return;try{var jobs=create(Paths()).History(original.ReportId);Jobs.ItemsSource=jobs;Jobs.SelectedItem=jobs.FirstOrDefault(j=>j.Id==id)??jobs.FirstOrDefault();Render();}catch(Exception e){Status.Text=UserErrors.Explain(e);}}
     private void Render()
     {if(Jobs.SelectedItem is not RealRepairJob j){Result.Text="실제 작업 이력 없음. 기본 수정 범위는 v0.2.0 src와 incident-tests뿐입니다. v0.1.7 긴급 건은 기존 프롬프트 복사/제안 경로를 사용하세요.";return;}
-        Result.Text=$"작업 {j.Id} · {j.State}\n기준 {j.BaseCommit}\nGitHub 계정 {j.Actor}\n브랜치 {j.Branch} → {RepairScope.BaseBranch}\nPR {j.PrUrl??"미생성/확인 필요"}\n\n진행\n{string.Join("\n",j.Events)}\n\nCodex 분석/수정 요약 (모델 주장 · 검토 필요)\n{j.ModelSummary}\n\n검증\n{j.Tests}\nCLI 보고 토큰 입력 {j.InputTokens?.ToString()??"미확인"} / 출력 {j.OutputTokens?.ToString()??"미확인"} · 서비스 API 비용과 별도/과금 미산정\n\n변경 파일\n{string.Join("\n",j.Changes.Select(f=>f.Path))}\n\nGit diff\n{j.Diff}\n\n검토 해시 {j.ReviewHash}\n실제 Windows10/Codex 격리·의미 정확성·WPF/E2E·배포는 별도 확인입니다. 승인 없는 Merge/배포는 실행하지 않습니다.";
+        Result.Text=$"작업 {j.Id} · {j.State}\n제보 revision {j.ReportRevision} · 현재 {original.Revision}\n기준 {j.BaseCommit}\nGitHub 계정 {j.Actor}\n브랜치 {j.Branch} → {RepairScope.BaseBranch}\nPR {j.PrUrl??"미생성/확인 필요"}\n\n진행\n{string.Join("\n",j.Events)}\n\nCodex 분석/수정 요약 (모델 주장 · 검토 필요)\n{j.ModelSummary}\n\n검증\n{j.Tests}\nCLI 보고 토큰 입력 {j.InputTokens?.ToString()??"미확인"} / 출력 {j.OutputTokens?.ToString()??"미확인"} · 서비스 API 비용과 별도/과금 미산정\n\n변경 파일\n{string.Join("\n",j.Changes.Select(f=>f.Path))}\n\nGit diff\n{j.Diff}\n\n검토 해시 {j.ReviewHash}\n실제 Windows10/Codex 격리·의미 정확성·WPF/E2E·배포는 별도 확인입니다. 승인 없는 Merge/배포는 실행하지 않습니다.";
     }
 }

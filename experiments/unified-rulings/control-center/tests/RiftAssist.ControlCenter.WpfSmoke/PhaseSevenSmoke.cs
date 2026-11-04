@@ -27,6 +27,13 @@ internal static class PhaseSevenSmoke
             window.RequeryAsync().GetAwaiter().GetResult();Check(github.Writes==1);
             revision="manual:2";window.StartAsync().GetAwaiter().GetResult();Check(cli.Calls==1&&window.Status.Text.Contains("바뀌",StringComparison.Ordinal));
             Check(new RealRepairStore(store.Root,new WindowsRealRepairProtection()).List().Single().State=="published");
+            // Reopening a current report must not authorize a prior-revision repair from its history.
+            var old=store.List().Single();store.Save(old with{State="review"},old.Revision);
+            var reopened=new RealRepairWindow(owner,Input(),()=>Task.FromResult(Input()),settings,store,"synthetic-node.exe",_=>new(store,github,cli,_=>work),_=>Task.FromResult(new ToolReadiness("0.162.0",true,true,true,"synthetic")));
+            try{reopened.Show();reopened.EnablePublication.IsChecked=true;
+                _=app.Dispatcher.BeginInvoke(new Action(()=>{foreach(var dialog in app.Windows.OfType<ActionConfirmation>().ToArray())dialog.Close();}),DispatcherPriority.ApplicationIdle);
+                reopened.PublishAsync().GetAwaiter().GetResult();Check(github.Writes==1&&reopened.Status.Text.Contains("바뀌",StringComparison.Ordinal));
+            }finally{reopened.Close();}
             Check(!window.Result.Text.Contains(new string('b',64),StringComparison.Ordinal));
         }finally{window.Close();Directory.Delete(root,true);}
     }

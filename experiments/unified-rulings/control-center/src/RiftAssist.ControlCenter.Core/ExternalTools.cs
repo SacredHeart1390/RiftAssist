@@ -49,9 +49,9 @@ public sealed class NativeToolRunner:IToolRunner
                 if(output.Length+line.Length+1>command.OutputLimit)throw new ControlException("client-real-output-limit");output.Append(line).Append('\n');command.Line?.Invoke(line);
             });
             var read=Read();await process.StandardInput.WriteAsync((command.Input??"").AsMemory(),timeout.Token);process.StandardInput.Close();
-            await Task.WhenAll(read,process.WaitForExitAsync(timeout.Token),errors);return new(process.ExitCode,output.ToString(),authKind);
+            await Task.WhenAll(read,process.WaitForExitAsync(timeout.Token),errors);timeout.Token.ThrowIfCancellationRequested();return new(process.ExitCode,output.ToString(),authKind);
         }catch(OperationCanceledException){throw new ControlException(cancellation.IsCancellationRequested?"client-real-cancelled":"client-real-timeout");}
-        catch(ControlException){throw;}catch{throw new ControlException("client-real-process");}
+        catch(ControlException){throw;}catch{throw new ControlException(cancellation.IsCancellationRequested?"client-real-cancelled":timeout.IsCancellationRequested?"client-real-timeout":"client-real-process");}
         finally{ChildProcess.Stop(process);}
     }
 }

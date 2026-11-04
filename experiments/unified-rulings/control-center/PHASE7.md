@@ -60,7 +60,7 @@ CLI/샌드박스 실행은 셸 없이 ArgumentList·UTF-8 stdin/stdout을 사용
 
 필수: `tests/incident-tests/repro.test.cjs`가 기준 소스에서 실패하고 변경 소스에서 통과 → 기준에서 고정한 Node 9개 suite(최소132) → v017 판정 회귀(최소11) → 검증 후 재검사/해시 일치. 생성된 테스트도 신뢰하지 않고 **네트워크 차단 sandbox**에서 실행한다. loopback/임시 파일/의존성 문제로 고정 회귀가 실행되지 않으면 게시 후보가 되지 않는다. 오류명 일부만 정제하여 표시한다. WPF·브라우저 E2E·공식 규칙 의미·실제 운영 재현은 작업별 자동 필수 검사에 아직 포함되지 않는다. 녹색 결과만으로 올바른 판정/운영 적용이 입증되지 않는다.
 
-GitHub 게시 승인은 정확한 작업 ID·기준 커밋/tree·계정·변경 파일/내용·diff·테스트·검토 해시에 묶인다. 승인 후 파일이 바뀌면 차단한다. gh는 다시 계정/쓰기 권한/기준 브랜치 이동 여부를 확인한다. **에이전트는 GitHub 인증·네트워크·Push/PR 권한을 받지 않는다.**
+GitHub 게시 승인은 정확한 작업 ID·제보 revision/입력 해시·기준 커밋/tree·계정·변경 파일/내용·diff·테스트·검토 해시에 묶인다. 승인 후 파일이 바뀌면 차단한다. gh는 다시 계정/쓰기 권한/기준 브랜치 이동 여부를 확인한다. **에이전트는 GitHub 인증·네트워크·Push/PR 권한을 받지 않는다.**
 
 게시 어댑터는 GitHub Git database REST API로 tree/결정적 commit을 만들고 `codex/incident-<GUID>` ref를 생성한다. 이것이 작업 브랜치의 Commit/Push에 해당하며 git push/GCM 토큰 추출은 사용하지 않는다. Draft PR base는 **feature/riot-api-v0.2**이다. 기존 PR #1의 main 대상은 바꾸지 않는다. 작업 PR은 사람이 검토해 개발 브랜치에 통합하고, PR #1의 main 병합·운영 배포는 이후 별도 승인 사항이다. 자동 merge/force push/기존 브랜치 덮어쓰기/Azure 배포 API는 없다.
 
@@ -68,7 +68,7 @@ GitHub 게시 승인은 정확한 작업 ID·기준 커밋/tree·계정·변경 
 
 20분 CLI 제한, 취소 시 프로세스 트리 종료, 유한 출력 크기를 적용한다. 한 실행의 자동 재시도는 **0회**다. 실패/취소/미확정 같은 제보 revision+검토 내용은 기존 작업 ID를 재사용하고 inference를 다시 보내지 않는다. 실패 작업의 임의 재개는 미지원이며 새 근거/revision을 검토한 새 작업이 필요하다.
 
-진행 중 앱이 종료되면 이력 조회에서 활동 잠금 없는 작업은 `uncertain`, 게시 중은 `publication-uncertain`으로 표시한다. CLI 작업을 자동 resume하지 않는다. ‘기존 PR 재조회’는 exact head/base/작업 marker/검토 해시·결정적 commit·비교된 파일 집합/blob을 검증한다. PR이 없고 동일 원격 ref/기준을 확인한 경우에만 review로 돌려놓아 **다시 승인받은 뒤** 게시를 이어간다. 같은 commit/tree/ref를 재사용하며 새 작업 ID/중복 PR을 자동 만들지 않는다. 이미 닫힌 작업 PR도 재조회하며 자동 재개설하지 않는다.
+진행 중 앱이 종료되면 이력 조회에서 활동 잠금 없는 작업은 `uncertain`, 게시 중은 `publication-uncertain`으로 표시한다. CLI 작업을 자동 resume하지 않는다. 정상 취소/종료에서는 프로세스 트리를 종료하지만 작업 관리자 강제 종료/앱 crash 뒤 잔존 프로세스의 자동 발견·종료(Job Object)는 미구현이다. 미확정 작업과 장치의 잔존 프로세스를 확인하기 전 다시 실행하지 않는다. ‘기존 PR 재조회’는 exact head/base/작업 marker/검토 해시·결정적 commit·비교된 파일 집합/blob을 검증한다. PR이 없고 동일 원격 ref/기준을 확인한 경우에만 review로 돌려놓아 **다시 승인받은 뒤** 게시를 이어간다. 같은 commit/tree/ref를 재사용하며 새 작업 ID/중복 PR을 자동 만들지 않는다. 이미 닫힌 작업 PR도 재조회하며 자동 재개설하지 않는다.
 
 작업 이력/검토한 입력/결과/diff는 별도 **RealRepairs DPAPI** 저장소(사용자 ACL·purpose entropy)에 보관한다. ManualReports/IncidentAnalysis와 분리한다. 같은 Windows 사용자 업데이트에서 재사용한다. 보관 한도200건/항목4MiB이며 자동 삭제/백업/내보내기 UI는 없다. 프로필/DPAPI 키 유실과 같은 사용자/관리자 접근 위험은 남는다. plaintext 소스 작업 공간에도 사람이 넣은 비밀이 없어야 하며 자동 기록 보안의 완전성을 보장하지 않는다.
 
