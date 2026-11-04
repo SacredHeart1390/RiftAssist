@@ -41,4 +41,5 @@ Copy-Item -LiteralPath (Join-Path $project 'ZERO-INPUT.md') -Destination (Join-P
 Copy-Item -LiteralPath (Join-Path $project 'PHASE5.md') -Destination (Join-Path $OutputDirectory 'PHASE5.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE6.md') -Destination (Join-Path $OutputDirectory 'PHASE6.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE7.md') -Destination (Join-Path $OutputDirectory 'PHASE7.md')
+Copy-Item -LiteralPath (Join-Path $project 'PHASE8.md') -Destination (Join-Path $OutputDirectory 'PHASE8.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

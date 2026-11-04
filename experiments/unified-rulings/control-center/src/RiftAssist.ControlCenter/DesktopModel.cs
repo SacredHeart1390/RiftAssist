@@ -86,6 +86,15 @@ public static class UserErrors
     {
         var code = error is ControlException control ? control.Code : "client-local-failed";
         var message = code switch {
+            "client-process-guard" => "소유 프로세스의 Windows 격리·정리 기록을 검증하지 못했습니다. 안전한 종료/검증 없이 실행을 계속하지 않습니다.",
+            "client-deploy-production-disabled" => "이 빌드의 실제 Azure 배포/롤백은 차단되어 있습니다. 실제 구성 확인·서버 브로커 설치·별도 승인이 필요합니다.",
+            "client-deploy-protocol" or "client-deploy-owner" => "앱이 만든 격리 합성 배포 환경과 요청 형식을 확인하세요.",
+            "client-deploy-tests" => "검증된 패키지·현재 배포 계획 또는 롤백할 이력을 먼저 선택하세요.",
+            "client-deploy-busy" => "다른 배포 작업이 진행 중이거나 중단 기록이 남았습니다. 재전송하지 말고 미확정 작업을 조회하세요.",
+            "client-deploy-stale" => "선택한 계획 이후 라우팅/버전이 바뀌었습니다. 현재 상태로 계획을 다시 준비하세요.",
+            "client-deploy-package" or "client-deploy-package-path" or "client-deploy-package-hash" => "배포 코드 패키지의 범위·ready=false·해시를 검증하지 못했습니다. 운영/자료 파일을 추가하지 말고 소스 패키지를 다시 확인하세요.",
+            "client-deploy-backup-integrity" => "백업 무결성·복원 검증에 실패했습니다. 백업을 덮거나 DB 복원에 사용하지 말고 원본 자료를 보존하세요.",
+            "client-deploy-failed" => "합성 배포/백업 검증을 완료하지 못했습니다. 기존 자료는 보존하고 결과와 라우팅을 재조회하세요.",
             "client-real-disabled" => "실제 Codex 실행은 기본 비활성입니다. 도구·로그인·격리를 확인하고 직접 활성화하세요.",
             "client-real-publication-disabled" => "GitHub 게시는 기본 비활성입니다. 변경 내용과 게시 대상을 확인하고 직접 활성화하세요.",
             "client-real-tool-missing" => "지정한 native EXE를 찾지 못했습니다. 공식 도구를 직접 설치하고 경로를 지정하세요. cmd/bat shim은 지원하지 않습니다.",

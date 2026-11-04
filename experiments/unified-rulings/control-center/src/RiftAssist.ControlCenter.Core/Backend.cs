@@ -8,6 +8,7 @@ namespace RiftAssist.ControlCenter.Core;
 public sealed class BackendLayout
 {
     private readonly HashSet<string> verifiedFiles = new(StringComparer.Ordinal);
+    public IReadOnlyList<string> VerifiedPaths=>verifiedFiles.Order(StringComparer.Ordinal).ToArray();
     public string Root { get; }
     public string Node { get; }
     public BackendLayout(string root, string node, string manifestPath)

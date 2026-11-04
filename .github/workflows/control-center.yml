@@ -40,6 +40,8 @@ jobs:
           node scripts/protocol-vectors.cjs
           node scripts/backend-manifest.cjs
           python scripts/verify-icon.py
+          node scripts/deployment-manifest.cjs
+          node --test --test-reporter=tap deployment/lab.test.cjs
       - name: Build native WPF target
         run: dotnet build src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj --configuration Release
       - name: Run C# protocol and mock Node integration proofs
@@ -108,7 +110,7 @@ jobs:
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
-          name: RiftAssist-ControlCenter-phase4-validation
+          name: RiftAssist-ControlCenter-phase8-validation
           path: |
             ${{ runner.temp }}/control-center-layout.json
             ${{ runner.temp }}/control-center-proof.json
@@ -139,7 +141,10 @@ jobs:
         with:
           python-version: '3.13'
       - name: Prepare synthetic loopback SSH server
-        run: python -m pip install paramiko==4.0.0
+        run: |
+          python -m pip install paramiko==4.0.0
+          node scripts/deployment-manifest.cjs
+          node --test --test-reporter=tap deployment/lab.test.cjs
       - name: Ubuntu POSIX script and OpenSSH loopback regressions (no Azure)
         run: |
           RIFTASSIST_CC_LOOPBACK_PYTHON="$(command -v python)" dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- ../releases/v0.2.0 "$(command -v node)" "$RUNNER_TEMP/control-center-ubuntu-proof.json"

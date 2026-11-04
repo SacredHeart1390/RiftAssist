@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  Restored /workspace/RiftAssist/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/RiftAssist.ControlCenter.Core.csproj (in 195 ms).
+  2 of 3 projects are up-to-date for restore.
+  RiftAssist.ControlCenter.Core -> /workspace/RiftAssist/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/bin/Debug/net10.0/RiftAssist.ControlCenter.Core.dll
+  RiftAssist.ControlCenter -> /workspace/RiftAssist/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/bin/Debug/net10.0-windows/win-x64/RiftAssist.ControlCenter.dll
+  RiftAssist.ControlCenter.WpfSmoke -> /workspace/RiftAssist/experiments/unified-rulings/control-center/tests/RiftAssist.ControlCenter.WpfSmoke/bin/Debug/net10.0-windows/win-x64/RiftAssist.ControlCenter.WpfSmoke.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:10.69

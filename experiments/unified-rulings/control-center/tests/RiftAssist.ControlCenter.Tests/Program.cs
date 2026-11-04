@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using RiftAssist.ControlCenter.Core;
 
+if(args.Length>0&&args[0]=="--owned-parent-fixture")return await PhaseEightProofs.OwnedParentFixture(args);
 if (args.Length < 2) { Console.Error.WriteLine("Usage: tests <v0.2.0-source-root> <node-executable> [report.json]"); return 2; }
 var suite = new ProofSuite();
 var release = Path.GetFullPath(args[0]); var node = Path.GetFullPath(args[1]);
@@ -13,6 +14,8 @@ BackendLayout? backend = null; OwnedSandbox? sandbox = null; NodeReviewTransport
 string? bundleId = null; ReviewPackage? package = null; byte[]? baseline = null;
 try
 {
+    if(args.Contains("--phase8-only")){backend=new BackendLayout(release,node,manifest);await PhaseEightProofs.RunAsync(suite,backend,temporary);}
+    else{
     using var vectors = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "fixtures/protocol-vectors.json")));
     var key = vectors.RootElement.GetProperty("keyText").GetString()!;
     foreach (var vector in vectors.RootElement.GetProperty("vectors").EnumerateArray()) suite.Check("golden: " + vector.GetProperty("name").GetString(), () => {
@@ -158,6 +161,8 @@ try
     await PhaseFiveProofs.RunAsync(suite, backend!, node, temporary);
     await PhaseSixProofs.RunAsync(suite, backend!, temporary);
     await PhaseSevenProofs.RunAsync(suite, backend!, temporary);
+    await PhaseEightProofs.RunAsync(suite, backend!, temporary);
+    }
 }
 finally
 {

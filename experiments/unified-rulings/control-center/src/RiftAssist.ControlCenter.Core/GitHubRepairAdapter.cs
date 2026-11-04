@@ -37,9 +37,11 @@ public sealed class GitHubRepairAdapter(string gh,string directory,IToolRunner r
         if(!Regex.IsMatch(login,@"\A[A-Za-z0-9-]{1,39}\z")||id<1)throw new ControlException("client-real-github-auth");return(login,id);
     }
     private async Task<string> BaseHead(CancellationToken c)=>Sha((await Get(Repo+"/git/ref/heads/"+RepairScope.BaseBranch,c)).GetProperty("object"));
-    public async Task<RepositorySource> PrepareAsync(CancellationToken c)
+    public Task<RepositorySource> PrepareAsync(CancellationToken c)=>PrepareCommitAsync(null,c);
+    public async Task<RepositorySource> PrepareCommitAsync(string? selectedCommit,CancellationToken c)
     {
-        var actor=await Authorize(c);var commit=await BaseHead(c);var info=await Get(Repo+"/git/commits/"+commit,c);var tree=Sha(info.GetProperty("tree"));
+        if(selectedCommit is not null&&!Regex.IsMatch(selectedCommit,"^[a-f0-9]{40}$"))throw new ControlException("client-real-github");
+        var actor=await Authorize(c);var commit=selectedCommit??await BaseHead(c);var info=await Get(Repo+"/git/commits/"+commit,c);var tree=Sha(info.GetProperty("tree"));
         var list=await Get(Repo+"/git/trees/"+tree+"?recursive=1",c);if(list.GetProperty("truncated").GetBoolean())throw new ControlException("client-real-source-limit");
         var files=new List<SourceBlob>();var seen=new HashSet<string>(StringComparer.OrdinalIgnoreCase);long total=0;
         foreach(var entry in list.GetProperty("tree").EnumerateArray()){

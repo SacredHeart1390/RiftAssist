@@ -11,7 +11,7 @@ public sealed record ToolResult(int Exit,string Output,string AuthKind="unknown"
 public interface IToolRunner { Task<ToolResult> RunAsync(ToolCommand command,CancellationToken cancellation); }
 
 // No shell, credential-valued environment, command echo, stderr log or automatic retry.
-public sealed class NativeToolRunner:IToolRunner
+public sealed class NativeToolRunner(string? processLeaseRoot=null):IToolRunner
 {
     public async Task<ToolResult> RunAsync(ToolCommand command,CancellationToken cancellation)
     {
@@ -28,7 +28,7 @@ public sealed class NativeToolRunner:IToolRunner
         if(command.Variables is not null)foreach(var pair in command.Variables){if(pair.Key is not("TEMP" or "TMP" or "RIFTASSI_TEST_RELEASE"))throw new ControlException("client-real-process");start.Environment[pair.Key]=pair.Value;}
         foreach(var arg in command.Arguments)start.ArgumentList.Add(arg);
         using var timeout=CancellationTokenSource.CreateLinkedTokenSource(cancellation);timeout.CancelAfter(TimeSpan.FromSeconds(command.Seconds));
-        using var process=Process.Start(start)??throw new ControlException("client-real-process");using var stop=timeout.Token.Register(()=>ChildProcess.Stop(process));
+        using var process=Process.Start(start)??throw new ControlException("client-real-process");using var job=WindowsOwnedProcess.Attach(process,command.Executable,command.Directory,processLeaseRoot);using var stop=timeout.Token.Register(()=>ChildProcess.Stop(process));
         try{
             var authKind="unknown";
             async Task Lines(StreamReader reader,int max,Action<string> accept)
@@ -88,7 +88,7 @@ public static class RepairScope
     {
         try{PathValid(path);}catch{return false;}
         if(path.Split('/').Any(p=>p is "private" or "knowledge-releases" or "source-updates" or "node_modules" or "bin" or "obj" or "logs" or "tmp" or "results" or "Settings" or "RealRepairs" or "ManualReports" or "IncidentAnalysis"))return false;
-        if(!Regex.IsMatch(path,@"\.(?:js|cjs|mjs|json|cs|xaml|csproj|props|html|css|md|svg|ico|png)\z",RegexOptions.IgnoreCase)&&!path.EndsWith("/.gitattributes",StringComparison.Ordinal))return false;
+        if(!Regex.IsMatch(path,@"\.(?:js|cjs|mjs|json|cs|xaml|csproj|props|html|css|md|svg|ico|png|webmanifest)\z",RegexOptions.IgnoreCase)&&!path.EndsWith("/.gitattributes",StringComparison.Ordinal))return false;
         return path.StartsWith(Prefix+"tests/",StringComparison.Ordinal)||path.StartsWith(Prefix+"control-center/",StringComparison.Ordinal)&&!path.Contains("/dist/",StringComparison.Ordinal)
             ||new[]{"v0.1.7","v0.2.0"}.Any(v=>{var prefix=Prefix+"releases/"+v+"/";if(!path.StartsWith(prefix,StringComparison.Ordinal))return false;var relative=path[prefix.Length..];return new[]{"src/","public/","manager-ui/","scripts/","dev-fixtures/","app-release.json"}.Any(p=>relative.StartsWith(p,StringComparison.Ordinal))||!relative.Contains('/')&&(relative.EndsWith(".md",StringComparison.Ordinal)||relative.EndsWith(".example.json",StringComparison.Ordinal)||relative==".gitattributes");});
     }

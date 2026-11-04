@@ -24,3 +24,9 @@ releases/v0.2.0/riot.config.local.json
 releases/v0.2.0/card-translation.config.local.json
 releases/v0.2.0/card-sync.config.local.json
 releases/v0.2.0/card-review.config.local.json
+
+# Private deployment labs and owned process receipts are never source artifacts.
+DeploymentLabs/
+ProcessLeases/
+*.sealed
+*.dpapi
