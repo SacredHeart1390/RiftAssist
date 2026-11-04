@@ -74,7 +74,7 @@ public sealed class ExternalToolInspector(ToolPaths tools,IToolRunner runner)
 public static class RepairScope
 {
     public const string Repository="SacredHeart1390/RiftAssist";
-    public const string BaseBranch="feature/riot-api-v0.2";
+    public const string BaseBranch="release/v0.2.0";
     public const string Prefix="experiments/unified-rulings/";
     public const string Repro="experiments/unified-rulings/tests/incident-tests/repro.test.cjs";
     public static readonly string[] WritableDirectories=[Prefix+"releases/v0.2.0/src",Prefix+"tests/incident-tests"];

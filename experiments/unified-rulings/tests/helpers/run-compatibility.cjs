@@ -1,0 +1,3 @@
+const {spawnSync}=require('node:child_process'),path=require('node:path'),fs=require('node:fs');
+const versions=['v0.1.7','v0.2.0','v0.3.0'].filter(v=>fs.existsSync(path.resolve(__dirname,'../../releases',v,'src/server.js')));
+for(const version of versions){console.log('Synthetic compatibility target '+version);const r=spawnSync(process.execPath,['--test','--test-concurrency=1',path.resolve(__dirname,'../compatibility-matrix.test.cjs')],{env:{...(process.env.SystemRoot?{SystemRoot:process.env.SystemRoot}:{}),RIFTASSI_TEST_RELEASE:version},stdio:'inherit'});if(r.status!==0)process.exit(r.status||1);}

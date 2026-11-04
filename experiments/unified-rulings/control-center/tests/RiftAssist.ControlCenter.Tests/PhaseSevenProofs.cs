@@ -75,7 +75,7 @@ internal static class PhaseSevenProofs
     }
     private static async Task FullSourceProof(ProofSuite s,string root,BackendLayout backend,NativeToolRunner runner)
     {
-        var repo=Path.GetFullPath(Path.Combine(backend.Root,"../../../.."));if(!File.Exists(Path.Combine(repo,".git","HEAD")))return;var git=Locate("git")!;
+        var repo=Path.GetFullPath(Path.Combine(backend.Root,"../../../.."));if(!Directory.Exists(Path.Combine(repo,".git"))&&!File.Exists(Path.Combine(repo,".git")))return;var git=Locate("git")!;
         var listed=await runner.RunAsync(new(git,["ls-files"],repo),default);
         var files=listed.Output.Split('\n',StringSplitOptions.RemoveEmptyEntries).Where(RepairScope.Exportable).Select(p=>new SourceBlob(p,File.ReadAllBytes(RepairScope.Resolve(repo,p)))).ToArray();
         var ws=new RepairWorkspace(Path.Combine(root,"full-source"),git,runner);RealRepairJob? job=null;
