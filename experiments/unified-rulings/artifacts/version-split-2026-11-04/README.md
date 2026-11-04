@@ -27,6 +27,8 @@ v030은 별도 환경 마커/.dev-data,3300/3301·worker3311/3312,세션/관리 
 | C#/Node·기존 관리자 계약·loopback SSH |263/263|263/263|
 | 총계 |462/462|472/472|
 
+Windows 직접 앱 회귀를 CI에 추가하면서 기존 카드 활성화 장애 주입2건이 POSIX 구분자에 의존하는 문제를 발견했다. 경로 비교를 path.resolve/dirname으로 정규화하고 실제 주입1회도 검증한다. 모의 Codex 검사 수 fixture도 새143건 기준으로 갱신했다. 실제 카드 활성화 코드는 바꾸지 않았다.
+
 Codex의 고정 회귀 목록에서 개발 환경 검사 파일명 불일치를 수정했다. 양쪽 branch에서 trusted11개 suite(143개 검사)가 실제 export된 코드 사본에서도 실행되는지 C# full-source proof 안에서 확인했다. 실제 Codex 추론을 실행한 것은 아니다. 외부 공유 knowledge 폴더에 의존하던 symlink 시험도 독립 임시 target으로 바꿨다.
 
 WPF 교차 빌드 두 branch 오류0/경고0. 마지막 재실행 때 sandbox 네트워크 미허용으로 NuGet 취약점 인덱스 검사 NU1900이 발생했으나, 네트워크를 허용해 restore/build를 다시 통과했다. audit/경고 검사를 끄지 않았다. backend85·deployment4·HMAC/한국어JSON vectors6·7개 크기 아이콘도 검사했다. release Windows GitHub runner는 별도 source269/packaged268, WPF smoke·ZIP최상위 EXE·실제 EXE 실행/종료·아이콘 검사를 통과했다(`release-windows-ci.json`의 SHA에 한정). 최신 브랜치 CI는 각 Actions 화면에서 exact SHA를 확인한다. GitHub Windows runner와 Windows10 실기기 검사는 구분한다. v030 Windows10 실기기·실제 Codex 추론/작업PR·Azure 접속/배포는 이번에 실행하지 않았다.
