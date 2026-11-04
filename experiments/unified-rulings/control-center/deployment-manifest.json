@@ -4,7 +4,7 @@
   "files": {
     "control.cjs": "83ccba5588145bbfc17df8c0d0c9566d6f6fead2082e5c6a8d74d7699e256c16",
     "lab.cjs": "39af32e7ee87cc882269036f9276943a92c8f1de06e3a62e3cc21253d5bfcacf",
-    "lab.test.cjs": "12b195090ea1d96f685d973a24903231f9b1eb3b65b7a620c62d5c96e173bd99",
+    "lab.test.cjs": "4353a3cd61b10f6d436a2468816afca2183ee18f1e7a6d68ab760052fd116d6e",
     "ubuntu-contract.cjs": "570ebf166a982cc20b1d7c51a058ded095f6b0e15d496bdb6f9d99f202890971"
   }
 }

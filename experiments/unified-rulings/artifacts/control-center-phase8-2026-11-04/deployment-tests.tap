@@ -2,175 +2,175 @@ TAP version 13
 # Subtest: normal deploy backs up consistently, validates HTTP/admin/mock AI/data, switches only synthetic route
 ok 1 - normal deploy backs up consistently, validates HTTP/admin/mock AI/data, switches only synthetic route
   ---
-  duration_ms: 129.634406
+  duration_ms: 130.566616
   type: 'test'
   ...
 # Subtest: rollback changes application routing only and retains new post-deploy reports and keys
 ok 2 - rollback changes application routing only and retains new post-deploy reports and keys
   ---
-  duration_ms: 84.158385
+  duration_ms: 75.550556
   type: 'test'
   ...
 # Subtest: safe deployment failure: precheck
 ok 3 - safe deployment failure: precheck
   ---
-  duration_ms: 5.620987
+  duration_ms: 6.142226
   type: 'test'
   ...
 # Subtest: safe deployment failure: backup
 ok 4 - safe deployment failure: backup
   ---
-  duration_ms: 6.444001
+  duration_ms: 7.124755
   type: 'test'
   ...
 # Subtest: safe deployment failure: transfer
 ok 5 - safe deployment failure: transfer
   ---
-  duration_ms: 8.161243
+  duration_ms: 10.822637
   type: 'test'
   ...
 # Subtest: safe deployment failure: start
 ok 6 - safe deployment failure: start
   ---
-  duration_ms: 11.507211
+  duration_ms: 13.395131
   type: 'test'
   ...
 # Subtest: safe deployment failure: health
 ok 7 - safe deployment failure: health
   ---
-  duration_ms: 13.174034
+  duration_ms: 12.054764
   type: 'test'
   ...
 # Subtest: safe deployment failure: route
 ok 8 - safe deployment failure: route
   ---
-  duration_ms: 22.151521
+  duration_ms: 19.096947
   type: 'test'
   ...
 # Subtest: safe deployment failure: backup-corrupt
 ok 9 - safe deployment failure: backup-corrupt
   ---
-  duration_ms: 21.915433
+  duration_ms: 23.313214
   type: 'test'
   ...
 # Subtest: safe deployment failure: post-health
 ok 10 - safe deployment failure: post-health
   ---
-  duration_ms: 36.12934
+  duration_ms: 33.451313
   type: 'test'
   ...
 # Subtest: failed automatic fallback reports recovery required without lying about current route
 ok 11 - failed automatic fallback reports recovery required without lying about current route
   ---
-  duration_ms: 22.661594
+  duration_ms: 27.777407
   type: 'test'
   ...
 # Subtest: manual rollback failure retains both release data and explicitly requires recovery
 ok 12 - manual rollback failure retains both release data and explicitly requires recovery
   ---
-  duration_ms: 47.027719
+  duration_ms: 47.716746
   type: 'test'
   ...
 # Subtest: response loss is uncertain; retry same id is read-only and requery does not deploy again
 ok 13 - response loss is uncertain; retry same id is read-only and requery does not deploy again
   ---
-  duration_ms: 27.877017
+  duration_ms: 25.340954
   type: 'test'
   ...
 # Subtest: same approved operation cannot create duplicate backups, services or route generations
 ok 14 - same approved operation cannot create duplicate backups, services or route generations
   ---
-  duration_ms: 46.13999
+  duration_ms: 34.938546
   type: 'test'
   ...
 # Subtest: concurrent command uses exclusive owner lock and second mutation is rejected
 ok 15 - concurrent command uses exclusive owner lock and second mutation is rejected
   ---
-  duration_ms: 36.717396
+  duration_ms: 37.892516
   type: 'test'
   ...
 # Subtest: changed plan, package, stale route, or wrong environment cannot pass approval
 ok 16 - changed plan, package, stale route, or wrong environment cannot pass approval
   ---
-  duration_ms: 36.991552
+  duration_ms: 33.187859
   type: 'test'
   ...
 # Subtest: plan is bound to the exact lab owner, even with identical stable routing
 ok 17 - plan is bound to the exact lab owner, even with identical stable routing
   ---
-  duration_ms: 8.927863
+  duration_ms: 6.220972
   type: 'test'
   ...
 # Subtest: encrypted backup hides rows/record key, detects tamper and restores only to probe file
 ok 18 - encrypted backup hides rows/record key, detects tamper and restores only to probe file
   ---
-  duration_ms: 32.971423
+  duration_ms: 31.108554
   type: 'test'
   ...
 # Subtest: backup uses SQLite online backup with pending WAL writes
 ok 19 - backup uses SQLite online backup with pending WAL writes
   ---
-  duration_ms: 37.175703
+  duration_ms: 35.625228
   type: 'test'
   ...
 # Subtest: incomplete operation after owner death is marked uncertain and never replayed
 ok 20 - incomplete operation after owner death is marked uncertain and never replayed
   ---
-  duration_ms: 3.298634
+  duration_ms: 3.952518
   type: 'test'
   ...
 # Subtest: active owner is preserved during requery
 ok 21 - active owner is preserved during requery
   ---
-  duration_ms: 3.663071
+  duration_ms: 3.707937
   type: 'test'
   ...
 # Subtest: owned directories reject reuse, symlink and unexpected targets
 ok 22 - owned directories reject reuse, symlink and unexpected targets
   ---
-  duration_ms: 2.790475
+  duration_ms: 2.38688
   type: 'test'
   ...
 # Subtest: package rejects database files, traversal, source hash mismatch, ready=true and missing test evidence
 ok 23 - package rejects database files, traversal, source hash mismatch, ready=true and missing test evidence
   ---
-  duration_ms: 0.411386
+  duration_ms: 0.404146
   type: 'test'
   ...
 # Subtest: production adapter and unknown inventory cannot execute commands
 ok 24 - production adapter and unknown inventory cannot execute commands
   ---
-  duration_ms: 0.300393
+  duration_ms: 0.499998
   type: 'test'
   ...
 # Subtest: Ubuntu command contract distinguishes candidate systemd units from manager APIs and protects domains/certificates
 ok 25 - Ubuntu command contract distinguishes candidate systemd units from manager APIs and protects domains/certificates
   ---
-  duration_ms: 0.828571
+  duration_ms: 1.046553
   type: 'test'
   ...
 # Subtest: unreadable new database remains visible in history and can route back without overwriting it
 ok 26 - unreadable new database remains visible in history and can route back without overwriting it
   ---
-  duration_ms: 58.022619
+  duration_ms: 63.349532
   type: 'test'
   ...
 # Subtest: disk reserve failure precedes backup and service startup
 ok 27 - disk reserve failure precedes backup and service startup
   ---
-  duration_ms: 5.351421
+  duration_ms: 7.300985
   type: 'test'
   ...
 # Subtest: Caddy contract validates proposed config before route mutation and restores on reload failure
 ok 28 - Caddy contract validates proposed config before route mutation and restores on reload failure
   ---
-  duration_ms: 0.877514
+  duration_ms: 0.731248
   type: 'test'
   ...
 # Subtest: Caddy rollback failure requires recovery and never replaces the full site/certificate config
 ok 29 - Caddy rollback failure requires recovery and never replaces the full site/certificate config
   ---
-  duration_ms: 0.249799
+  duration_ms: 0.407171
   type: 'test'
   ...
 1..29
@@ -181,4 +181,4 @@ ok 29 - Caddy rollback failure requires recovery and never replaces the full sit
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 782.985574
+# duration_ms 769.315509
