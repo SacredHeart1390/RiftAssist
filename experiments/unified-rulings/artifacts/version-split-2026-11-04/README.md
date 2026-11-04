@@ -27,7 +27,7 @@ v030은 별도 환경 마커/.dev-data,3300/3301·worker3311/3312,세션/관리 
 | C#/Node·기존 관리자 계약·loopback SSH |263/263|263/263|
 | 총계 |462/462|472/472|
 
-Windows 직접 앱 회귀를 CI에 추가하면서 기존 카드 활성화 장애 주입2건이 POSIX 구분자에 의존하는 문제를 발견했다. 경로 비교를 path.resolve/dirname으로 정규화하고 실제 주입1회도 검증한다. 모의 Codex 검사 수 fixture도 새143건 기준으로 갱신했다. 실제 카드 활성화 코드는 바꾸지 않았다.
+Windows 직접 앱 회귀를 CI에 추가하면서 기존 카드 활성화 장애 주입2건이 POSIX 구분자에 의존하는 문제를 발견했다. fixture root의 Windows TEMP 짧은/긴 경로 alias를 realpath로 통일하고 경로 비교를 path.resolve/dirname으로 정규화하며 실제 주입1회도 검증한다. 모의 Codex 검사 수 fixture도 새143건 기준으로 갱신했다. 실제 카드 활성화 코드는 바꾸지 않았다.
 
 Codex의 고정 회귀 목록에서 개발 환경 검사 파일명 불일치를 수정했다. 양쪽 branch에서 trusted11개 suite(143개 검사)가 실제 export된 코드 사본에서도 실행되는지 C# full-source proof 안에서 확인했다. 실제 Codex 추론을 실행한 것은 아니다. 외부 공유 knowledge 폴더에 의존하던 symlink 시험도 독립 임시 target으로 바꿨다.
 
