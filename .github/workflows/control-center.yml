@@ -42,6 +42,14 @@ jobs:
           python scripts/verify-icon.py
           node scripts/deployment-manifest.cjs
           node --test --test-reporter=tap deployment/lab.test.cjs
+      - name: Run Windows synthetic application and legacy compatibility contracts
+        run: |
+          npm --prefix ../tests test
+          if ($LASTEXITCODE -ne 0) { throw 'Windows application regressions failed.' }
+          npm --prefix ../tests run test:compat
+          if ($LASTEXITCODE -ne 0) { throw 'Windows version compatibility matrix failed.' }
+          npm --prefix ../tests run test:legacy
+          if ($LASTEXITCODE -ne 0) { throw 'Windows legacy regressions failed.' }
       - name: Build native WPF target
         run: dotnet build src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj --configuration Release
       - name: Run C# protocol and mock Node integration proofs
