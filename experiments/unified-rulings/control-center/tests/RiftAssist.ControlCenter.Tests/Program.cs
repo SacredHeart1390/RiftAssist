@@ -157,6 +157,7 @@ try
     await AutomaticAuthProofs.RunAsync(suite, node, temporary);
     await PhaseFiveProofs.RunAsync(suite, backend!, node, temporary);
     await PhaseSixProofs.RunAsync(suite, backend!, temporary);
+    await PhaseSevenProofs.RunAsync(suite, backend!, temporary);
 }
 finally
 {

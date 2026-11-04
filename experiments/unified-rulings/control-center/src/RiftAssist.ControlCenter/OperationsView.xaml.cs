@@ -131,6 +131,11 @@ public partial class OperationsView : UserControl, IAsyncDisposable
             new IncidentAnalysisWindow(Window.GetWindow(this), input, () => Model.ReadIncidentInputAsync(report), AnalysisLedger.Local(), new OfflineIncidentAnalyzer(backend), new MockRepairWorker(backend)).Show();
         });
     }
+    private async void RealCodex_Click(object sender,RoutedEventArgs e)
+    {
+        if(ReportsGrid.SelectedItem is not OperationsReport report)return;
+        await Run("실제 Codex 작업 준비",async()=>{var input=await Model.ReadIncidentInputAsync(report);new RealRepairWindow(Window.GetWindow(this),input,()=>Model.ReadIncidentInputAsync(report)).Show();});
+    }
     private void NewManualReport_Click(object sender, RoutedEventArgs e) => EditManual(null);
     private void EditManualReport_Click(object sender, RoutedEventArgs e)
     { try { if (ReportsGrid.SelectedItem is OperationsReport { Source: "수동 · 로컬" } report) EditManual(Model.ReadManualReport(report)); } catch (Exception error) { MessageBox.Show(Window.GetWindow(this), UserErrors.Explain(error), "수동 제보"); } }
