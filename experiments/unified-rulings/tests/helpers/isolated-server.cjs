@@ -9,7 +9,7 @@ const { DatabaseSync } = require('node:sqlite');
 const { once } = require('node:events');
 const fixture = require('../fixtures/rules-2026-10-09.json');
 const project = path.resolve(__dirname, '../..');
-const releaseId = process.env.RIFTASSI_TEST_RELEASE || 'v0.1.7';
+const releaseId = process.env.RIFTASSI_TEST_RELEASE || 'v0.2.0';
 if (!/^v\d+\.\d+\.\d+$/.test(releaseId)) throw new Error('Expected a release version, not a filesystem path.');
 const release = path.join(project, 'releases', releaseId);
 
@@ -39,14 +39,28 @@ function localRequest(port, route, { method = 'GET', body, cookie } = {}) {
     request.end(body ? JSON.stringify(body) : undefined);
   });
 }
-async function isolatedServer(t, plans) {
+function syntheticPermittedCards(catalog = fixture.cards) {
+  // Permission overlay exists only inside disposable tests, never on source fixtures
+  // or real card data. It is not evidence of any actual license or Riot approval.
+  return { ...catalog, cards: catalog.cards.map(card => ({ ...card,
+    textVerified: true, permissions: { display: true, modelInput: true },
+    source: { ...card.source, kind: releaseId === 'v0.1.7' ? 'licensed' : 'mock', verification: 'synthetic-fixture', url: `https://example.test/cards/${encodeURIComponent(card.id)}`,
+      label: 'Synthetic test permissions only; no real-world license asserted' },
+  })) };
+}
+async function isolatedServer(t, plans, options = {}) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-rules-test-'));
   let child, output = '', cookie = '';
-  const externalCalls = [], unexpected = [];
+  const externalCalls = [], judgeCalls = [], unexpected = [];
+  const cleanups = [];
   t.after(async () => {
+    let cleanupError;
+    for (const cleanup of cleanups.reverse()) {
+      try { await cleanup(); } catch (error) { cleanupError ||= error; }
+    }
     if (child && child.exitCode === null) {
       const ended = once(child, 'exit');
-      const force = setTimeout(() => child.kill(), 3000);
+      const force = setTimeout(() => child.kill('SIGKILL'), 3000);
       if (child.connected) child.send({ type: 'shutdown' }, () => {}); else child.kill();
       try { await ended; } finally { clearTimeout(force); }
     }
@@ -56,12 +70,14 @@ async function isolatedServer(t, plans) {
     assert.ok(path.basename(resolved).startsWith('riftassist-rules-test-'));
     await fs.rm(resolved, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
     assert.deepEqual(unexpected, [], 'The test attempted an unplanned external request.');
+    if (cleanupError) throw cleanupError;
   });
+  await fs.writeFile(path.join(directory, '.riftassist-environment.json'), JSON.stringify({ releaseFamily: 'v0.2.0', environment: 'development' }));
   const dataId = 'regression-2026-10-09';
   const dir = path.join(directory, 'knowledge-releases', dataId);
   await fs.mkdir(dir, { recursive: true });
   const hashes = {};
-  for (const [name, value] of Object.entries({ 'rules.json': fixture.rules, 'cards.json': fixture.cards, 'judge-cases.json': [] })) {
+  for (const [name, value] of Object.entries({ 'rules.json': fixture.rules, 'cards.json': options.cards || syntheticPermittedCards(), 'judge-cases.json': options.judgeCases || [] })) {
     const bytes = JSON.stringify(value);
     hashes[name] = crypto.createHash('sha256').update(bytes).digest('hex');
     await fs.writeFile(path.join(dir, name), bytes);
@@ -75,16 +91,19 @@ async function isolatedServer(t, plans) {
   const port = await freePort();
   // No inherited API credentials, NODE_OPTIONS or project .env. Only this temporary DATA_ROOT is read.
   const env = { RIFTASSI_DATA_ROOT: directory, RIFTASSI_TEST_PLAN: planPath,
-    PORT: String(port), PUBLIC_PORT: String(port), OPENAI_API_KEY: 'sk-regression-dummy-not-a-real-key',
+    RIFTASSI_EXTERNAL_MODE: 'test', PORT: String(port), PUBLIC_PORT: String(port), OPENAI_API_KEY: 'sk-regression-dummy-not-a-real-key',
     OPENAI_GENERATION_ENABLED: 'true', OPENAI_MODEL: 'regression-mocked-model', OPENAI_REASONING_EFFORT: 'low',
     ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
   };
+  const cardPolicy = Object.hasOwn(options, 'cardPolicy') ? options.cardPolicy : 'verified-only';
+  if (cardPolicy !== null) env.RIFTASSI_CARD_POLICY = cardPolicy;
   child = fork(path.join(release, 'src/server.js'), [], { cwd: directory, env,
     execArgv: ['--require', path.join(__dirname, 'mock-external.cjs')], silent: true, windowsHide: true });
   child.stdout.on('data', chunk => { output = (output + chunk).slice(-3000); });
   child.stderr.on('data', chunk => { output = (output + chunk).slice(-3000); });
   child.on('message', value => {
     if (value.type === 'mock-openai') externalCalls.push(value.body);
+    if (value.type === 'mock-riftjudge') judgeCalls.push(value.body);
     if (value.type === 'unexpected-network') unexpected.push(value.url);
   });
   await new Promise((resolve, reject) => {
@@ -103,7 +122,11 @@ async function isolatedServer(t, plans) {
   cookie = health.headers['set-cookie'][0].split(';')[0];
   return {
     baseURL: `http://127.0.0.1:${port}`,
+    dataRoot: directory, // Disposable fixture only, for isolated manager integration checks.
+    addCleanup(cleanup) { cleanups.push(cleanup); }, // Close browsers/DBs before stopping/removing the fixture.
+    request(route, options = {}) { return localRequest(port, route, { cookie, ...options }); },
     externalCalls,
+    judgeCalls,
     async ask(question, cardIds = []) {
       return localRequest(port, '/api/ask', { method: 'POST', cookie,
         body: { question, cardIds, language: 'ko', clientKey: crypto.randomUUID() } });
@@ -125,4 +148,4 @@ async function isolatedServer(t, plans) {
     },
   };
 }
-module.exports = { isolatedServer, fixture, release };
+module.exports = { isolatedServer, fixture, release, freePort, syntheticPermittedCards };

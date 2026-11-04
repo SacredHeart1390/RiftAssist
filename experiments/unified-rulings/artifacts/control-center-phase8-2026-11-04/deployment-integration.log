@@ -1,0 +1,12 @@
+PASS deployment package is code only and ready false with distinct synthetic evidence
+PASS real local deployment protocol initializes an owned synthetic target
+PASS production mutation is denied before any client transport even with consent
+PASS prepared plan binds package hash source commit and lab identity
+PASS deployment exact consent cannot be reused for another destination
+PASS bundled Node code and native client execute backup deployment health and routing
+PASS native client can validate encrypted backup without receiving rows or keys
+PASS approved rollback uses separate plan and changes routing without database restore
+PASS deployment requery is read-only and cannot replay completed writes
+PASS GitHub catalog validates workflow evidence for exact selected commit
+PASS missing or stale CI evidence prevents deployment package selection
+C# proof suite: 11/11 passed; native WPF execution: false.

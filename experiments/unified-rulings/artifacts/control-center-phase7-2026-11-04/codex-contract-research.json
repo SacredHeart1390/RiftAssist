@@ -1,0 +1,27 @@
+{
+  "checkedDateSeoul": "2026-11-04",
+  "source": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/core/config.schema.json",
+  "schemaSha256": "cbd200dc6cc7291b2ad5684c0c3eb30a26578994c55758756901db976c51af0d",
+  "configurationFieldsPresent": [
+    "default_permissions",
+    "permissions",
+    "windows",
+    "forced_login_method",
+    "model_provider",
+    "web_search"
+  ],
+  "disabledFeatureFieldsConfirmed": [
+    "apps",
+    "plugins",
+    "hooks",
+    "codex_hooks",
+    "plugin_hooks",
+    "remote_plugin",
+    "in_app_browser",
+    "in_app_local_automation"
+  ],
+  "implementationMinimumCli": "0.162.0",
+  "actualCliBinaryContractExecuted": false,
+  "actualInferenceCalls": 0,
+  "limitations": "Static upstream schema/docs inspection plus mocked CLI contracts. Installed CLI version/option compatibility and Windows isolation must pass on the user device; no guarantee from schema alone."
+}

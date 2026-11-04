@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+.vs/
+dist/
+*.user
+*.local.json
+*.pfx
+*.key
+*.sqlite*
+runtime/
+
+*.dpapi

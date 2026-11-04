@@ -31,4 +31,6 @@ jobs:
           # Tests use only Node built-ins; no dependency installation or cache is needed.
           package-manager-cache: false
       - name: Run mocked rules regression tests
-        run: node --test --test-concurrency=1 ruling-regression.test.cjs
+        run: npm test
+      - name: Verify unchanged v0.1.7 compatibility
+        run: npm run test:legacy

@@ -1,0 +1,16 @@
+{
+  "source": "experiments/unified-rulings/releases/v0.1.7/public/icon.svg",
+  "sourceSha256": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
+  "icoSha256": "82991706f09b0f9743a51fc1c257c144cbf2965f3a7bbf7c28fab8db11d10821",
+  "sizes": [
+    16,
+    24,
+    32,
+    48,
+    64,
+    128,
+    256
+  ],
+  "method": "Inkscape SVG rasterization at 256px and Pillow ICO downsampling; no artwork modification",
+  "sourceHashNormalization": "Git canonical LF text; CRLF checkout normalized in memory only"
+}

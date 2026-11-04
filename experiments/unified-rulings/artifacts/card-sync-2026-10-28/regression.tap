@@ -1,0 +1,550 @@
+TAP version 13
+# Subtest: policy defaults/invalid modes deny all, and verified mode ignores prototype exceptions without mutating data
+ok 1 - policy defaults/invalid modes deny all, and verified mode ignores prototype exceptions without mutating data
+  ---
+  duration_ms: 3.425531
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (unset)
+ok 2 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (unset)
+  ---
+  duration_ms: 174.464415
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (verified-only)
+ok 3 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (verified-only)
+  ---
+  duration_ms: 158.887481
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (invalid-mode)
+ok 4 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (invalid-mode)
+  ---
+  duration_ms: 143.419511
+  type: 'test'
+  ...
+# Subtest: verified cards retain search/selection/model input; display-only cards never become model input
+ok 5 - verified cards retain search/selection/model input; display-only cards never become model input
+  ---
+  duration_ms: 155.771409
+  type: 'test'
+  ...
+# Subtest: general rule AI and local cases survive the default restriction; source translation excludes the hidden glossary
+ok 6 - general rule AI and local cases survive the default restriction; source translation excludes the hidden glossary
+  ---
+  duration_ms: 139.887624
+  type: 'test'
+  ...
+# Subtest: old idempotency responses are rejected without altering records; current retries still reuse one answer
+ok 7 - old idempotency responses are rejected without altering records; current retries still reuse one answer
+  ---
+  duration_ms: 155.75632
+  type: 'test'
+  ...
+# Subtest: historical translation keys containing unconfirmed card glossaries are denied without paid calls
+ok 8 - historical translation keys containing unconfirmed card glossaries are denied without paid calls
+  ---
+  duration_ms: 89.901225
+  type: 'test'
+  ...
+# Subtest: knowledge-release reload creates a new policy view and invalidates the previous response scope
+ok 9 - knowledge-release reload creates a new policy view and invalidates the previous response scope
+  ---
+  duration_ms: 94.433677
+  type: 'test'
+  ...
+# Subtest: mock adapter produces a complete snapshot without using its HTTP transport
+ok 10 - mock adapter produces a complete snapshot without using its HTTP transport
+  ---
+  duration_ms: 3.143916
+  type: 'test'
+  ...
+# Subtest: paging accepts only one complete, count-checked snapshot
+ok 11 - paging accepts only one complete, count-checked snapshot
+  ---
+  duration_ms: 1.283487
+  type: 'test'
+  ...
+# Subtest: invalid partial page never reaches conversion/translation and preserves the last good snapshot
+ok 12 - invalid partial page never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 56.53965
+  type: 'test'
+  ...
+# Subtest: invalid unknown terminal cursor never reaches conversion/translation and preserves the last good snapshot
+ok 13 - invalid unknown terminal cursor never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 29.271142
+  type: 'test'
+  ...
+# Subtest: invalid count mismatch never reaches conversion/translation and preserves the last good snapshot
+ok 14 - invalid count mismatch never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 35.872075
+  type: 'test'
+  ...
+# Subtest: invalid duplicate IDs never reaches conversion/translation and preserves the last good snapshot
+ok 15 - invalid duplicate IDs never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 24.437877
+  type: 'test'
+  ...
+# Subtest: invalid invalid card never reaches conversion/translation and preserves the last good snapshot
+ok 16 - invalid invalid card never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 32.251134
+  type: 'test'
+  ...
+# Subtest: invalid invalid card dates never reaches conversion/translation and preserves the last good snapshot
+ok 17 - invalid invalid card dates never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 31.037352
+  type: 'test'
+  ...
+# Subtest: invalid unrevealed preview never reaches conversion/translation and preserves the last good snapshot
+ok 18 - invalid unrevealed preview never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 33.316172
+  type: 'test'
+  ...
+# Subtest: invalid credential URL never reaches conversion/translation and preserves the last good snapshot
+ok 19 - invalid credential URL never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 25.333788
+  type: 'test'
+  ...
+# Subtest: invalid mixed snapshot pages never reaches conversion/translation and preserves the last good snapshot
+ok 20 - invalid mixed snapshot pages never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 28.302379
+  type: 'test'
+  ...
+# Subtest: invalid cursor loop never reaches conversion/translation and preserves the last good snapshot
+ok 21 - invalid cursor loop never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 24.353259
+  type: 'test'
+  ...
+# Subtest: page limit and timeout abort the collection without exposing a partial catalog
+ok 22 - page limit and timeout abort the collection without exposing a partial catalog
+  ---
+  duration_ms: 21.06152
+  type: 'test'
+  ...
+# Subtest: first sync stages a review candidate using the existing translation/knowledge stores, never activates it
+ok 23 - first sync stages a review candidate using the existing translation/knowledge stores, never activates it
+  ---
+  duration_ms: 28.089628
+  type: 'test'
+  ...
+# Subtest: repeats, page/card reordering and version-only advances publish nothing and do not invoke translation
+ok 24 - repeats, page/card reordering and version-only advances publish nothing and do not invoke translation
+  ---
+  duration_ms: 47.048058
+  type: 'test'
+  ...
+# Subtest: only new/changed English cards are translated; unchanged records survive and stale Korean becomes review-only
+ok 25 - only new/changed English cards are translated; unchanged records survive and stale Korean becomes review-only
+  ---
+  duration_ms: 31.61577
+  type: 'test'
+  ...
+# Subtest: errata forces renewed review of an approved same-English translation and reuses its cache
+ok 26 - errata forces renewed review of an approved same-English translation and reuses its cache
+  ---
+  duration_ms: 22.653203
+  type: 'test'
+  ...
+# Subtest: temporary omission is retained once, repeated omissions do not publish again, and return is reviewed
+ok 27 - temporary omission is retained once, repeated omissions do not publish again, and return is reviewed
+  ---
+  duration_ms: 54.57877
+  type: 'test'
+  ...
+# Subtest: official locale addition/change/removal and release changes are distinct in pure canonical comparison
+ok 28 - official locale addition/change/removal and release changes are distinct in pure canonical comparison
+  ---
+  duration_ms: 0.817655
+  type: 'test'
+  ...
+# Subtest: mock Korean-locale and release updates are reviewed without another provider call
+ok 29 - mock Korean-locale and release updates are reviewed without another provider call
+  ---
+  duration_ms: 27.806991
+  type: 'test'
+  ...
+# Subtest: snapshot revision reversal preserves the last normal observation and active release
+ok 30 - snapshot revision reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 19.811082
+  type: 'test'
+  ...
+# Subtest: same revision changed data preserves the last normal observation and active release
+ok 31 - same revision changed data preserves the last normal observation and active release
+  ---
+  duration_ms: 19.946978
+  type: 'test'
+  ...
+# Subtest: same card revision changed data preserves the last normal observation and active release
+ok 32 - same card revision changed data preserves the last normal observation and active release
+  ---
+  duration_ms: 20.539012
+  type: 'test'
+  ...
+# Subtest: card revision reversal preserves the last normal observation and active release
+ok 33 - card revision reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 21.751482
+  type: 'test'
+  ...
+# Subtest: publication date reversal preserves the last normal observation and active release
+ok 34 - publication date reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 19.168012
+  type: 'test'
+  ...
+# Subtest: network/rate-limit failures use persistent bounded backoff, sanitize errors and recover without data loss
+ok 35 - network/rate-limit failures use persistent bounded backoff, sanitize errors and recover without data loss
+  ---
+  duration_ms: 32.988443
+  type: 'test'
+  ...
+# Subtest: parallel sync workers share one reservation; disabled scheduling never collects
+ok 36 - parallel sync workers share one reservation; disabled scheduling never collects
+  ---
+  duration_ms: 15.731274
+  type: 'test'
+  ...
+# Subtest: explicit scheduler ticks respect due times and stop without starting a second worker
+ok 37 - explicit scheduler ticks respect due times and stop without starting a second worker
+  ---
+  duration_ms: 25.098523
+  type: 'test'
+  ...
+# Subtest: a fully declared empty snapshot retains every card and excessive retry delays require manual review
+ok 38 - a fully declared empty snapshot retains every card and excessive retry delays require manual review
+  ---
+  duration_ms: 29.858557
+  type: 'test'
+  ...
+# Subtest: a changed source scope or incomplete injected collector cannot advance the accepted state
+ok 39 - a changed source scope or incomplete injected collector cannot advance the accepted state
+  ---
+  duration_ms: 23.467471
+  type: 'test'
+  ...
+# Subtest: a completed candidate is reused after a journal failure without another publication or translation
+ok 40 - a completed candidate is reused after a journal failure without another publication or translation
+  ---
+  duration_ms: 23.288552
+  type: 'test'
+  ...
+# Subtest: base-pointer changes and unapproved source catalogs are blocked, and real sync cannot collect
+ok 41 - base-pointer changes and unapproved source catalogs are blocked, and real sync cannot collect
+  ---
+  duration_ms: 31.88608
+  type: 'test'
+  ...
+# Subtest: shared roots, symlinks, damaged state and stale run locks fail closed
+ok 42 - shared roots, symlinks, damaged state and stale run locks fail closed
+  ---
+  duration_ms: 17.38473
+  type: 'test'
+  ...
+# Subtest: a staged sync candidate is loadable by existing knowledge/search APIs while current requests retain the last active data
+ok 43 - a staged sync candidate is loadable by existing knowledge/search APIs while current requests retain the last active data
+  ---
+  duration_ms: 114.131048
+  type: 'test'
+  ...
+# Subtest: translation is a candidate: separates mechanics and provenance and requires explicit review
+ok 44 - translation is a candidate: separates mechanics and provenance and requires explicit review
+  ---
+  duration_ms: 22.771861
+  type: 'test'
+  ...
+# Subtest: official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+ok 45 - official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+  ---
+  duration_ms: 4.032356
+  type: 'test'
+  ...
+# Subtest: official locale availability must be confirmed, and injected lookups prefer official text without AI
+ok 46 - official locale availability must be confirmed, and injected lookups prefer official text without AI
+  ---
+  duration_ms: 14.300726
+  type: 'test'
+  ...
+# Subtest: official labels and glossary evidence reject unconfirmed Korean-source URLs
+ok 47 - official labels and glossary evidence reject unconfirmed Korean-source URLs
+  ---
+  duration_ms: 3.369746
+  type: 'test'
+  ...
+# Subtest: explicit absent-locale lookup permits a candidate; fan-source locale claims are rejected
+ok 48 - explicit absent-locale lookup permits a candidate; fan-source locale claims are rejected
+  ---
+  duration_ms: 6.959384
+  type: 'test'
+  ...
+# Subtest: official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+ok 49 - official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+  ---
+  duration_ms: 0.710072
+  type: 'test'
+  ...
+# Subtest: persistent cache survives engine restart and source-version-only changes without retranslating
+ok 50 - persistent cache survives engine restart and source-version-only changes without retranslating
+  ---
+  duration_ms: 6.011524
+  type: 'test'
+  ...
+# Subtest: partial official names/keywords override AI fields and reuse the cached effect without a new call
+ok 51 - partial official names/keywords override AI fields and reuse the cached effect without a new call
+  ---
+  duration_ms: 4.472306
+  type: 'test'
+  ...
+# Subtest: official-source anomalies remain official candidates for review, never rewritten or sent to AI
+ok 52 - official-source anomalies remain official candidates for review, never rewritten or sent to AI
+  ---
+  duration_ms: 2.794288
+  type: 'test'
+  ...
+# Subtest: same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+ok 53 - same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+  ---
+  duration_ms: 240.852403
+  type: 'test'
+  ...
+# Subtest: provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+ok 54 - provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+  ---
+  duration_ms: 30.20441
+  type: 'test'
+  ...
+# Subtest: cache publication failure retains its reservation and prevents a second provider attempt
+ok 55 - cache publication failure retains its reservation and prevents a second provider attempt
+  ---
+  duration_ms: 5.53897
+  type: 'test'
+  ...
+# Subtest: blocking number mismatch is a cached review candidate, never approved/published
+ok 56 - blocking number mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.691401
+  type: 'test'
+  ...
+# Subtest: blocking symbol mismatch is a cached review candidate, never approved/published
+ok 57 - blocking symbol mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.972706
+  type: 'test'
+  ...
+# Subtest: blocking cost mismatch is a cached review candidate, never approved/published
+ok 58 - blocking cost mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.403076
+  type: 'test'
+  ...
+# Subtest: blocking stat mismatch is a cached review candidate, never approved/published
+ok 59 - blocking stat mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.135782
+  type: 'test'
+  ...
+# Subtest: blocking keyword mismatch is a cached review candidate, never approved/published
+ok 60 - blocking keyword mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.32666
+  type: 'test'
+  ...
+# Subtest: blocking shape mismatch is a cached review candidate, never approved/published
+ok 61 - blocking shape mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.421184
+  type: 'test'
+  ...
+# Subtest: checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+ok 62 - checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+  ---
+  duration_ms: 17.292966
+  type: 'test'
+  ...
+# Subtest: inconsistent keywords across a batch block both proposals without rewriting cache evidence
+ok 63 - inconsistent keywords across a batch block both proposals without rewriting cache evidence
+  ---
+  duration_ms: 5.983356
+  type: 'test'
+  ...
+# Subtest: rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+ok 64 - rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+  ---
+  duration_ms: 8.868215
+  type: 'test'
+  ...
+# Subtest: oversized translation prompts are cached as blocked work without invoking the provider
+ok 65 - oversized translation prompts are cached as blocked work without invoking the provider
+  ---
+  duration_ms: 15.109707
+  type: 'test'
+  ...
+# Subtest: unrevealed or unofficial previews are rejected by collection/conversion before translation
+ok 66 - unrevealed or unofficial previews are rejected by collection/conversion before translation
+  ---
+  duration_ms: 28.5813
+  type: 'test'
+  ...
+# Subtest: later official translation creates a replacement candidate, preserves old records and requires review
+ok 67 - later official translation creates a replacement candidate, preserves old records and requires review
+  ---
+  duration_ms: 5.966476
+  type: 'test'
+  ...
+# Subtest: unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+ok 68 - unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+  ---
+  duration_ms: 5.032887
+  type: 'test'
+  ...
+# Subtest: knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+ok 69 - knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+  ---
+  duration_ms: 33.928701
+  type: 'test'
+  ...
+# Subtest: cache/candidate stores refuse links and never use an unmarked or shared production root
+ok 70 - cache/candidate stores refuse links and never use an unmarked or shared production root
+  ---
+  duration_ms: 2.236265
+  type: 'test'
+  ...
+# Subtest: reviewed translation retains English authority and provenance in the existing AI question API
+ok 71 - reviewed translation retains English authority and provenance in the existing AI question API
+  ---
+  duration_ms: 135.605305
+  type: 'test'
+  ...
+# Subtest: legal pages are public static documents; private/admin routes stay inaccessible
+ok 72 - legal pages are public static documents; private/admin routes stay inaccessible
+  ---
+  duration_ms: 181.475881
+  type: 'test'
+  ...
+# Subtest: card APIs, AI, linked reports and authenticated manager review work together
+ok 73 - card APIs, AI, linked reports and authenticated manager review work together
+  ---
+  duration_ms: 274.119552
+  type: 'test'
+  ...
+# Subtest: documented encryption, 7/30/90-day purge and independent backup snapshots match the store
+ok 74 - documented encryption, 7/30/90-day purge and independent backup snapshots match the store
+  ---
+  duration_ms: 107.417109
+  type: 'test'
+  ...
+# Subtest: 01 재점령 득점: 같은 턴·전장 제한 472를 검색 결과에 보존한다
+ok 75 - 01 재점령 득점: 같은 턴·전장 제한 472를 검색 결과에 보존한다
+  ---
+  duration_ms: 8.874926
+  type: 'test'
+  ...
+# Subtest: 02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘못된 인용을 제거한다
+ok 76 - 02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘못된 인용을 제거한다
+  ---
+  duration_ms: 224.243063
+  type: 'test'
+  ...
+# Subtest: 03 유성·빅토르: 피해·정리·유발의 기본 조항이 실제 AI 입력에 함께 들어간다
+ok 77 - 03 유성·빅토르: 피해·정리·유발의 기본 조항이 실제 AI 입력에 함께 들어간다
+  ---
+  duration_ms: 150.847887
+  type: 'test'
+  ...
+# Subtest: 04 빅토르도 같은 정리에서 죽는 예외: 스킬 출처 이탈 조항을 확보한다
+ok 78 - 04 빅토르도 같은 정리에서 죽는 예외: 스킬 출처 이탈 조항을 확보한다
+  ---
+  duration_ms: 2.487364
+  type: 'test'
+  ...
+# Subtest: 05 실제 상황 정보 부족: 조건별 설명과 후속 질문을 불필요하게 재생성하지 않는다
+ok 79 - 05 실제 상황 정보 부족: 조건별 설명과 후속 질문을 불필요하게 재생성하지 않는다
+  ---
+  duration_ms: 0.69567
+  type: 'test'
+  ...
+# Subtest: 06 근거 부족 초안: 한 번 보강한 뒤 정상 답변을 반환하고 두 호출을 정산한다
+ok 80 - 06 근거 부족 초안: 한 번 보강한 뒤 정상 답변을 반환하고 두 호출을 정산한다
+  ---
+  duration_ms: 145.122641
+  type: 'test'
+  ...
+# Subtest: 07 보강 후에도 근거 부족: 세 번째 호출 없이 검색 오류로 기록한다
+ok 81 - 07 보강 후에도 근거 부족: 세 번째 호출 없이 검색 오류로 기록한다
+  ---
+  duration_ms: 143.213884
+  type: 'test'
+  ...
+# Subtest: 08 OpenAI 429 오류: 자동 재시도하지 않고 실패 호출을 정산한다
+ok 82 - 08 OpenAI 429 오류: 자동 재시도하지 않고 실패 호출을 정산한다
+  ---
+  duration_ms: 131.300753
+  type: 'test'
+  ...
+# Subtest: 09 개정 규칙: 같은 공식 문서의 서로 다른 버전 혼합을 거절한다
+ok 83 - 09 개정 규칙: 같은 공식 문서의 서로 다른 버전 혼합을 거절한다
+  ---
+  duration_ms: 0.930444
+  type: 'test'
+  ...
+# Subtest: 10 정상적인 부정 판정: 대상 재확정 금지를 근거 부족으로 오인하지 않아야 한다
+ok 84 - 10 정상적인 부정 판정: 대상 재확정 금지를 근거 부족으로 오인하지 않아야 한다
+  ---
+  duration_ms: 0.730773
+  type: 'test'
+  ...
+# Subtest: 11 실제 불확실성: complete로 잘못 표시한 초안도 처리 순서 미확정 표현을 감지한다
+ok 85 - 11 실제 불확실성: complete로 잘못 표시한 초안도 처리 순서 미확정 표현을 감지한다
+  ---
+  duration_ms: 0.406774
+  type: 'test'
+  ...
+# Subtest: v0.2.0 rejects the shared runtime root before opening DBs and keys
+ok 86 - v0.2.0 rejects the shared runtime root before opening DBs and keys
+  ---
+  duration_ms: 87.517858
+  type: 'test'
+  ...
+# Subtest: unmarked roots and links to production directories are rejected
+ok 87 - unmarked roots and links to production directories are rejected
+  ---
+  duration_ms: 6.104544
+  type: 'test'
+  ...
+# Subtest: mock collector/converter/translation use synthetic sources and preserve English originals
+ok 88 - mock collector/converter/translation use synthetic sources and preserve English originals
+  ---
+  duration_ms: 3.899616
+  type: 'test'
+  ...
+# Subtest: real adapter requires explicit approval/config and a reviewed mapper, sanitizes errors, and does not imply card permissions
+ok 89 - real adapter requires explicit approval/config and a reviewed mapper, sanitizes errors, and does not imply card permissions
+  ---
+  duration_ms: 18.460494
+  type: 'test'
+  ...
+# Subtest: prepared development release runs behind its own gateway with mock AI and never overwrites its pointer
+ok 90 - prepared development release runs behind its own gateway with mock AI and never overwrites its pointer
+  ---
+  duration_ms: 736.294656
+  type: 'test'
+  ...
+1..90
+# tests 90
+# suites 0
+# pass 90
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5360.368403

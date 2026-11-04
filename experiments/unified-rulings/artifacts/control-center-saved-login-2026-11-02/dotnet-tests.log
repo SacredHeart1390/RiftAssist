@@ -1,0 +1,136 @@
+PASS golden: korean-and-quotes
+PASS golden: emoji-and-combining
+PASS golden: control-characters
+PASS golden: integer-property-order
+PASS golden: safe-integers
+PASS golden: arrays-null-booleans
+PASS duplicate JSON keys rejected
+PASS fractional and unsafe request numbers rejected
+PASS Unicode is not normalized and invalid surrogates fail
+PASS session credentials are random, ephemeral, and final scopes opt-in
+PASS typed final phrases, acknowledgement and reason all required
+PASS live integrations remain unavailable while mock operations are explicit
+PASS backend source integrity verified
+PASS empty or traversing backend manifests rejected
+PASS arbitrary data folders cannot be opened
+PASS owned mock sandbox prepared with existing Node engine
+PASS owned sandbox listing and reparse boundaries
+PASS Node verifies C# HMAC and returns bilingual structured comparisons
+PASS local validation blocks incomplete warning acknowledgement before writes
+PASS bulk hold/reject decisions and Korean reasons persist
+PASS individual approval and explicit partial-stage plan
+PASS default session cannot activate and backend scopes independently enforce it
+PASS fresh privileged local session activates exact staged package
+PASS rollback is separate, version-bound and preserves original files
+PASS audit records show Korean decisions without credentials or raw signed requests
+PASS reconnect restores review history without re-seeding or reactivating
+PASS pipe boundary: wrong-id
+PASS pipe boundary: oversize
+PASS pipe boundary: hang
+PASS pipe boundary: environment
+PASS SSH strict host verification, noninteractive auth and no forwarding
+PASS SSH uses a fixed read-only script and tampered commands are rejected
+PASS SSH injection, unexpected HTTPS targets and invalid profile fields fail
+PASS SSH agent mode does not require a private key file or read key bytes
+PASS remote status accepts bounded numeric metrics and HTTP codes
+PASS malformed, duplicate, unknown, unbounded or inconsistent metrics fail
+PASS SSH settings store only six metadata fields and never private key contents
+PASS unexpected credential fields and symlink settings are refused
+PASS no SSH runner is invoked without separate connection approval
+PASS mock SSH success produces one timestamped snapshot without paid APIs
+PASS mock SSH authentication is sanitized, bounded and not retried
+PASS mock SSH changed host key is sanitized, bounded and not retried
+PASS mock SSH unverified host key is sanitized, bounded and not retried
+PASS mock SSH network timeout is sanitized, bounded and not retried
+PASS mock SSH disconnect is sanitized, bounded and not retried
+PASS failed SSH preserves last good metrics as stale and explicit retry can recover
+PASS SSH profile switch never reuses another server's successful snapshot
+PASS SSH cancellation and malformed stdout never publish fresh metrics
+PASS Azure operational controls and actual admin data are denied before transport
+PASS all eight existing AI limits enforce ranges and reject missing/extra fields
+PASS uncertain development writes require status refresh and cannot become production requests
+PASS owned Node development manager authenticates through existing login/cookie API
+PASS synthetic report detail includes original question and response without real user data
+PASS development AI toggle and usage are actual local API state, not paid calls
+PASS development limits use the unchanged admin API validation
+PASS development hosting cannot open a tunnel or accept public configuration
+PASS development app start and restart affect only owned ephemeral workers
+PASS development app update and rollback use ready synthetic releases
+PASS development report status and Korean notes persist through existing API
+PASS development backup stays inside owned root; no DB or key bytes are printed
+PASS legacy network rediscovery remains blocked and never activates knowledge
+PASS development operation journal stores reasons and outcomes, never keys/cookies/signatures
+PASS development stop/reconnect preserves reports and settings without auto-starting
+PASS read-only actions never require a confirmation dialog
+PASS ordinary changes and card decisions use one simple confirmation
+PASS backup, final versions, destructive and unknown actions retain protection
+PASS automatic reasons include action and target and satisfy unchanged backend validation
+PASS automatic audit does not accept unbounded or control-character targets
+PASS dashboard shows six separately labelled metrics with friendly healthy states
+PASS dashboard never labels missing HTTP responses or failed service as healthy
+PASS dashboard clearly distinguishes stale values and an unqueried server
+PASS SSH stdin is LF-only UTF-8 without BOM and fixed POSIX sh
+PASS SSH start-info preserves argument boundaries and strips unrelated environment
+PASS SSH failure separation: remote shell exit 2
+PASS SSH failure separation: missing remote tool
+PASS SSH failure separation: post-auth session loss
+PASS SSH failure separation: Windows no-exit-status -1
+PASS SSH failure separation: Windows native crash status
+PASS SSH failure separation: truncated input success
+PASS SSH failure separation: stdin pipe failure with auth stderr
+PASS SSH failure separation: refused
+PASS SSH failure separation: DNS
+PASS SSH failure separation: unsupported option
+PASS SSH failure separation: key load
+PASS SSH failure separation: benign stderr
+PASS SSH exit zero malformed output is parsing failure rather than disconnect
+PASS SSH diagnostic only permits known marker values
+PASS unexpected local exception is never described as server disconnect
+PASS real child pipes preserve Korean paths, LF stdin, EOF and non-UTF8 stderr
+PASS real early child stdin close still returns authentication stderr and exit code
+PASS real pipe output limit terminates child promptly without deadlock
+PASS invalid stdout UTF-8 is a parse failure, not SSH disconnected
+PASS real hanging child respects cancellation and is reaped
+PASS local executable launch failure is sanitized and distinct
+PASS Linux POSIX sh status script runs with real /proc and stubbed HTTP/systemd
+PASS Linux missing required tool yields safe dependency failure
+PASS Linux unavailable optional health/systemd retain metrics with explicit warnings
+PASS actual OpenSSH loopback mock: good
+PASS actual OpenSSH loopback mock: remote-error
+PASS actual OpenSSH loopback mock: denied
+PASS actual OpenSSH loopback mock: host-mismatch
+PASS actual OpenSSH loopback mock: bad-output
+PASS actual OpenSSH loopback mock: drop
+PASS production admin allows only existing login and exact read routes
+PASS SSH admin stdin bridge is fixed to remote loopback 3100 without listener or remote exec
+PASS unchanged manager rejects untrusted Host Origin and missing cookie
+PASS admin read before login cannot create even a loopback connection
+PASS unchanged v017 router rejects wrong key with sanitized authentication code
+PASS existing login Origin Host and memory cookie authenticate real v017 router
+PASS real readonly router returns synthetic report and linked Korean question answer
+PASS status projector never renders upstream error credentials or paths
+PASS blocked route never reaches HTTP transport after authenticated reads
+PASS admin HTTP failure clears cookie without sensitive response: expired
+PASS admin HTTP failure clears cookie without sensitive response: redirect
+PASS admin HTTP failure clears cookie without sensitive response: bad-json
+PASS admin HTTP failure clears cookie without sensitive response: oversize
+PASS admin HTTP failure clears cookie without sensitive response: disconnect
+PASS admin HTTP cancellation stops read and invalidates cookie
+PASS real OpenSSH -W readonly API bridge: admin-proxy
+PASS real OpenSSH -W readonly API bridge: admin-denied
+PASS credential identity survives ZIP updates and SSH key-path rotation but isolates targets/schemes
+PASS fresh login defaults have no secret read and startup cannot authenticate
+PASS successful unchecked login never stores a key or enables startup
+PASS remember option saves only after authentication and startup remains separate
+PASS failed first authentication never writes a remembered credential
+PASS protected storage failure cannot enable auto connect or fall back to plaintext
+PASS login JSON contains only version binding scheme and opt-in booleans
+PASS explicit auto opt-in permits one startup authentication with stored data
+PASS changed admin key rejects saved credential and deletes it without retry
+PASS network failure retains protected credential but disarms automatic startup
+PASS forget clears credential and opt-in even after recreated preferences instance
+PASS tampered or credential-bearing options fail closed
+PASS actual v017 structured report content renders description expected tags and linked response
+PASS report strings empty snapshots and null optional fields remain compatible
+PASS malformed report tags and oversized descriptions remain rejected
+C# proof suite: 135/135 passed; native WPF execution: false.

@@ -1,0 +1,63 @@
+{
+  "validatedCodeCommit": "2127b79faf20f8684170166d0e558df96fb7d5d4",
+  "runId": 40835470491,
+  "runUrl": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/40835470491",
+  "jobId": 123319101505,
+  "conclusion": "success",
+  "runner": "Microsoft Windows Server 2025",
+  "sourceCSharp": {
+    "passed": 63,
+    "failed": 0
+  },
+  "packagedCSharp": {
+    "passed": 63,
+    "failed": 0
+  },
+  "nativeWpf": {
+    "operationsTabs": 7,
+    "bindingErrors": 0,
+    "existingCardComparison": true,
+    "productionControlsDisabled": true
+  },
+  "packagedNativeExe": {
+    "started": true,
+    "closedCleanly": true,
+    "automaticChildProcesses": 0
+  },
+  "realAzureConnections": 0,
+  "windows10PhysicalPcVerified": false,
+  "logExcerpts": [
+    "2026-10-29T07:26:50.2190358Z Microsoft Windows Server 2025",
+    "2026-10-29T07:26:50.2195095Z Image: windows-2025-vs2026",
+    "2026-10-29T07:28:48.2824409Z C# proof suite: 63/63 passed; native WPF execution: false.",
+    "2026-10-29T07:28:57.0539288Z {\"nativeWpfWindowLoaded\":true,\"bindingErrors\":0,\"operationsTabsLoaded\":7,\"productionControlsDisabled\":true,\"backendStarted\":false,\"liveConnections\":false,\"os\":\"Microsoft Windows 10.0.26100\"}",
+    "2026-10-29T07:29:09.6665994Z Portable local-development package created. No installation, remote connection or live deployment was performed.",
+    "2026-10-29T07:29:53.3420492Z C# proof suite: 63/63 passed; native WPF execution: false.",
+    "2026-10-29T07:29:53.7618603Z \u001b[36;1m  $report = @{ packagedNativeExeStarted = $true; closedCleanly = $true; automaticChildProcesses = 0; realAzureConnections = 0; os = $PSVersionTable.OS } | ConvertTo-Json\u001b[0m",
+    "2026-10-29T07:29:56.5873028Z   \"automaticChildProcesses\": 0,",
+    "2026-10-29T07:29:56.5873924Z   \"packagedNativeExeStarted\": true,",
+    "2026-10-29T07:29:56.5874617Z   \"closedCleanly\": true,",
+    "2026-10-29T07:29:56.5875169Z   \"realAzureConnections\": 0"
+  ],
+  "artifacts": [
+    {
+      "id": 12879554678,
+      "name": "RiftAssist-ControlCenter-win-x64-development",
+      "size_in_bytes": 101644856,
+      "url": "https://api.github.com/repos/SacredHeart1390/RiftAssist/actions/artifacts/12879554678",
+      "archive_download_url": "https://api.github.com/repos/SacredHeart1390/RiftAssist/actions/artifacts/12879554678/zip",
+      "expired": false,
+      "created_at": "2026-10-29T07:30:09Z",
+      "expires_at": "2027-01-27T07:26:46Z",
+      "updated_at": "2026-10-29T07:30:09Z",
+      "digest": "sha256:e2fd5c9a83117af8c722aa6e515def727ec40a097f6823d874c3199fc3446819",
+      "workflow_run": {
+        "id": 40835470491,
+        "repository_id": 1433776683,
+        "head_repository_id": 1433776683,
+        "head_branch": "feature/riot-api-v0.2",
+        "head_sha": "2127b79faf20f8684170166d0e558df96fb7d5d4"
+      }
+    }
+  ]
+}

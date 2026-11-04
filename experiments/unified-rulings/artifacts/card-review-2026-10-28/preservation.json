@@ -1,0 +1,11 @@
+{
+  "v017FilesIdenticalToMain": 65,
+  "sharedHashesUnchanged": 8,
+  "releaseHashesVerified": 104,
+  "ready": false,
+  "productionDbAndKeysOpened": false,
+  "realRiotCalls": 0,
+  "paidApiCalls": 0,
+  "workspaceActivePointerWrites": 0,
+  "azureActions": 0
+}

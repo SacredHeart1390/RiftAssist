@@ -1,0 +1,178 @@
+TAP version 13
+# Subtest: policy defaults/invalid modes deny all, and verified mode ignores prototype exceptions without mutating data
+ok 1 - policy defaults/invalid modes deny all, and verified mode ignores prototype exceptions without mutating data
+  ---
+  duration_ms: 2.428708
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (unset)
+ok 2 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (unset)
+  ---
+  duration_ms: 164.218645
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (verified-only)
+ok 3 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (verified-only)
+  ---
+  duration_ms: 137.354722
+  type: 'test'
+  ...
+# Subtest: unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (invalid-mode)
+ok 4 - unconfirmed cards stay out of search/detail/resolve/AI while references and reports work (invalid-mode)
+  ---
+  duration_ms: 133.206474
+  type: 'test'
+  ...
+# Subtest: verified cards retain search/selection/model input; display-only cards never become model input
+ok 5 - verified cards retain search/selection/model input; display-only cards never become model input
+  ---
+  duration_ms: 147.383263
+  type: 'test'
+  ...
+# Subtest: general rule AI and local cases survive the default restriction; source translation excludes the hidden glossary
+ok 6 - general rule AI and local cases survive the default restriction; source translation excludes the hidden glossary
+  ---
+  duration_ms: 132.381204
+  type: 'test'
+  ...
+# Subtest: old idempotency responses are rejected without altering records; current retries still reuse one answer
+ok 7 - old idempotency responses are rejected without altering records; current retries still reuse one answer
+  ---
+  duration_ms: 128.842099
+  type: 'test'
+  ...
+# Subtest: historical translation keys containing unconfirmed card glossaries are denied without paid calls
+ok 8 - historical translation keys containing unconfirmed card glossaries are denied without paid calls
+  ---
+  duration_ms: 86.58666
+  type: 'test'
+  ...
+# Subtest: knowledge-release reload creates a new policy view and invalidates the previous response scope
+ok 9 - knowledge-release reload creates a new policy view and invalidates the previous response scope
+  ---
+  duration_ms: 90.577268
+  type: 'test'
+  ...
+# Subtest: legal pages are public static documents; private/admin routes stay inaccessible
+ok 10 - legal pages are public static documents; private/admin routes stay inaccessible
+  ---
+  duration_ms: 148.75936
+  type: 'test'
+  ...
+# Subtest: card APIs, AI, linked reports and authenticated manager review work together
+ok 11 - card APIs, AI, linked reports and authenticated manager review work together
+  ---
+  duration_ms: 249.893887
+  type: 'test'
+  ...
+# Subtest: documented encryption, 7/30/90-day purge and independent backup snapshots match the store
+ok 12 - documented encryption, 7/30/90-day purge and independent backup snapshots match the store
+  ---
+  duration_ms: 74.465144
+  type: 'test'
+  ...
+# Subtest: 01 재점령 득점: 같은 턴·전장 제한 472를 검색 결과에 보존한다
+ok 13 - 01 재점령 득점: 같은 턴·전장 제한 472를 검색 결과에 보존한다
+  ---
+  duration_ms: 4.386434
+  type: 'test'
+  ...
+# Subtest: 02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘못된 인용을 제거한다
+ok 14 - 02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘못된 인용을 제거한다
+  ---
+  duration_ms: 162.939155
+  type: 'test'
+  ...
+# Subtest: 03 유성·빅토르: 피해·정리·유발의 기본 조항이 실제 AI 입력에 함께 들어간다
+ok 15 - 03 유성·빅토르: 피해·정리·유발의 기본 조항이 실제 AI 입력에 함께 들어간다
+  ---
+  duration_ms: 134.930565
+  type: 'test'
+  ...
+# Subtest: 04 빅토르도 같은 정리에서 죽는 예외: 스킬 출처 이탈 조항을 확보한다
+ok 16 - 04 빅토르도 같은 정리에서 죽는 예외: 스킬 출처 이탈 조항을 확보한다
+  ---
+  duration_ms: 2.281546
+  type: 'test'
+  ...
+# Subtest: 05 실제 상황 정보 부족: 조건별 설명과 후속 질문을 불필요하게 재생성하지 않는다
+ok 17 - 05 실제 상황 정보 부족: 조건별 설명과 후속 질문을 불필요하게 재생성하지 않는다
+  ---
+  duration_ms: 0.417531
+  type: 'test'
+  ...
+# Subtest: 06 근거 부족 초안: 한 번 보강한 뒤 정상 답변을 반환하고 두 호출을 정산한다
+ok 18 - 06 근거 부족 초안: 한 번 보강한 뒤 정상 답변을 반환하고 두 호출을 정산한다
+  ---
+  duration_ms: 137.041131
+  type: 'test'
+  ...
+# Subtest: 07 보강 후에도 근거 부족: 세 번째 호출 없이 검색 오류로 기록한다
+ok 19 - 07 보강 후에도 근거 부족: 세 번째 호출 없이 검색 오류로 기록한다
+  ---
+  duration_ms: 140.822903
+  type: 'test'
+  ...
+# Subtest: 08 OpenAI 429 오류: 자동 재시도하지 않고 실패 호출을 정산한다
+ok 20 - 08 OpenAI 429 오류: 자동 재시도하지 않고 실패 호출을 정산한다
+  ---
+  duration_ms: 121.768466
+  type: 'test'
+  ...
+# Subtest: 09 개정 규칙: 같은 공식 문서의 서로 다른 버전 혼합을 거절한다
+ok 21 - 09 개정 규칙: 같은 공식 문서의 서로 다른 버전 혼합을 거절한다
+  ---
+  duration_ms: 0.777995
+  type: 'test'
+  ...
+# Subtest: 10 정상적인 부정 판정: 대상 재확정 금지를 근거 부족으로 오인하지 않아야 한다
+ok 22 - 10 정상적인 부정 판정: 대상 재확정 금지를 근거 부족으로 오인하지 않아야 한다
+  ---
+  duration_ms: 0.666857
+  type: 'test'
+  ...
+# Subtest: 11 실제 불확실성: complete로 잘못 표시한 초안도 처리 순서 미확정 표현을 감지한다
+ok 23 - 11 실제 불확실성: complete로 잘못 표시한 초안도 처리 순서 미확정 표현을 감지한다
+  ---
+  duration_ms: 0.329177
+  type: 'test'
+  ...
+# Subtest: v0.2.0 rejects the shared runtime root before opening DBs and keys
+ok 24 - v0.2.0 rejects the shared runtime root before opening DBs and keys
+  ---
+  duration_ms: 75.470363
+  type: 'test'
+  ...
+# Subtest: unmarked roots and links to production directories are rejected
+ok 25 - unmarked roots and links to production directories are rejected
+  ---
+  duration_ms: 7.402319
+  type: 'test'
+  ...
+# Subtest: mock collector/converter/translation use synthetic sources and preserve English originals
+ok 26 - mock collector/converter/translation use synthetic sources and preserve English originals
+  ---
+  duration_ms: 2.637573
+  type: 'test'
+  ...
+# Subtest: real adapter requires explicit approval/config and a reviewed mapper, sanitizes errors, and does not imply card permissions
+ok 27 - real adapter requires explicit approval/config and a reviewed mapper, sanitizes errors, and does not imply card permissions
+  ---
+  duration_ms: 19.460181
+  type: 'test'
+  ...
+# Subtest: prepared development release runs behind its own gateway with mock AI and never overwrites its pointer
+ok 28 - prepared development release runs behind its own gateway with mock AI and never overwrites its pointer
+  ---
+  duration_ms: 383.536636
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2928.18733

@@ -1,0 +1,631 @@
+diff --git a/.github/workflows/rules-tests.yml b/.github/workflows/rules-tests.yml
+index 24323c1..a1d3230 100644
+--- a/.github/workflows/rules-tests.yml
++++ b/.github/workflows/rules-tests.yml
+@@ -31,4 +31,4 @@ jobs:
+           # Tests use only Node built-ins; no dependency installation or cache is needed.
+           package-manager-cache: false
+       - name: Run mocked rules regression tests
+-        run: node --test --test-concurrency=1 ruling-regression.test.cjs
++        run: npm test
+diff --git a/experiments/unified-rulings/.gitignore b/experiments/unified-rulings/.gitignore
+index c638026..f2d1607 100644
+--- a/experiments/unified-rulings/.gitignore
++++ b/experiments/unified-rulings/.gitignore
+@@ -9,3 +9,12 @@ knowledge/imports/
+ knowledge/card-history/
+ knowledge/source-translations/
+ private/
++# Runtime databases and key files must never enter new source changes.
++# Existing tracked source-cache databases still require a separate index/history review.
++*.sqlite
++*.sqlite-wal
++*.sqlite-shm
++*.db
++*.db-wal
++*.db-shm
++*.key
+diff --git a/experiments/unified-rulings/releases/v0.1.7/app-release.json b/experiments/unified-rulings/releases/v0.1.7/app-release.json
+index ce4644f..1144194 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/app-release.json
++++ b/experiments/unified-rulings/releases/v0.1.7/app-release.json
+@@ -5,7 +5,7 @@
+   "ready": true,
+   "createdAt": "2026-10-23T03:12:12.048Z",
+   "baseRelease": "v0.1.6",
+-  "uiRevision": "timing-evidence-recovery-1",
++  "uiRevision": "riot-production-review-20261028",
+   "review": {
+     "syntaxFiles": 7,
+     "testsRun": false,
+@@ -17,26 +17,26 @@
+     "manager-ui/manager.css": "160d4bf045c6a5099a4b21847ea7bcdd8962c5d6f6a32973515564e463a13ff0",
+     "manager-ui/manager.js": "6030ed168e3cf1be761417222f70ae2cb82595a2fb0ebea2d331ef33aa92fecc",
+     "package.json": "f9ec51e834865461ee6e4a97cc3b2e1cff6d78ac2122987379e5e10e0b7f0d89",
+-    "public/app-r2.js": "eca066d2546696263785afafef5a1d76f11eda5024069c050b687ff34e653322",
+-    "public/app-ui2.js": "f867b9df991cc406c670a6b389f3538b587b4168401d2eb85347f36ea9a74bb4",
++    "public/app-r2.js": "59e3cbbc1eb003e6fbba75537aca1604bcbd150476b98a328082f7663d77928f",
++    "public/app-ui2.js": "37fedf9ce1839997854496e1c3630c23e4c0c0380efec8a17761e146027e0fb0",
+     "public/app-ui3.js": "d56dc5ff9b63d067a14f751cf1cc99c6d761de72e8d95e36a47a8a9207e839be",
+     "public/app-ui4.js": "8700d88a7cf0259f485374ba2fbe59c2b458338b41ce30aeb96735d5931fe31b",
+-    "public/app-ui5.js": "a91ec4344b30720d96b28f5ce2dd96f669781d4bfea6a337f99a32b55b7cb0d8",
++    "public/app-ui5.js": "578d6be9f3aa552c339a65beecedf802bdb15c00bc65fe9177cb260960cbde75",
+     "public/app.js": "38e7bcb4c91824fc422072ec95ade3e10759682b19f8d9eebbd041d696d85459",
+-    "public/card-composer-r2.js": "882d8b93ae1cfee9423d9b139ec47560f7d22c932f9a5a94aff0330f2935f86c",
+-    "public/card-composer-ui2.js": "a42bb62e55bd9bb095af11e132cc51b49711ced82499afb39b2374c2e86542bf",
+-    "public/card-composer-ui3.js": "c493bd57ab6d565eb0b171f4e0794e62a3f109216913ab22bcac1f2e0da4984c",
++    "public/card-composer-r2.js": "ba01bd1f4f429a60f394ea1f30f9377e3f7655910d7a01c949c0380c2f75564b",
++    "public/card-composer-ui2.js": "7c0b6e480c601016be6760ac4df691630cc9dcf3b8e11ffe33d903e79699a7e0",
++    "public/card-composer-ui3.js": "d4db995f1fc63e328669e724df0e7f4fe5aefeba9759c6c9db79a56823ee6713",
+     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
+     "public/evidence-view.js": "e69596546ef48f0ca455241af735b935a2c932087c80d9b02588c7b85a9c84ee",
+     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
+-    "public/index.html": "275f594a57459d7291792f16f5fdc9cd5a2684ef72814b678e7b9efacf99d231",
++    "public/index.html": "df93c0aca8cdcc5809ae98ab1c694aefb7ac6afad66e2bab7037920eef66fb6a",
+     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
+-    "public/reports-ui3.js": "a24d4c8ec17cdba42dd4cf09ac402a290fa7e9c91ab5ff74840007b7bd17a731",
++    "public/reports-ui3.js": "6e3ad3e3acd5ba8ec010612dd342a03010d65549ef7991629eac59f4ebbf06cc",
+     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
+     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
+-    "public/service-worker.js": "d64196c8a56a285a2d4baaa8ad4f15855909eeeac4f1888f649a038dacfa5aaf",
+-    "public/styles-r2.css": "65b5f83e52347f334658e00ef0b4218fbde811d23131f73ec8315316d4436891",
+-    "public/styles-ui2.css": "186128ae203abb11d88cda9ba8c04dfad3f51b2f248a11db7234f7dedd5ca4ee",
++    "public/service-worker.js": "0f7b7b27d075cd63880b0ac69b087a0d6d6d660ce227a2723a9809d3d48c7b77",
++    "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
++    "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
+     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
+     "public/styles-ui4.css": "ac74c153afb65e13f67d9074dce62c63b7a16953a13a551b664706b5d83d23d7",
+     "public/styles-ui5.css": "efb86cd85f66607230a0d4e6027c0d03d707c97eb5e45f161121a422ba45aea6",
+@@ -49,7 +49,7 @@
+     "scripts/knowledge.js": "0d47663e517adc448a04e79e91efbe2d3f7c699c40cdce96ff8ba649b1fe1fc2",
+     "scripts/open-manager.ps1": "3dfe80b5b116d79baf7b813484697768a42ef17d5ca146d30f5a7d09c9d4923b",
+     "scripts/rebuild-local-rules.mjs": "a11cba190611d0105511d1f54368930b1b7f91844ce874e20ede1f46593ca3ae",
+-    "scripts/source-monitor.js": "48b3d141b4264d55b6dade22a9655f8fbd78dbc4430f276d51afa59129b794d0",
++    "scripts/source-monitor.js": "4759cfb938264d77a663df3dc6aec6d5a681bead7dcaf3831ad92e8fcb4b9fc1",
+     "scripts/sync-rules.mjs": "12bd6af79570ed26537af13eb831cede276b6cd5da523ec3670a060662bc5d1c",
+     "scripts/verify-release.cjs": "852fe1cd01c5ddea28e1b46ef9257544d30ecd58275d1955a59a0a1dadc3301d",
+     "src/access-control.js": "9889fadf5a66ab32b22df640585fb569c931fc00c6de7b4625dd886d7b2594ff",
+@@ -64,9 +64,9 @@
+     "src/knowledge-admin.js": "e755d01b33d1f953e3ec4c4243b9d326d0773797b364e252232e4db53942558e",
+     "src/knowledge-provider.js": "6bab1af0c77a0ac13dc5fe2b93e359fd2e26ef812a520421eb140db98ff0610f",
+     "src/knowledge-releases.js": "99f9bc83d66a5972d126e13fbf995f727d16eb7f634a53cff84544c615c23bf7",
+-    "src/manager.js": "0075d11fbee5c19c86ca9536c0e5eff3407043e185f83e8a276af550a2e9e67e",
++    "src/manager.js": "31556511292ed254a3e35725b1b44fbea0191f515bce3cadaa4428fcb3eb7727",
+     "src/operations-store.js": "6eec519a11e61c631b41afdf5fb47a7a9c2414981c211e42f83ea2cbf645436c",
+-    "src/paths.js": "af50f7fabfd2387ce9c32777b3cf3884cc4a7b067dad7294be63a9ddbb32be2e",
++    "src/paths.js": "c1fb2004181637dac74a6047d6e1e47f35d6f4d93010d5d35e8db4ef22cbcc0b",
+     "src/pdf-rules.mjs": "508b9df13f2887f0776e16a0d6931f739be24e37e23afeea57b47303f28cd542",
+     "src/retrieval.js": "2d9955a0d90ffe7c1cb1c332c7fc82ef7f8aa2cf5ba07818826b408146b1b0c3",
+     "src/server.js": "f5ae05aea0dc6da1b83cbca0201adcac7ba7abb8e66fcf46c623d48904af9a52",
+@@ -76,7 +76,10 @@
+     "src/sync-judge.js": "e291cb51728785904363f614406e758311cfbb0d8d1b691a754248df5f9ee687",
+     "src/sync-official.js": "a0d11a7e17910c9e6661d390a13194aae944b1d302c3a816738c526ed69be232",
+     "src/sync-store.js": "80020789e4c6838dfc54ff6cfc0afe3d31b19b0135f2f6fbdeb4fb0ed9e947d8",
+-    "src/terminology-ko.js": "22070a946bea64123b4e445741f3084d72eb54b561becb39632448df50f8b835"
++    "src/terminology-ko.js": "22070a946bea64123b4e445741f3084d72eb54b561becb39632448df50f8b835",
++    "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
++    "public/privacy.html": "f7da91c5167e6e07d830250b2a3f0412f81952b2f4fed7908b79ebde36a2f077",
++    "public/terms.html": "637c42c51dc9b0f1b0b66b9025e2f7034accdbe56190121a5e32271888b5d911"
+   },
+   "ciValidation": {
+     "tests": 11,
+@@ -95,5 +98,34 @@
+     "paidApiCalls": 0,
+     "productionRestart": false,
+     "checkedAt": "2026-10-23T09:12:32.557Z"
++  },
++  "legalValidation": {
++    "checkedAt": "2026-10-28T01:20:50.865188+00:00",
++    "regressionsPassed": 14,
++    "e2ePassed": 10,
++    "syntaxFiles": 7,
++    "htmlDocuments": 3,
++    "browser": "Chromium 154.0.8037.57",
++    "playwright": "1.62.1",
++    "viewports": [
++      1280,
++      390,
++      320
++    ],
++    "paidApiCalls": 0,
++    "productionDeployment": false,
++    "legalReviewPending": true,
++    "preexistingManifestHashMismatchesRefreshed": [
++      "public/app-r2.js",
++      "public/app-ui2.js",
++      "public/card-composer-r2.js",
++      "public/card-composer-ui2.js",
++      "public/card-composer-ui3.js",
++      "public/styles-r2.css",
++      "public/styles-ui2.css",
++      "scripts/source-monitor.js",
++      "src/manager.js",
++      "src/paths.js"
++    ]
+   }
+ }
+diff --git a/experiments/unified-rulings/releases/v0.1.7/public/app-ui5.js b/experiments/unified-rulings/releases/v0.1.7/public/app-ui5.js
+index 5b4ce09..67a4570 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/public/app-ui5.js
++++ b/experiments/unified-rulings/releases/v0.1.7/public/app-ui5.js
+@@ -5,14 +5,15 @@ const strings = {
+     subhead: '카드 효과부터 대회 중 상황까지, 궁금한 내용을 그대로 적어 주세요. 게임 규칙과 대회 규칙, 리프트저지 사례를 함께 살펴봅니다.',
+     promptLabel: '어떤 상황인가요?',
+     promptPlaceholder: '예: 대회 시간 종료 후 마지막 차례에 시간 왜곡을 사용했어요. 추가 차례를 진행할 수 있나요?',
+-    askButton: '근거 찾아 답변받기', footerDisclaimer: '리프트어시는 코어룰, 토너먼트룰, Riftjudge Q&A 기록을 참조하여 답변하는 AI 어시스턴트이므로, 100% 정확하지 않을 수 있습니다.',
+-    privacyNote: '질문은 리프트저지 사례 검색에 전송됩니다. AI 답변 생성 시 질문과 검색 근거를 OpenAI로 보냅니다.',
+-    privacyNoteSearchOnly: '질문은 리프트저지 사례 검색에 전송됩니다. 현재 OpenAI 생성 호출은 꺼져 있습니다.',
+-    privacyNoteWithLogs: '운영 서버에 질문·답변·근거는 7일, 처리 기록은 30일 보관합니다. 제보에 연결한 자료는 최대 90일 보관합니다. 개인정보는 적지 마세요.',
+-    privacyNoteMetadata: '운영 서버에 질문·답변·근거는 7일, 처리 기록은 30일 보관합니다. 제보에 연결한 자료는 최대 90일 보관합니다. 개인정보는 적지 마세요.',
++    askButton: '근거 찾아 답변받기', footerDisclaimer: 'RiftAssist의 AI 답변은 오류가 있을 수 있는 참고 정보입니다. 공식 Riot Games 판정이나 대회 저지의 최종 판정을 대체하지 않습니다.',
++    privacyLink: '개인정보 처리방침', termsLink: '이용약관',
++    privacyNote: '질문 일부와 검색어가 필요 시 RiftJudge로 전송됩니다. AI 생성 시 질문·선택 카드·검색 근거를 OpenAI로 보냅니다.',
++    privacyNoteSearchOnly: '질문 일부와 검색어가 필요 시 RiftJudge로 전송됩니다. 현재 OpenAI 생성 호출은 꺼져 있습니다.',
++    privacyNoteWithLogs: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
++    privacyNoteMetadata: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
+     privacyNoteLoading: '연결 상태를 확인하고 있습니다.', connectionError: '서버에 연결하지 못했습니다. 잠시 후 페이지를 새로고침해 주세요.', answerLabel: '근거 기반 답변', newQuestion: '새 질문', sourceLinks: '출처 바로가기', officialLink: '공식 규칙 허브 ↗',
+     resolutionTitle: '처리 순서', ruleEvidenceTitle: '참조한 공식 룰', caseEvidenceTitle: '참고한 리프트저지 사례', followUpTitle: '확인이 필요한 점',
+-    cardEvidenceTitle: '질문에 연결된 카드', cardDetailsNeeded: '카드 확인 필요', caseComparison: 'AI가 설명한 사례 적용', sharedConditions: '공통 조건', differences: '차이점', application: '현재 질문에 적용',
++    cardEvidenceTitle: '질문에 연결된 카드', cardDetailsNeeded: '카드 확인 필요', cardAccessRestricted: '카드 이용 제한', caseComparison: 'AI가 설명한 사례 적용', sharedConditions: '공통 조건', differences: '차이점', application: '현재 질문에 적용',
+     sourcesTitle: '연결된 출처',
+     sourcesSubtitle: '공식 문서와 커뮤니티 판례를 구분해 보여줍니다.', officialTag: '공식', communityTag: '커뮤니티',
+     rulesHub: 'Rules Hub', sourceNote: '저지 사례는 요청마다 리프트저지 검색 인덱스에서 조회합니다.',
+@@ -29,14 +30,15 @@ const strings = {
+     subhead: 'From card interactions to tournament situations, just describe what happened. The assistant considers gameplay rules, tournament rules and RiftJudge examples together.',
+     promptLabel: 'What happened?',
+     promptPlaceholder: 'For example: I played Time Warp on the final turn after time was called at a tournament. Can I take another turn?',
+-    askButton: 'Search and answer', footerDisclaimer: 'RiftAssi is an AI assistant that references the Core Rules, Tournament Rules, and RiftJudge Q&A. Its answers may contain errors.',
+-    privacyNote: 'Your question is sent to RiftJudge for case search. AI generation sends your question and retrieved sources to OpenAI.',
+-    privacyNoteSearchOnly: 'Your question is sent to RiftJudge for case search. OpenAI generation is currently off.',
+-    privacyNoteWithLogs: 'Questions, answers and references are retained for 7 days, metadata for 30 days, and reports with linked records for up to 90 days. Do not enter personal information.',
+-    privacyNoteMetadata: 'Questions, answers and references are retained for 7 days, metadata for 30 days, and reports with linked records for up to 90 days. Do not enter personal information.',
++    askButton: 'Search and answer', footerDisclaimer: 'RiftAssist AI answers are reference information and may contain errors. They do not replace official Riot Games rulings or a tournament judge’s final decision.',
++    privacyLink: 'Privacy Policy', termsLink: 'Terms of Use',
++    privacyNote: 'Question excerpts and search terms go to RiftJudge when needed. AI generation sends your question, selected cards and retrieved sources to OpenAI.',
++    privacyNoteSearchOnly: 'Question excerpts and search terms go to RiftJudge when needed. OpenAI generation is currently off.',
++    privacyNoteWithLogs: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
++    privacyNoteMetadata: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
+     privacyNoteLoading: 'Checking connection status.', connectionError: 'Could not connect to the server. Please refresh the page shortly.', answerLabel: 'Evidence-based answer', newQuestion: 'New question', sourceLinks: 'Open references', officialLink: 'Official Rules Hub ↗',
+     resolutionTitle: 'Resolution steps', ruleEvidenceTitle: 'Official rules referenced', caseEvidenceTitle: 'RiftJudge examples', followUpTitle: 'Details to confirm',
+-    cardEvidenceTitle: 'Cards linked to the question', cardDetailsNeeded: 'Card confirmation needed', caseComparison: 'AI explanation of applicability', sharedConditions: 'Shared conditions', differences: 'Differences', application: 'Application to this question',
++    cardEvidenceTitle: 'Cards linked to the question', cardDetailsNeeded: 'Card confirmation needed', cardAccessRestricted: 'Card access restricted', caseComparison: 'AI explanation of applicability', sharedConditions: 'Shared conditions', differences: 'Differences', application: 'Application to this question',
+     sourcesTitle: 'Connected references',
+     sourcesSubtitle: 'Official documents and community cases are clearly distinguished.', officialTag: 'OFFICIAL', communityTag: 'COMMUNITY',
+     rulesHub: 'Rules Hub', sourceNote: 'RiftJudge cases are retrieved from its live search index for each request.',
+@@ -72,7 +74,7 @@ function applyLanguage(language) {
+   state.language = language === 'en' ? 'en' : 'ko';
+   document.documentElement.lang = state.language;
+   cardComposer.setLanguage(state.language);
+-  document.title = state.language === 'en' ? 'Rift Assistant — Riftbound Rules' : '리프트어시 — 리프트바운드 규칙 도우미';
++  document.title = state.language === 'en' ? 'RiftAssist — Riftbound Rules' : 'RiftAssist · 리프트어시 — 리프트바운드 규칙 도우미';
+   document.querySelectorAll('[data-i18n]').forEach((element) => {
+     const key = element.dataset.i18n;
+     if (strings[state.language][key]) element.innerHTML = strings[state.language][key];
+@@ -123,7 +125,7 @@ function renderCases(cases, citedCaseIds = [], comparisons = []) {
+ function setAnswerStatus(data) {
+   const labels = {
+     'ruling-generated': 'rulingGenerated', 'insufficient-evidence': 'insufficient', 'no-evidence': 'noEvidence',
+-    'evidence-only': 'evidenceOnly', 'ai-paused': 'aiPaused', 'model-error': 'modelError', 'card-details-needed': 'cardDetailsNeeded',
++    'evidence-only': 'evidenceOnly', 'ai-paused': 'aiPaused', 'model-error': 'modelError', 'card-details-needed': 'cardDetailsNeeded', 'card-access-restricted': 'cardAccessRestricted',
+   };
+   document.querySelector('#answer-status').textContent = tr(labels[data.status] || 'evidenceOnly');
+ }
+diff --git a/experiments/unified-rulings/releases/v0.1.7/public/card-composer-ui3.js b/experiments/unified-rulings/releases/v0.1.7/public/card-composer-ui3.js
+index 8210c28..7b4dc44 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/public/card-composer-ui3.js
++++ b/experiments/unified-rulings/releases/v0.1.7/public/card-composer-ui3.js
+@@ -12,6 +12,7 @@
+       limit: '한 질문에는 서로 다른 카드 8장까지 연결할 수 있습니다.', tooLong: '질문은 10,000자까지 작성할 수 있습니다.',
+       checking: '카드 목록을 확인하고 있습니다.', catalog: () => '카드명 2글자 이상을 입력하면 해당 글자가 포함된 카드가 나타납니다. 목록에서 선택해 질문에 연결하세요.',
+       noneCatalog: '카드 자료 준비 중입니다. 질문에 정확한 카드명과 효과를 적어 주세요.',
++      restrictedCatalog: '카드 이용 권한 확인 중으로 카드 검색·이미지·카드에 의존하는 AI 판정을 제한합니다. 규칙·저지 사례는 계속 검색할 수 있습니다.',
+       citation: '답변에서 인용', unavailable: '모델 사용 준비 전',
+     },
+     en: {
+@@ -26,6 +27,7 @@
+       limit: 'Select at most 8 different cards per question.', tooLong: 'Questions must be 10,000 characters or fewer.',
+       checking: 'Checking card catalog.', catalog: () => 'Type at least 2 characters of a card name. Choose a matching card from the suggestions to link it to your question.',
+       noneCatalog: 'Card data is being prepared. Include the exact card name and effect in your question.',
++      restrictedCatalog: 'Card search, images and card-dependent AI answers are restricted while usage rights are reviewed. Rule and judge-case search remains available.',
+       citation: 'Cited in answer', unavailable: 'Not ready for model use',
+     },
+   };
+@@ -96,7 +98,8 @@
+ 
+     updateCatalogNote() {
+       // Keep actionable errors visible; routine usage and collection details belong outside the form.
+-      const message = this.catalogFailed ? this.t('error') : this.catalog && !this.catalog.total ? this.t('noneCatalog') : '';
++      const limited = this.catalog?.access?.mode === 'restricted' || (this.catalog?.access?.restrictedTotal > 0 && !this.catalog.total);
++      const message = this.catalogFailed ? this.t('error') : limited ? this.t('restrictedCatalog') : this.catalog && !this.catalog.total ? this.t('noneCatalog') : '';
+       this.note.textContent = message;
+       this.note.hidden = !message;
+     }
+diff --git a/experiments/unified-rulings/releases/v0.1.7/public/index.html b/experiments/unified-rulings/releases/v0.1.7/public/index.html
+index 738da70..ff4bff2 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/public/index.html
++++ b/experiments/unified-rulings/releases/v0.1.7/public/index.html
+@@ -9,17 +9,18 @@
+     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+     <link rel="stylesheet" href="/styles-ui5.css">
+     <link rel="stylesheet" href="/reports.css">
+-    <title>리프트어시 — 리프트바운드 규칙 도우미</title>
++    <link rel="stylesheet" href="/legal.css">
++    <title>RiftAssist · 리프트어시 — 리프트바운드 규칙 도우미</title>
+   </head>
+   <body>
+     <div class="app-shell">
+       <header class="topbar">
+         <a class="brand" href="/" aria-label="리프트어시 홈">
+           <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+-          <span class="brand-copy"><strong>리프트어시</strong><small>RIFT ASSISTANT</small></span>
++          <span class="brand-copy"><strong>리프트어시</strong><small>RiftAssist</small></span>
+         </a>
+         <div class="topbar-right">
+-          <span class="version-pill"><i></i><span data-i18n="prototype">베타</span> <b data-app-version>v0.1.4</b></span>
++          <span class="version-pill"><i></i><span data-i18n="prototype">베타</span> <b data-app-version>v0.1.7</b></span>
+           <label class="language-picker" aria-label="Language">
+             <span class="sr-only" data-i18n="language">언어</span>
+             <select id="language-select">
+@@ -109,8 +110,13 @@
+           </section>
+ 
+           <footer class="page-footer">
+-            <p class="footer-disclaimer" data-i18n="footerDisclaimer">리프트어시는 코어룰, 토너먼트룰, Riftjudge Q&amp;A 기록을 참조하여 답변하는 AI 어시스턴트이므로, 100% 정확하지 않을 수 있습니다.</p>
+-            <span>리프트어시 <b>·</b> <span data-app-version>v0.1.4</span> BETA</span>
++            <p class="footer-disclaimer" data-i18n="footerDisclaimer">RiftAssist의 AI 답변은 오류가 있을 수 있는 참고 정보입니다. 공식 Riot Games 판정이나 대회 저지의 최종 판정을 대체하지 않습니다.</p>
++            <p class="riot-notice" lang="en">RiftAssist was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.</p>
++            <nav class="legal-links" aria-label="Legal">
++              <a href="/privacy.html" data-i18n="privacyLink">개인정보 처리방침</a>
++              <a href="/terms.html" data-i18n="termsLink">이용약관</a>
++            </nav>
++            <span>RiftAssist <b>·</b> <span data-app-version>v0.1.7</span> BETA</span>
+             <a href="https://playriftbound.com/ko-kr/rules-hub/" target="_blank" rel="noreferrer" data-i18n="officialLink">공식 규칙 허브 ↗</a>
+           </footer>
+         </section>
+diff --git a/experiments/unified-rulings/releases/v0.1.7/public/reports-ui3.js b/experiments/unified-rulings/releases/v0.1.7/public/reports-ui3.js
+index 3b79405..29e1a44 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/public/reports-ui3.js
++++ b/experiments/unified-rulings/releases/v0.1.7/public/reports-ui3.js
+@@ -38,7 +38,7 @@
+     for(const [value,ko,en] of tags){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.value=value;label.append(input,document.createTextNode(text(ko,en)));fieldset.append(label);}
+     descriptionLabel.replaceChildren(document.createTextNode(text('어떤 문제가 있었나요?','What happened?')),description);
+     expectedLabel.replaceChildren(document.createTextNode(text('기대했던 답변·관련 근거 링크 (선택)','Expected answer or source link (optional)')),expected);
+-    warning.textContent=text('제보 내용과 연결된 질문·답변·근거는 운영자 검토를 위해 최대 90일 보관합니다. 이름·연락처 등 개인정보를 적지 마세요.','Reports and linked questions, answers and references are kept for up to 90 days for operator review. Do not include personal information.');
++    warning.textContent=text('제보와 연결된 질문·답변·근거는 운영자 검토를 위해 저장되며 접수 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 이름·연락처 등 개인정보를 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.','Reports and linked questions, answers and references are stored for operator review and become eligible for cleanup 90 days after receipt. Backups are managed separately. Do not include personal information. See the Privacy Policy in the footer.');
+     send.textContent=text('제보 보내기','Submit report');close.textContent=text('닫기','Close');dialog.showModal();description.focus();
+   }
+   open.addEventListener('click',show);answerButton.addEventListener('click',show);
+diff --git a/experiments/unified-rulings/releases/v0.1.7/public/service-worker.js b/experiments/unified-rulings/releases/v0.1.7/public/service-worker.js
+index 2463864..af0c534 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/public/service-worker.js
++++ b/experiments/unified-rulings/releases/v0.1.7/public/service-worker.js
+@@ -1,5 +1,5 @@
+-const CACHE_NAME = 'riftassi-v0.1.7-e2e-connection2';
+-const APP_SHELL = ['/', '/styles-ui5.css', '/reports.css', '/card-composer-ui3.js', '/evidence-view.js', '/app-ui5.js', '/reports-ui3.js', '/manifest.webmanifest', '/icon.svg'];
++const CACHE_NAME = 'riftassi-v0.1.7-card-access-20261028';
++const APP_SHELL = ['/', '/styles-ui5.css', '/reports.css', '/legal.css', '/privacy.html', '/terms.html', '/card-composer-ui3.js', '/evidence-view.js', '/app-ui5.js', '/reports-ui3.js', '/manifest.webmanifest', '/icon.svg'];
+ self.addEventListener('install', (event) => {
+   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL.map((url) => new Request(url, { cache: 'reload' })))));
+   self.skipWaiting();
+diff --git a/experiments/unified-rulings/releases/v0.1.7/src/server.js b/experiments/unified-rulings/releases/v0.1.7/src/server.js
+index 92faf39..4508df5 100644
+--- a/experiments/unified-rulings/releases/v0.1.7/src/server.js
++++ b/experiments/unified-rulings/releases/v0.1.7/src/server.js
+@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
+ const fsSync = require('node:fs');
+ const path = require('node:path');
+ const crypto = require('node:crypto');
+-const { searchCards, resolveCards } = require('./cards');
++const { searchCards } = require('./cards');
+ const { AsyncLocalStorage } = require('node:async_hooks');
+ const { APP_ROOT, DATA_ROOT } = require('./paths');
+ const { createKnowledgeProvider } = require('./knowledge-provider');
+@@ -15,6 +15,7 @@ const requestKnowledge = new AsyncLocalStorage();
+ const { createSourceTranslations } = require('./source-translations');
+ const { createStore } = require('./operations-store');
+ const { createAccess } = require('./access-control');
++const { createCardAccess } = require('./card-access');
+ 
+ const ROOT = DATA_ROOT;
+ const PUBLIC_DIR = path.join(APP_ROOT, 'public');
+@@ -41,6 +42,7 @@ function loadDotEnv() {
+   } catch { /* .env is optional */ }
+ }
+ loadDotEnv();
++const cardAccess = createCardAccess(process.env.RIFTASSI_CARD_POLICY);
+ const PORT = Number(process.env.PORT || 3001);
+ // Content is retained only in the encrypted operations database, never JSONL.
+ const CONTENT_LOGGING = false;
+@@ -113,8 +115,8 @@ function hasTournamentContext(question) {
+ function sourceGlossary(item) {
+   const content = ` ${item.question || ''} ${item.answer || ''} ${item.officialTextEn || ''} `.toLocaleLowerCase();
+   const names = new Map();
+-  for (const card of (requestKnowledge.getStore() || knowledge.current()).cardCatalog.cards) {
+-    if (!card.nameEn || !card.nameKo || card.nameEn.length < 3 || names.has(card.nameEn)) continue;
++  for (const card of (requestKnowledge.getStore() || cardAccess.snapshot(knowledge.current())).cardCatalog.cards) {
++    if (!card.modelReady || !card.nameEn || !card.nameKo || card.nameEn.length < 3 || names.has(card.nameEn)) continue;
+     const escaped = card.nameEn.toLocaleLowerCase().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+     if (new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'u').test(content)) names.set(card.nameEn, card.nameKo);
+     if (names.size >= 24) break;
+@@ -478,23 +480,24 @@ async function handleAsk(req, res) {
+   catch (error) { sendJson(res, error.statusCode || 400, { error: error.message }); return; }
+ 
+   let cardResolution;
+-  try { cardResolution = resolveCards(cardCatalog, payload.cardIds, question, payload.rememberedCardIds, payload.excludedCardIds); }
++  try { cardResolution = cardAccess.resolve(snapshot, payload.cardIds, question, payload.rememberedCardIds, payload.excludedCardIds); }
+   catch (error) { sendJson(res, error.statusCode || 400, { error: error.message }); return; }
+   const owner = access.session(req, res);
+   const request = store.beginQuestion(owner, payload.clientKey, question,
+-    store.hash(JSON.stringify({ question, language, cardIds: payload.cardIds || [], image: imageDataUrl ? store.hash(imageDataUrl) : null })),
++    store.hash(JSON.stringify({ question, language, cardIds: payload.cardIds || [], image: imageDataUrl ? store.hash(imageDataUrl) : null, cardPolicy: snapshot.cardCacheScope })),
+     { imageAttached: Boolean(imageDataUrl), language, cardIds: payload.cardIds || [] });
+   if (request.response) { sendJson(res, 200, request.response); return; }
+   const requestId = request.id;
+   req.riftRequestId = requestId;
+   const selectedCards = cardResolution.selected;
+-  let retrieved = retrieval.search(snapshot.index, question, selectedCards);
+-  const blockedByCards = cardResolution.unresolved.length > 0 || (retrieved.intent.needsCardText && cardResolution.missing.length > 0);
++  const modelCards = selectedCards.filter(card => card.modelReady);
++  let retrieved = retrieval.search(snapshot.index, question, modelCards);
++  const blockedByCards = cardResolution.restricted || cardResolution.unresolved.length > 0 || cardResolution.missing.length > 0;
+   let blockedByEvidence = retrieved.trace.missingRequired.length > 0;
+   const ruleMatches = retrieved.evidence;
+   let [matches, cases] = await Promise.all([
+     Promise.all(ruleMatches.map((item) => prepareLocalization('rule', item))),
+-    searchJudge(question, selectedCards).then((items) => Promise.all(items.map((item) => prepareLocalization('case', item)))),
++    searchJudge(question, modelCards).then((items) => Promise.all(items.map((item) => prepareLocalization('case', item)))),
+   ]);
+   let ai;
+   let modelError = null;
+@@ -503,7 +506,7 @@ async function handleAsk(req, res) {
+   async function generateAttempt(recoveryPass=false) {
+     const callId = store.reserveCall(owner, 'answer');
+     let result, failure=null;
+-    try { result = await askOpenAI(question, category, language, matches, cases, imageDataUrl, selectedCards, {trace:retrieved.trace,recoveryPass,deadline:startedAt+85000}); return result; }
++    try { result = await askOpenAI(question, category, language, matches, cases, imageDataUrl, modelCards, {trace:retrieved.trace,recoveryPass,deadline:startedAt+85000}); return result; }
+     catch(error) { failure=error; throw error; }
+     finally {
+       const usage=result?.usage || failure?.usage || null;
+@@ -523,7 +526,7 @@ async function handleAsk(req, res) {
+         retry={reason:error.code,queries:[],ruleIds:[]};
+       }
+       if(retry) {
+-        retrieved=retrieval.search(snapshot.index,question,selectedCards,{...retry,repair:true});
++        retrieved=retrieval.search(snapshot.index,question,modelCards,{...retry,repair:true});
+         blockedByEvidence=retrieved.trace.missingRequired.length>0;
+         matches=await Promise.all(retrieved.evidence.map(item=>prepareLocalization('rule',item)));
+         if(retry.reason==='source-conflict') cases=cases.filter(item=>!item.applicabilityWarning);
+@@ -559,6 +562,11 @@ async function handleAsk(req, res) {
+       citedCardIds: ai.ruling.citedCardIds, caseComparisons: ai.ruling.caseComparisons,
+       requiresJudge: ai.ruling.requiresJudge,
+     };
++  } else if (cardResolution.restricted) {
++    answer = baseAnswer(language, 'card-access-restricted',
++      language === 'en' ? 'Card-dependent AI answers are paused until the card’s usage rights are confirmed.' : '카드 이용 권한 확인 전까지 이 카드에 의존하는 AI 판정을 보류합니다.',
++      language === 'en' ? 'No OpenAI answer request was sent. You can still review the rule and community references below.' : 'OpenAI 답변 생성 요청은 보내지 않았습니다. 아래 규칙·커뮤니티 사례 검색 결과는 계속 확인할 수 있습니다.');
++    answer.citedRuleIds = []; answer.citedCaseIds = []; answer.citedCardIds = []; answer.caseComparisons = []; answer.requiresJudge = true;
+   } else if (blockedByCards) {
+     const missingNames = cardResolution.missing.map((card) => language === 'en' ? card.nameEn || card.nameKo : card.nameKo || card.nameEn);
+     const unresolvedNames = [...new Set(cardResolution.unresolved.map((card) => language === 'en' ? card.nameEn || card.nameKo : card.nameKo || card.nameEn))];
+@@ -594,7 +602,7 @@ async function handleAsk(req, res) {
+     answer.requiresJudge = true;
+   }
+ 
+-  if (blockedByEvidence) {
++  if (blockedByEvidence && !cardResolution.restricted) {
+     answer.status = 'insufficient-evidence'; answer.confidence = 'insufficient'; answer.requiresJudge = false;
+     answer.recommendation = language === 'en' ? 'The search could not supply a required rule. This is an evidence retrieval issue, not a ruling that the situation is undecidable.' : '판정에 필요한 규칙을 검색 결과에 확보하지 못했습니다. 규칙에 정답이 없다는 뜻이 아니라, 근거 검색에 문제가 발생한 상태입니다.';
+     answer.reasoning = `${language === 'en' ? 'Missing clauses' : '누락된 조항'}: ${retrieved.trace.missingRequired.join(', ')}`;
+@@ -620,7 +628,7 @@ async function handleAsk(req, res) {
+   const response = {
+     requestId, category, language, ...answer,
+     evidence: matches.map((item) => ({ ...item, requestId })), judgeCases: titledCases.map((item) => ({ ...item, requestId })),
+-    cards: selectedCards, cardCatalogVersion: cardCatalog.version,
++    cards: selectedCards, cardCatalogVersion: cardCatalog.version, cardAccess: snapshot.cardAccess,
+     sources: SOURCE_LINKS, knowledgeReleaseId: snapshot.releaseId,
+     ai: { configured: Boolean(process.env.OPENAI_API_KEY), generationEnabled: aiEnabled(), enabled: aiEnabled() && Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null, used: Boolean(ai.ruling), error: modelError },
+     notice: '',
+@@ -634,7 +642,7 @@ async function handleAsk(req, res) {
+     citedCardIds: answer.citedCardIds || [], promptVersion: PROMPT_VERSION, terminologyVersion: terminology.VERSION, cardCatalogVersion: cardCatalog.version,
+     automaticallyResolvedCardIds: cardResolution.automaticallyResolvedIds || [],
+     cardReferences: selectedCards.map((card) => ({ id: card.id, version: card.source.version, contentHash: card.contentHash, modelReady: card.modelReady, authority: card.authority, fetchedAt: card.source.fetchedAt })),
+-    unresolvedCardIds: cardResolution.unresolved.map((card) => card.id), blockedByCards, blockedByEvidence,
++    unresolvedCardIds: cardResolution.unresolved.map((card) => card.id), blockedByCards, blockedByEvidence, cardAccessRestricted: cardResolution.restricted,
+     ruleVersions: [...new Set(matches.map((item) => `${item.documentId}:${item.version}`))],
+     judgeCaseVersions: cases.map((item) => ({ id: item.id, status: item.status, rulesVersion: item.rulesVersion })),
+     localizationKeys: [...matches, ...cases].map((item) => item.localization?.key).filter(Boolean),
+@@ -669,8 +677,9 @@ async function serveStatic(req, res, pathname) {
+ 
+ async function initialize() {
+   await knowledge.initialize();
+-  const server = http.createServer((req, res) => requestKnowledge.run(knowledge.current(), () => {
+-    const { evidence, cardCatalog, evidenceCountByDocument } = requestKnowledge.getStore();
++  const server = http.createServer((req, res) => requestKnowledge.run(cardAccess.snapshot(knowledge.current()), () => {
++    const snapshot = requestKnowledge.getStore();
++    const { evidence, cardCatalog, evidenceCountByDocument } = snapshot;
+     const cardCatalogAvailable = cardCatalog.cards.length > 0;
+     let url;
+     try { access.check(req); url = new URL(req.url, 'http://localhost'); }
+@@ -692,22 +701,21 @@ async function initialize() {
+         indexedSupplementCount: evidence.filter((item) => !item.ruleId).length,
+         evidenceCountByDocument,
+         riftJudgeSearchEnabled: true, riftJudgeSearchAvailable: judgeSearchAvailable,
+-        cardCatalog: { available: cardCatalogAvailable, version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length },
++        cardCatalog: { available: cardCatalogAvailable, version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess },
+         generationBudget: { maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS, maxInputCharacters: MAX_MODEL_INPUT_CHARS },
+       });
+       return;
+     }
+     if (req.method === 'GET' && url.pathname === '/api/cards/search') {
+-      if (!cardCatalogAvailable) { sendJson(res, 503, { error: 'Card catalog unavailable.' }); return; }
+-      sendJson(res, 200, { version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, results: searchCards(cardCatalog, url.searchParams.get('q'), url.searchParams.get('language'), url.searchParams.get('browse') === '1') });
++      sendJson(res, 200, { version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess, results: searchCards(cardCatalog, url.searchParams.get('q'), url.searchParams.get('language'), url.searchParams.get('browse') === '1') });
+       return;
+     }
+     if (req.method === 'POST' && url.pathname === '/api/cards/resolve') {
+       readJson(req).then(payload=>{
+         if(typeof payload.question!=='string'||payload.question.length>10000)throw Object.assign(new Error('Invalid question text.'),{statusCode:400});
+-        const result=resolveCards(cardCatalog,payload.cardIds,payload.question,payload.rememberedCardIds,payload.excludedCardIds);
++        const result=cardAccess.resolve(snapshot,payload.cardIds,payload.question,payload.rememberedCardIds,payload.excludedCardIds);
+         // Catalog lookup only: no model call, question log or conversational history.
+-        sendJson(res,200,{version:cardCatalog.version,cards:result.selected,references:result.references,unresolved:result.unresolved.map(c=>({id:c.id,nameKo:c.nameKo,nameEn:c.nameEn}))});
++        sendJson(res,200,{version:cardCatalog.version,cards:result.selected,references:result.references,unresolved:result.unresolved.map(c=>({id:c.id,nameKo:c.nameKo,nameEn:c.nameEn})),restricted:result.restricted,access:snapshot.cardAccess});
+       }).catch(error=>sendJson(res,error.statusCode||500,{error:error.statusCode?error.message:'Card lookup failed.'}));
+       return;
+     }
+@@ -737,7 +745,11 @@ async function initialize() {
+         const owner = access.session(req, res);
+         const question = store.getQuestion(body.requestId, owner);
+         const items = body.kind === 'case' ? question.response?.judgeCases : question.response?.evidence;
+-        if (!items?.some((item) => String(item.id) === body.id && item.localization?.key === body.key)) throw Object.assign(new Error('Source is not part of this question.'), { statusCode: 403 });
++        const item = items?.find((item) => String(item.id) === body.id && item.localization?.key === body.key);
++        if (!item) throw Object.assign(new Error('Source is not part of this question.'), { statusCode: 403 });
++        // Previously saved translation keys may include now-restricted card-name glossaries.
++        const current = await sourceTranslations.prepare(body.kind, item, sourceGlossary(item));
++        if (current?.key !== body.key) throw Object.assign(new Error('Source permissions changed. Submit a new question.'), { statusCode: 403, code: 'source_permissions_changed' });
+         const result = await sourceTranslations.translate(body.key, body.kind, body.id, owner);
+         store.attachTranslation(body.requestId, owner, body.key, result.translation);
+         return result;
+diff --git a/experiments/unified-rulings/tests/e2e/user-flows.test.cjs b/experiments/unified-rulings/tests/e2e/user-flows.test.cjs
+index 5db94e5..feca2fe 100644
+--- a/experiments/unified-rulings/tests/e2e/user-flows.test.cjs
++++ b/experiments/unified-rulings/tests/e2e/user-flows.test.cjs
+@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
+ const path = require('node:path');
+ const { chromium } = require('playwright');
+ const { isolatedServer, fixture } = require('../helpers/isolated-server.cjs');
+-const results = path.resolve(__dirname, '../results/e2e');
++const results = process.env.RIFTASSI_E2E_RESULTS || path.resolve(__dirname, '../results/e2e');
+ const expected = '같은 턴에 같은 전장에서 이미 득점했다면 다시 정복해도 추가 점수를 얻지 않습니다.';
+ const question = '제 턴 개시 단계에 한 전장에서 점거로 1점을 얻었습니다. 상대에게 빼앗긴 뒤 같은 턴에 다시 정복하면 추가 점수를 얻나요?';
+ const steps = ['이 전장에서 이번 턴 이미 득점했는지 확인합니다.', '같은 턴의 재정복으로는 추가 점수를 얻지 않습니다.'];
+@@ -18,6 +18,7 @@ async function browserSession(t, plans, options = {}) {
+   const server = await isolatedServer(t, plans);
+   // Use an isolated headless profile, never the user's existing browser or production server.
+   const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'],
++    ...(process.env.RIFTASSI_E2E_EXECUTABLE_PATH ? { executablePath: process.env.RIFTASSI_E2E_EXECUTABLE_PATH } : {}),
+     ...(process.env.RIFTASSI_E2E_CHANNEL ? { channel: process.env.RIFTASSI_E2E_CHANNEL } : {}) });
+   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: 'block',
+     reducedMotion: 'reduce', locale: 'ko-KR', ...options });
+@@ -34,7 +35,7 @@ async function browserSession(t, plans, options = {}) {
+     offsite.push(target.origin);
+     return route.abort('blockedbyclient');
+   });
+-  t.after(async () => {
++  server.addCleanup(async () => {
+     try {
+       if (t.passed === false) {
+         await fs.mkdir(results, { recursive: true });
+diff --git a/experiments/unified-rulings/tests/helpers/isolated-server.cjs b/experiments/unified-rulings/tests/helpers/isolated-server.cjs
+index f9186f9..821cbc1 100644
+--- a/experiments/unified-rulings/tests/helpers/isolated-server.cjs
++++ b/experiments/unified-rulings/tests/helpers/isolated-server.cjs
+@@ -39,14 +39,28 @@ function localRequest(port, route, { method = 'GET', body, cookie } = {}) {
+     request.end(body ? JSON.stringify(body) : undefined);
+   });
+ }
+-async function isolatedServer(t, plans) {
++function syntheticPermittedCards(catalog = fixture.cards) {
++  // Permission overlay exists only inside disposable tests, never on source fixtures
++  // or real card data. It is not evidence of any actual license or Riot approval.
++  return { ...catalog, cards: catalog.cards.map(card => ({ ...card,
++    textVerified: true, permissions: { display: true, modelInput: true },
++    source: { ...card.source, kind: 'licensed', url: `https://example.test/cards/${encodeURIComponent(card.id)}`,
++      label: 'Synthetic test permissions only; no real-world license asserted' },
++  })) };
++}
++async function isolatedServer(t, plans, options = {}) {
+   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'riftassist-rules-test-'));
+   let child, output = '', cookie = '';
+-  const externalCalls = [], unexpected = [];
++  const externalCalls = [], judgeCalls = [], unexpected = [];
++  const cleanups = [];
+   t.after(async () => {
++    let cleanupError;
++    for (const cleanup of cleanups.reverse()) {
++      try { await cleanup(); } catch (error) { cleanupError ||= error; }
++    }
+     if (child && child.exitCode === null) {
+       const ended = once(child, 'exit');
+-      const force = setTimeout(() => child.kill(), 3000);
++      const force = setTimeout(() => child.kill('SIGKILL'), 3000);
+       if (child.connected) child.send({ type: 'shutdown' }, () => {}); else child.kill();
+       try { await ended; } finally { clearTimeout(force); }
+     }
+@@ -56,12 +70,13 @@ async function isolatedServer(t, plans) {
+     assert.ok(path.basename(resolved).startsWith('riftassist-rules-test-'));
+     await fs.rm(resolved, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+     assert.deepEqual(unexpected, [], 'The test attempted an unplanned external request.');
++    if (cleanupError) throw cleanupError;
+   });
+   const dataId = 'regression-2026-10-09';
+   const dir = path.join(directory, 'knowledge-releases', dataId);
+   await fs.mkdir(dir, { recursive: true });
+   const hashes = {};
+-  for (const [name, value] of Object.entries({ 'rules.json': fixture.rules, 'cards.json': fixture.cards, 'judge-cases.json': [] })) {
++  for (const [name, value] of Object.entries({ 'rules.json': fixture.rules, 'cards.json': options.cards || syntheticPermittedCards(), 'judge-cases.json': options.judgeCases || [] })) {
+     const bytes = JSON.stringify(value);
+     hashes[name] = crypto.createHash('sha256').update(bytes).digest('hex');
+     await fs.writeFile(path.join(dir, name), bytes);
+@@ -79,12 +94,15 @@ async function isolatedServer(t, plans) {
+     OPENAI_GENERATION_ENABLED: 'true', OPENAI_MODEL: 'regression-mocked-model', OPENAI_REASONING_EFFORT: 'low',
+     ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
+   };
++  const cardPolicy = Object.hasOwn(options, 'cardPolicy') ? options.cardPolicy : 'verified-only';
++  if (cardPolicy !== null) env.RIFTASSI_CARD_POLICY = cardPolicy;
+   child = fork(path.join(release, 'src/server.js'), [], { cwd: directory, env,
+     execArgv: ['--require', path.join(__dirname, 'mock-external.cjs')], silent: true, windowsHide: true });
+   child.stdout.on('data', chunk => { output = (output + chunk).slice(-3000); });
+   child.stderr.on('data', chunk => { output = (output + chunk).slice(-3000); });
+   child.on('message', value => {
+     if (value.type === 'mock-openai') externalCalls.push(value.body);
++    if (value.type === 'mock-riftjudge') judgeCalls.push(value.body);
+     if (value.type === 'unexpected-network') unexpected.push(value.url);
+   });
+   await new Promise((resolve, reject) => {
+@@ -103,7 +121,11 @@ async function isolatedServer(t, plans) {
+   cookie = health.headers['set-cookie'][0].split(';')[0];
+   return {
+     baseURL: `http://127.0.0.1:${port}`,
++    dataRoot: directory, // Disposable fixture only, for isolated manager integration checks.
++    addCleanup(cleanup) { cleanups.push(cleanup); }, // Close browsers/DBs before stopping/removing the fixture.
++    request(route, options = {}) { return localRequest(port, route, { cookie, ...options }); },
+     externalCalls,
++    judgeCalls,
+     async ask(question, cardIds = []) {
+       return localRequest(port, '/api/ask', { method: 'POST', cookie,
+         body: { question, cardIds, language: 'ko', clientKey: crypto.randomUUID() } });
+@@ -125,4 +147,4 @@ async function isolatedServer(t, plans) {
+     },
+   };
+ }
+-module.exports = { isolatedServer, fixture, release };
++module.exports = { isolatedServer, fixture, release, freePort, syntheticPermittedCards };
+diff --git a/experiments/unified-rulings/tests/helpers/mock-external.cjs b/experiments/unified-rulings/tests/helpers/mock-external.cjs
+index 4e5c8db..1b5fc46 100644
+--- a/experiments/unified-rulings/tests/helpers/mock-external.cjs
++++ b/experiments/unified-rulings/tests/helpers/mock-external.cjs
+@@ -6,7 +6,7 @@ const emit = value => { if (process.connected) process.send(value); };
+ globalThis.fetch = async (url, options = {}) => {
+   const target = String(url);
+   if (target === 'https://app.riftjudge.com/api/search') {
+-    emit({ type: 'mock-riftjudge' });
++    emit({ type: 'mock-riftjudge', body: JSON.parse(options.body) });
+     return Response.json({ results: [] });
+   }
+   if (target !== 'https://api.openai.com/v1/responses') {
+diff --git a/experiments/unified-rulings/tests/package.json b/experiments/unified-rulings/tests/package.json
+index 97b27a6..1d8f5df 100644
+--- a/experiments/unified-rulings/tests/package.json
++++ b/experiments/unified-rulings/tests/package.json
+@@ -2,8 +2,8 @@
+   "name": "riftassist-rules-regression",
+   "private": true,
+   "scripts": {
+-    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs",
+-    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs"
++    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs",
++    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs"
+   },
+   "devDependencies": { "playwright": "1.62.1" },
+   "engines": { "node": ">=22.13" }

@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "6632479ccb7c4b35c6153687441fad16a4bebe1e",
+  "workflow": {
+    "id": 41400403570,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570",
+    "conclusion": "success",
+    "windowsJob": 125130785260,
+    "ubuntuJob": 125130784877
+  },
+  "regressionWorkflow": {
+    "id": 41400403578,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403578",
+    "conclusion": "success"
+  },
+  "windows": {
+    "runner": "Windows Server 2025",
+    "sourceProofs": {
+      "passed": 154,
+      "failed": 0
+    },
+    "extractedPackageProofs": {
+      "passed": 154,
+      "failed": 0
+    },
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "fixedSshKeyStartupNoInput": true,
+      "automaticRenewalAndRecoveryBounded": true,
+      "automaticReportsMemoryOnly": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "package": {
+      "rootExecutable": true,
+      "nativeExeStarted": true,
+      "closedCleanly": true,
+      "iconResourcesAndHandles": true,
+      "savedSshSettingsPresentOnPackageLaunch": false,
+      "automaticChildProcessesWithoutSavedSettings": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "Ubuntu 24.04",
+    "passed": 155,
+    "failed": 0,
+    "loopbackSyntheticSshOnly": true
+  },
+  "artifact": {
+    "id": 13120938158,
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64",
+    "bytes": 101639489,
+    "digest": "sha256:69cdbb3b758696f91d2b5838de96e2a55f521586323a65f5a3f45a7f18e0f6f6",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41400403570/artifacts/13120938158",
+    "expiresAt": "2027-01-31T06:31:05Z"
+  },
+  "realWindows10DeviceTestedByDeveloper": false,
+  "realAzureConnected": false,
+  "operatingDataOrKeysUsed": false,
+  "paidApiCalls": 0,
+  "limits": "Full-authority server key is restricted only by client request policy; managed string erasure is not guaranteed. Windows10 physical device and actual Azure are user follow-up tests."
+}

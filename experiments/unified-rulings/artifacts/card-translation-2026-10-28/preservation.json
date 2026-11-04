@@ -1,0 +1,19 @@
+{
+  "branch": "feature/riot-api-v0.2",
+  "v017TrackedFileCount": 65,
+  "v017IdenticalToMain": true,
+  "preservedFilesUnchanged": {
+    "knowledge-releases/active.json": true,
+    "knowledge-releases/2026-10-26-e14c666116dc/manifest.json": true,
+    "knowledge-releases/2026-10-26-e14c666116dc/cards.json": true,
+    "knowledge-releases/2026-10-26-e14c666116dc/rules.json": true,
+    "knowledge-releases/2026-10-26-e14c666116dc/judge-cases.json": true,
+    "source-updates/content.sqlite": true,
+    "source-updates/content.sqlite-wal": true,
+    "source-updates/content.sqlite-shm": true
+  },
+  "productionDbAndKeysOpened": false,
+  "paidApiCalls": 0,
+  "azureActions": 0,
+  "activePointerWrites": 0
+}

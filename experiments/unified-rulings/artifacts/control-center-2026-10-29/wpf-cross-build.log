@@ -1,0 +1,10 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  RiftAssist.ControlCenter.Core -> /workspace/RiftAssist/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter.Core/bin/Release/net10.0/RiftAssist.ControlCenter.Core.dll
+  RiftAssist.ControlCenter -> /workspace/RiftAssist/experiments/unified-rulings/control-center/src/RiftAssist.ControlCenter/bin/Release/net10.0-windows/win-x64/RiftAssist.ControlCenter.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.73

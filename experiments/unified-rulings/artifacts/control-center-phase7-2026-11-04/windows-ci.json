@@ -1,0 +1,70 @@
+{
+  "sourceCommit": "fadeced91221a5c060c97d2508e8a1fa25fb0fd6",
+  "controlCenterRun": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800",
+  "rulesRun": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033754",
+  "conclusion": "success",
+  "windows": {
+    "runner": "Windows Server 2025 10.0.26100",
+    "sourceCsharpPassed": 256,
+    "packagedCsharpPassed": 255,
+    "nativeWpf": {
+      "nativeWpfWindowLoaded": true,
+      "realAdapterUiWithMockDependencies": true,
+      "separateExecutionAndGitHubApproval": true,
+      "realRepairDpapiHistoryReopened": true,
+      "incidentPreviewConsentAndClipboard": true,
+      "incidentMockRepairAndHistory": true,
+      "incidentStaleRevisionBlocked": true,
+      "manualReportsDpapiAndReopen": true,
+      "manualReportEditorAndUnifiedList": true,
+      "productionChangeControlsBlocked": true,
+      "fixedSshKeyStartupNoInput": true,
+      "automaticRenewalAndRecoveryBounded": true,
+      "automaticReportsMemoryOnly": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "phaseSevenSmokeIncludingReopenedPriorRevisionReturnedSuccessfully": true,
+    "zipRootExecutable": true,
+    "packagedExeStartedAndClosed": true,
+    "explorerWindowTaskbarIcons": true,
+    "automaticChildProcessesOnUnconfiguredStartup": 0,
+    "signature": "NotSigned",
+    "executionLevel": "asInvoker"
+  },
+  "ubuntu": {
+    "runner": "Ubuntu24.04",
+    "csharpPassed": 252
+  },
+  "package": {
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64.zip",
+    "sizeBytes": 101786387,
+    "sha256": "7c6d066736e051cc08e05c1d1874853320ab8e2acd4b5460011f3a3fedd56368",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800/artifacts/13291798648",
+    "expiresUtc": "2027-02-02T02:57:25Z"
+  },
+  "actualCodexInferenceCalls": 0,
+  "actualRepairPrPublishes": 0,
+  "actualAzureConnections": 0,
+  "paidApiCalls": 0,
+  "limits": [
+    "Native CLI/GitHub adapters were tested with synthetic mocked responses, not real inference or repair PR publication.",
+    "Actual company Windows10 and its elevated Codex sandbox/CLI authentication remain user verification.",
+    "Windows CLI contracts/events/tests used injected process runner. Real Git processes, Node reproduction, WPF, DPAPI and packaged EXE were exercised.",
+    "WPF build and native CI are not a physical Windows10 compatibility proof."
+  ]
+}

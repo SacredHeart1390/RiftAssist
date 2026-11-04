@@ -1,0 +1,93 @@
+{
+  "sourceCommit": "5856e6ca38769ca38d8aa8a7cf699ae401b157c5",
+  "workflow": {
+    "id": 41404472071,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41404472071",
+    "conclusion": "success",
+    "windowsJob": 125143277290,
+    "ubuntuJob": 125143277428
+  },
+  "regressionWorkflow": {
+    "id": 41404472033,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41404472033",
+    "conclusion": "success"
+  },
+  "local": {
+    "core": 177,
+    "node": 132,
+    "web": 13,
+    "v017": 11,
+    "total": 333,
+    "failed": 0
+  },
+  "windows": {
+    "runner": "Windows Server 2025",
+    "sourceProofs": {
+      "passed": 176,
+      "failed": 0
+    },
+    "extractedPackageProofs": {
+      "passed": 176,
+      "failed": 0
+    },
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "manualReportsDpapiAndReopen": true,
+      "manualReportEditorAndUnifiedList": true,
+      "productionChangeControlsBlocked": true,
+      "fixedSshKeyStartupNoInput": true,
+      "automaticRenewalAndRecoveryBounded": true,
+      "automaticReportsMemoryOnly": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "publisher": {
+      "authenticodeStatus": "NotSigned",
+      "requestedExecutionLevel": "asInvoker",
+      "uiAccess": false,
+      "signingPerformed": false,
+      "globalSecurityChanges": false
+    },
+    "package": {
+      "rootExecutable": true,
+      "nativeExeStarted": true,
+      "closedCleanly": true,
+      "iconResourcesAndHandles": true,
+      "automaticChildrenWithoutSavedSettings": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "Ubuntu 24.04",
+    "passed": 177,
+    "failed": 0,
+    "syntheticLoopbackOnly": true
+  },
+  "artifact": {
+    "id": 13122623874,
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64",
+    "bytes": 101665948,
+    "digest": "sha256:d7e19bef88e8b7ed1348f4f021ac0e1e9d0ba9c635c17f22e27f2c3026e220f4",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41404472071/artifacts/13122623874",
+    "expiresAt": "2027-01-31T07:09:35Z"
+  },
+  "realWindows10PhysicalDeviceTested": false,
+  "realAzureConnected": false,
+  "productionChangesEnabled": false,
+  "productionKeysOrUserRecordsUsed": false,
+  "paidApiCalls": 0,
+  "limits": "Synthetic managers only. Native model/store reopen validates persistence; actual Windows10 EXE relaunch with user records remains user follow-up. Server controls remain blocked; no SSH write adapter or systemd control is provided."
+}

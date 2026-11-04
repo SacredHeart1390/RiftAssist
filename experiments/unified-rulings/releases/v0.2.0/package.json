@@ -1,0 +1,22 @@
+{
+  "name": "riftbound-rules-assistant",
+  "version": "0.2.0",
+  "private": true,
+  "description": "RiftAssist isolated next-version development",
+  "scripts": {
+    "start": "node scripts/start-development.cjs",
+    "manager": "node src/manager.js",
+    "knowledge:status": "node scripts/knowledge.js status",
+    "dev:prepare": "node scripts/prepare-development.cjs",
+    "riot:preview": "node scripts/preview-riot-import.cjs",
+    "translations:preview": "node scripts/preview-card-translations.cjs",
+    "sync:mock": "node scripts/sync-mock-cards.cjs",
+    "sync:status": "node scripts/sync-mock-cards.cjs status"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "devDependencies": {
+    "pdfjs-dist": "5.6.205"
+  }
+}

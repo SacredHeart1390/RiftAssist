@@ -1,0 +1,1271 @@
+{
+  "Tests": [
+    {
+      "Name": "golden: korean-and-quotes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: emoji-and-combining",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: control-characters",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: integer-property-order",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: safe-integers",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "golden: arrays-null-booleans",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "duplicate JSON keys rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fractional and unsafe request numbers rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Unicode is not normalized and invalid surrogates fail",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "session credentials are random, ephemeral, and final scopes opt-in",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "typed final phrases, acknowledgement and reason all required",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "live integrations remain unavailable while mock operations are explicit",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "backend source integrity verified",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "empty or traversing backend manifests rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "arbitrary data folders cannot be opened",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "owned mock sandbox prepared with existing Node engine",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "owned sandbox listing and reparse boundaries",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Node verifies C# HMAC and returns bilingual structured comparisons",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "local validation blocks incomplete warning acknowledgement before writes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "bulk hold/reject decisions and Korean reasons persist",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "individual approval and explicit partial-stage plan",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "default session cannot activate and backend scopes independently enforce it",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fresh privileged local session activates exact staged package",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "rollback is separate, version-bound and preserves original files",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "audit records show Korean decisions without credentials or raw signed requests",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "reconnect restores review history without re-seeding or reactivating",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: wrong-id",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: oversize",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: hang",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "pipe boundary: environment",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH strict host verification, noninteractive auth and no forwarding",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH uses a fixed read-only script and tampered commands are rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH injection, unexpected HTTPS targets and invalid profile fields fail",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH agent mode does not require a private key file or read key bytes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "remote status accepts bounded numeric metrics and HTTP codes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "malformed, duplicate, unknown, unbounded or inconsistent metrics fail",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH settings store only six metadata fields and never private key contents",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unexpected credential fields and symlink settings are refused",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "no SSH runner is invoked without separate connection approval",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH success produces one timestamped snapshot without paid APIs",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH authentication is sanitized, bounded and not retried",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH changed host key is sanitized, bounded and not retried",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH unverified host key is sanitized, bounded and not retried",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH network timeout is sanitized, bounded and not retried",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock SSH disconnect is sanitized, bounded and not retried",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "failed SSH preserves last good metrics as stale and explicit retry can recover",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH profile switch never reuses another server\u0027s successful snapshot",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH cancellation and malformed stdout never publish fresh metrics",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Azure operational controls and actual admin data are denied before transport",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "all eight existing AI limits enforce ranges and reject missing/extra fields",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain development writes require status refresh and cannot become production requests",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "owned Node development manager authenticates through existing login/cookie API",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "synthetic report detail includes original question and response without real user data",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development AI toggle and usage are actual local API state, not paid calls",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development limits use the unchanged admin API validation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development hosting cannot open a tunnel or accept public configuration",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development app start and restart affect only owned ephemeral workers",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development app update and rollback use ready synthetic releases",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development report status and Korean notes persist through existing API",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development backup stays inside owned root; no DB or key bytes are printed",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "legacy network rediscovery remains blocked and never activates knowledge",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development operation journal stores reasons and outcomes, never keys/cookies/signatures",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "development stop/reconnect preserves reports and settings without auto-starting",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "read-only actions never require a confirmation dialog",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "ordinary changes and card decisions use one simple confirmation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "backup, final versions, destructive and unknown actions retain protection",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "automatic reasons include action and target and satisfy unchanged backend validation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "automatic audit does not accept unbounded or control-character targets",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "dashboard shows six separately labelled metrics with friendly healthy states",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "dashboard never labels missing HTTP responses or failed service as healthy",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "dashboard clearly distinguishes stale values and an unqueried server",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH stdin is LF-only UTF-8 without BOM and fixed POSIX sh",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH start-info preserves argument boundaries and strips unrelated environment",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: remote shell exit 2",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: missing remote tool",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: post-auth session loss",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: Windows no-exit-status -1",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: Windows native crash status",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: truncated input success",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: stdin pipe failure with auth stderr",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: refused",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: DNS",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: unsupported option",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: key load",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH failure separation: benign stderr",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH exit zero malformed output is parsing failure rather than disconnect",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH diagnostic only permits known marker values",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unexpected local exception is never described as server disconnect",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real child pipes preserve Korean paths, LF stdin, EOF and non-UTF8 stderr",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real early child stdin close still returns authentication stderr and exit code",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real pipe output limit terminates child promptly without deadlock",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "invalid stdout UTF-8 is a parse failure, not SSH disconnected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real hanging child respects cancellation and is reaped",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "local executable launch failure is sanitized and distinct",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Linux POSIX sh status script runs with real /proc and stubbed HTTP/systemd",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Linux missing required tool yields safe dependency failure",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Linux unavailable optional health/systemd retain metrics with explicit warnings",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: good",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: remote-error",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: denied",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: host-mismatch",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: bad-output",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH loopback mock: drop",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "production admin allows only existing login and exact read routes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "SSH admin stdin bridge is fixed to remote loopback 3100 without listener or remote exec",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unchanged manager rejects untrusted Host Origin and missing cookie",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin read before login cannot create even a loopback connection",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unchanged v017 router rejects wrong key with sanitized authentication code",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "existing login Origin Host and memory cookie authenticate real v017 router",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real readonly router returns synthetic report and linked Korean question answer",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "status projector never renders upstream error credentials or paths",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "blocked route never reaches HTTP transport after authenticated reads",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP failure clears cookie without sensitive response: expired",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP failure clears cookie without sensitive response: redirect",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP failure clears cookie without sensitive response: bad-json",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP failure clears cookie without sensitive response: oversize",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP failure clears cookie without sensitive response: disconnect",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "admin HTTP cancellation stops read and invalidates cookie",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real OpenSSH -W readonly API bridge: admin-proxy",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real OpenSSH -W readonly API bridge: admin-denied",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "credential identity survives ZIP updates and SSH key-path rotation but isolates targets/schemes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fresh login defaults have no secret read and startup cannot authenticate",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "successful unchecked login never stores a key or enables startup",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "remember option saves only after authentication and startup remains separate",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "failed first authentication never writes a remembered credential",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "protected storage failure cannot enable auto connect or fall back to plaintext",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "login JSON contains only version binding scheme and opt-in booleans",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "explicit auto opt-in permits one startup authentication with stored data",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "changed admin key rejects saved credential and deletes it without retry",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "network failure retains protected credential but disarms automatic startup",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "forget clears credential and opt-in even after recreated preferences instance",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "tampered or credential-bearing options fail closed",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual v017 structured report content renders description expected tags and linked response",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "report strings empty snapshots and null optional fields remain compatible",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "malformed report tags and oversized descriptions remain rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manager key SSH command has one immutable file and rejects any script or argument mutation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "secret lease accepts exact hex64 with optional newline and never formats its value",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "secret lease authenticates via existing API and disposed bytes cannot be reused",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "bounded child key output is consumed only as a redacted credential",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes missing",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes permission",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes link",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes format",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes invalid",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes huge",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "fixed key read sanitizes auth",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "key subprocess cancellation closes the process without leaking output",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "automatic network retries stop at two with exactly five seconds between attempts",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "host-key and fixed file errors never retry automatically",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "a transient recovery succeeds once and cannot create an unbounded retry loop",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "production policy rejects even the test-only alternate manager file",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Ubuntu-compatible fixed script reads bounded local synthetic bytes and reports missing file",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH fixed-key mock: key-good",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH fixed-key mock: key-missing",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual OpenSSH fixed-key mock: key-invalid",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "phase5 API plans preserve exact v017 routes; restart is stop, verify, start, verify",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "production changes are denied before read or mutation transport even with confirmation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "synthetic existing signed manager supports verified start stop restart AI limits status and note",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: authentication",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: network",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: stopped",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: lost",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: verify",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "uncertain change requires status read and never replays: restart-stop",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "no confirmation and concurrent requests cannot produce duplicate writes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unmodified v017 auth and mutation router with synthetic store: change-normal",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unmodified v017 auth and mutation router with synthetic store: change-lost",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unmodified v017 auth and mutation router with synthetic store: change-auth",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manual encrypted create preserves Korean fields without plaintext metadata or temp files",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manual reopen edit retains ID creation time and encrypted audit revisions",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "stale manual edit rejected without replacing current encrypted record",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manual invalid title enum controls length and Unicode are rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manual lock blocks parallel writer and leaves existing data intact",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "protection failure never falls back to plaintext or overwrites old report",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "corrupted ciphertext fails closed and is preserved",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "future analysis packet is explicit in-memory local source and revision only",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "manual symlink storage refused",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "analysis manual revision and memory summary remain explicit",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "API projection excludes trace session identifiers and uses content revision",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "privacy redacts known key cookie UUID email phone address path and PEM canaries",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "consent binds exact redacted contents and destination; real execution remains denied",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "existing verified retrieval card schema and answer policy run offline without official claims",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "analysis encrypted ledger is separate, cached and reopenable with linked revision",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "stored provider output is scrubbed and paid providers cannot silently enter ledger",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "analysis CAS lock and protection failure preserve existing ciphertext",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "corrupted analysis ciphertext fails closed without overwrite",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "mock repair runs actual Node before failure and after pass in owned synthetic workspace",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "v017 emergency and v020 improvement jobs have separate IDs and never touch release code",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "repair terminal status blocks duplicate execution: cancelled",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "repair terminal status blocks duplicate execution: disconnected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "repair terminal status blocks duplicate execution: failed",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "repair terminal status blocks duplicate execution: unsafe-result",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "restart recovery marks pending jobs uncertain without executing them",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "copy requests require bound consent and preserve job identity with prepared and complete states",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "Codex JSON events are bounded progress only and completion is never verified success",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "analysis symlink root is rejected without following it",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real Codex permission profile denies root reads and network with elevated backend",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real Codex disables web plugin hooks and uses narrow write grants",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path manager.key",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path content.sqlite",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path content.sqlite-wal",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path active.json",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path config",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path outside.js",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path .env",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "export refuses sensitive path secret.pem",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "live v017 and integration tests remain read only",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "source guard refuses provider key and SQLite masquerading as source",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "source guard allows only specific existing dummy fixture credential",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "tool readiness reuses CLI ChatGPT authentication without key extraction",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "API key login cannot silently substitute ChatGPT authentication",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "native process uses UTF8 stdin and drains private stderr without returning it",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "native process strips credential variables from child environment",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "native cancellation kills child tree with finite error",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "native timeout does not replay writes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "malformed streaming event stops child promptly",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "stdout oversize terminates safely",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "non Windows actual Codex execution fails closed before runner call",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real GitHub source adapter selects exact branch and excludes runtime DB before fetch",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "incomplete GitHub tree fails closed without archive clone fallback",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "GitHub publisher verifies account push permission",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "corrupt source blob hash is rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real GitHub adapter creates deterministic commit per-job branch and Draft PR targeting feature",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "repeat publication and PR requery validate existing result with zero extra writes",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "remote branch content conflict is never accepted as published result",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "moved integration base blocks publication before write",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "missing-response branch resume is read-only and validates exact tree",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "commit identity and time are stable across replay",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "isolated source has no Git credential metadata or copied runtime records",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real Git diff and derived manifests bind edited code plus reproduction",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "trusted tests and before snapshot stay immutable during verification copy",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "live v017 edits are rejected before diff publication",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "agent manifest tampering is rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "source path traversal and alternate streams are rejected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "complete allowed source snapshot excludes data and passes real bundle manifest verification",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "actual execution requires activation and exact external preview approval",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real workflow adapter contract completes isolation edit tests and review without publishing",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "duplicate execute reuses job and never repeats paid inference",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "job store is encrypted separately and preserves CAS revision",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "publication requires separate enable and exact diff approval",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "changed diff after tests blocks GitHub write",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "unknown publication response persists uncertainty and blocks automatic replay",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "read-only requery resumes approval state without any write",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "explicit second approval publishes once and read requery remains idempotent",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real job failure remains unpublishable without retry: tests-failed",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real job failure remains unpublishable without retry: timeout",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real job failure remains unpublishable without retry: cancelled",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real job failure remains unpublishable without retry: disconnected",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "real job failure remains unpublishable without retry: isolation",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "restart marks abandoned execution uncertain and never replays",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "active job lease prevents restart reclassification",
+      "Passed": true,
+      "Error": null
+    },
+    {
+      "Name": "settings default disabled and persist paths only",
+      "Passed": true,
+      "Error": null
+    }
+  ],
+  "passed": 252,
+  "failed": 0,
+  "os": "Debian GNU/Linux 13 (trixie)",
+  "framework": ".NET 10.0.14",
+  "nativeWpfExecuted": false,
+  "realRiotCalls": 0,
+  "paidApiCalls": 0
+}

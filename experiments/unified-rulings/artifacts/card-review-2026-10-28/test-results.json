@@ -1,0 +1,28 @@
+{
+  "regression": {
+    "tests": 119,
+    "pass": 119,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "e2e": {
+    "tests": 13,
+    "pass": 13,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "legacy": {
+    "tests": 11,
+    "pass": 11,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "total": 143,
+  "releaseHashesVerified": 104
+}

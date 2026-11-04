@@ -1,0 +1,28 @@
+{
+  "knowledgeRelease": "2026-10-26-e14c666116dc",
+  "preservedKnowledgeHashes": {
+    "knowledge-releases/active.json": "982964b1e4ddf8ca9e8501981874ea936264ebe87016e00240f8c21ffb293d87",
+    "knowledge-releases/2026-10-26-e14c666116dc/manifest.json": "5ab3987f1ca775270310a637ed5ba567573c616559688002faab3b913be3ed04",
+    "knowledge-releases/2026-10-26-e14c666116dc/cards.json": "8eec626a557995b9366242efeddd0b730ef5fe782b6a67b845ef3974a7d9c8c5",
+    "knowledge-releases/2026-10-26-e14c666116dc/rules.json": "7acbc93d7f292242453961f5e298c2285ff13a2d148c06256dbb4cb46de03c9e",
+    "knowledge-releases/2026-10-26-e14c666116dc/judge-cases.json": "2b9cb775c43212837d9cd6817b8057262f6378620b6b5ba80e53eaf8fe8f7e65"
+  },
+  "startingChanges": [
+    " M .github/workflows/rules-tests.yml",
+    " M experiments/unified-rulings/.gitignore",
+    " M experiments/unified-rulings/releases/v0.1.7/app-release.json",
+    " M experiments/unified-rulings/releases/v0.1.7/public/app-ui5.js",
+    " M experiments/unified-rulings/releases/v0.1.7/public/index.html",
+    " M experiments/unified-rulings/releases/v0.1.7/public/reports-ui3.js",
+    " M experiments/unified-rulings/releases/v0.1.7/public/service-worker.js",
+    " M experiments/unified-rulings/tests/e2e/user-flows.test.cjs",
+    " M experiments/unified-rulings/tests/helpers/isolated-server.cjs",
+    " M experiments/unified-rulings/tests/package.json",
+    "?? experiments/unified-rulings/artifacts/riot-production-review-2026-10-28/",
+    "?? experiments/unified-rulings/releases/v0.1.7/public/legal.css",
+    "?? experiments/unified-rulings/releases/v0.1.7/public/privacy.html",
+    "?? experiments/unified-rulings/releases/v0.1.7/public/terms.html",
+    "?? experiments/unified-rulings/tests/e2e/legal-pages.test.cjs",
+    "?? experiments/unified-rulings/tests/legal-operations.test.cjs"
+  ]
+}

@@ -1,0 +1,220 @@
+TAP version 13
+# Subtest: mock adapter produces a complete snapshot without using its HTTP transport
+ok 1 - mock adapter produces a complete snapshot without using its HTTP transport
+  ---
+  duration_ms: 4.065889
+  type: 'test'
+  ...
+# Subtest: paging accepts only one complete, count-checked snapshot
+ok 2 - paging accepts only one complete, count-checked snapshot
+  ---
+  duration_ms: 1.162035
+  type: 'test'
+  ...
+# Subtest: invalid partial page never reaches conversion/translation and preserves the last good snapshot
+ok 3 - invalid partial page never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 63.470368
+  type: 'test'
+  ...
+# Subtest: invalid unknown terminal cursor never reaches conversion/translation and preserves the last good snapshot
+ok 4 - invalid unknown terminal cursor never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 29.957847
+  type: 'test'
+  ...
+# Subtest: invalid count mismatch never reaches conversion/translation and preserves the last good snapshot
+ok 5 - invalid count mismatch never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 28.945172
+  type: 'test'
+  ...
+# Subtest: invalid duplicate IDs never reaches conversion/translation and preserves the last good snapshot
+ok 6 - invalid duplicate IDs never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 23.542381
+  type: 'test'
+  ...
+# Subtest: invalid invalid card never reaches conversion/translation and preserves the last good snapshot
+ok 7 - invalid invalid card never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 31.81823
+  type: 'test'
+  ...
+# Subtest: invalid invalid card dates never reaches conversion/translation and preserves the last good snapshot
+ok 8 - invalid invalid card dates never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 30.074342
+  type: 'test'
+  ...
+# Subtest: invalid unrevealed preview never reaches conversion/translation and preserves the last good snapshot
+ok 9 - invalid unrevealed preview never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 33.157317
+  type: 'test'
+  ...
+# Subtest: invalid credential URL never reaches conversion/translation and preserves the last good snapshot
+ok 10 - invalid credential URL never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 26.745456
+  type: 'test'
+  ...
+# Subtest: invalid mixed snapshot pages never reaches conversion/translation and preserves the last good snapshot
+ok 11 - invalid mixed snapshot pages never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 22.857652
+  type: 'test'
+  ...
+# Subtest: invalid cursor loop never reaches conversion/translation and preserves the last good snapshot
+ok 12 - invalid cursor loop never reaches conversion/translation and preserves the last good snapshot
+  ---
+  duration_ms: 20.377102
+  type: 'test'
+  ...
+# Subtest: page limit and timeout abort the collection without exposing a partial catalog
+ok 13 - page limit and timeout abort the collection without exposing a partial catalog
+  ---
+  duration_ms: 21.152133
+  type: 'test'
+  ...
+# Subtest: first sync stages a review candidate using the existing translation/knowledge stores, never activates it
+ok 14 - first sync stages a review candidate using the existing translation/knowledge stores, never activates it
+  ---
+  duration_ms: 22.79302
+  type: 'test'
+  ...
+# Subtest: repeats, page/card reordering and version-only advances publish nothing and do not invoke translation
+ok 15 - repeats, page/card reordering and version-only advances publish nothing and do not invoke translation
+  ---
+  duration_ms: 46.145514
+  type: 'test'
+  ...
+# Subtest: only new/changed English cards are translated; unchanged records survive and stale Korean becomes review-only
+not ok 16 - only new/changed English cards are translated; unchanged records survive and stale Korean becomes review-only
+  ---
+  duration_ms: 24.47196
+  type: 'test'
+  location: '/workspace/RiftAssist/experiments/unified-rulings/tests/card-sync.test.cjs:142:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'candidate'
+    - 'unchanged'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'unchanged'
+  actual: 'candidate'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/workspace/RiftAssist/experiments/unified-rulings/tests/card-sync.test.cjs:144:10)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: errata forces renewed review of an approved same-English translation and reuses its cache
+ok 17 - errata forces renewed review of an approved same-English translation and reuses its cache
+  ---
+  duration_ms: 40.5054
+  type: 'test'
+  ...
+# Subtest: temporary omission is retained once, repeated omissions do not publish again, and return is reviewed
+ok 18 - temporary omission is retained once, repeated omissions do not publish again, and return is reviewed
+  ---
+  duration_ms: 59.47035
+  type: 'test'
+  ...
+# Subtest: official locale addition/change/removal and release changes are distinct in pure canonical comparison
+ok 19 - official locale addition/change/removal and release changes are distinct in pure canonical comparison
+  ---
+  duration_ms: 1.087462
+  type: 'test'
+  ...
+# Subtest: mock Korean-locale and release updates are reviewed without another provider call
+ok 20 - mock Korean-locale and release updates are reviewed without another provider call
+  ---
+  duration_ms: 36.242754
+  type: 'test'
+  ...
+# Subtest: snapshot revision reversal preserves the last normal observation and active release
+ok 21 - snapshot revision reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 28.021359
+  type: 'test'
+  ...
+# Subtest: same revision changed data preserves the last normal observation and active release
+ok 22 - same revision changed data preserves the last normal observation and active release
+  ---
+  duration_ms: 23.558435
+  type: 'test'
+  ...
+# Subtest: same card revision changed data preserves the last normal observation and active release
+ok 23 - same card revision changed data preserves the last normal observation and active release
+  ---
+  duration_ms: 24.408529
+  type: 'test'
+  ...
+# Subtest: card revision reversal preserves the last normal observation and active release
+ok 24 - card revision reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 21.347643
+  type: 'test'
+  ...
+# Subtest: publication date reversal preserves the last normal observation and active release
+ok 25 - publication date reversal preserves the last normal observation and active release
+  ---
+  duration_ms: 23.134852
+  type: 'test'
+  ...
+# Subtest: network/rate-limit failures use persistent bounded backoff, sanitize errors and recover without data loss
+ok 26 - network/rate-limit failures use persistent bounded backoff, sanitize errors and recover without data loss
+  ---
+  duration_ms: 27.647328
+  type: 'test'
+  ...
+# Subtest: parallel sync workers share one reservation; disabled scheduling never collects
+ok 27 - parallel sync workers share one reservation; disabled scheduling never collects
+  ---
+  duration_ms: 17.730698
+  type: 'test'
+  ...
+# Subtest: explicit scheduler ticks respect due times and stop without starting a second worker
+ok 28 - explicit scheduler ticks respect due times and stop without starting a second worker
+  ---
+  duration_ms: 18.15675
+  type: 'test'
+  ...
+# Subtest: a completed candidate is reused after a journal failure without another publication or translation
+ok 29 - a completed candidate is reused after a journal failure without another publication or translation
+  ---
+  duration_ms: 25.248878
+  type: 'test'
+  ...
+# Subtest: base-pointer changes and unapproved source catalogs are blocked, and real sync cannot collect
+ok 30 - base-pointer changes and unapproved source catalogs are blocked, and real sync cannot collect
+  ---
+  duration_ms: 32.415736
+  type: 'test'
+  ...
+# Subtest: shared roots, symlinks, damaged state and stale run locks fail closed
+ok 31 - shared roots, symlinks, damaged state and stale run locks fail closed
+  ---
+  duration_ms: 15.435212
+  type: 'test'
+  ...
+# Subtest: a staged sync candidate is loadable by existing knowledge/search APIs while current requests retain the last active data
+ok 32 - a staged sync candidate is loadable by existing knowledge/search APIs while current requests retain the last active data
+  ---
+  duration_ms: 143.268723
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 31
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1071.295181

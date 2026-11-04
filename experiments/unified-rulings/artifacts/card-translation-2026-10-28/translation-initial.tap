@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: translation is a candidate: separates mechanics and provenance and requires explicit review
+ok 1 - translation is a candidate: separates mechanics and provenance and requires explicit review
+  ---
+  duration_ms: 22.222987
+  type: 'test'
+  ...
+# Subtest: official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+ok 2 - official Korean takes precedence without any provider call; locale version mismatch never falls back to AI
+  ---
+  duration_ms: 4.668826
+  type: 'test'
+  ...
+# Subtest: official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+ok 3 - official-card terms require evidence and override rule headings; unofficial sources cannot seed the official glossary
+  ---
+  duration_ms: 0.870854
+  type: 'test'
+  ...
+# Subtest: persistent cache survives engine restart and source-version-only changes without retranslating
+ok 4 - persistent cache survives engine restart and source-version-only changes without retranslating
+  ---
+  duration_ms: 10.560652
+  type: 'test'
+  ...
+# Subtest: same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+ok 5 - same-source concurrent engines use one cache reservation; model/source/glossary changes invalidate it
+  ---
+  duration_ms: 245.999038
+  type: 'test'
+  ...
+# Subtest: provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+ok 6 - provider failures are sanitized and cached; timeout and corrupt cache never trigger automatic retry
+  ---
+  duration_ms: 31.764175
+  type: 'test'
+  ...
+# Subtest: blocking number mismatch is a cached review candidate, never approved/published
+ok 7 - blocking number mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.645675
+  type: 'test'
+  ...
+# Subtest: blocking symbol mismatch is a cached review candidate, never approved/published
+ok 8 - blocking symbol mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 12.044987
+  type: 'test'
+  ...
+# Subtest: blocking cost mismatch is a cached review candidate, never approved/published
+ok 9 - blocking cost mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 6.280523
+  type: 'test'
+  ...
+# Subtest: blocking stat mismatch is a cached review candidate, never approved/published
+ok 10 - blocking stat mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.785271
+  type: 'test'
+  ...
+# Subtest: blocking keyword mismatch is a cached review candidate, never approved/published
+ok 11 - blocking keyword mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 4.291587
+  type: 'test'
+  ...
+# Subtest: blocking shape mismatch is a cached review candidate, never approved/published
+ok 12 - blocking shape mismatch is a cached review candidate, never approved/published
+  ---
+  duration_ms: 5.298636
+  type: 'test'
+  ...
+# Subtest: checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+ok 13 - checks catch negation, ownership, timing/conditions, per-clause amount swaps and provider uncertainty
+  ---
+  duration_ms: 19.93215
+  type: 'test'
+  ...
+# Subtest: inconsistent keywords across a batch block both proposals without rewriting cache evidence
+ok 14 - inconsistent keywords across a batch block both proposals without rewriting cache evidence
+  ---
+  duration_ms: 4.310805
+  type: 'test'
+  ...
+# Subtest: rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+ok 15 - rights and explicit operator-provider/budget gates block generation; provider cannot mutate the source
+  ---
+  duration_ms: 6.678559
+  type: 'test'
+  ...
+# Subtest: unrevealed or unofficial previews are rejected by collection/conversion before translation
+ok 16 - unrevealed or unofficial previews are rejected by collection/conversion before translation
+  ---
+  duration_ms: 21.845368
+  type: 'test'
+  ...
+# Subtest: later official translation creates a replacement candidate, preserves old records and requires review
+ok 17 - later official translation creates a replacement candidate, preserves old records and requires review
+  ---
+  duration_ms: 6.816176
+  type: 'test'
+  ...
+# Subtest: unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+ok 18 - unreviewed/stale proposals never leak through the public catalog; approved Korean remains searchable
+  ---
+  duration_ms: 4.580363
+  type: 'test'
+  ...
+# Subtest: knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+ok 19 - knowledge-release integration stages review-required copies and preserves the active pointer/base bytes
+  ---
+  duration_ms: 41.451751
+  type: 'test'
+  ...
+# Subtest: cache/candidate stores refuse links and never use an unmarked or shared production root
+ok 20 - cache/candidate stores refuse links and never use an unmarked or shared production root
+  ---
+  duration_ms: 2.036053
+  type: 'test'
+  ...
+# Subtest: reviewed translation retains English authority and provenance in the existing AI question API
+ok 21 - reviewed translation retains English authority and provenance in the existing AI question API
+  ---
+  duration_ms: 162.331908
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 702.996676

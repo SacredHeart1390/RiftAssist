@@ -1,0 +1,53 @@
+{
+  "validatedCommit": "006b63ecaf88db17abb6eb10475f788ae6517fd4",
+  "runId": 40800286124,
+  "runUrl": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/40800286124",
+  "jobId": 123206475098,
+  "conclusion": "success",
+  "runner": "Microsoft Windows Server 2025",
+  "image": "windows-2025-vs2026",
+  "sourceCSharpProofs": {
+    "passed": 30,
+    "failed": 0
+  },
+  "packagedCSharpProofs": {
+    "passed": 30,
+    "failed": 0
+  },
+  "nativeWpf": {
+    "windowLoaded": true,
+    "bindingErrors": 0,
+    "backendStarted": false,
+    "liveConnections": false
+  },
+  "windows10PhysicalPcVerified": false,
+  "logExcerpts": [
+    "2026-10-29T01:25:01.4615823Z Microsoft Windows Server 2025",
+    "2026-10-29T01:25:01.4618272Z Image: windows-2025-vs2026",
+    "2026-10-29T01:26:05.2592906Z C# proof suite: 30/30 passed; native WPF execution: false.",
+    "2026-10-29T01:26:10.7089118Z {\"nativeWpfWindowLoaded\":true,\"bindingErrors\":0,\"backendStarted\":false,\"liveConnections\":false,\"os\":\"Microsoft Windows 10.0.26100\"}",
+    "2026-10-29T01:26:23.4484911Z Portable local-development package created. No installation, remote connection or live deployment was performed.",
+    "2026-10-29T01:26:28.2018513Z C# proof suite: 30/30 passed; native WPF execution: false."
+  ],
+  "artifacts": [
+    {
+      "id": 12864999963,
+      "name": "RiftAssist-ControlCenter-win-x64-development",
+      "size_in_bytes": 101508924,
+      "url": "https://api.github.com/repos/SacredHeart1390/RiftAssist/actions/artifacts/12864999963",
+      "archive_download_url": "https://api.github.com/repos/SacredHeart1390/RiftAssist/actions/artifacts/12864999963/zip",
+      "expired": false,
+      "created_at": "2026-10-29T01:26:36Z",
+      "expires_at": "2027-01-27T01:24:58Z",
+      "updated_at": "2026-10-29T01:26:36Z",
+      "digest": "sha256:5620edd29cc9a81fda03f636cf533cc8b458a2d4614e24a2630a1e9e8a5d564c",
+      "workflow_run": {
+        "id": 40800286124,
+        "repository_id": 1433776683,
+        "head_repository_id": 1433776683,
+        "head_branch": "feature/riot-api-v0.2",
+        "head_sha": "006b63ecaf88db17abb6eb10475f788ae6517fd4"
+      }
+    }
+  ]
+}

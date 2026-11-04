@@ -1,0 +1,17 @@
+{
+  "startingCommit": "ddd93421e35eb41559525ffe832bdc1433518ad3",
+  "mainSha": "a69dff678ccd92ea3cc5cc58767ff13e7179f630",
+  "preservedHashes": {
+    "knowledge-releases/active.json": "982964b1e4ddf8ca9e8501981874ea936264ebe87016e00240f8c21ffb293d87",
+    "knowledge-releases/2026-10-26-e14c666116dc/manifest.json": "5ab3987f1ca775270310a637ed5ba567573c616559688002faab3b913be3ed04",
+    "knowledge-releases/2026-10-26-e14c666116dc/cards.json": "8eec626a557995b9366242efeddd0b730ef5fe782b6a67b845ef3974a7d9c8c5",
+    "knowledge-releases/2026-10-26-e14c666116dc/rules.json": "7acbc93d7f292242453961f5e298c2285ff13a2d148c06256dbb4cb46de03c9e",
+    "knowledge-releases/2026-10-26-e14c666116dc/judge-cases.json": "2b9cb775c43212837d9cd6817b8057262f6378620b6b5ba80e53eaf8fe8f7e65",
+    "source-updates/content.sqlite": "a10973b2cd84c6934bbc04cf612c7e09614f6e4cefc0cdfb0faf4c69a8bab4f3",
+    "source-updates/content.sqlite-wal": "a54bb2bd055926a34fbc77ca622a7751e10c8c5d2723fb02f43669d6e048285c",
+    "source-updates/content.sqlite-shm": "6f09768d352dfccb2dd94e7c7b99aa7f9571031ea4b2fdba1f9987f971fff636"
+  },
+  "preExistingChanges": [
+    "AGENTS.md"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "provider": { "mode": "mock", "id": "mock-card-ko", "model": "synthetic-ko-1", "enabled": false, "approvalReference": null },
+  "operatorAdapterMaxNewCalls": 0,
+  "retryRevision": "initial",
+  "requiredPermissions": ["translation", "modelInput"],
+  "officialKoreanPriority": true,
+  "officialKoreanLookup": "Injected lookup or explicit version-aligned absent status from a reviewed Riot mapper; missing fields are unknown, not absent.",
+  "manualReviewRequired": true,
+  "automaticActivation": false,
+  "cacheAndCandidates": "DATA_ROOT/card-translations",
+  "styleCalibration": "Official Korean-card examples pending approved API access; existing aligned official-rule terminology only by default.",
+  "note": "Configuration contract only. The preview CLI always uses mock. No OpenAI client or API credential belongs in this file; a future operator adapter must be explicitly injected and budgeted."
+}

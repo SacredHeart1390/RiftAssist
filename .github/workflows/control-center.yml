@@ -1,0 +1,155 @@
+name: Control Center validation
+on:
+  push:
+    branches: [feature/riot-api-v0.2]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: control-center-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows-validation:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: experiments/unified-rulings/control-center
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Prepare loopback-only SSH fixture
+        run: |
+          python -m pip install paramiko==4.0.0
+          "RIFTASSIST_CC_LOOPBACK_PYTHON=$((Get-Command python).Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Check public protocol vectors and backend payload
+        run: |
+          node scripts/protocol-vectors.cjs
+          node scripts/backend-manifest.cjs
+          python scripts/verify-icon.py
+          node scripts/deployment-manifest.cjs
+          node --test --test-reporter=tap deployment/lab.test.cjs
+      - name: Build native WPF target
+        run: dotnet build src/RiftAssist.ControlCenter/RiftAssist.ControlCenter.csproj --configuration Release
+      - name: Run C# protocol and mock Node integration proofs
+        run: |
+          $node = (Get-Command node).Source
+          dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- ../releases/v0.2.0 $node "$env:RUNNER_TEMP/control-center-proof.json"
+      - name: Load WPF window on the Windows runner
+        run: dotnet run --project tests/RiftAssist.ControlCenter.WpfSmoke/RiftAssist.ControlCenter.WpfSmoke.csproj --configuration Release -- "$env:RUNNER_TEMP/control-center-smoke"
+      - name: Build portable development package
+        run: |
+          $node = (Get-Command node).Source
+          ./scripts/Publish-Windows.ps1 -NodePath $node -OutputDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-win-x64"
+      - name: Verify ZIP root layout and extract the exact package for execution tests
+        run: |
+          ./scripts/Test-PackageLayout.ps1 -PackageDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-win-x64" -ArchivePath "$env:RUNNER_TEMP/RiftAssist-ControlCenter-v0.2.0-win-x64.zip" -ExtractDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified" -ReportPath "$env:RUNNER_TEMP/control-center-layout.json"
+      - name: Verify packaged backend and runtime through the C# client
+        run: |
+          $bundle = "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified"
+          dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- "$bundle/backend/v0.2.0" "$bundle/runtime/node.exe" "$env:RUNNER_TEMP/control-center-packaged-proof.json" "$bundle/backend-manifest.json"
+      - name: Inspect actual EXE signature and embedded non-elevating manifest
+        run: ./scripts/Test-Publisher.ps1 -Executable "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe" -ReportPath "$env:RUNNER_TEMP/control-center-publisher.json"
+      - name: Start and close the actual packaged native executable
+        run: |
+          $executable = Join-Path $env:RUNNER_TEMP 'RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe'
+          Add-Type @'
+          using System;
+          using System.Runtime.InteropServices;
+          public static class PackageIcons {
+            [DllImport("shell32.dll", CharSet=CharSet.Unicode)] public static extern uint ExtractIconEx(string file, int index, IntPtr[] big, IntPtr[] small, uint count);
+            [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr window, uint message, IntPtr wParam, IntPtr lParam);
+            [DllImport("user32.dll")] public static extern bool DestroyIcon(IntPtr icon);
+          }
+          '@
+          $big = New-Object IntPtr[] 1; $small = New-Object IntPtr[] 1
+          if ([PackageIcons]::ExtractIconEx($executable,0,$big,$small,1) -lt 1 -or $big[0] -eq [IntPtr]::Zero -or $small[0] -eq [IntPtr]::Zero) { throw 'Explorer executable icon resource is missing.' }
+          [void][PackageIcons]::DestroyIcon($big[0]); [void][PackageIcons]::DestroyIcon($small[0])
+          $owned = Start-Process -FilePath $executable -PassThru
+          try {
+            if (!$owned.WaitForInputIdle(15000)) { throw 'Packaged native window did not become idle.' }
+            $deadline = [DateTime]::UtcNow.AddSeconds(10)
+            do {
+              $owned.Refresh()
+              if ($owned.HasExited) { throw 'Packaged application exited before its main window.' }
+              if ($owned.MainWindowHandle -ne [IntPtr]::Zero) { break }
+              Start-Sleep -Milliseconds 100
+            } while ([DateTime]::UtcNow -lt $deadline)
+            if ($owned.MainWindowHandle -eq [IntPtr]::Zero -or $owned.MainWindowTitle -notlike 'RiftAssist Control Center*') { throw 'Expected packaged native window was not found.' }
+            $windowBig = [PackageIcons]::SendMessage($owned.MainWindowHandle,0x007F,[IntPtr]1,[IntPtr]::Zero)
+            $windowSmall = [PackageIcons]::SendMessage($owned.MainWindowHandle,0x007F,[IntPtr]::Zero,[IntPtr]::Zero)
+            if ($windowBig -eq [IntPtr]::Zero -or $windowSmall -eq [IntPtr]::Zero) { throw 'Window/taskbar icon handles are missing.' }
+            $children = @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($owned.Id)")
+            if ($children.Count -ne 0) { throw 'Opening the app must not auto-start Node, SSH or a browser.' }
+            if (!$owned.CloseMainWindow() -or !$owned.WaitForExit(15000)) { throw 'Packaged native window did not close cleanly.' }
+            if ($owned.ExitCode -ne 0) { throw 'Packaged application returned a failing exit code.' }
+            $report = @{ packagedNativeExeStarted = $true; explorerIconResource = $true; windowAndTaskbarIcons = $true; closedCleanly = $true; automaticChildProcesses = 0; realAzureConnections = 0; os = $PSVersionTable.OS } | ConvertTo-Json
+            [IO.File]::WriteAllText("$env:RUNNER_TEMP/control-center-native-package.json", $report)
+            Write-Output $report
+          } finally {
+            if (!$owned.HasExited) { $owned.Kill($true) }
+            $owned.Dispose()
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-ControlCenter-v0.2.0-win-x64
+          path: ${{ runner.temp }}/RiftAssist-ControlCenter-verified/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-ControlCenter-phase8-validation
+          path: |
+            ${{ runner.temp }}/control-center-layout.json
+            ${{ runner.temp }}/control-center-proof.json
+            ${{ runner.temp }}/control-center-packaged-proof.json
+            ${{ runner.temp }}/control-center-native-package.json
+            ${{ runner.temp }}/control-center-publisher.json
+            ${{ runner.temp }}/control-center-smoke/
+          if-no-files-found: error
+
+  ubuntu-ssh-script-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: experiments/unified-rulings/control-center
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Prepare synthetic loopback SSH server
+        run: |
+          python -m pip install paramiko==4.0.0
+          node scripts/deployment-manifest.cjs
+          node --test --test-reporter=tap deployment/lab.test.cjs
+      - name: Ubuntu POSIX script and OpenSSH loopback regressions (no Azure)
+        run: |
+          RIFTASSIST_CC_LOOPBACK_PYTHON="$(command -v python)" dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- ../releases/v0.2.0 "$(command -v node)" "$RUNNER_TEMP/control-center-ubuntu-proof.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-ControlCenter-ubuntu-ssh-proof
+          path: ${{ runner.temp }}/control-center-ubuntu-proof.json
+          if-no-files-found: error

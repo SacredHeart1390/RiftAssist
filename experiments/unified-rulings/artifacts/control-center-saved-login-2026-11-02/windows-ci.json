@@ -1,0 +1,77 @@
+{
+  "sourceCommit": "e3800ebd22df3d51ab73e81f4236fcce1d7e1285",
+  "workflow": {
+    "id": 41393466124,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466124",
+    "conclusion": "success",
+    "windowsJob": 125109644675,
+    "ubuntuJob": 125109644438
+  },
+  "regressionWorkflow": {
+    "id": 41393466137,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466137",
+    "conclusion": "success"
+  },
+  "windows": {
+    "runner": "Windows Server 2025",
+    "sourceProofs": {
+      "passed": 136,
+      "failed": 0
+    },
+    "extractedPackageProofs": {
+      "passed": 136,
+      "failed": 0
+    },
+    "nativeDpapi": [
+      "current-user protect/unprotect and reopened vault",
+      "no UTF8/UTF16 plaintext in protected file",
+      "different target entropy rejected",
+      "current user directory ACL and deletion"
+    ],
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "package": {
+      "rootExecutable": true,
+      "nativeExeStarted": true,
+      "closedCleanly": true,
+      "iconResourcesAndHandles": true,
+      "automaticChildProcessesOnDefaultStartup": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "Ubuntu 24.04",
+    "passed": 135,
+    "failed": 0,
+    "loopbackSyntheticSshOnly": true
+  },
+  "artifact": {
+    "id": 13118297862,
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64",
+    "bytes": 101628855,
+    "digest": "sha256:ad7cc9a252aa46e3e36b717a82d642c19b10895a455923c4f398240c7a9f366a",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41393466124/artifacts/13118297862",
+    "expiresAt": "2027-01-31T05:20:40Z"
+  },
+  "realWindows10DeviceTestedByDeveloper": false,
+  "realAzureConnected": false,
+  "operatingDataOrKeysUsed": false,
+  "paidApiCalls": 0,
+  "limits": "Current-user DPAPI does not isolate secrets from other programs running as the same Windows user or from privileged/memory compromise. Windows10 real-user saved login/report retrieval remains a user follow-up; test keys and reports were synthetic."
+}

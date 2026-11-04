@@ -1,0 +1,97 @@
+{
+  "sourceCommit": "65b619dd8f7e0fc7c08494975700222bd2262b84",
+  "workflow": {
+    "id": 41414048257,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257",
+    "conclusion": "success",
+    "windowsJob": 125173482961,
+    "ubuntuJob": 125173483230
+  },
+  "regressionWorkflow": {
+    "id": 41414048209,
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048209",
+    "conclusion": "success"
+  },
+  "local": {
+    "core": 196,
+    "node": 132,
+    "web": 13,
+    "v017": 11,
+    "total": 352,
+    "failed": 0
+  },
+  "windows": {
+    "runner": "Windows Server 2025",
+    "sourceProofs": {
+      "passed": 195,
+      "failed": 0
+    },
+    "extractedPackageProofs": {
+      "passed": 195,
+      "failed": 0
+    },
+    "wpf": {
+      "nativeWpfWindowLoaded": true,
+      "incidentPreviewConsentAndClipboard": true,
+      "incidentMockRepairAndHistory": true,
+      "incidentStaleRevisionBlocked": true,
+      "manualReportsDpapiAndReopen": true,
+      "manualReportEditorAndUnifiedList": true,
+      "productionChangeControlsBlocked": true,
+      "fixedSshKeyStartupNoInput": true,
+      "automaticRenewalAndRecoveryBounded": true,
+      "automaticReportsMemoryOnly": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "publisher": {
+      "authenticodeStatus": "NotSigned",
+      "requestedExecutionLevel": "asInvoker",
+      "uiAccess": false
+    },
+    "package": {
+      "rootExecutable": true,
+      "nativeExeStarted": true,
+      "closedCleanly": true,
+      "iconResourcesAndHandles": true,
+      "automaticChildrenWithoutSavedSettings": 0
+    }
+  },
+  "ubuntu": {
+    "runner": "Ubuntu 24.04",
+    "passed": 196,
+    "failed": 0,
+    "syntheticLoopbackOnly": true
+  },
+  "artifact": {
+    "id": 13126617448,
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64",
+    "bytes": 101710558,
+    "digest": "sha256:4e667ead22593910d523ebcc2e7cae08299c4057ed3d80f594bd392bfb94a59b",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257/artifacts/13126617448",
+    "expiresAt": "2027-01-31T08:34:21Z"
+  },
+  "implementedAnalysis": "Offline preliminary triage only; official data index empty; no actual LLM",
+  "implementedCodex": "Explicitly reviewed prompt copy and synthetic repair/test workflow only",
+  "realAiOrCodexExecuted": false,
+  "externalCalls": 0,
+  "realWindows10PhysicalDeviceTested": false,
+  "realAzureConnected": false,
+  "productionKeysOrUserRecordsUsed": false,
+  "runtimeGitHubPublicationEnabled": false,
+  "limits": "Actual semantic model analysis, Codex subprocess/cloud state/result integration, isolated real repository and actual incident reproduction/regression are follow-ups requiring implementation, authorization and Windows10 verification. Synthetic success is not proof of a real incident fix."
+}

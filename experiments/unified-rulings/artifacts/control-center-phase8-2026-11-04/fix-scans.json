@@ -1,0 +1,22 @@
+{
+  "scope": "initial staged phase8 change and separately staged Windows fixture/path fixes",
+  "findingCount": 0,
+  "checks": [
+    {
+      "files": 39,
+      "bytes": 336177,
+      "findings": 0
+    },
+    {
+      "files": 3,
+      "bytes": 20248,
+      "findings": 0
+    },
+    {
+      "files": 4,
+      "bytes": 32389,
+      "findings": 0
+    }
+  ],
+  "limits": "Path/pattern check only, not an entire-history or all-secret guarantee."
+}

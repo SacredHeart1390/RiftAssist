@@ -1,12 +1,13 @@
 // Loaded only in the isolated test child with --require. No real fetch fallback exists.
 const fs = require('node:fs');
 const plans = JSON.parse(fs.readFileSync(process.env.RIFTASSI_TEST_PLAN, 'utf8'));
+globalThis.__riftassistTestTransport = true;
 let calls = 0;
 const emit = value => { if (process.connected) process.send(value); };
 globalThis.fetch = async (url, options = {}) => {
   const target = String(url);
   if (target === 'https://app.riftjudge.com/api/search') {
-    emit({ type: 'mock-riftjudge' });
+    emit({ type: 'mock-riftjudge', body: JSON.parse(options.body) });
     return Response.json({ results: [] });
   }
   if (target !== 'https://api.openai.com/v1/responses') {
