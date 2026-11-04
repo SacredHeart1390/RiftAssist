@@ -1,0 +1,264 @@
+PASS golden: korean-and-quotes
+PASS golden: emoji-and-combining
+PASS golden: control-characters
+PASS golden: integer-property-order
+PASS golden: safe-integers
+PASS golden: arrays-null-booleans
+PASS duplicate JSON keys rejected
+PASS fractional and unsafe request numbers rejected
+PASS Unicode is not normalized and invalid surrogates fail
+PASS session credentials are random, ephemeral, and final scopes opt-in
+PASS typed final phrases, acknowledgement and reason all required
+PASS live integrations remain unavailable while mock operations are explicit
+PASS backend source integrity verified
+PASS empty or traversing backend manifests rejected
+PASS arbitrary data folders cannot be opened
+PASS owned mock sandbox prepared with existing Node engine
+PASS owned sandbox listing and reparse boundaries
+PASS Node verifies C# HMAC and returns bilingual structured comparisons
+PASS local validation blocks incomplete warning acknowledgement before writes
+PASS bulk hold/reject decisions and Korean reasons persist
+PASS individual approval and explicit partial-stage plan
+PASS default session cannot activate and backend scopes independently enforce it
+PASS fresh privileged local session activates exact staged package
+PASS rollback is separate, version-bound and preserves original files
+PASS audit records show Korean decisions without credentials or raw signed requests
+PASS reconnect restores review history without re-seeding or reactivating
+PASS pipe boundary: wrong-id
+PASS pipe boundary: oversize
+PASS pipe boundary: hang
+PASS pipe boundary: environment
+PASS SSH strict host verification, noninteractive auth and no forwarding
+PASS SSH uses a fixed read-only script and tampered commands are rejected
+PASS SSH injection, unexpected HTTPS targets and invalid profile fields fail
+PASS SSH agent mode does not require a private key file or read key bytes
+PASS remote status accepts bounded numeric metrics and HTTP codes
+PASS malformed, duplicate, unknown, unbounded or inconsistent metrics fail
+PASS SSH settings store only six metadata fields and never private key contents
+PASS unexpected credential fields and symlink settings are refused
+PASS no SSH runner is invoked without separate connection approval
+PASS mock SSH success produces one timestamped snapshot without paid APIs
+PASS mock SSH authentication is sanitized, bounded and not retried
+PASS mock SSH changed host key is sanitized, bounded and not retried
+PASS mock SSH unverified host key is sanitized, bounded and not retried
+PASS mock SSH network timeout is sanitized, bounded and not retried
+PASS mock SSH disconnect is sanitized, bounded and not retried
+PASS failed SSH preserves last good metrics as stale and explicit retry can recover
+PASS SSH profile switch never reuses another server's successful snapshot
+PASS SSH cancellation and malformed stdout never publish fresh metrics
+PASS Azure operational controls and actual admin data are denied before transport
+PASS all eight existing AI limits enforce ranges and reject missing/extra fields
+PASS uncertain development writes require status refresh and cannot become production requests
+PASS owned Node development manager authenticates through existing login/cookie API
+PASS synthetic report detail includes original question and response without real user data
+PASS development AI toggle and usage are actual local API state, not paid calls
+PASS development limits use the unchanged admin API validation
+PASS development hosting cannot open a tunnel or accept public configuration
+PASS development app start and restart affect only owned ephemeral workers
+PASS development app update and rollback use ready synthetic releases
+PASS development report status and Korean notes persist through existing API
+PASS development backup stays inside owned root; no DB or key bytes are printed
+PASS legacy network rediscovery remains blocked and never activates knowledge
+PASS development operation journal stores reasons and outcomes, never keys/cookies/signatures
+PASS development stop/reconnect preserves reports and settings without auto-starting
+PASS read-only actions never require a confirmation dialog
+PASS ordinary changes and card decisions use one simple confirmation
+PASS backup, final versions, destructive and unknown actions retain protection
+PASS automatic reasons include action and target and satisfy unchanged backend validation
+PASS automatic audit does not accept unbounded or control-character targets
+PASS dashboard shows six separately labelled metrics with friendly healthy states
+PASS dashboard never labels missing HTTP responses or failed service as healthy
+PASS dashboard clearly distinguishes stale values and an unqueried server
+PASS SSH stdin is LF-only UTF-8 without BOM and fixed POSIX sh
+PASS SSH start-info preserves argument boundaries and strips unrelated environment
+PASS SSH failure separation: remote shell exit 2
+PASS SSH failure separation: missing remote tool
+PASS SSH failure separation: post-auth session loss
+PASS SSH failure separation: Windows no-exit-status -1
+PASS SSH failure separation: Windows native crash status
+PASS SSH failure separation: truncated input success
+PASS SSH failure separation: stdin pipe failure with auth stderr
+PASS SSH failure separation: refused
+PASS SSH failure separation: DNS
+PASS SSH failure separation: unsupported option
+PASS SSH failure separation: key load
+PASS SSH failure separation: benign stderr
+PASS SSH exit zero malformed output is parsing failure rather than disconnect
+PASS SSH diagnostic only permits known marker values
+PASS unexpected local exception is never described as server disconnect
+PASS real child pipes preserve Korean paths, LF stdin, EOF and non-UTF8 stderr
+PASS real early child stdin close still returns authentication stderr and exit code
+PASS real pipe output limit terminates child promptly without deadlock
+PASS invalid stdout UTF-8 is a parse failure, not SSH disconnected
+PASS real hanging child respects cancellation and is reaped
+PASS local executable launch failure is sanitized and distinct
+PASS Linux POSIX sh status script runs with real /proc and stubbed HTTP/systemd
+PASS Linux missing required tool yields safe dependency failure
+PASS Linux unavailable optional health/systemd retain metrics with explicit warnings
+PASS actual OpenSSH loopback mock: good
+PASS actual OpenSSH loopback mock: remote-error
+PASS actual OpenSSH loopback mock: denied
+PASS actual OpenSSH loopback mock: host-mismatch
+PASS actual OpenSSH loopback mock: bad-output
+PASS actual OpenSSH loopback mock: drop
+PASS production admin allows only existing login and exact read routes
+PASS SSH admin stdin bridge is fixed to remote loopback 3100 without listener or remote exec
+PASS unchanged manager rejects untrusted Host Origin and missing cookie
+PASS admin read before login cannot create even a loopback connection
+PASS unchanged v017 router rejects wrong key with sanitized authentication code
+PASS existing login Origin Host and memory cookie authenticate real v017 router
+PASS real readonly router returns synthetic report and linked Korean question answer
+PASS status projector never renders upstream error credentials or paths
+PASS blocked route never reaches HTTP transport after authenticated reads
+PASS admin HTTP failure clears cookie without sensitive response: expired
+PASS admin HTTP failure clears cookie without sensitive response: redirect
+PASS admin HTTP failure clears cookie without sensitive response: bad-json
+PASS admin HTTP failure clears cookie without sensitive response: oversize
+PASS admin HTTP failure clears cookie without sensitive response: disconnect
+PASS admin HTTP cancellation stops read and invalidates cookie
+PASS real OpenSSH -W readonly API bridge: admin-proxy
+PASS real OpenSSH -W readonly API bridge: admin-denied
+PASS credential identity survives ZIP updates and SSH key-path rotation but isolates targets/schemes
+PASS fresh login defaults have no secret read and startup cannot authenticate
+PASS successful unchecked login never stores a key or enables startup
+PASS remember option saves only after authentication and startup remains separate
+PASS failed first authentication never writes a remembered credential
+PASS protected storage failure cannot enable auto connect or fall back to plaintext
+PASS login JSON contains only version binding scheme and opt-in booleans
+PASS explicit auto opt-in permits one startup authentication with stored data
+PASS changed admin key rejects saved credential and deletes it without retry
+PASS network failure retains protected credential but disarms automatic startup
+PASS forget clears credential and opt-in even after recreated preferences instance
+PASS tampered or credential-bearing options fail closed
+PASS actual v017 structured report content renders description expected tags and linked response
+PASS report strings empty snapshots and null optional fields remain compatible
+PASS malformed report tags and oversized descriptions remain rejected
+PASS manager key SSH command has one immutable file and rejects any script or argument mutation
+PASS secret lease accepts exact hex64 with optional newline and never formats its value
+PASS secret lease authenticates via existing API and disposed bytes cannot be reused
+PASS bounded child key output is consumed only as a redacted credential
+PASS fixed key read sanitizes missing
+PASS fixed key read sanitizes permission
+PASS fixed key read sanitizes link
+PASS fixed key read sanitizes format
+PASS fixed key read sanitizes invalid
+PASS fixed key read sanitizes huge
+PASS fixed key read sanitizes auth
+PASS key subprocess cancellation closes the process without leaking output
+PASS automatic network retries stop at two with exactly five seconds between attempts
+PASS host-key and fixed file errors never retry automatically
+PASS a transient recovery succeeds once and cannot create an unbounded retry loop
+PASS production policy rejects even the test-only alternate manager file
+PASS Ubuntu-compatible fixed script reads bounded local synthetic bytes and reports missing file
+PASS actual OpenSSH fixed-key mock: key-good
+PASS actual OpenSSH fixed-key mock: key-missing
+PASS actual OpenSSH fixed-key mock: key-invalid
+PASS phase5 API plans preserve exact v017 routes; restart is stop, verify, start, verify
+PASS production changes are denied before read or mutation transport even with confirmation
+PASS synthetic existing signed manager supports verified start stop restart AI limits status and note
+PASS uncertain change requires status read and never replays: authentication
+PASS uncertain change requires status read and never replays: network
+PASS uncertain change requires status read and never replays: stopped
+PASS uncertain change requires status read and never replays: lost
+PASS uncertain change requires status read and never replays: verify
+PASS uncertain change requires status read and never replays: restart-stop
+PASS no confirmation and concurrent requests cannot produce duplicate writes
+PASS unmodified v017 auth and mutation router with synthetic store: change-normal
+PASS unmodified v017 auth and mutation router with synthetic store: change-lost
+PASS unmodified v017 auth and mutation router with synthetic store: change-auth
+PASS manual encrypted create preserves Korean fields without plaintext metadata or temp files
+PASS manual reopen edit retains ID creation time and encrypted audit revisions
+PASS stale manual edit rejected without replacing current encrypted record
+PASS manual invalid title enum controls length and Unicode are rejected
+PASS manual lock blocks parallel writer and leaves existing data intact
+PASS protection failure never falls back to plaintext or overwrites old report
+PASS corrupted ciphertext fails closed and is preserved
+PASS future analysis packet is explicit in-memory local source and revision only
+PASS manual symlink storage refused
+PASS analysis manual revision and memory summary remain explicit
+PASS API projection excludes trace session identifiers and uses content revision
+PASS privacy redacts known key cookie UUID email phone address path and PEM canaries
+PASS consent binds exact redacted contents and destination; real execution remains denied
+PASS existing verified retrieval card schema and answer policy run offline without official claims
+PASS analysis encrypted ledger is separate, cached and reopenable with linked revision
+PASS stored provider output is scrubbed and paid providers cannot silently enter ledger
+PASS analysis CAS lock and protection failure preserve existing ciphertext
+PASS corrupted analysis ciphertext fails closed without overwrite
+PASS mock repair runs actual Node before failure and after pass in owned synthetic workspace
+PASS v017 emergency and v030 improvement jobs have separate IDs and never touch release code
+PASS repair terminal status blocks duplicate execution: cancelled
+PASS repair terminal status blocks duplicate execution: disconnected
+PASS repair terminal status blocks duplicate execution: failed
+PASS repair terminal status blocks duplicate execution: unsafe-result
+PASS restart recovery marks pending jobs uncertain without executing them
+PASS copy requests require bound consent and preserve job identity with prepared and complete states
+PASS Codex JSON events are bounded progress only and completion is never verified success
+PASS analysis symlink root is rejected without following it
+PASS real Codex permission profile denies root reads and network with elevated backend
+PASS real Codex disables web plugin hooks and uses narrow write grants
+PASS export refuses sensitive path manager.key
+PASS export refuses sensitive path content.sqlite
+PASS export refuses sensitive path content.sqlite-wal
+PASS export refuses sensitive path active.json
+PASS export refuses sensitive path config
+PASS export refuses sensitive path outside.js
+PASS export refuses sensitive path .env
+PASS export refuses sensitive path secret.pem
+PASS live v017 and integration tests remain read only
+PASS source guard refuses provider key and SQLite masquerading as source
+PASS source guard allows only specific existing dummy fixture credential
+PASS tool readiness reuses CLI ChatGPT authentication without key extraction
+PASS API key login cannot silently substitute ChatGPT authentication
+PASS native process uses UTF8 stdin and drains private stderr without returning it
+PASS native process strips credential variables from child environment
+PASS native cancellation kills child tree with finite error
+PASS native timeout does not replay writes
+PASS malformed streaming event stops child promptly
+PASS stdout oversize terminates safely
+PASS non Windows actual Codex execution fails closed before runner call
+PASS real GitHub source adapter selects exact branch and excludes runtime DB before fetch
+PASS incomplete GitHub tree fails closed without archive clone fallback
+PASS GitHub publisher verifies account push permission
+PASS corrupt source blob hash is rejected
+PASS real GitHub adapter creates deterministic commit per-job branch and Draft PR targeting feature
+PASS repeat publication and PR requery validate existing result with zero extra writes
+PASS remote branch content conflict is never accepted as published result
+PASS moved integration base blocks publication before write
+PASS missing-response branch resume is read-only and validates exact tree
+PASS commit identity and time are stable across replay
+PASS isolated source has no Git credential metadata or copied runtime records
+PASS real Git diff and derived manifests bind edited code plus reproduction
+PASS trusted tests and before snapshot stay immutable during verification copy
+PASS live v017 edits are rejected before diff publication
+PASS agent manifest tampering is rejected
+PASS source path traversal and alternate streams are rejected
+PASS complete allowed source snapshot excludes data and passes real bundle manifest verification
+PASS actual execution requires activation and exact external preview approval
+PASS real workflow adapter contract completes isolation edit tests and review without publishing
+PASS duplicate execute reuses job and never repeats paid inference
+PASS job store is encrypted separately and preserves CAS revision
+PASS publication requires separate enable and exact diff approval
+PASS changed diff after tests blocks GitHub write
+PASS unknown publication response persists uncertainty and blocks automatic replay
+PASS read-only requery resumes approval state without any write
+PASS explicit second approval publishes once and read requery remains idempotent
+PASS real job failure remains unpublishable without retry: tests-failed
+PASS real job failure remains unpublishable without retry: timeout
+PASS real job failure remains unpublishable without retry: cancelled
+PASS real job failure remains unpublishable without retry: disconnected
+PASS real job failure remains unpublishable without retry: isolation
+PASS restart marks abandoned execution uncertain and never replays
+PASS active job lease prevents restart reclassification
+PASS settings default disabled and persist paths only
+PASS deployment package is code only and ready false with distinct synthetic evidence
+PASS real local deployment protocol initializes an owned synthetic target
+PASS production mutation is denied before any client transport even with consent
+PASS prepared plan binds package hash source commit and lab identity
+PASS deployment exact consent cannot be reused for another destination
+PASS bundled Node code and native client execute backup deployment health and routing
+PASS native client can validate encrypted backup without receiving rows or keys
+PASS approved rollback uses separate plan and changes routing without database restore
+PASS deployment requery is read-only and cannot replay completed writes
+PASS GitHub catalog validates workflow evidence for exact selected commit
+PASS missing or stale CI evidence prevents deployment package selection
+C# proof suite: 263/263 passed; native WPF execution: false.

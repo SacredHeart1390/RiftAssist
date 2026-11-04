@@ -1,0 +1,19 @@
+{
+  "branch": "release/v0.2.0",
+  "commit": "d010b76f2591fec74aa968b9a562993d3502f68a",
+  "runId": 41796074642,
+  "conclusion": "success",
+  "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41796074642",
+  "windows": {
+    "sourceProofs": 269,
+    "packagedProofs": 268,
+    "wpfSmoke": true,
+    "nativeExeStartedAndClosed": true,
+    "iconsVerified": true,
+    "azureConnections": 0,
+    "windows10PhysicalTest": false
+  },
+  "ubuntu": "passed",
+  "packageArtifact": 13305183169,
+  "note": "This CI evidence is pinned to the given commit. Later commits need their own checks; physical Windows10 phase8 lab success was user-reported."
+}

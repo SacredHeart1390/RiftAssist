@@ -1,0 +1,40 @@
+
+> test:compat
+> node helpers/run-compatibility.cjs
+
+Synthetic compatibility target v0.1.7
+✔ compatibility: schema1 synthetic permitted card search and selection (144.284334ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (163.478248ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (141.876124ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 517.201429
+Synthetic compatibility target v0.2.0
+✔ compatibility: schema1 synthetic permitted card search and selection (146.222433ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (146.128491ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (162.148126ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 525.554094
+Synthetic compatibility target v0.3.0
+✔ compatibility: schema1 synthetic permitted card search and selection (139.926017ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (177.037262ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (192.610379ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 575.486019
