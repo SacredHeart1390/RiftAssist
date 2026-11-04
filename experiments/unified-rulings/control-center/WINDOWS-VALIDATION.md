@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+7차 실행 코드 fadeced9의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800) 성공: Windows 소스256/256·추출255/255, Ubuntu252/252, native WPF/루트 EXE/아이콘/종료 통과·binding0. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800/artifacts/13291798648), [증거](../artifacts/control-center-phase7-2026-11-04/windows-ci.json). Windows Server2025이며 실제 회사 Windows10·Codex 추론/작업 PR·Azure는 별도 사용자 검증이다.
+
 7차 최신: [실제 Codex CLI·격리 소스·작업별 Draft PR·Windows10 준비/비용/제한](PHASE7.md), [검증 보고서](../artifacts/control-center-phase7-2026-11-04/README.md). 실제 어댑터를 구현했으며 실행/게시는 각각 기본 비활성·사용자 별도 승인입니다. 개발 검증은 합성/모의이며 실제 Codex·작업 PR·Azure는 실행하지 않았습니다. 아래 6차 기록의 전체 비활성 설명은 7차의 새 opt-in 경로와 구분합니다.
 
 6차 최종 실행 코드65b619d의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257) 성공: Windows 소스/추출 C# 각각195/195, Ubuntu196/196. WPF 미리보기 승인/거절·복사·모의 수정/이력·stale revision와 기존 기능의 binding 오류0. 실제 Node 합성 전후 테스트·루트 EXE/아이콘·실행/종료 통과. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41414048257/artifacts/13126617448), [증거](../artifacts/control-center-phase6-2026-11-02/windows-ci.json). Windows Server2025이며 실제 Windows10/외부 LLM·Codex/운영 Azure는 미검증/비활성입니다.

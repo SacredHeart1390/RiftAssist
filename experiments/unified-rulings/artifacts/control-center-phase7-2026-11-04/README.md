@@ -24,7 +24,7 @@
 
 합계408/408. 실제 Git diff/허용 전체 소스 사본/manifest 검증·합성 Node 전후, 소스 누락/해시 불일치/권한/base 이동·중복 PR·응답 유실·승인 해시·암호화 CAS/재시작을 포함한다. 합성 loopback SSH만 사용했다. 실제 Azure 접속·실제 Codex 추론/수정 PR 게시·유료 API 호출은 0회다. Windows용 실제 어댑터의 exec/이벤트/test 명령 계약은 Windows CI에서 모의 runner로 추가 검사한다.
 
-Windows CI/패키지 결과는 완료 후 이 문서에 추가한다. Linux 교차 빌드는 실제 WPF 실행이 아니며 회사 Windows10 물리 기기·실제 CLI/gh 연결은 사용자 후속 검증이다.
+최종 실행 코드 **fadeced91221a5c060c97d2508e8a1fa25fb0fd6**의 [Control Center CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800)와 [규칙 회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033754)가 성공했다. 회사 Windows10 물리 기기·실제 CLI/gh 연결은 사용자 후속 검증이다.
 
 ## 보존·한계
 
@@ -33,3 +33,17 @@ main a69dff6 대비 v017 65파일 불변, 공유 active/공개 자료·추적 SQ
 샌드박스 probe는 모든 취약점의 증명이 아니며 회사 Windows10에서 실제 backend/네트워크/루프백 테스트 호환성을 확인해야 한다. Codex 의미 정확성·공식 규칙 연결·작업별 WPF/E2E·이력 삭제/보관 UI·기본 모델/한도 API는 후속이다. 비용은 ChatGPT 플랜/CLI 이용량으로 기존 서비스 API와 구분하고 reported token만 표시하며 정확 금액/잔여량은 미산정이다. 실제 Codex/GitHub 개별 실행은 각각 별도 승인한다. main 병합·Azure/운영 코드/DB 변경·배포는 하지 않는다.
 
 문서는 Markdown 원본 그대로 보관한다. 이 클라우드에서는 사용자 바탕화면을 직접 열 수 없어 `바탕화면/RiftAssist`에 저장했다고 주장하지 않는다.
+
+## 최종 Windows 패키지
+
+**[7차 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800/artifacts/13291798648)** — `RiftAssist-ControlCenter-v0.2.0-win-x64.zip`, 101,786,387바이트(약102MB), GitHub 권한 필요, 만료 UTC2027-02-02. 전체를 새 폴더에 풀어 최상위 EXE를 실행한다. 기존 LocalAppData 설정/DPAPI/수동 제보는 그대로 유지한다.
+
+SHA256 `7c6d066736e051cc08e05c1d1874853320ab8e2acd4b5460011f3a3fedd56368`.
+
+- Windows Server2025 소스 C# **256/256**, 추출 패키지 C# **255/255**, Ubuntu24.04 C# **252/252** 통과. Windows 추가 계약5건·실제 DPAPI와 OS별 기존 차이로 수가 다르며, 패키지 검사는 소스 저장소의 전체 export 검사를 제외해1건 적다.
+- native WPF는 실제 실행·게시 활성화 분리, 전송 미리보기 승인/거절, 모의 진행/검증/diff, 게시 별도 승인/PR 재조회, 제보 수정 후 재열기에서 이전 작업 게시 차단, DPAPI 재열기, 기존6차 UI를 검사했다. **binding 오류0**. 테스트의 CLI/GitHub 종단은 모의 의존성이다.
+- 실제 Git 프로세스/소스 사본/diff·manifest LF 결정성, 생성 재현 전후·고정 테스트 overlay, Windows Git 객체의 소유 임시 파일 정리 검사를 통과했다. 기존 운영 파일은 정리 대상이 아니다.
+- ZIP 최상위 EXE/runtime/backend·아이콘, 추출한 실제 EXE 실행/정상 종료·창/작업 표시줄/파일 탐색기 아이콘을 확인했다. 설정 없는 시작의 자식 프로세스0개. SSH 자동 인증은 별도 모의 기존 회귀로 확인했다. EXE는 **NotSigned·asInvoker**이며 보호 해제/권한 상승을 추가하지 않았다.
+- 실제 Codex 추론/작업별 GitHub PR 게시·Azure 접속·유료 API 호출은 **0회**다. native CLI 옵션/계정/elevated sandbox는 사용자의 Windows10에서 별도 검증해야 한다. 생성된 테스트와 모델 주장은 관리자 검토가 필요하다.
+
+[windows-ci.json](windows-ci.json), [CLI 계약 조사](codex-contract-research.json), [후속 수정 비밀 검사](secret-scan-fixes.json)에 증거와 한계를 보존했다. 이 패키지는 위 실행 코드 기준이며 이후 문서·증거 커밋은 실행 코드/백엔드를 변경하지 않는다. 통합 Draft PR #1을 유지하고 실제 수정 작업 PR은 이번에 만들지 않았다.
