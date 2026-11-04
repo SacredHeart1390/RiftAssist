@@ -1,0 +1,37 @@
+✔ normal deploy backs up consistently, validates HTTP/admin/mock AI/data, switches only synthetic route (105.054166ms)
+✔ rollback changes application routing only and retains new post-deploy reports and keys (63.273813ms)
+✔ safe deployment failure: precheck (5.000182ms)
+✔ safe deployment failure: backup (5.828803ms)
+✔ safe deployment failure: transfer (7.227115ms)
+✔ safe deployment failure: start (8.216955ms)
+✔ safe deployment failure: health (11.445754ms)
+✔ safe deployment failure: route (16.804065ms)
+✔ safe deployment failure: backup-corrupt (18.183949ms)
+✔ safe deployment failure: post-health (35.593162ms)
+✔ failed automatic fallback reports recovery required without lying about current route (23.063594ms)
+✔ manual rollback failure retains both release data and explicitly requires recovery (47.345393ms)
+✔ response loss is uncertain; retry same id is read-only and requery does not deploy again (28.800442ms)
+✔ same approved operation cannot create duplicate backups, services or route generations (44.308116ms)
+✔ concurrent command uses exclusive owner lock and second mutation is rejected (32.776394ms)
+✔ changed plan, package, stale route, or wrong environment cannot pass approval (33.64571ms)
+✔ plan is bound to the exact lab owner, even with identical stable routing (7.528569ms)
+✔ encrypted backup hides rows/record key, detects tamper and restores only to probe file (31.292651ms)
+✔ backup uses SQLite online backup with pending WAL writes (33.152258ms)
+✔ incomplete operation after owner death is marked uncertain and never replayed (3.308027ms)
+✔ active owner is preserved during requery (3.436907ms)
+✔ owned directories reject reuse, symlink and unexpected targets (2.205882ms)
+✔ package rejects database files, traversal, source hash mismatch, ready=true and missing test evidence (0.563581ms)
+✔ production adapter and unknown inventory cannot execute commands (0.176961ms)
+✔ Ubuntu command contract distinguishes candidate systemd units from manager APIs and protects domains/certificates (0.763656ms)
+✔ unreadable new database remains visible in history and can route back without overwriting it (52.60641ms)
+✔ disk reserve failure precedes backup and service startup (4.46972ms)
+✔ Caddy contract validates proposed config before route mutation and restores on reload failure (0.61721ms)
+✔ Caddy rollback failure requires recovery and never replaces the full site/certificate config (0.302365ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 694.025863
