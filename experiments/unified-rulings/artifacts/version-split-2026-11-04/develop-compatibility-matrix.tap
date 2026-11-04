@@ -3,9 +3,9 @@
 > node helpers/run-compatibility.cjs
 
 Synthetic compatibility target v0.1.7
-✔ compatibility: schema1 synthetic permitted card search and selection (144.284334ms)
-✔ compatibility: AI contract uses mocked responses and selected English text (163.478248ms)
-✔ compatibility: generated answer supports authenticated report and follow-up access (141.876124ms)
+✔ compatibility: schema1 synthetic permitted card search and selection (144.136461ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (148.688467ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (130.353758ms)
 ℹ tests 3
 ℹ suites 0
 ℹ pass 3
@@ -13,11 +13,11 @@ Synthetic compatibility target v0.1.7
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 517.201429
+ℹ duration_ms 495.651988
 Synthetic compatibility target v0.2.0
-✔ compatibility: schema1 synthetic permitted card search and selection (146.222433ms)
-✔ compatibility: AI contract uses mocked responses and selected English text (146.128491ms)
-✔ compatibility: generated answer supports authenticated report and follow-up access (162.148126ms)
+✔ compatibility: schema1 synthetic permitted card search and selection (142.836143ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (159.118785ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (170.698811ms)
 ℹ tests 3
 ℹ suites 0
 ℹ pass 3
@@ -25,11 +25,11 @@ Synthetic compatibility target v0.2.0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 525.554094
+ℹ duration_ms 530.42843
 Synthetic compatibility target v0.3.0
-✔ compatibility: schema1 synthetic permitted card search and selection (139.926017ms)
-✔ compatibility: AI contract uses mocked responses and selected English text (177.037262ms)
-✔ compatibility: generated answer supports authenticated report and follow-up access (192.610379ms)
+✔ compatibility: schema1 synthetic permitted card search and selection (159.813713ms)
+✔ compatibility: AI contract uses mocked responses and selected English text (168.689904ms)
+✔ compatibility: generated answer supports authenticated report and follow-up access (150.650051ms)
 ℹ tests 3
 ℹ suites 0
 ℹ pass 3
@@ -37,4 +37,4 @@ Synthetic compatibility target v0.3.0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 575.486019
+ℹ duration_ms 546.918159

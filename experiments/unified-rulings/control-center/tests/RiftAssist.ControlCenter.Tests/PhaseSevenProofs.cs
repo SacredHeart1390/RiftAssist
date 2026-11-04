@@ -80,12 +80,15 @@ internal static class PhaseSevenProofs
         var files=listed.Output.Split('\n',StringSplitOptions.RemoveEmptyEntries).Where(RepairScope.Exportable).Select(p=>new SourceBlob(p,File.ReadAllBytes(RepairScope.Resolve(repo,p)))).ToArray();
         var ws=new RepairWorkspace(Path.Combine(root,"full-source"),git,runner);RealRepairJob? job=null;
         await s.CheckAsync("complete allowed source snapshot excludes data and passes real bundle manifest verification",async()=>{
+            if(!WindowsCodexAdapter.RegressionPaths.All(p=>files.Any(f=>f.Path==p)))throw new ControlException("client-proof-missing-regression-path");
             var baseline=await ws.CreateAsync(new(new('a',40),new('b',40),"synthetic",1,files),default);job=Job() with{Baseline=baseline};
             File.WriteAllText(RepairScope.Resolve(ws.Source,Code),"module.exports=2;");File.WriteAllText(RepairScope.Resolve(ws.Source,RepairScope.Repro),"const test=require('node:test'),assert=require('node:assert/strict');test('synthetic source copy',()=>assert.equal(require('../../releases/v0.3.0/src/incident-proof'),2));");
             var changed=await ws.InspectAsync(job,default);ProofSuite.True(changed.Changes.Any(p=>p.Path==Code));
             var result=await runner.RunAsync(new(backend.Node,[RepairScope.Prefix+"control-center/scripts/backend-manifest.cjs"],ws.Source),default);if(result.Exit!=0)throw new ControlException("client-proof-phase7-manifest");
             await ws.PrepareTestsAsync(job,default);
             var before=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.TestBefore),default);var after=await runner.RunAsync(new(backend.Node,["--test",RepairScope.Repro],ws.Verify),default);if(before.Exit==0||after.Exit!=0)throw new ControlException("client-proof-phase7-repro");
+            var regression=await runner.RunAsync(new(backend.Node,new[]{"--test","--test-reporter=tap","--test-concurrency=1"}.Concat(WindowsCodexAdapter.RegressionPaths).ToArray(),ws.Verify,Seconds:180),default);
+            if(regression.Exit!=0||!regression.Output.Contains("# fail 0",StringComparison.Ordinal))throw new ControlException("client-proof-phase7-regression");
         });
     }
     private static async Task CoordinatorTests(ProofSuite s,string root)
