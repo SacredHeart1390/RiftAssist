@@ -25,7 +25,7 @@ lab health는 선택 코드의 무결성과 모의 HTTP/admin/mock AI/저장 검
 
 총448/448. SQLite WAL 포함 snapshot/복호화 가능한 복원, 손상 새 DB rollback, precheck/디스크·백업·중간 전송·기동·health·route·post-health·복귀 실패, response-loss/중단·owner lock·같은 op 중복, owner/consent/hash/stale 검사를 포함한다. HTTP/mock AI·systemd/Caddy IO·GitHub metadata는 합성/모의다. Native C#→Node 프로토콜의 실제 코드 패키지/배포/암호화 백업 검증/롤백을 별도로 실행했다.
 
-Windows CI에서는 기존7차+배포 화면 승인/거절·조회 무확인·운영 차단, 부모만 강제 종료하는 실제 Node 트리/Job receipt, 소스/추출 패키지 C#, 루트 EXE/아이콘/실행·종료를 추가 검증한다. 결과와 새 링크는 CI 완료 후 추가한다. 실제 회사 Windows10·Codex 추론·GitHub 오류 수정 PR·Azure는 개발자가 시험하지 않았다.
+Windows CI에서는 기존7차+배포 화면 승인/거절·조회 무확인·운영 차단, 부모만 강제 종료하는 실제 Node 트리/Job receipt, 소스/추출 패키지 C#, 루트 EXE/아이콘/실행·종료를 추가 검증한다. 최종 실행 코드2a6eafa의 Windows/Ubuntu CI가 성공했다. 아래에 패키지와 증거를 기록했다. 실제 회사 Windows10·Codex 추론·GitHub 오류 수정 PR·Azure는 개발자가 시험하지 않았다.
 
 ## 보존·미확인
 
@@ -36,3 +36,20 @@ v017 65파일/main 불변, 공유 active/공개 자료·추적 SQLite3개 포함
 release/v0.2.0 / develop/v0.3.0 분리는 별도 사용자 승인 전 수행하지 않았다. 이후 v03n 개발 차수 완료 시 patch 증가, Riot 승인·권한 확인 자료/번역·API 계약 검증과 v1.0.0 준비를 별도로 진행한다. 미승인 리프트나루 자료를 v020 공개 데이터로 복사하지 않는다.
 
 문서는 Markdown 원본으로 보관한다. 클라우드에서 사용자 바탕화면에 직접 복사하지 않았다.
+
+## 최종 Windows 검증·패키지
+
+최종 실행 코드 **2a6eafac77133cc8b43c4e2f4e17a4bcc2f25bfa**의 [Control Center Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664)와 [규칙 회귀 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262672)가 성공했다. 이후 문서·증거 커밋은 프로그램 코드/배포 스크립트를 변경하지 않는다.
+
+- Windows Server2025 C# 소스 **269/269**, 추출 패키지 **268/268**, 새 Node 배포 검사 **29/29**.
+- Ubuntu24.04 C# **263/263**, 새 Node 배포 검사 **29/29**. 기존/신규 OS별 계약/DPAPI/Job 테스트 차이와 package 소스 export1건 제외로 수가 다르다.
+- WPF 배포·롤백 화면 승인/거절·조회 무확인·운영 차단, 7차 기능과 SSH/제보/카드·번역·수동 관리 회귀 통과. **binding 오류0**.
+- C#→실제 Node 배포/암호화 백업 검증/롤백과 Windows 부모만 강제 종료하는 Job Object 하위 트리 종료/receipt 재조회를 소스·패키지에서 확인했다. 실제 Codex 추론을 한 검사는 아니다.
+- 긴 SQLite 복원 probe 경로를 제한하고 WAL fixture 연결을 임시 디렉터리 정리 전에 닫도록 보완했다. 실제 운영 파일은 정리 대상이 아니다.
+- 최상위 EXE·deployment/runtime/backend 무결성·아이콘·추출 EXE 실행/정상 종료 통과. **NotSigned·asInvoker**, 미설정 시작 자식0개. 보안 해제/관리자 권한 상승을 추가하지 않았다.
+
+**[8차 Windows 실행 패키지 다운로드](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664/artifacts/13298104560)** — `RiftAssist-ControlCenter-v0.2.0-win-x64.zip`, 101,833,034바이트(약102MB), GitHub 권한 필요, 만료 UTC2027-02-02. 전체를 새 폴더에 풀고 최상위 EXE를 실행한다. 기존 LocalAppData 설정/제보·이력을 지우지 않는다.
+
+SHA256 `03bae6d37cf3b3a1815c09f7934f5f806eaaca928c2e485b379afe583f465508`.
+
+[windows-ci.json](windows-ci.json)과 [후속 수정 비밀 검사](fix-scans.json)에 결과·미검증 경계를 기록했다. 실제 회사 Windows10·Codex/GitHub 오류 수정 PR·Azure 배포는 별도 검증/승인 사항이다. systemd/Caddy IO는 모의이며 actual site/remote writer/broker 설치를 완료했다고 주장하지 않는다. 기존 Draft PR #1을 유지한다.

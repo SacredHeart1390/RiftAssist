@@ -1,0 +1,82 @@
+{
+  "sourceCommit": "2a6eafac77133cc8b43c4e2f4e17a4bcc2f25bfa",
+  "conclusion": "success",
+  "controlCenterRun": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664",
+  "rulesRun": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262672",
+  "local": {
+    "csharp": 263,
+    "deploymentNode": 29,
+    "existingNode": 132,
+    "web": 13,
+    "v017": 11,
+    "total": 448
+  },
+  "windows": {
+    "runner": "Windows Server 2025 10.0.26100",
+    "sourceCsharp": 269,
+    "packagedCsharp": 268,
+    "deploymentNode": 29,
+    "nativeWpf": {
+      "nativeWpfWindowLoaded": true,
+      "phaseEightDeploymentAndRollbackUi": true,
+      "phaseEightProductionBlocked": true,
+      "realAdapterUiWithMockDependencies": true,
+      "separateExecutionAndGitHubApproval": true,
+      "realRepairDpapiHistoryReopened": true,
+      "incidentPreviewConsentAndClipboard": true,
+      "incidentMockRepairAndHistory": true,
+      "incidentStaleRevisionBlocked": true,
+      "manualReportsDpapiAndReopen": true,
+      "manualReportEditorAndUnifiedList": true,
+      "productionChangeControlsBlocked": true,
+      "fixedSshKeyStartupNoInput": true,
+      "automaticRenewalAndRecoveryBounded": true,
+      "automaticReportsMemoryOnly": true,
+      "savedLoginOptInAndStartupOnce": true,
+      "savedLoginDeleteAndUpdateReuse": true,
+      "phaseFourAdminReadOnlyUi": true,
+      "iconFramesAndWindowHandles": true,
+      "bindingErrors": 0,
+      "operationsTabsLoaded": 7,
+      "simpleConfirmationTested": true,
+      "automaticReasonTested": true,
+      "manualMockSshQueryTested": true,
+      "sshFailureCategoriesDisplayed": true,
+      "sanitizedSshDiagnostics": true,
+      "invalidPortSaveBlocked": true,
+      "productionControlsDisabled": true,
+      "backendStarted": false,
+      "liveConnections": false,
+      "os": "Microsoft Windows 10.0.26100"
+    },
+    "syntheticNodeOwnerForceKillTreeAndReceipt": true,
+    "extractedZipExecutableStartedAndClosed": true,
+    "rootExeLayoutAndIcons": true,
+    "signature": "NotSigned",
+    "executionLevel": "asInvoker"
+  },
+  "ubuntu": {
+    "runner": "Ubuntu24.04",
+    "csharp": 263,
+    "deploymentNode": 29
+  },
+  "package": {
+    "name": "RiftAssist-ControlCenter-v0.2.0-win-x64.zip",
+    "sizeBytes": 101833034,
+    "sha256": "03bae6d37cf3b3a1815c09f7934f5f806eaaca928c2e485b379afe583f465508",
+    "url": "https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664/artifacts/13298104560",
+    "expiresUtc": "2027-02-02T05:26:29Z"
+  },
+  "actualAzureConnections": 0,
+  "actualAzureDeployments": 0,
+  "operationalDatabaseOrKeysAccessed": false,
+  "paidApiCalls": 0,
+  "actualCodexInferenceCalls": 0,
+  "actualIncidentPrPublishes": 0,
+  "limits": [
+    "Only synthetic lab files/SQLite/keys were used. Actual Node, SQLite backup/encryption/restore, HTTP and Windows Job Objects were exercised.",
+    "systemd/Caddy commands and GitHub candidate evidence were mocked. The lab HTTP service does not boot the selected RiftAssist app itself.",
+    "Azure remote write transport/server broker installation and actual unit/Caddy/site configuration binding are not implemented or enabled.",
+    "Actual company Windows10/Codex CLI/GitHub incident publication remain user verification. Independent Codex broker/service ownership is not assumed."
+  ]
+}

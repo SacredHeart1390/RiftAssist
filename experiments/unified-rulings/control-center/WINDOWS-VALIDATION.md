@@ -1,5 +1,7 @@
 # RiftAssist Control Center — 검증 및 Windows 후속 확인
 
+8차 실행 코드2a6eafa의 [최종 CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664) 성공: Windows 소스269/269·추출268/268, Ubuntu263/263, 새 Node29/29. WPF/소유 Job 강제종료·루트 EXE/아이콘·실행/종료 통과. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41779262664/artifacts/13298104560), [증거](../artifacts/control-center-phase8-2026-11-04/windows-ci.json). 실제 회사 Windows10/Codex/Azure는 미검증이며 운영 배포 어댑터/브로커 연결은 미구현·차단이다.
+
 8차 최신: [배포·백업·롤백 합성 검증 / 운영 활성화 조건 / Codex 프로세스 정리](PHASE8.md), [검사 기록](../artifacts/control-center-phase8-2026-11-04/README.md). 실제 Azure 배포는 차단하며 기존7차 기능·운영 읽기를 유지합니다.
 
 7차 실행 코드 fadeced9의 [Windows/Ubuntu CI](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800) 성공: Windows 소스256/256·추출255/255, Ubuntu252/252, native WPF/루트 EXE/아이콘/종료 통과·binding0. [새 패키지](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41764033800/artifacts/13291798648), [증거](../artifacts/control-center-phase7-2026-11-04/windows-ci.json). Windows Server2025이며 실제 회사 Windows10·Codex 추론/작업 PR·Azure는 별도 사용자 검증이다.

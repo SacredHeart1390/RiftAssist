@@ -74,7 +74,7 @@ GitHub CI 통과는 배포 허가가 아니다. 번들 선택은 synthetic 증�
 
 ## 7차 Codex 보강
 
-Windows native 도구 실행에 **Kill-on-close Job Object**를 적용한다. stdin을 보내기 전에 도구를 소유 Job에 할당하고 현재 사용자 DPAPI receipt에 owner PID/start time, root process 정보, 바이너리·작업 경로 hash만 저장한다. prompt·키·인증·실제 경로 문자열은 receipt에 넣지 않는다. 종료/취소·소유 앱 crash로 마지막 Job handle이 닫히면 소속 프로세스가 종료된다. 보호/receipt를 만들지 못하면 자식을 중단하고 실행을 막는다. 실제 작업 명령은 stdin 이후 시작되는 CLI 계약을 사용한다. 도구 bootstrap 전반의 모든 OS 취약점을 증명한 것은 아니다.
+Windows native 도구 실행에 **Kill-on-close Job Object**를 적용한다. stdin을 보내기 전에 도구를 소유 Job에 할당하고 현재 사용자 DPAPI receipt에 owner PID/start time, root process 정보, 바이너리·작업 경로 hash만 저장한다. prompt·키·인증·실제 경로 문자열은 receipt에 넣지 않는다. 종료/취소·소유 앱 crash로 마지막 Job handle이 닫히면 소속 프로세스가 종료된다. 보호/receipt를 만들지 못하면 자식을 중단하고 실행을 막는다. 실제 작업 명령은 stdin 이후 시작되는 CLI 계약을 사용한다. 독립된 Codex sandbox broker/service까지 이 Job의 자식이라고 가정하지 않으며 실제 CLI의 종료 전파는 실기기 후속 검증이다. 도구 bootstrap 전반의 모든 OS 취약점을 증명한 것은 아니다.
 
 ‘실행/잔존 프로세스 조회’는 확인 없이 읽고, ‘소유한 잔존 작업 정리’는 예/아니요로 승인한다. 살아 있는 다른 Control Center owner는 보존한다. 이전 owner가 종료된 **정확한 named Job**만 종료할 수 있고 프로세스 이름/임의 PID로 찾아 죽이지 않는다. 종료된 Job의 암호화된 receipt는 정리할 수 있다. 원래 수정/게시 작업의 미확정 상태는 기존 이력에서 다시 조회하며 자동 재개/추론/중복 게시하지 않는다.
 
@@ -86,4 +86,4 @@ Windows 자동 테스트는 모의 Codex/GitHub와 실제 합성 Node 부모/자
 
 이번 8차의 모든 코드는 기존 feature에만 반영한다. 사용자가 8차 검증 결과를 확인하고 별도로 승인한 뒤에만 `release/v0.2.0`(출시 준비), `develop/v0.3.0`(다음 개발)을 만든다. v020은 기존 저장 형식/검색·판정·제보·관리 호환성과 법적/운영 요건을 점검한다. Riot 미승인 상태에서 기존 카드 DB를 복사해 공개하거나 미확인 리프트나루 자료를 공식 자료로 취급하지 않는다. 권한이 확인된 데이터만 별도 후보·검토·승인을 거쳐 공개한다.
 
-v030 개발 시작 →1차 완료 v031 →2차 v032 →이후 v03n으로 올리는 정책을 다음 브랜치에 적용한다. 이번 assembly/release는 계속0.2.0/ready=false다. v03n의 공식 Riot API·v1.0.0 목표는 실제 API 승인/권한·endpoint/언어/버전 매핑·번역/정오표 정확성·운영 시험과 별개 승인 후 연결한다. main 병합과 Azure 배포는 이번에 하지 않는다.
+v0.3.0 개발 시작 →1차 완료 v0.3.1 →2차 v0.3.2 →이후 v0.3.n으로 올리는 정책을 다음 브랜치에 적용한다. 이번 assembly/release는 계속0.2.0/ready=false다. v03n의 공식 Riot API·v1.0.0 목표는 실제 API 승인/권한·endpoint/언어/버전 매핑·번역/정오표 정확성·운영 시험과 별개 승인 후 연결한다. main 병합과 Azure 배포는 이번에 하지 않는다.
