@@ -3,7 +3,7 @@
   "releaseFamily": "v0.2.0",
   "scope": "mock-local-control-center",
   "files": {
-    "app-release.json": "753932ca23fde5eaf1ecdd28e8eac169069015dcbe19818c3b4c31556e0259f7",
+    "app-release.json": "0e1f0adbe4ed71f890bbf54c1c5498012710c8e9de045a5c1c640633bef2cec8",
     "dev-fixtures/mock-cards.json": "cbc3a8073658783bdbd283396e95b6f55e4a738d0d8079b139da0dea3473f7f0",
     "dev-fixtures/rules.json": "7a9804933595c88f8363d0402e88aa5885dfccc4b35477d85ccaf09eb8440249",
     "manager-ui/index.html": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804",
@@ -28,7 +28,7 @@
     "public/reports-ui3.js": "8de1cc86e64d7a29ccee528d952c5a0ed7558e9f7100dfdfc9e984c2beea94fe",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "48c464f8666a8894a56da291d99180cc6eb949f938de26e1b3635f3ce426d94e",
+    "public/service-worker.js": "e2adc7bbc9b6f07af3fa86e897c5f39bc88b7a033a2063ac018903790a4c5f98",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",

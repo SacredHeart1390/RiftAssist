@@ -14,11 +14,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
-  event.respondWith(caches.open(CACHE_NAME).then(async (cache) => {
+  event.respondWith(caches.open(CACHE_NAME).catch(()=>null).then(async (cache) => {
     try {
       const response=await fetch(event.request,{cache:'no-store'});
-      if(response.ok&&response.headers.get('X-RiftAssist-Release')==='v0.2.0'&&!url.search&&APP_SHELL.includes(url.pathname))await cache.put(event.request,response.clone()).catch(()=>{});
+      if(cache&&response.ok&&response.headers.get('X-RiftAssist-Release')==='v0.2.0'&&!url.search&&APP_SHELL.includes(url.pathname))await cache.put(event.request,response.clone()).catch(()=>{});
       return response; // A rolled-back server always supplies its own current shell/assets.
-    } catch(error){const cached=await cache.match(event.request);if(cached)return cached;throw error;}
+    } catch(error){const cached=await cache?.match(event.request);if(cached)return cached;throw error;}
   }));
 });
