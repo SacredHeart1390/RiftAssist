@@ -11,10 +11,12 @@ async function serve(){
   if(q.protocol!==R.PROTOCOL||!P.uuid(q.requestId)||q.inventoryHash!==c.inventoryHash)P.fail('protocol');const p=q.payload;let result;
   switch(q.method){
     case 'status':P.exact(p,[]);result=engine.status();break;
+    case 'reconcile':P.exact(p,[]);result=await engine.reconcile();break;
     case 'preflight':P.exact(p,[]);result=engine.gates();break;
     case 'plan':P.exact(p,['operationId']);result=engine.plan('replace',p.operationId);break;
+    case 'backup-plan':P.exact(p,['operationId']);result=engine.plan('qualify-backup',p.operationId);break;
     case 'rollback-plan':P.exact(p,['operationId','deploymentId']);result=engine.plan('rollback',p.operationId,p.deploymentId);break;
-    case 'replace':case 'rollback':P.exact(p,['plan','approval']);if(p.plan?.kind!==q.method)P.fail('protocol');result=await engine.execute(p.plan,p.approval);break;
+    case 'replace':case 'rollback':case 'qualify-backup':P.exact(p,['plan','approval']);if(p.plan?.kind!==q.method)P.fail('protocol');result=await engine.execute(p.plan,p.approval);break;
     case 'inspect':P.exact(p,['operationId']);result=engine.inspect(p.operationId);break;
     default:P.fail('method');
   }

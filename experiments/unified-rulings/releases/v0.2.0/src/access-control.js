@@ -15,7 +15,7 @@ const safeEqual = (a, b) => typeof a === 'string' && typeof b === 'string' && Bu
 const deny = (message, statusCode = 403) => Object.assign(new Error(message), { statusCode });
 
 const SESSION_COOKIE = 'rift_session_v020';
-function createAccess({ port, publicOrigin = '', directory, store }) {
+function createAccess({ port, publicOrigin = '', directory, store, allowLegacySession = false }) {
   const secret = localSecret(directory, 'sessions.key');
   const localOrigins = [`http://127.0.0.1:${port}`, `http://localhost:${port}`];
   let origins, hosts;
@@ -41,10 +41,18 @@ function createAccess({ port, publicOrigin = '', directory, store }) {
     }
   }
   function session(req, res, create = false) {
-    const value = (req.headers.cookie || '').split(';').map((x) => x.trim()).find((x) => x.startsWith(SESSION_COOKIE + '='))?.slice(SESSION_COOKIE.length + 1);
-    const [id, issued, signature] = (value || '').split('.');
-    const valid = /^[a-f0-9]{48}$/.test(id || '') && /^\d{13}$/.test(issued || '') && Number(issued) <= Date.now() && Number(issued) > Date.now() - 30 * 86400000 && safeEqual(signature, sign(`${id}.${issued}`));
-    if (valid) return store.hash(id);
+    const cookies=(req.headers.cookie||'').split(';').map(x=>x.trim());
+    const read=name=>cookies.find(x=>x.startsWith(name+'='))?.slice(name.length+1);
+    const validate=value=>{const [id,issued,signature,...extra]=(value||'').split('.');return !extra.length&&/^[a-f0-9]{48}$/.test(id||'')&&/^\d{13}$/.test(issued||'')&&Number(issued)<=Date.now()&&Number(issued)>Date.now()-30*86400000&&safeEqual(signature,sign(`${id}.${issued}`));};
+    const value=read(SESSION_COOKIE);
+    if(validate(value))return store.hash(value.split('.')[0]);
+    const legacy=allowLegacySession?read('rift_session'):undefined;
+    if(validate(legacy)){
+      const [id,issued]=legacy.split('.'),secure=!localOrigins.some(origin=>new URL(origin).host===req.headers.host);
+      const remaining=Math.max(0,Math.floor((Number(issued)+30*86400000-Date.now())/1000));
+      res.setHeader('Set-Cookie',`${SESSION_COOKIE}=${legacy}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${remaining}${secure?'; Secure':''}`);
+      return store.hash(id); // Same signed owner; no new session and no lifetime extension.
+    }
     if (!create) throw deny('접속 세션이 만료됐습니다. 새로고침해 주세요. / Refresh the page.', 401);
     store.allocateSession();
     const token = `${crypto.randomBytes(24).toString('hex')}.${Date.now()}`;

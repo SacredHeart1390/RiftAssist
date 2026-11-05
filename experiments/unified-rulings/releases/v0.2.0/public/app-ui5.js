@@ -51,7 +51,8 @@ const strings = {
   },
 };
 
-const state = { providerMode: 'mock', language: 'ko', privacyReady: false, connectionFailed: false, aiConfigured: false, aiEnabled: false, asking: false };
+const state = { providerMode: 'mock', language: 'ko', privacyReady: false, connectionFailed: false, versionMismatch:false, aiConfigured: false, aiEnabled: false, asking: false };
+let pendingAsk=null;
 let latestAnswer = null;
 const form = document.querySelector('#ask-form');
 const question = document.querySelector('#question');
@@ -61,13 +62,16 @@ const evidenceList = document.querySelector('#evidence-list');
 const caseList = document.querySelector('#case-list');
 const cardComposer = new window.CardComposer(question, state.language);
 let contentLoggingEnabled = false;
+const connectionRetry=document.createElement('button');connectionRetry.type='button';connectionRetry.id='connection-retry';connectionRetry.hidden=true;
+document.querySelector('[data-i18n^="privacyNote"]').after(connectionRetry);
 
 function tr(key) { return strings[state.language][key] || strings.ko[key] || key; }
 
 function updatePrivacyNotice() {
-  const notice = state.connectionFailed ? tr('connectionError') : !state.privacyReady ? tr('privacyNoteLoading')
+  const notice = state.versionMismatch ? (state.language==='en'?'The service version changed. Save your input before reloading.':'서비스 버전이 변경됐습니다. 입력 내용을 보관한 뒤 새로고침해 주세요.') : state.connectionFailed ? tr('connectionError') : !state.privacyReady ? tr('privacyNoteLoading')
     : state.providerMode === 'mock' ? tr('privacyNoteMock') : `${tr(state.aiEnabled ? 'privacyNote' : 'privacyNoteSearchOnly')} ${tr(contentLoggingEnabled ? 'privacyNoteWithLogs' : 'privacyNoteMetadata')}`;
   document.querySelector('[data-i18n^="privacyNote"]').textContent = notice;
+  connectionRetry.textContent=state.language==='en'?'Check connection again':'연결 다시 확인';connectionRetry.hidden=!state.connectionFailed&&!state.versionMismatch;
 }
 
 function applyLanguage(language) {
@@ -132,7 +136,7 @@ function setAnswerStatus(data) {
 
 function setAsking(value) {
   state.asking=value;
-  submitButton.disabled=value;
+  submitButton.disabled=value||!state.privacyReady||state.connectionFailed||state.versionMismatch;
   submitButton.dataset.busy=String(value);
   submitButton.setAttribute('aria-busy',String(value));
   submitButton.querySelector('[data-i18n="askButton"]').textContent=value ? (state.language==='en'?'Searching…':'검색 중…') : tr('askButton');
@@ -152,13 +156,17 @@ form.addEventListener('submit', async (event) => {
   answerCard.hidden = true;
   window.dispatchEvent(new CustomEvent('rift-answer', { detail: null }));
   try {
-    const body = { clientKey: crypto.randomUUID(), question: text, language: state.language, cardIds: cardComposer.getCardIds(), rememberedCardIds: cardComposer.getRememberedCardIds(), excludedCardIds: cardComposer.getExcludedCardIds() };
+    const input = { question: text, language: state.language, cardIds: cardComposer.getCardIds(), rememberedCardIds: cardComposer.getRememberedCardIds(), excludedCardIds: cardComposer.getExcludedCardIds() };
+    const fingerprint=JSON.stringify(input);if(!pendingAsk||pendingAsk.fingerprint!==fingerprint)pendingAsk={fingerprint,body:{clientKey:crypto.randomUUID(),...input}};
+    const body=pendingAsk.body;
     const response = await fetch('/api/ask', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      method: 'POST', headers: { 'Content-Type': 'application/json','X-RiftAssist-Client':'v0.2.0' }, body: JSON.stringify(body),
     });
-    const data = await response.json();
+    let data;try{if(!response.headers.get('content-type')?.includes('application/json'))throw Error();data=await response.json();}catch{throw new Error(state.language==='en'?'The response could not be confirmed. Nothing was resent automatically; check the connection before retrying.':'응답을 확인하지 못했습니다. 자동 재전송하지 않았습니다. 연결 상태를 확인한 뒤 다시 시도해 주세요.');}
+    if(data.code==='client_version_changed'){state.versionMismatch=true;updatePrivacyNotice();}
     window.dispatchEvent(new CustomEvent('rift-answer', { detail: { requestId: data.requestId || null } }));
     if (!response.ok) throw new Error(data.error || tr('askError'));
+    pendingAsk=null;
     answerCard.dataset.status = data.status;
     setAnswerStatus(data);
     latestAnswer = data;
@@ -208,6 +216,7 @@ form.addEventListener('submit', async (event) => {
 });
 
 document.querySelector('#clear-answer').addEventListener('click', () => {
+  pendingAsk=null;
   latestAnswer = null;
   window.dispatchEvent(new CustomEvent('rift-answer', { detail: null }));
   question.value = '';
@@ -224,7 +233,8 @@ try {
   if (savedLanguage === 'en') { document.querySelector('#language-select').value = 'en'; applyLanguage('en'); }
 } catch { /* local storage may be unavailable */ }
 
-fetch('/api/health', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Connection failed'); return data; }).then((data) => {
+function refreshHealth(){return fetch('/api/health', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Connection failed'); return data; }).then((data) => {
+  state.versionMismatch=data.version!=='0.2.0';
   if (typeof data.version === 'string' && /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(data.version)) {
     document.querySelectorAll('[data-app-version]').forEach(node => { node.textContent = `v${data.version}`; });
   }
@@ -235,11 +245,13 @@ fetch('/api/health', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).
   state.privacyReady = true;
   state.connectionFailed = false;
   updatePrivacyNotice();
-  if (!state.asking) submitButton.disabled = false;
+  if (!state.asking) submitButton.disabled = state.versionMismatch;
 }).catch(() => {
   state.connectionFailed = true;
   submitButton.disabled = true;
   updatePrivacyNotice();
-});
+});}
+connectionRetry.addEventListener('click',()=>{connectionRetry.disabled=true;refreshHealth().finally(()=>{connectionRetry.disabled=false;});});
+refreshHealth();
 
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js',{updateViaCache:'none'}).catch(() => {}));

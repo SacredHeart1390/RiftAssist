@@ -1,3 +1,5 @@
+> 최신 실행 절차: [출시 확인표·승인된 두 조사 한 번에 실행·백업 사전검사·롤백 비용 보호](RELEASE-CHECKLIST.md). 실제 Azure 설치/중지/DB·키 접근/배포는 별도 승인 대상이며 ready=false를 유지합니다.
+
 > 최신 출시 방향: [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 교체**를 적용합니다. 별도 VM/병렬 운영은 필수가 아닙니다. 실제 Azure 변경·배포는 별도 승인 전 차단합니다.
 
 > 2026-11-05 출시 준비 2단계: [Ubuntu staging 구조·미구현/활성화 조건](STAGING.md), [승인 대기 Azure 읽기 조사 명령](AZURE-INSPECTION.md). 실제 Azure 설치/접속/배포는 실행하지 않았고, 기존 배포 화면은 합성 전용입니다.

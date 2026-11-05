@@ -5,7 +5,7 @@ const P=require('./protocol.cjs'),R=require('./replacement.cjs'),{fixture,FakeRe
 class ActualIO extends FakeReplacementIO{
   constructor(s,controller,{systemd=false,tools=__dirname,unitFile=null}={}){super(s.c);this.s=s;this.controller=controller;this.systemd=systemd;this.tools=tools;this.unitFile=unitFile;this.child=null;this.running=null;this.selected='v0.1.7';this.activeMax=0;}
   command(args){if(!this.systemd)P.fail('fixture');return execFileSync('/usr/bin/systemctl',args,{stdio:'ignore'});}
-  unitText(version){const slot=version==='v0.1.7'?'a':'b';return '[Unit]\nDescription=RiftAssist disposable single-service replacement\n[Service]\nType=simple\nUser='+this.c.uid+'\nGroup='+this.c.gid+'\nWorkingDirectory='+path.join(this.s.stage.root,'data',slot)+'\nExecStart='+this.c.node+' --require '+this.tools+'/mock-legacy.cjs '+this.tools+'/replacement-rehearsal-runner.cjs '+path.join(this.s.stage.root,'launch',slot+'.json')+'\nKillMode=control-group\nTimeoutStopSec=115\nRestart=no\n';}
+  unitText(version){const slot=version==='v0.1.7'?'a':'b';return '[Unit]\nDescription=RiftAssist disposable single-service replacement\n[Service]\nType=simple\nUser='+this.c.uid+'\nGroup='+this.c.gid+'\nWorkingDirectory='+path.join(this.s.stage.root,'data',slot)+'\nExecStart='+this.c.node+' --require '+this.tools+'/mock-legacy.cjs '+this.tools+'/replacement-rehearsal-runner.cjs '+path.join(this.s.stage.root,'launch',slot+'.json')+'\nKillMode=control-group\nTimeoutStopSec=115\nRestart=no\n'+(version==='v0.1.7'&&this.aiPaused?'Environment=RIFTASSIST_REHEARSAL_PAUSE_AI=true\n':'');}
   async preflight(){if(!this.running)P.fail('fixture-stopped');await this.configurationUnchanged();}
   async stop(){
     this.calls.push('stop');if(this.systemd)this.command(['stop',this.c.service]);
@@ -19,13 +19,13 @@ class ActualIO extends FakeReplacementIO{
   async backupBudget(){/* bounded synthetic SQLite only */}
   async configurationSnapshot(){await this.configurationUnchanged();return{selected:this.selected};}
   async finalizeCandidate(){require('./files.cjs').chownTree(this.s.stage,path.join(this.c.candidateData,'private'));}
-  async select(version){await this.assertStopped();this.selected=version;if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
-  async restorePrevious(version){await this.select(version);}
+  async select(version){await this.assertStopped();this.selected=version;this.aiPaused=version==='v0.1.7';if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
+  async restorePrevious(version,snapshot,{pauseAi=false}={}){await this.select(version);this.aiPaused=version==='v0.1.7'&&pauseAi;if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
   async start(version){
     await this.assertStopped();if(this.selected!==version)P.fail('fixture-selector');this.calls.push('start:'+version);
     if(this.systemd)this.command(['start',this.c.service]);else{
       const slot=version==='v0.1.7'?'a':'b',c=this.s.stage;
-      this.child=spawn(c.node,['--require',path.join(this.tools,'mock-legacy.cjs'),path.join(this.tools,'replacement-rehearsal-runner.cjs'),path.join(c.root,'launch',slot+'.json')],{env:this.controller.env(),stdio:'ignore',...(process.geteuid()===0?{uid:c.appUid,gid:c.appGid}:{})});this.child.on('error',()=>{});
+      this.child=spawn(c.node,['--require',path.join(this.tools,'mock-legacy.cjs'),path.join(this.tools,'replacement-rehearsal-runner.cjs'),path.join(c.root,'launch',slot+'.json')],{env:{...this.controller.env(),...(this.aiPaused?{RIFTASSIST_REHEARSAL_PAUSE_AI:'true'}:{})},stdio:'ignore',...(process.geteuid()===0?{uid:c.appUid,gid:c.appGid}:{})});this.child.on('error',()=>{});
     }
     this.running=version;this.activeMax=Math.max(this.activeMax,1);
   }
@@ -49,15 +49,16 @@ async function main({systemd=false}={}){
     io=new ActualIO(s,controller,{systemd,tools,unitFile});if(systemd){fs.writeFileSync(unitFile,io.unitText('v0.1.7'),{flag:'wx',mode:0o644});io.command(['daemon-reload']);}
     await io.start('v0.1.7');await health(s.stage,'a');await controller.command('start','proxy');
     let tls=false;for(let n=0;n<150;n++){try{await proxyHealth(s.stage,'v0.1.7');tls=true;break;}catch{}await new Promise(r=>setTimeout(r,100));}if(!tls)P.fail('initial-tls');
-    const engine=R.createReplacement(s.raw,io,{rehearsal:true}),p=engine.plan('replace',crypto.randomUUID()),deployed=await engine.execute(p,p.digest);if(deployed.state!=='completed')P.fail('rehearsal-'+deployed.state+'-'+deployed.failure);
+    const engine=R.createReplacement(s.raw,io,{rehearsal:true}),q=engine.plan('qualify-backup',crypto.randomUUID()),qualified=await engine.execute(q,q.digest);if(qualified.state!=='qualified')P.fail('qualification-failed');const p=engine.plan('replace',crypto.randomUUID()),deployed=await engine.execute(p,p.digest);if(deployed.state!=='completed')P.fail('rehearsal-'+deployed.state+'-'+deployed.failure);
     const dbfile=path.join(s.c.candidateData,'private/operations.sqlite');let db=new(require('node:sqlite').DatabaseSync)(dbfile,{readOnly:true}),reports;try{reports=db.prepare('SELECT count(*) n FROM reports').get().n;}finally{db.close();}if(reports<2)P.fail('reports-not-preserved');
     const rb=engine.plan('rollback',crypto.randomUUID(),deployed.id),rolled=await engine.execute(rb,rb.digest);if(rolled.state!=='rolled-back')P.fail('rehearsal-rollback');
     db=new(require('node:sqlite').DatabaseSync)(dbfile,{readOnly:true});try{if(db.prepare('SELECT count(*) n FROM reports').get().n!==reports)P.fail('new-record-loss');}finally{db.close();}
     db=new(require('node:sqlite').DatabaseSync)(path.join(s.c.oldData,'private/operations.sqlite'),{readOnly:true});try{if(db.prepare('SELECT count(*) n FROM reports').get().n!==1)P.fail('old-record-loss');}finally{db.close();}
     for(const key of ['storage.key','sessions.key','manager.key'])if(P.hash(fs.readFileSync(path.join(s.c.oldData,'private',key)))!==P.hash(fs.readFileSync(path.join(s.c.candidateData,'private',key))))P.fail('key-not-preserved');
+    const oldHealth=await(await fetch('http://127.0.0.1:'+s.c.ports[1]+'/api/health')).json();if(oldHealth.aiEnabled!==false)P.fail('rollback-budget-not-paused');
     if(R.codeReceipt(s.c.candidateCode).manifest.ready!==false)P.fail('source-readiness-changed');
     if(P.hash(fs.readFileSync(s.c.caddyFile))!==configHash||P.hash(fs.readFileSync(path.join(s.stage.root,'proxy/route.caddy')))!==routeHash)P.fail('caddy-changed');
-    const proof={protocol:'riftassist-replacement-proof-1',mode:'single-instance-replacement',actualSystemd:systemd,appServiceUnits:systemd?1:0,actualV017ManagerGatewayWorker:true,legacyEphemeralPortsInjectedInMemory:true,actualV020ManagerGatewayWorker:true,samePortsReused:true,maxConcurrentVersions:io.activeMax,caddyConfigurationUnchanged:true,httpsVerified:true,encryptedBackupAndRestore:true,originalRecordsPreserved:true,postReplacementReportsRetained:reports,rolledBack:rolled.state==='rolled-back',additionalVmRequired:false,sourceReady:false,productionConnections:0,paidApiCalls:0};
+    const proof={protocol:'riftassist-replacement-proof-1',mode:'single-instance-replacement',actualSystemd:systemd,appServiceUnits:systemd?1:0,actualV017ManagerGatewayWorker:true,legacyEphemeralPortsInjectedInMemory:true,actualV020ManagerGatewayWorker:true,samePortsReused:true,maxConcurrentVersions:io.activeMax,caddyConfigurationUnchanged:true,httpsVerified:true,encryptedBackupAndRestore:true,originalRecordsPreserved:true,postReplacementReportsRetained:reports,rolledBack:rolled.state==='rolled-back',additionalVmRequired:false,sourceReady:false,backupQualifiedWhileNotReady:qualified.state==='qualified',rollbackGenerationPaused:oldHealth.aiEnabled===false,productionConnections:0,paidApiCalls:0};
     if(process.env.RIFTASSIST_REPLACEMENT_PROOF){fs.writeFileSync(process.env.RIFTASSIST_REPLACEMENT_PROOF,JSON.stringify(proof,null,2)+'\n',{flag:'wx',mode:0o644});fs.chmodSync(process.env.RIFTASSIST_REPLACEMENT_PROOF,0o644);}console.log(JSON.stringify(proof));return proof;
   }finally{if(io)await io.stop();await controller.close();if(unitFile&&fs.existsSync(unitFile)){fs.unlinkSync(unitFile);execFileSync('/usr/bin/systemctl',['daemon-reload'],{stdio:'ignore'});}s.cleanup();}
 }

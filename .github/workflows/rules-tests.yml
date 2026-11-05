@@ -36,3 +36,25 @@ jobs:
         run: npm run test:compat
       - name: Verify unchanged v0.1.7 compatibility
         run: npm run test:legacy
+
+  browser-compatibility:
+    name: Browser mobile PWA and maintenance compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: experiments/unified-rulings/tests
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install pinned browser test dependencies
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Exercise synthetic browser mobile PWA and release transition flows
+        run: npm run test:e2e

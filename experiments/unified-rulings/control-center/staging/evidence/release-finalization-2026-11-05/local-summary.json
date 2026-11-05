@@ -1,0 +1,29 @@
+{
+  "scope": "local-synthetic-only",
+  "node": 218,
+  "csharp": 284,
+  "crossVersionContracts": 6,
+  "unchangedV017": 11,
+  "browserMobilePwa": 17,
+  "deploymentLab": 29,
+  "pythonInspectionAndPreparation": 17,
+  "totalDistinctChecks": 582,
+  "failed": 0,
+  "wpfCrossBuild": {
+    "errors": 0,
+    "warnings": 0,
+    "nativeExecution": false
+  },
+  "azureConnections": 0,
+  "paidApiCalls": 0,
+  "sourceReady": false,
+  "legacySourceFiles": 65,
+  "legacyGitTree": "7f25baaaa9e2d1898d54c99386fd24adce929a0f",
+  "approvedInspectorCommit": "a7dbf966f7361dfa9fba34416caf6409bfcd6047",
+  "remoteInspectionResultsReceived": false,
+  "limitations": [
+    "Native Windows and real systemd are separate CI proofs, not this local count",
+    "No real Azure DB/key/topology inspection or deployment",
+    "Actual Windows 10 PC and live-domain PWA transition remain unverified"
+  ]
+}

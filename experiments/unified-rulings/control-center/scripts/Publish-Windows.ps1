@@ -49,3 +49,6 @@ Copy-Item -LiteralPath (Join-Path $project 'REPLACEMENT.md') -Destination (Join-
 Copy-Item -LiteralPath (Join-Path $project 'LEGACY-BASELINE.md') -Destination (Join-Path $OutputDirectory 'LEGACY-BASELINE.md')
 Copy-Item -LiteralPath (Join-Path $project 'AZURE-INSPECTION.md') -Destination (Join-Path $OutputDirectory 'AZURE-INSPECTION.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'
+
+Copy-Item -LiteralPath (Join-Path $project 'scripts/Invoke-ReleasePreparation.ps1') -Destination (Join-Path $OutputDirectory 'Invoke-ReleasePreparation.ps1')
+Copy-Item -LiteralPath (Join-Path $project 'RELEASE-CHECKLIST.md') -Destination (Join-Path $OutputDirectory 'RELEASE-CHECKLIST.md')

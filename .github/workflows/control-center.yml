@@ -47,9 +47,10 @@ jobs:
           python staging/replacement-inspection.test.py
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
+          python scripts/preparation.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
-          node --test --test-reporter=tap staging/replacement.test.cjs
+          node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
       - name: Run Windows synthetic application and legacy compatibility contracts
         run: |
           npm --prefix ../tests test
@@ -165,9 +166,10 @@ jobs:
           python staging/replacement-inspection.test.py
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
+          python scripts/preparation.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
-          node --test --test-reporter=tap staging/replacement.test.cjs
+          node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
       - name: Ubuntu POSIX script and OpenSSH loopback regressions (no Azure)
         run: |
           RIFTASSIST_CC_LOOPBACK_PYTHON="$(command -v python)" dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- ../releases/v0.2.0 "$(command -v node)" "$RUNNER_TEMP/control-center-ubuntu-proof.json"

@@ -10,7 +10,7 @@ try {
   foreach($entry in $zip.Entries) {
     if ($entry.FullName.StartsWith('/') -or $entry.FullName.Contains('\') -or $entry.FullName.Split('/') -contains '..') { throw 'Unexpected archive path.' }
   }
-  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.2.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','staging/serve.cjs','staging/inspect-azure.py','staging/mock-services.cjs','staging-manifest.json','STAGING.md','AZURE-INSPECTION.md','PHASE8.md')) {
+  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.2.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','staging/serve.cjs','staging/inspect-azure.py','staging/mock-services.cjs','staging-manifest.json','STAGING.md','AZURE-INSPECTION.md','PHASE8.md','Invoke-ReleasePreparation.ps1','RELEASE-CHECKLIST.md','staging/inspect-replacement-topology.py','staging/inspect-legacy-source.py')) {
     if (!$zip.GetEntry($name)) { throw 'Required file is missing from the archive root/layout.' }
   }
   if (@($zip.Entries | Where-Object { $_.FullName -like '*/RiftAssist.ControlCenter.exe' }).Count -ne 0) { throw 'Executable must not be nested.' }
@@ -29,3 +29,5 @@ if ($mock -ne $trustedMock) { throw 'Staging mock transport differs from verifie
 $report=@{ rootExecutable=$true; nestedExecutable=$false; runtimeAndBackendPresent=$true; archiveName=[IO.Path]::GetFileName($ArchivePath); nativeChecksUseExtractedArchive=$true }|ConvertTo-Json
 [IO.File]::WriteAllText($ReportPath,$report)
 Write-Output $report
+
+& (Join-Path $ExtractDirectory 'Invoke-ReleasePreparation.ps1') -Mode Verify -PackageDirectory $ExtractDirectory

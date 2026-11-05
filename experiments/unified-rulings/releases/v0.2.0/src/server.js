@@ -56,7 +56,7 @@ const outputLimit = Number(process.env.OPENAI_MAX_OUTPUT_TOKENS || 4096);
 const OPENAI_MAX_OUTPUT_TOKENS = Number.isInteger(outputLimit) && outputLimit >= 1024 && outputLimit <= 16000 ? outputLimit : 4096;
 const MAX_MODEL_INPUT_CHARS = 50000;
 const store = createStore(ROOT);
-const access = createAccess({ port: Number(process.env.PUBLIC_PORT || PORT), publicOrigin: process.env.PUBLIC_ORIGIN || '', directory: store.directory, store });
+const access = createAccess({ port: Number(process.env.PUBLIC_PORT || PORT), publicOrigin: process.env.PUBLIC_ORIGIN || '', directory: store.directory, store, allowLegacySession: environment==='production'&&process.env.RIFTASSI_PRESERVE_V017_SESSION==='true' });
 const aiEnabled = () => OPENAI_GENERATION_ENABLED && store.setting('aiEnabled', true);
 const sourceTranslations = createSourceTranslations({
   getTerminology: () => terminology.glossary((requestKnowledge.getStore() || knowledge.current()).evidence),
@@ -671,7 +671,7 @@ async function serveStatic(req, res, pathname) {
     const type = MIME_TYPES[path.extname(filePath)] || 'application/octet-stream';
     res.writeHead(200, {
       'Content-Type': type,
-      'Cache-Control': path.basename(filePath) === 'service-worker.js' ? 'no-cache' : 'public, max-age=300',
+      'Cache-Control': 'no-cache',
       'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Content-Security-Policy': "default-src 'self'; img-src 'self' blob: data: https://*.rgpub.io https://*.riotgames.com https://*.contentstack.io https://*.ctfassets.net https://media.riftnaru.com; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
@@ -683,6 +683,7 @@ async function serveStatic(req, res, pathname) {
 async function initialize() {
   await knowledge.initialize();
   const server = http.createServer((req, res) => requestKnowledge.run(cardAccess.snapshot(knowledge.current()), () => {
+    res.setHeader('X-RiftAssist-Release','v0.2.0');
     const snapshot = requestKnowledge.getStore();
     const { evidence, cardCatalog, evidenceCountByDocument } = snapshot;
     const cardCatalogAvailable = cardCatalog.cards.length > 0;
@@ -691,8 +692,10 @@ async function initialize() {
     catch (error) { sendJson(res, error.statusCode || 400, { error: error.message }); return; }
     if (url.pathname.startsWith('/api/')) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     if (req.method === 'POST' && url.pathname.startsWith('/api/')) {
+      if(req.headers['x-riftassist-client']&&req.headers['x-riftassist-client']!=='v0.2.0'){sendJson(res,409,{code:'client_version_changed',error:'서비스 버전이 변경됐습니다. 입력 내용을 보관한 뒤 새로고침해 주세요. / Reload after saving your input.'});return;}
       try { access.session(req, res); } catch (error) { sendJson(res, error.statusCode || 401, { error: error.message }); return; }
     }
+    if(req.method==='GET'&&url.pathname==='/api/release'){sendJson(res,200,{releaseId:'v0.2.0',version:'0.2.0'});return;}
     if (req.method === 'GET' && url.pathname === '/api/health') {
       try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
       sendJson(res, 200, {

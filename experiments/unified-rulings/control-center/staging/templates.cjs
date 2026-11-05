@@ -11,5 +11,5 @@ function systemdUnits(config,tools='/usr/local/lib/riftassist-stage/staging') {
   return units;
 }
 const wrapper='#!/bin/sh\nset -eu\n[ "$#" -eq 0 ] || exit 64\nexec /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw /usr/local/lib/riftassist-stage/staging/serve.cjs\n';
-const replacementWrapper=wrapper.replace('staging/serve.cjs','staging/replacement-serve.cjs');
+const replacementWrapper=wrapper.replace('/usr/local/lib/riftassist-stage/staging/serve.cjs','/usr/local/lib/riftassist-replacement/staging/replacement-serve.cjs');
 module.exports={systemdUnits,wrapper,replacementWrapper};

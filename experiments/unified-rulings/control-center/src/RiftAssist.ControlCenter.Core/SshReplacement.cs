@@ -8,8 +8,8 @@ public static class ReplacementSshPolicy
 {
     public const string Protocol="riftassist-replacement-1";
     public const string RemoteCommand="/usr/bin/sudo -n -- /usr/local/libexec/riftassist-replacement-broker";
-    public static readonly string[] Reads=["status","preflight","plan","rollback-plan","inspect"];
-    public static readonly string[] Writes=["replace","rollback"];
+    public static readonly string[] Reads=["status","reconcile","preflight","plan","backup-plan","rollback-plan","inspect"];
+    public static readonly string[] Writes=["replace","rollback","qualify-backup"];
     public static ReplacementSshCommand Build(SshProfile profile,string input)
     {
         if(ProtocolJson.Utf8.GetByteCount(input)>65536)throw new ControlException("client-stage-limit");
@@ -35,7 +35,7 @@ public sealed class SshReplacementClient(SshProfile profile,StagingActivation in
     {
         Method(method);installation.Require(profile);
         var hash=PrivacyPacket.Hash(JsonSerializer.Serialize(new{installation.SiteId,installation.InventoryHash,installation.ProfileHash,method,payload},ProtocolJson.Options));
-        return new("단일 서비스 교체 · 짧은 사이트 중단\n대상: "+profile.User+"@"+profile.Host+":"+profile.Port+"\n작업: "+method+"\n기존 서비스 중지 → DB/키/설정 백업·독립 복원 검사 → 별도 데이터 사본으로 시작 → HTTPS/기능 점검. Caddy·3001/3100 유지. 한 버전만 실행. 실패 시 구 설정 복귀, 새 기록은 보존.\n계획: "+payload.GetRawText()+"\n실제 설치와 이 작업에 대한 별도 승인이 필요합니다.",hash,0);
+        return new("단일 서비스 유지보수 · 짧은 사이트 중단\n대상: "+profile.User+"@"+profile.Host+":"+profile.Port+"\n작업: "+method+"\n"+(method=="qualify-backup"?"기존 서비스 중지 → DB/키/설정 백업·독립 복원·호환성 검사 → 같은 v0.1.7 재시작. v0.2.0은 실행하지 않습니다.":"기존 서비스 중지 → DB/키/설정 백업·독립 복원 검사 → 별도 데이터 사본으로 시작 → HTTPS/기능 점검. 실패 시 구 설정 복귀, 새 기록은 보존. 롤백 후 비용·호출량 대조 전 AI 생성은 일시 중지.")+"\nCaddy·3001/3100 유지. 한 버전만 실행.\n계획: "+payload.GetRawText()+"\n실제 설치와 이 작업에 대한 별도 승인이 필요합니다.",hash,0);
     }
     public async Task<JsonElement> CallAsync(string method,JsonElement payload,AnalysisConsent? approval=null,CancellationToken c=default)
     {

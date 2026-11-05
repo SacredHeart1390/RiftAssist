@@ -98,7 +98,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-card-sync-20261028');
+    const cache = await caches.open('riftassi-v0.2.0-single-service-20261105');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -188,4 +188,45 @@ test('reviewed card translations display separate English/Korean text and an exp
   await page.locator('#language-select').selectOption('en');
   assert.equal(await detail.evaluate(node => node.open), true);
   assert.match(await page.locator('#selected-cards details').innerText(), /RiftAssist AI translation · unofficial/);
+});
+
+test('maintenance response retains the question and recovers only on manual connection check',async t=>{
+  const {server,page}=await openBrowser(t);let healthy=false,checks=0;
+  await page.route('**/api/health',async route=>{checks++;if(!healthy)return route.fulfill({status:503,contentType:'text/html',body:'<h1>maintenance</h1>'});return route.continue();});
+  await page.goto(server.baseURL);await page.locator('#connection-retry').waitFor({state:'visible'});
+  await page.locator('#question').fill('합성 연결 복구 질문');assert.equal(await page.locator('#submit-button').isDisabled(),true);assert.equal(checks,1);
+  healthy=true;await page.locator('#connection-retry').click();await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
+  assert.equal(checks,2);assert.equal(await page.locator('#question').inputValue(),'합성 연결 복구 질문');
+});
+
+test('a rolled-back server disables the new UI without discarding input or forcing a reload',async t=>{
+  const {server,page}=await openBrowser(t);let checks=0;
+  await page.route('**/api/health',async route=>{checks++;const response=await route.fetch(),body=await response.json();await route.fulfill({response,json:{...body,version:'0.1.7'}});});
+  await page.goto(server.baseURL);await page.locator('#connection-retry').waitFor({state:'visible'});
+  await page.locator('#question').fill('보존할 합성 질문');assert.equal(await page.locator('#submit-button').isDisabled(),true);
+  assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),/버전이 변경/);assert.equal(checks,1);
+  assert.equal(await page.locator('#question').inputValue(),'보존할 합성 질문');
+});
+
+test('an unconfirmed ruling POST is never automatically resent and manual retry keeps its idempotency key',async t=>{
+  const {server,page}=await openBrowser(t),requests=[];
+  await page.route('**/api/ask',async route=>{requests.push(route.request().postDataJSON());return route.fulfill({status:503,contentType:'text/html',body:'<h1>unavailable</h1>'});});
+  await page.goto(server.baseURL);await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
+  await page.locator('#question').fill('합성 수동 재시도 질문');await page.locator('#submit-button').click();await page.locator('#answer-card[data-status="error"]').waitFor();
+  assert.match(await page.locator('#answer-recommendation').innerText(),/자동 재전송하지 않았습니다/);assert.equal(requests.length,1);
+  await page.locator('#submit-button').click();await page.waitForFunction(()=>document.querySelector('#submit-button').dataset.busy==='false');
+  assert.equal(requests.length,2);assert.equal(requests[0].clientKey,requests[1].clientKey);assert.equal(requests[0].question,'합성 수동 재시도 질문');
+});
+
+test('PWA network responses override stale assets and query responses stay uncached',async t=>{
+  const {server,page}=await openBrowser(t,{serviceWorkers:'allow'});
+  await page.goto(server.baseURL);await page.evaluate(()=>navigator.serviceWorker.ready);await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  const result=await page.evaluate(async()=>{
+    const cache=await caches.open('riftassi-v0.2.0-single-service-20261105');await cache.put('/app-ui5.js',new Response('stale fixture'));
+    const fresh=await(await fetch('/app-ui5.js')).text();
+    await cache.put('/terms.html',new Response('preserved v020 shell'));
+    return{fresh,cacheKeys:(await cache.keys()).map(r=>new URL(r.url).pathname)};
+  });assert.ok(result.fresh.includes('pendingAsk'));assert.ok(!result.cacheKeys.some(p=>p.startsWith('/api/')));
+  // A query response is never part of the cached shell, even during a version transition.
+  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-v0.2.0-single-service-20261105');return(await cache.keys()).some(r=>new URL(r.url).search);});assert.equal(check,false);
 });

@@ -24,7 +24,7 @@ RAM 약887MiB, 조사 당시 MemAvailable 약371MiB, 디스크 여유 약59.8GB,
 
 - `staging/replacement.cjs`: 단일 교체 상태기계·서명 계획·승인·잠금·중복/중단 조회. 종전 vault/독립 restore probe/감사 hash chain을 재사용한다.
 - `replacement-ubuntu.cjs`: 고정 riftassist.service의 stop/start/show/daemon-reload와 전용 override 하나만 관리한다. 임의 unit/명령/원격 경로를 요청하지 않는다. Caddy는 hash 확인만 하고 변경/reload하지 않는다.
-- `replacement-serve.cjs`: root-owned /etc/riftassist-replacement/inventory.json을 고정으로 읽는 endpoint다. stdin JSON에서 status/preflight/plan/replace/rollback-plan/rollback/inspect만 허용한다. 설치용 임의 파일 쓰기/업로드 API는 없다.
+- `replacement-serve.cjs`: root-owned /etc/riftassist-replacement/inventory.json을 고정으로 읽는 endpoint다. stdin JSON에서 status/reconcile/preflight/plan/backup-plan/qualify-backup/replace/rollback-plan/rollback/inspect만 허용한다. 설치용 임의 파일 쓰기/업로드 API는 없다.
 - `templates.cjs.replacementWrapper`: 무인수·env-i 고정 endpoint 실행 원문만 제공한다. SSH 명령은 /usr/bin/sudo -n -- /usr/local/libexec/riftassist-replacement-broker 하나다. 설치·sudoers·forced-command 설정은 별도 승인 전 실행하지 않는다.
 - `SshReplacementClient`: 기존 Windows OpenSSH와 프로필/호스트 검증/UTF8/안전한 process IO를 재사용하며 이 endpoint의 별도 설치 활성화 및 작업별 exact 승인을 요구한다. 기존 자동 관리자 로그인은 배포 승인이 아니다. 실패 쓰기는 자동 재전송하지 않는다.
 - `replacement-launch.cjs`: 기존 service 사용자로 새 manager를 실행하고 원래 /api/login → /api/start 절차로 앱을 한 번 시작한다. 키/쿠키는 메모리에만 두며 argv/일반 설정/로그에 넣지 않는다. 실제 worker는3011/3012, gateway3001, 관리자3100으로 구성할 수 있다. ready=false에서는 production 실행을 거절한다.
@@ -40,7 +40,7 @@ RAM 약887MiB, 조사 당시 MemAvailable 약371MiB, 디스크 여유 약59.8GB,
 5. systemctl stop riftassist.service를 한 번 실행한 뒤 inactive/failed·MainPID0·해당 cgroup의 모든 자식 종료와3100/3001/3011/3012 해제를 확인한다. 불확실하면 DB에 접근하거나 다른 버전을 시작하지 않는다. 응답 손실을 성공으로 간주하지 않고 inspect/status로 확인한다.
 6. **서비스 중단 후** 운영 SQLite를 readOnly 연결/online backup으로 일관성 snapshot하고 storage.key·sessions.key·manager.key 등 확인한 키 및 DB 안의 설정/질문/제보/이력과 unit/Caddy/전용 override 설정을 서버 private 안에서 AES-GCM 봉인한다. 설정/키/행은 결과나 GitHub artifact에 넣지 않는다. 기존 makeBackup API는 purge 부수효과가 있어 호출하지 않는다.
 7. 별도 프로세스에서 임시 복원 DB의 integrity_check 및 실제 암호문 복호화 가능성을 확인한다. 기존 DB 위에 restore하지 않는다. 실패하면 새 앱을 시작하지 않고 이전 실행 설정으로 복귀한다. wrapping key는 backup envelope와 분리하며, 별도 보관·디스크 암호화·복구키/오프호스트 보관 정책은 운영자가 확정해야 한다.
-8. 검증된 snapshot을 **새 private 디렉터리에만** 복원한다. DB schema hash와 두 버전 operations-store 코드의 동일성 검사를 통과해야 한다. schema가 다르면 자동 migration/직접 덮어쓰기하지 않는다. 기존 설정/한도/AI 상태를 보존하며 검증된 사본의 appRelease 포인터만 v0.2.0으로 맞춘다. cloudflare/ngrok 설정은 자동 변환하지 않고 거절한다. 실제 production은 기존 hosting이 external + https://riftassistant.app로 확인된 경우만 대상이며 local-only/미확인 origin은 자동 변경하지 않고 중단한다. 격리 시험은 none + localhost를 사용한다. 미확인 추가 DB/외부 설정이 있으면 포함 범위 검토가 선행해야 한다.
+8. 검증된 snapshot을 **새 private 디렉터리에만** 복원한다. DB schema hash와 두 버전 operations-store 코드의 동일성 검사를 통과해야 한다. schema가 다르면 자동 migration/직접 덮어쓰기하지 않는다. 기존 설정/한도/AI 상태를 보존하며 검증된 사본의 appRelease 포인터만 v0.2.0으로 맞춘다. cloudflare/ngrok 설정은 자동 변환하지 않고 거절한다. 실제 production은 기존 hosting이 external 또는 none이며 publicOrigin=https://riftassistant.app로 확인된 경우만 대상이며 local-only/미확인 origin은 자동 변경하지 않고 중단한다. 격리 시험은 none + localhost를 사용한다. 미확인 추가 DB/외부 설정이 있으면 포함 범위 검토가 선행해야 한다.
 9. 주 unit 원문/계정/의존성은 유지하고 검토한 전용 drop-in에서 WorkingDirectory/ExecStart를 새 launcher로 바꾼다. base unit/Caddy hash와 전용 override CAS가 달라지면 중단한다. 새 override에는 TimeoutStopSec=115를 포함한다. 기존 unit의 중지 제한/진행 중 요청은 별도 검토하며 중단 시 아직 처리 중인 AI/제보 응답이 끊길 수 있어 중복 전송을 피하도록 안내해야 한다. daemon-reload → 같은 riftassist.service 시작 → 정상 관리자 인증/앱 시작 순서다. 새/구 버전을 동시에 실행하지 않는다.
 10. 로컬 앱 버전·규칙 준비·관리자 인증/상태와 실제 HTTPS200/TLS를 점검한다. 이때 새 복원 사본에서 세션 통계가 늘 수 있다. 유료 AI 호출은 health check에 넣지 않는다. 실제 AI가 활성 상태라면 기존 환경에 명시적인 live provider/호출 허용/키 설정이 검토되어 있어야 하며, 없을 때 mock으로 대신 운영하지 않고 launcher가 거절한다. 자동 유료 호출은 하지 않는다. 실제 카드/규칙 검색·KO/EN·AI 품질·제보/관리자·브라우저/PWA는 별도의 승인된 수동 기능 검수도 필요하다. 공개 HTTPS200 하나만으로 버전/기능 검증 완료를 선언하지 않는다.
 
@@ -68,7 +68,7 @@ replacement-integration.cjs는 disposable Ubuntu의 실제 v017 manager/gateway/
 
 추가 조사는 helper의 비밀값 제외 실행 형태·참조 스크립트 경로/개입 시점, Caddy 실제 --config 경로/443 소유, systemd FragmentPath/drop-ins·KillMode/ControlGroup·UID/GID/Node 버전에 한정한 후속 승인안이 필요하다. 기존 inspect-azure.py는 바꾸지 않으며 승인받은 SHA256도 보존한다. 이번 작업에서는 추가 SSH를 실행하지 않는다.
 
-## 다음 읽기 조사 승인안 (아직 실행하지 않음)
+## 추가 읽기 조사 (사용자 승인 완료, 실제 실행 결과 대기)
 
 별도 승인 대상 원문은 staging/inspect-replacement-topology.py이며 SHA256은 `6d0a68ff75eeccc45235d5607b72704ef9079f159d94f1fc52bf74acd36cbfa1`이다. 기존 승인된 inspect-azure.py는 그대로다.
 
@@ -93,29 +93,26 @@ replacement-integration.cjs는 disposable Ubuntu의 실제 v017 manager/gateway/
 
 helper가 별도 스크립트/숨겨진 환경 설정을 참조하면 이 조사만으로 동작을 확정할 수 없다. 그때는 해당 코드/설정의 비밀값 없는 별도 검토 범위를 제시하고 추가 승인을 받아야 한다. 443 소유 PID도 이 조사로 새로 확정하지 않는다. 어떠한 추가 권한도 자동 요청/부여하지 않는다.
 
-## 재개 후 추가 읽기 조사 두 원문을 실행하는 승인안
+## 두 원문을 한 번에 실행하는 승인 범위
 
-기존 조사(원문inspect-azure.py)의 승인을 확장하지 않는다. 새 topology 원문과 고정65개 소스 hash 검사 원문은 각각 별도 검토 대상이며, 아래 두 가지 읽기 조사만 추가 승인받은 뒤 실행한다. 실제 설치·DB/키 접근·변경은 포함하지 않는다. 아직 실제 서버에서 실행하지 않았다.
+기존 조사(원문inspect-azure.py)의 승인을 확장하지 않는다. 사용자가 a7dbf966의 topology 및 고정65개 소스 hash 검사 원문을 승인했다. 아래 두 가지 읽기 조사만 사용자 PC에서 실행한다. 설치/DB·키 접근/배포 승인으로 확대하지 않는다. 실제 설치·DB/키 접근·변경은 포함하지 않는다. 아직 실제 서버에서 실행하지 않았다.
 
 ```powershell
-& {
-  $checks = @(
-    @{Name='inspect-replacement-topology.py'; Sha='6d0a68ff75eeccc45235d5607b72704ef9079f159d94f1fc52bf74acd36cbfa1'; Protocol='riftassist-replacement-topology-1'},
-    @{Name='inspect-legacy-source.py'; Sha='5d353f19ff44ff1218ddfdc5b09e4fa5a2126f29c6fa24fc9404cb56d2a98166'; Protocol='riftassist-legacy-source-1'}
-  )
-  foreach ($check in $checks) {
-    $bytes = [IO.File]::ReadAllBytes((Join-Path (Get-Location).Path ('staging/' + $check.Name)))
-    $sha = [Security.Cryptography.SHA256]::Create()
-    try { $digest = [BitConverter]::ToString($sha.ComputeHash($bytes)).Replace('-', '').ToLowerInvariant() } finally { $sha.Dispose() }
-    if ($digest -cne $check.Sha) { throw 'SHA256 불일치: 이 원문의 SSH 실행 안 함' }
-    $source = [Text.Encoding]::ASCII.GetString($bytes)
-    $output = @($source | & "$env:WINDIR\System32\OpenSSH\ssh.exe" -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ConnectionAttempts=1 -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=1 -o ForwardAgent=no -o ForwardX11=no -o ClearAllForwardings=yes -o PermitLocalCommand=no -o LogLevel=ERROR -o UserKnownHostsFile="$env:USERPROFILE\.ssh\known_hosts" -i "$env:USERPROFILE\.ssh\riftassistant-key.pem" azureuser@20.222.152.195 "python3 -B -" 2>$null)
-    if ($LASTEXITCODE -ne 0) { throw 'SSH 조사 실패: stderr 표시/저장 안 함' }
-    $report = ($output -join "`n") | ConvertFrom-Json -ErrorAction Stop
-    if ($report.protocol -cne $check.Protocol -or $report.readOnly -ne $true) { throw '응답 형식 불일치: 원시 응답 공유 금지' }
-    $report | ConvertTo-Json -Depth 12
-  }
-}
+# 최신 검증 Windows ZIP의 최상위에서 실행. 두 hash 모두 먼저 검사한다.
+& .\Invoke-ReleasePreparation.ps1 -Mode Verify -PackageDirectory (Get-Location).Path
+& .\Invoke-ReleasePreparation.ps1 -Mode Inspect -PackageDirectory (Get-Location).Path
 ```
 
 검증한 동일 원문만 메모리에서 stdin으로 전달한다. 서버에 원문/결과를 저장하지 않고 비밀값/일반 stderr를 표시하지 않는다. 실제 대상 IP/계정/키 경로가 그대로인지 확인한다. 두 조사 중 먼저 실행한 결과가 남더라도 두 번째 실패를 성공으로 숨기지 않는다. 정상적인 SSH 접속 기록·소량 조회 부하는 발생할 수 있다. 결과의 referenceVerified가 false면 현재 서버 코드가 복구 기준과 같다고 선언하지 않으며 교체/롤백을 계속 차단한다.
+
+## 2026-11-05 추가 보완
+
+[RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md)에 설치 대상/승인 분리/배포 전후 검수와 복구 조건을 통합했다. release readiness와 실제 DB 검사가 서로 선행 조건이 되는 문제를 없애기 위해, 별도 승인된 backup-plan/qualify-backup 유지보수로 v017만 중지·백업·독립 검증·재시작할 수 있다. 새 버전 실행/DB 복사는 없고 ready=false를 유지한다. 실제 schema/복호화/필수 키3개·한도·AI 상태·publicOrigin을 값 노출 없이 확인한다.
+
+구 manager는 helper가 없을 때 systemd 시작만으로 앱이 뜨지 않을 수 있어 정상 /api/login·/api/status 후 /api/start를 한 번만 요청한다. 재시작/응답 손실은 자동 재전송하지 않는다. 새 앱 실행 뒤 복귀하면 소유 drop-in으로 AI 생성을 일시 중지해 동결된 구 DB의 호출 카운터 때문에 비용 한도가 중복 사용되지 않게 한다. 새 호출/제보는 보존하며 비용 대조/AI 재개는 별도 승인 작업이다. 단순 backup qualification은 원래 AI 설정을 유지한다.
+
+완료 감사 저장 실패 시 영속 버전 포인터도 보상하고, reconcile은 서비스/설정/기록 불일치를 읽기 전용으로 표시한다. 외부 override 변경은 계속 차단한다. 디스크/메모리/키 누락·설정 불일치·백업 무결성 실패는 새 앱 실행을 막는다. candidate 소스 전체의 미등록 파일/디렉터리도 거절해 부가 파일이 공개 폴더로 섞이지 않는다.
+
+브라우저는 정적 자산 network 우선/릴리스 marker 캐시/오래된 서버 감지/입력 보존/수동 연결 재확인을 사용한다. 유료 요청 응답이 불명확하면 자동 재전송하지 않고 동일한 요청 내용의 수동 재시도에 idempotency key를 재사용한다. 기존 signed 쿠키는 명시적인 production 전환에서만 같은 owner/원래 만료를 유지한다. 기존 개발 세션은 기본 분리한다. 실제 도메인과 기존 설치형 PWA 검수는 별도로 필요하다.
+
+replacement-package.cjs는 code-only 후보·production 의존성·고정 wrapper·설치 계획/hash를 생성하고 검증한다. 실제 root 설치/SSH 권한 부여를 실행하는 도구가 아니다. broker와 기존 staging은 다른 namespace이며 launcher의 상대 require와 독립 restore 자식 의존성도 포함한다. 실제 topology 결과와 설치 inventory가 확정되기 전 운영 설치/수동 복구 명령은 추정하지 않는다.

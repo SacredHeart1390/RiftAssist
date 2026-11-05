@@ -62,7 +62,7 @@ function restoreProbe(root,id) {
     for(const [table,columns]of Object.entries({requests:['question','response','trace'],reports:['content','snapshot'],report_history:['note']})) {
       for(const row of db.prepare('SELECT '+columns.join(',')+' FROM '+table).iterate())for(const cell of Object.values(row))if(cell){unsealCell(cell,storage);encryptedRows++;}
     }
-    return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,encryptedRows,keysPreserved:Object.keys(value.keys).length};
+    return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,encryptedRows,keysPreserved:Object.keys(value.keys).length,keyNames:Object.keys(value.keys).sort(),compatibility:require('./data-compatibility.cjs').inspect(db)};
   } finally {db?.close();storage?.fill(0);fs.rmSync(probe,{recursive:true,force:true,maxRetries:3});}
 }
 module.exports={createBackup,createPrivateBackup,verifyBackup,restoreProbe,seal,open};

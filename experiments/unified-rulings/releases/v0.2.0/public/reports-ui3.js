@@ -46,8 +46,8 @@
   form.addEventListener('submit',async event=>{
     event.preventDefault();if(sending)return;sending=true;send.disabled=true;close.disabled=true;status.textContent=text('제보 저장 중…','Saving report…');
     try {
-      const response=await fetch('/api/reports',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientKey,requestId:capturedRequest,category:category.value,description:description.value,expected:expected.value,tags:[...fieldset.querySelectorAll('input:checked')].map(input=>input.value),language:lang()})});
-      const result=await response.json();if(!response.ok)throw new Error(result.error || 'Report failed');
+      const response=await fetch('/api/reports',{method:'POST',headers:{'Content-Type':'application/json','X-RiftAssist-Client':'v0.2.0'},body:JSON.stringify({clientKey,requestId:capturedRequest,category:category.value,description:description.value,expected:expected.value,tags:[...fieldset.querySelectorAll('input:checked')].map(input=>input.value),language:lang()})});
+      let result;try{if(!response.headers.get('content-type')?.includes('application/json'))throw Error();result=await response.json();}catch{throw new Error(text('응답을 확인하지 못했습니다. 자동 재전송하지 않았습니다. 같은 제보로 다시 시도할 수 있습니다.','The response could not be confirmed.'));}if(!response.ok)throw new Error(result.error || 'Report failed');
       status.textContent=text(`접수했습니다. 제보 번호 ${result.id}`,`Report received: ${result.id}`);send.hidden=true;
     }catch(error){status.textContent=error.message;send.disabled=false;}finally{sending=false;close.disabled=false;}
   });

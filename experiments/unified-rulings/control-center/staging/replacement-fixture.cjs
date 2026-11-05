@@ -6,6 +6,8 @@ async function fixture({realLegacy=false,caddy=process.execPath,uid=process.getu
   const s=await require('./fixture.cjs').site({realLegacy,caddy,appUid:uid,appGid:gid}),st=s.config;
   if(realLegacy){for(const name of ['scripts','package.json'])fs.cpSync(path.resolve(__dirname,'../../releases/v0.1.7',name),path.join(st.root,'releases/a/code',name),{recursive:true,errorOnExist:true,force:false});}
   const baseline=require('../../releases/v0.2.0/src/operations-store.js').createStore(path.join(st.root,'data/a'));try{baseline.setSetting('appRelease','v0.1.7');baseline.setSetting('hosting',{provider:'none',publicOrigin:'https://localhost:'+st.proxyPort});}finally{baseline.close();}
+  for(const name of ['manager.key','sessions.key'])require('../../releases/v0.2.0/src/access-control.js').localSecret(path.join(st.root,'data/a/private'),name);
+  F.chownTree(st,path.join(st.root,'data/a'));
   // a and b reuse exactly the same four ports, never run concurrently.
   const stage={...st,ports:{a:st.ports.a,b:st.ports.a}};
   F.writeCode(stage,'b',s.packet.files,'v0.2.0',s.packet.commit,s.packet.digest);
@@ -29,10 +31,11 @@ class FakeReplacementIO{
   async backupBudget(){this.at('budget');}
   async configurationSnapshot(){this.at('snapshot');return{selected:this.selected,unit:fs.readFileSync(this.c.unitFile).toString('base64'),caddy:fs.readFileSync(this.c.caddyFile).toString('base64')};}
   async finalizeCandidate(){this.at('copy');}
-  async select(version){this.at('select');this.selected=version;}
-  async restorePrevious(version){this.at('restore');this.selected=version;}
+  async select(version){this.at('select');this.selected=version;this.aiPaused=version==='v0.1.7';}
+  async restorePrevious(version,snapshot,{pauseAi=false}={}){this.at('restore');this.selected=version;this.aiPaused=version==='v0.1.7'&&pauseAi;}
   async start(version){this.at('start');if(this.running!==null)P.fail('concurrent-version');this.running=version;}
   async health(version){this.at(version==='v0.2.0'?'health':'old-health');if(this.running!==version)P.fail('health');return{version,synthetic:true};}
   async configurationUnchanged(){this.at('caddy');if(P.hash(fs.readFileSync(this.c.caddyFile))!==this.c.caddyHash)P.fail('caddy-drift');}
+  async observe(){return{serviceActive:this.running!==null,configurationTarget:this.selected};}
 }
 module.exports={fixture,FakeReplacementIO};
