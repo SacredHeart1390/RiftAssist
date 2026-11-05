@@ -30,3 +30,6 @@ DeploymentLabs/
 ProcessLeases/
 *.sealed
 *.dpapi
+
+# Local staging source inspection bytecode; never runtime data
+control-center/staging/__pycache__/

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "scope": "isolated-staging-not-installed",
+  "productionEnabled": false,
+  "files": {
+    "broker.cjs": "e4a1c106a68c82132358bddca8e88d6afdf5968c288379c84c289290f1125dc7",
+    "files.cjs": "00d6d4b322c26f241ee8b6f2c22dcdeb447c90028238e994870d0828217d3918",
+    "fixture.cjs": "7be800f6c32b3e4add5a2b6b0cb91cda7bea4a8db9e9ffed8aa0bee222561b49",
+    "inspect-azure.py": "6f6901c6a97b5188f0014553b8e518430b59570e46c406c3a5f757ab7902901d",
+    "inspection.test.py": "d8f8a6c59752d1cdf0f97abe152ffeea36144f28897572098fc24d4851a5705d",
+    "integration.cjs": "65c8cbf05f17c49a5175a510985a7fc41da02673a74c7fc556422791ba850d23",
+    "inventory.example.json": "f36999d7087a54c6e312c7e6f44c0f97aa1ae790e1298e9b2a08b43e3a43432c",
+    "mock-legacy.cjs": "58f379c01ee66e977e5f8585b29458d94c477ef602b1151977f6f542eb44b4f1",
+    "process-controller.cjs": "cf2ea7e037dce5600c98161f53d07b08bea2353de3fb610c10c5bc01e00d1dab",
+    "protocol.cjs": "20d3bd4167985e9d3d505455a8810331ee3b3f5215ebe99dad69315e261f9171",
+    "restore-probe.cjs": "f35b1166a90442fd48484cef21d05cc2cccf22491282a654e8860fe7096fb6d2",
+    "runner.cjs": "3ebf1f160f7cfad31304f066de0508cbc2240a3ca1c421916325bfc701ecd97e",
+    "serve.cjs": "b1088abd06e4d3a2cf88e6cb63c4afc20ebb01605606a2086f00def21ecb3e70",
+    "staging.test.cjs": "94d4b7c125f8bf4fc52d1d4f366071d3a0a6170e888a5c3feb651c450cb382b7",
+    "templates.cjs": "b554d76d3e0ac2e17e2edf69691a8f747b8388d27bc2a3a24e04c57bd564ecee",
+    "ubuntu-io.cjs": "20147594e9ef96bf762c22a7893fc6f5e8d6b5e247f8c75d32542bb374c665db",
+    "vault.cjs": "6c88b263cfbcfedafc835f5d6a0bce5a35deb6f6f46ef18a5302d9ea2eb4b3e7"
+  }
+}

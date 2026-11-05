@@ -21,6 +21,7 @@ public sealed record SshProfile(string Host = "", string User = "", int Port = 2
             || !Regex.IsMatch(HttpsOrigin, @"\Ahttps://[a-zA-Z0-9.\[\]:-]+/?\z")) throw new ControlException("client-ssh-profile");
     }
     [JsonIgnore] public string HealthUrl => HttpsOrigin.TrimEnd('/') + "/api/health";
+    [JsonIgnore] public string ReadOnlyStatusUrl => HttpsOrigin.TrimEnd('/') + "/";
 }
 
 public sealed class SshProfileStore(string directory)
@@ -83,9 +84,9 @@ public static class SshCommandPolicy
             "service=$(systemctl show riftassist.service --property=ActiveState --value 2>/dev/null)\n" +
             "case \"$service\" in active|inactive|failed|activating|deactivating|reloading) ;; *) service=unknown; printf 'RIFTASSIST_STATUS_WARNING=systemd\\n' >&2;; esac\n" +
             "printf 'service=%s\\n' \"$service\"\n" +
-            "app=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --noproxy '*' http://127.0.0.1:3001/api/health 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=app-health\\n' >&2\n" +
+            "app=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --noproxy '*' http://127.0.0.1:3001/ 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=app-health\\n' >&2\n" +
             "printf 'app_http=%s\\n' \"${app:-000}\"\n" +
-            "https=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --proto '=https' --noproxy '*' '" + profile.HealthUrl + "' 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=https-health\\n' >&2\n" +
+            "https=$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 5 --connect-timeout 3 --proto '=https' --noproxy '*' '" + profile.ReadOnlyStatusUrl + "' 2>/dev/null) || printf 'RIFTASSIST_STATUS_WARNING=https-health\\n' >&2\n" +
             "printf 'https_http=%s\\n' \"${https:-000}\"\n" +
             "printf 'RIFTASSIST_STATUS_COMPLETE\\n' >&2\nexit 0\n";
         return new(profile, arguments, script);

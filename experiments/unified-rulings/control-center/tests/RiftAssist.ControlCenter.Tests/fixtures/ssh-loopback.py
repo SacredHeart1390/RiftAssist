@@ -56,7 +56,7 @@ class MockServer(paramiko.ServerInterface):
     def check_channel_exec_request(self, channel, command):
         self.command = command
         self.ready.set()
-        return command == b'sh -s'
+        return command == (b'/usr/bin/sudo -n -- /usr/local/libexec/riftassist-stage-broker' if mode == 'staging-json' else b'sh -s')
 
 print(json.dumps({'port': port}), flush=True)
 connection, _ = listener.accept()
@@ -96,6 +96,22 @@ try:
             chunks.append(part)
             if sum(map(len, chunks)) > 16000:
                 raise ValueError('Oversize fixture input')
+        if mode == 'staging-json':
+            request = json.loads(b''.join(chunks).decode('utf-8'))
+            assert request['protocol'] == 'riftassist-staging-1' and request['method'] == 'status'
+            assert server.command == b'/usr/bin/sudo -n -- /usr/local/libexec/riftassist-stage-broker'
+            (root / 'stdin-verified').write_text('verified')
+            response = {'protocol': request['protocol'], 'requestId': request['requestId'], 'siteId': request['siteId'], 'inventoryHash': request['inventoryHash'], 'ok': True, 'result': {'message': '\uD569\uC131 staging SSH', 'productionEnabled': False}}
+            channel.sendall(json.dumps(response, ensure_ascii=False).encode('utf-8') + b'\n')
+            channel.send_exit_status(0)
+            channel.shutdown_write()
+            channel.close()
+            deadline = time.monotonic() + 2
+            while transport.is_active() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            transport.close()
+            time.sleep(30)
+            sys.exit(0)
         if mode.startswith('key-'):
             expected = (root / 'expected-input.txt').read_bytes()
             if b''.join(chunks) != expected or server.command != b'sh -s':

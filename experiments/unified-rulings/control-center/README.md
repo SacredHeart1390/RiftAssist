@@ -1,3 +1,5 @@
+> 2026-11-05 출시 준비 2단계: [Ubuntu staging 구조·미구현/활성화 조건](STAGING.md), [승인 대기 Azure 읽기 조사 명령](AZURE-INSPECTION.md). 실제 Azure 설치/접속/배포는 실행하지 않았고, 기존 배포 화면은 합성 전용입니다.
+
 # RiftAssist Control Center — Windows 관리 MVP
 
 8차 최신: [배포·백업·롤백 합성 검증 / 운영 활성화 조건 / Codex 프로세스 정리](PHASE8.md), [검사 기록](../artifacts/control-center-phase8-2026-11-04/README.md). 실제 Azure 배포는 차단하며 기존7차 기능·운영 읽기를 유지합니다.

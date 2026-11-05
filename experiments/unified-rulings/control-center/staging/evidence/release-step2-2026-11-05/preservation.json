@@ -1,0 +1,10 @@
+{
+  "releaseBase": "4ce117852cf730b5f172693d88904fbb22e58d57",
+  "v017FilesIdenticalToMain": 65,
+  "developHeadUnchanged": "3d16e48b11d34200ad41f1e5525867e68d2341a3",
+  "featureHeadUnchanged": "955f6e8fb85692e274a3ba919486dacf6440433c",
+  "mainHeadUnchanged": "a69dff678ccd92ea3cc5cc58767ff13e7179f630",
+  "stagedForbiddenPaths": 0,
+  "operationalDatabasesOrKeysOpened": false,
+  "azureSshConnections": 0
+}

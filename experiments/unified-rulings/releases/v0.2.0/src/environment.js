@@ -37,7 +37,7 @@ function assertEnvironment(root) {
     const target = path.join(location, name);
     if (fs.existsSync(target) && !inside(location, canonical(target))) throw new Error('Runtime directories must not link outside the v0.2.0 data root.');
   }
-  for (const name of ['operations.sqlite','operations.sqlite-wal','operations.sqlite-shm','storage.key','manager.key','session.key']) {
+  for (const name of ['operations.sqlite','operations.sqlite-wal','operations.sqlite-shm','storage.key','manager.key','session.key','sessions.key']) {
     const file=path.join(location,'private',name);let info;
     try { info=fs.lstatSync(file); } catch(error) { if(error.code==='ENOENT')continue;throw error; }
     if(info.isSymbolicLink()||!info.isFile()||info.nlink>1)throw new Error('Sensitive runtime files must not be links or shared files.');

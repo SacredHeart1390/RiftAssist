@@ -7,6 +7,7 @@ const { searchCards } = require('./cards');
 const { AsyncLocalStorage } = require('node:async_hooks');
 const { APP_ROOT, DATA_ROOT } = require('./paths');
 const environment = require('./environment').assertEnvironment(DATA_ROOT);
+if (environment === 'staging') require('./staging-policy').stagingPorts(DATA_ROOT);
 const { fetchExternal: fetch, providerMode } = require('./external-services');
 const { createKnowledgeProvider } = require('./knowledge-provider');
 const retrieval = require('./retrieval');

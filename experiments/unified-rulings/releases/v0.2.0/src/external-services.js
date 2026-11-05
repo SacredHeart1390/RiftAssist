@@ -25,4 +25,4 @@ async function fetchExternal(url, options) {
   if (mode === 'live' && process.env.RIFTASSI_ALLOW_EXTERNAL_CALLS === 'true') return globalThis.fetch(url, options);
   throw new Error('External service mode is not explicitly enabled.');
 }
-module.exports = { fetchExternal, providerMode };
+module.exports = { fetchExternal, providerMode, mockFetch };

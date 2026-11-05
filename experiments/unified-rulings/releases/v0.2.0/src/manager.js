@@ -16,6 +16,8 @@ const PORT = Number(process.env.MANAGER_PORT || 3200), APP_PORT = Number(process
 if (![PORT, APP_PORT].every((port) => Number.isInteger(port) && port >= 1024 && port <= 65535) || PORT === APP_PORT) throw new Error('Invalid or conflicting local ports.');
 // Only the owned Control Center development child supplies ephemeral worker ports.
 let controlCenterWorkerPorts;
+let isolatedStagingPorts;
+if (environment === 'staging') isolatedStagingPorts = require('./staging-policy').stagingPorts(ROOT);
 if (process.env.RIFTASSI_CC_WORKER_PORTS) {
   if (environment !== 'development') throw new Error('Control Center worker ports require development mode.');
   const markerFile = path.join(ROOT, '.riftassist-control-center.json');
@@ -34,8 +36,8 @@ const origins = new Set([`http://127.0.0.1:${PORT}`, `http://localhost:${PORT}`]
 const hosts = new Set([...origins].map((item) => new URL(item).host));
 let app = null, tunnel = null, changing = false, appReady = false, errorMessage = '', tunnelState = 'off';
 let activeOrigin = '';
-const appHost = createAppHost({ root: ROOT, port: APP_PORT, ...(controlCenterWorkerPorts ? { workerPorts: controlCenterWorkerPorts } : {}), onFailure: message => { app = null; appReady = false; errorMessage = message; } });
-const config = () => store.setting('hosting', { provider: 'none', publicOrigin: '' });
+const appHost = createAppHost({ root: ROOT, port: APP_PORT, staging: Boolean(isolatedStagingPorts), ...(isolatedStagingPorts ? { workerPorts: isolatedStagingPorts.slice(2) } : controlCenterWorkerPorts ? { workerPorts: controlCenterWorkerPorts } : {}), onFailure: message => { app = null; appReady = false; errorMessage = message; } });
+const config = () => isolatedStagingPorts ? { provider: 'none', publicOrigin: require('./staging-policy').stagingOrigin(ROOT) } : store.setting('hosting', { provider: 'none', publicOrigin: '' });
 function ensureSourceMonitor() {
   // v0.2.0 imports are explicit. Never launch legacy network collectors automatically.
 }
@@ -253,6 +255,7 @@ server.listen(PORT, '127.0.0.1', () => {
   ensureSourceMonitor();
   console.log(`리프트어시 관리 화면: http://127.0.0.1:${PORT}/ (프로젝트의 실행 파일로 인증)`);
   if (controlCenterWorkerPorts && process.send) process.send({ type: 'control-center-manager-ready', port: PORT, rootId: path.basename(ROOT) });
+  if (isolatedStagingPorts && process.send) process.send({ type: 'isolated-staging-manager-ready', port: PORT });
 });
 const cleanup = setInterval(() => { try { store.purge(); } catch { /* next run retries */ } }, 3600000);
 cleanup.unref();

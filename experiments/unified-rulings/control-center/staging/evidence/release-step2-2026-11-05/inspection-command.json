@@ -1,0 +1,10 @@
+{
+  "program": "staging/inspect-azure.py",
+  "sha256": "6f6901c6a97b5188f0014553b8e518430b59570e46c406c3a5f757ab7902901d",
+  "azureExecuted": false,
+  "requiresSeparateReadOnlyApproval": true,
+  "httpsMethod": "GET",
+  "httpsPath": "/",
+  "healthEndpointAvoidedBecauseItAllocatesSessions": true,
+  "noDatabaseOrKeyContentReads": true
+}

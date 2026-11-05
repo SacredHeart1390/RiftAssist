@@ -162,6 +162,7 @@ try
     await PhaseSixProofs.RunAsync(suite, backend!, temporary);
     await PhaseSevenProofs.RunAsync(suite, backend!, temporary);
     await PhaseEightProofs.RunAsync(suite, backend!, temporary);
+    await StagingProofs.RunAsync(suite, temporary);
     }
 }
 finally

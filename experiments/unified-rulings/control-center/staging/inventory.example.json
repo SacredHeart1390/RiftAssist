@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "siteId": "00000000-0000-0000-0000-000000000000",
+  "environment": "isolated-staging",
+  "installationApproved": false,
+  "root": "/var/lib/riftassist-staging/00000000-0000-0000-0000-000000000000",
+  "node": "/usr/bin/node",
+  "caddy": "/usr/bin/caddy",
+  "appUid": 0,
+  "appGid": 0,
+  "approvedCommit": "",
+  "approvedPackageDigest": "",
+  "ports": {"a": [3400,3401,3411,3412], "b": [3500,3501,3511,3512]},
+  "proxyPort": 3443,
+  "proxyAdminPort": 3444
+}

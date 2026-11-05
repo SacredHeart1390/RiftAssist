@@ -81,7 +81,7 @@
     <TextBlock Text="웹사이트 HTTPS 주소" Margin="0,8,0,0"/><TextBox x:Name="OriginInput" MaxLength="2048" Text="{Binding HttpsOrigin, UpdateSourceTrigger=PropertyChanged}" ToolTip="예: https://example.invalid (경로 없이 입력)"/>
     <WrapPanel Margin="0,12"><Button x:Name="SaveSshSettings" Content="설정 저장" Click="SaveSettings_Click"/><Button Content="저장된 설정 불러오기" Click="ReloadSettings_Click"/></WrapPanel>
     <TextBlock x:Name="SettingsMessage" Text="{Binding SettingsFeedback}" TextWrapping="Wrap" Margin="4"/>
-    <Expander Header="연결 도움말" Margin="4,14"><TextBlock Text="Windows OpenSSH Client와 기존 키/agent를 준비하세요. 호스트 키는 사전에 확인한 known_hosts로 검증하며 미등록·변경 키는 거절합니다. HTTPS /api/health와 앱 기본 3001을 조회합니다. 설정 저장은 연결을 시작하지 않습니다. 별도 관리자 읽기 연결은 SSH 표준입출력으로 원격 loopback 3100의 기존 로그인/API를 사용합니다. 운영 변경은 차단합니다." TextWrapping="Wrap"/></Expander>
+    <Expander Header="연결 도움말" Margin="4,14"><TextBlock Text="Windows OpenSSH Client와 기존 키/agent를 준비하세요. 호스트 키는 사전에 확인한 known_hosts로 검증하며 미등록·변경 키는 거절합니다. HTTPS /와 앱 기본 3001의 정적 페이지를 조회합니다. 신규 세션을 만드는 /api/health는 호출하지 않습니다. 설정 저장은 연결을 시작하지 않습니다. 별도 관리자 읽기 연결은 SSH 표준입출력으로 원격 loopback 3100의 기존 로그인/API를 사용합니다. 운영 변경은 차단합니다." TextWrapping="Wrap"/></Expander>
    </StackPanel></ScrollViewer></TabItem>
   </TabControl></Grid>
  </DockPanel>

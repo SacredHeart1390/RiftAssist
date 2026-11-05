@@ -18,4 +18,5 @@
   </ItemGroup>
 <ItemGroup><Content Include="../../deployment/*.cjs"><Link>deployment/%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><Content Include="../../deployment-manifest.json"><Link>deployment-manifest.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>
 <ItemGroup><Resource Include="Assets/RiftAssist.ico" /></ItemGroup>
+<ItemGroup><Content Include="../../staging/*.cjs;../../staging/*.py;../../staging/*.json"><Link>staging/%(Filename)%(Extension)</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><Content Include="../../staging-manifest.json"><Link>staging-manifest.json</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content><Content Include="../../../releases/v0.2.0/src/external-services.js"><Link>staging/mock-services.cjs</Link><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></Content></ItemGroup>
 </Project>

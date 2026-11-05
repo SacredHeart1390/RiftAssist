@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: staging inventory refuses production roots unapproved installs reused ports and mutable target fields
+ok 1 - staging inventory refuses production roots unapproved installs reused ports and mutable target fields
+  ---
+  duration_ms: 37.577686
+  type: 'test'
+  ...
+# Subtest: fixed site and exact installed package commit/hash are required before backup or transfer
+ok 2 - fixed site and exact installed package commit/hash are required before backup or transfer
+  ---
+  duration_ms: 21.731494
+  type: 'test'
+  ...
+# Subtest: server-signed exact approval stale version and expiry prevent forged old plans
+ok 3 - server-signed exact approval stale version and expiry prevent forged old plans
+  ---
+  duration_ms: 14.518044
+  type: 'test'
+  ...
+# Subtest: staging deployment uses actual SQLite snapshot encryption and independent restore while source/key remain intact
+ok 4 - staging deployment uses actual SQLite snapshot encryption and independent restore while source/key remain intact
+  ---
+  duration_ms: 184.378613
+  type: 'test'
+  ...
+# Subtest: failure preflight keeps the known-good v017 route database key and release
+ok 5 - failure preflight keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 26.487119
+  type: 'test'
+  ...
+# Subtest: failure start keeps the known-good v017 route database key and release
+ok 6 - failure start keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 87.823167
+  type: 'test'
+  ...
+# Subtest: failure health keeps the known-good v017 route database key and release
+ok 7 - failure health keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 89.948492
+  type: 'test'
+  ...
+# Subtest: failure route keeps the known-good v017 route database key and release
+ok 8 - failure route keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 145.384595
+  type: 'test'
+  ...
+# Subtest: failure post-health keeps the known-good v017 route database key and release
+ok 9 - failure post-health keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 132.263275
+  type: 'test'
+  ...
+# Subtest: backup key or cipher corruption prevents activation and does not restore over source data
+ok 10 - backup key or cipher corruption prevents activation and does not restore over source data
+  ---
+  duration_ms: 173.681166
+  type: 'test'
+  ...
+# Subtest: rollback is separately signed routing approval and preserves new v020 reports and both keys
+ok 11 - rollback is separately signed routing approval and preserves new v020 reports and both keys
+  ---
+  duration_ms: 230.537823
+  type: 'test'
+  ...
+# Subtest: duplicate operation or uncertain retry never repeats transfer backup service start or routing
+ok 12 - duplicate operation or uncertain retry never repeats transfer backup service start or routing
+  ---
+  duration_ms: 141.201568
+  type: 'test'
+  ...
+# Subtest: unfinished operation and stale owner are visible without replay or automatic unlock
+ok 13 - unfinished operation and stale owner are visible without replay or automatic unlock
+  ---
+  duration_ms: 11.968544
+  type: 'test'
+  ...
+# Subtest: path links pinned config changes and port contention fail before touching any source records
+ok 14 - path links pinned config changes and port contention fail before touching any source records
+  ---
+  duration_ms: 11.629663
+  type: 'test'
+  ...
+# Subtest: backup failure retains the baseline and cannot create or start a candidate
+ok 15 - backup failure retains the baseline and cannot create or start a candidate
+  ---
+  duration_ms: 26.056743
+  type: 'test'
+  ...
+# Subtest: online backup captures committed WAL rows without checkpoint or source restore
+ok 16 - online backup captures committed WAL rows without checkpoint or source restore
+  ---
+  duration_ms: 109.766096
+  type: 'test'
+  ...
+# Subtest: failed rollback clearly requires recovery and retains candidate records
+ok 17 - failed rollback clearly requires recovery and retains candidate records
+  ---
+  duration_ms: 130.744713
+  type: 'test'
+  ...
+# Subtest: a concurrent request cannot acquire the deployment lock or repeat a pending write
+ok 18 - a concurrent request cannot acquire the deployment lock or repeat a pending write
+  ---
+  duration_ms: 120.860349
+  type: 'test'
+  ...
+# Subtest: port contention rejects preflight on real loopback before transfer or service start
+ok 19 - port contention rejects preflight on real loopback before transfer or service start
+  ---
+  duration_ms: 13.801107
+  type: 'test'
+  ...
+# Subtest: Caddy validation and reload failure recover the previous scoped include by CAS
+ok 20 - Caddy validation and reload failure recover the previous scoped include by CAS
+  ---
+  duration_ms: 13.07815
+  type: 'test'
+  ...
+# Subtest: audit corruption prevents later requests and source records remain untouched
+ok 21 - audit corruption prevents later requests and source records remain untouched
+  ---
+  duration_ms: 131.382814
+  type: 'test'
+  ...
+# Subtest: server unit templates contain only site-specific units and a protected isolated runtime
+ok 22 - server unit templates contain only site-specific units and a protected isolated runtime
+  ---
+  duration_ms: 13.801637
+  type: 'test'
+  ...
+# Subtest: a standalone staging marker cannot open an arbitrary existing data root or bypass its namespace
+ok 23 - a standalone staging marker cannot open an arbitrary existing data root or bypass its namespace
+  ---
+  duration_ms: 45.828374
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1989.495968

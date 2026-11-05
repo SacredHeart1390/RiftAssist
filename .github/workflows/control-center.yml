@@ -37,11 +37,15 @@ jobs:
           "RIFTASSIST_CC_LOOPBACK_PYTHON=$((Get-Command python).Source)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Check public protocol vectors and backend payload
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           node scripts/protocol-vectors.cjs
           node scripts/backend-manifest.cjs
           python scripts/verify-icon.py
           node scripts/deployment-manifest.cjs
+          node scripts/staging-manifest.cjs
+          python staging/inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
+          node --test --test-reporter=tap staging/staging.test.cjs
       - name: Run Windows synthetic application and legacy compatibility contracts
         run: |
           npm --prefix ../tests test
@@ -152,12 +156,26 @@ jobs:
         run: |
           python -m pip install paramiko==4.0.0
           node scripts/deployment-manifest.cjs
+          node scripts/staging-manifest.cjs
+          python staging/inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
+          node --test --test-reporter=tap staging/staging.test.cjs
       - name: Ubuntu POSIX script and OpenSSH loopback regressions (no Azure)
         run: |
           RIFTASSIST_CC_LOOPBACK_PYTHON="$(command -v python)" dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- ../releases/v0.2.0 "$(command -v node)" "$RUNNER_TEMP/control-center-ubuntu-proof.json"
+      - name: Real isolated app systemd Caddy HTTPS backup and routing rollback (synthetic data only)
+        run: |
+          sudo apt-get update -qq
+          mkdir -p "$RUNNER_TEMP/riftassist-caddy-package"
+          cd "$RUNNER_TEMP/riftassist-caddy-package"
+          apt-get download caddy
+          dpkg-deb -x ./*.deb unpacked
+          cd "$GITHUB_WORKSPACE/experiments/unified-rulings/control-center"
+          sudo env RIFTASSIST_TEST_CADDY="$RUNNER_TEMP/riftassist-caddy-package/unpacked/usr/bin/caddy" RIFTASSIST_STAGING_PROOF="$RUNNER_TEMP/control-center-real-staging-proof.json" "$(command -v node)" staging/integration.cjs --systemd
       - uses: actions/upload-artifact@v4
         with:
           name: RiftAssist-ControlCenter-ubuntu-ssh-proof
-          path: ${{ runner.temp }}/control-center-ubuntu-proof.json
+          path: |
+            ${{ runner.temp }}/control-center-ubuntu-proof.json
+            ${{ runner.temp }}/control-center-real-staging-proof.json
           if-no-files-found: error

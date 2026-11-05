@@ -9,16 +9,18 @@ function headersWithoutHop(headers) {
   const excluded = new Set([...HOP, ...String(headers.connection || '').split(',').map(s => s.trim().toLowerCase())]);
   return Object.fromEntries(Object.entries(headers).filter(([key]) => !excluded.has(key.toLowerCase())));
 }
-function releasePath(root, id) {
+function releasePath(root, id, staging = false) {
   if (!safeId(id)) throw new Error('올바르지 않은 앱 버전입니다.');
   const parent = fs.realpathSync(path.join(root, 'releases'));
   const folder = fs.realpathSync(path.join(parent, id));
   if (!folder.startsWith(parent + path.sep) || !fs.statSync(path.join(folder, 'src', 'server.js')).isFile()) throw new Error('앱 버전 경로를 확인하세요.');
   const manifest = JSON.parse(fs.readFileSync(path.join(folder, 'app-release.json'), 'utf8'));
-  if (manifest.releaseId !== id || manifest.dataSchema !== 2 || manifest.ready !== true) throw new Error('준비가 완료되지 않은 앱 버전입니다.');
+  const isolated = staging && require('./environment').assertEnvironment(root) === 'staging';
+  if (isolated) require('./staging-policy').stagingPorts(root);
+  if (manifest.releaseId !== id || manifest.dataSchema !== 2 || (isolated ? manifest.ready !== false : manifest.ready !== true)) throw new Error('준비가 완료되지 않은 앱 버전입니다.');
   return folder;
 }
-function createAppHost({ root, port = 3201, workerPorts = [3211, 3212], onFailure = () => {} }) {
+function createAppHost({ root, port = 3201, workerPorts = [3211, 3212], staging = false, onFailure = () => {} }) {
   let gateway = null, current = null, origin = '', operation = false;
   const workers = new Set();
   const drainMs = 90000;
@@ -67,7 +69,7 @@ function createAppHost({ root, port = 3201, workerPorts = [3211, 3212], onFailur
     gateway = server;
   }
   async function startWorker(releaseId) {
-    const directory = releasePath(root, releaseId);
+    const directory = releasePath(root, releaseId, staging);
     const availablePort = workerPorts.find(p => ![...workers].some(w => w.port === p));
     if (!availablePort) throw new Error('이전 버전의 응답이 끝난 뒤 다시 시도해 주세요.');
     fs.mkdirSync(path.join(root, 'tmp'), { recursive: true });
