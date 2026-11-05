@@ -8,7 +8,7 @@
 
 Windows 고정 SSH stdin 어댑터와 별도 설치 활성화/프로필·site·inventory/개별 승인, root-owned 고정 broker endpoint, source commit·package pin, 서버 HMAC 계획/기한·CAS·lock·중복/미확정 조회·hash-chain audit을 추가했다. 파일/셸/unit/port를 임의 요청하는 프로토콜은 없다. production 환경은 지원하지 않는다. 기존 WPF 배포 화면은 합성 전용이며 실제 SSH는 자동 활성화하지 않는다.
 
-실제 Node manager/gateway/worker를 새 DB/키/knowledge 루트에서 ready=false로 기동하고, 별도 Caddy loopback HTTPS/검증 CA·사전 config 검증·include CAS/reload·실패 복귀를 구현했다. 기존 운영 Caddy/443/riftassist.service/3100은 대상이 아니다. 새 broker 설치·systemd unit 등록·권한 부여는 실행하지 않았다.
+실제 Node manager/gateway/worker를 새 DB/키/knowledge 루트에서 ready=false로 기동하고, 별도 Caddy loopback HTTPS/검증 CA·사전 config 검증·include CAS/reload·실패 복귀를 구현했다. 기존 운영 Caddy/443/riftassist.service/3100은 대상이 아니다. 실제 Azure/운영 서버에 broker 설치·systemd unit 등록·권한 부여는 실행하지 않았다.
 
 SQLite online backup·AES 봉인·별도 프로세스 integrity/암호문 복호화 probe와 storage/sessions/manager key 보존은 서버 내부 private에 한정한다. rollback은 이전 app/route 선택이며 새 DB/키/제보를 덮거나 지우지 않는다. 실제 v017의 /api/health가 세션 수를 갱신하는 점을 확인해 조사와 기존 일반 SSH 상태 조회는 정적 /로 바꿨다. 운영 v017 코드는 그대로다.
 
@@ -27,3 +27,10 @@ Native Ubuntu systemd 및 Windows GUI/패키지 CI는 이 branch의 exact SHA Ac
 [AZURE-INSPECTION.md](../../../AZURE-INSPECTION.md)의 읽기 조사만 먼저 승인받아야 한다. 실제 unit/Caddy/DataRoot·노드 runtime와 별도 staging host/UID·ports·hash를 확인한 뒤 고정 설치안/서버 보안 검토·설치 승인·staging 시험 승인이 각각 필요하다. 현 구성에는 라이브 production writer, 운영 Caddy 전환, 실제 사용자 DB migration/restore, 지속 slot 회전/기록 병합이 없다. crash stale lock은 자동 삭제하지 않는다.
 
 기존 카드/이미지/번역 이용 권한, 현재 규칙·사례 및 AI 정확성, 개인정보 운영자 연락처/법적 정보·처리 근거, 오프호스트 backup/key 보관·RPO/RTO, 실제 도메인 브라우저/PWA 전환·복귀를 확정해야 한다. API 승인/CI·합성 성공만으로 배포하지 않으며 source/candidate ready=false를 유지한다.
+
+
+## 첫 원격 CI와 결과 파일 권한 보완
+
+f41a335의 Windows CI는 WPF/ZIP/아이콘/EXE 실행·종료·앱 회귀와 C# 소스280/패키지279를 통과했다. Ubuntu CI는 C#274와 **actualSystemd=true인 실제 systemd·앱·Caddy TLS·백업/복원·v017 라우팅 복귀/신규 합성 제보 보존**을 통과했으나, root 전용0600 집계 JSON을 runner가 artifact로 읽지 못해 마지막 upload 단계가 EACCES로 실패했다. 데이터·키·백업 파일은 변경하지 않고, 키/행/경로를 담지 않는 집계 proof 파일 하나만 새 파일(wx)/0644로 발행하도록 보완한다. 기존 파일을 덮지 않는다. 최종 exact SHA의 CI는 branch Actions에서 확인한다.
+
+[첫 Windows/Ubuntu 실행](https://github.com/SacredHeart1390/RiftAssist/actions/runs/41955695260). 실제 Azure에 접속하거나 운영 자료를 사용한 검증이 아니다. 새 Windows10 실기기/실제 설치는 여전히 후속이다.

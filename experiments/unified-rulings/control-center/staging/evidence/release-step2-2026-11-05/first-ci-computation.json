@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "f41a335d1b099371dc79edc89865fd4652290c22",
+  "runId": 41955695260,
+  "windows": {
+    "sourceCSharpPassed": 280,
+    "packagedCSharpPassed": 279,
+    "nativeWpfAndExe": true,
+    "conclusion": "success"
+  },
+  "ubuntu": {
+    "cSharpPassed": 274,
+    "actualSystemd": true,
+    "actualSelectedApp": true,
+    "actualCaddyTls": true,
+    "encryptedRestore": true,
+    "routingRollbackAndNewReportPreservation": true,
+    "jobConclusion": "failure",
+    "failureStage": "artifact upload: metadata JSON permission EACCES"
+  },
+  "productionConnections": 0,
+  "paidApiCalls": 0
+}

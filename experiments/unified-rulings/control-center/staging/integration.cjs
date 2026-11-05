@@ -43,7 +43,8 @@ async function main({systemd=false}={}) {
     const status=await broker.handle(q('status'));
     const candidateReady=P.readJSON(path.join(config.root,'data/b/releases/v0.2.0/app-release.json')).ready;if(candidateReady!==false)throw Error('Candidate readiness was changed.');
     const result={protocol:'riftassist-staging-proof-1',actualSelectedV020App:true,legacyV017:'actual-server-source/isolated-direct-worker-fixture',actualCaddy:true,tlsVerified:true,actualSystemd:systemd,encryptedRestoreVerified:backup.verified,newReportsPreserved:reports,rolledBack:rolled.state==='rolled-back',sourceV020Ready:candidateReady,productionConnections:0,paidApiCalls:0,finalRoute:status.observed.slot};
-    if(process.env.RIFTASSIST_STAGING_PROOF)fs.writeFileSync(process.env.RIFTASSIST_STAGING_PROOF,JSON.stringify(result,null,2)+'\n',{mode:0o600});console.log(JSON.stringify(result));return result;
+    // Publishable aggregate proof only: no rows, keys, cookies, paths or backup bytes.
+    if(process.env.RIFTASSIST_STAGING_PROOF){fs.writeFileSync(process.env.RIFTASSIST_STAGING_PROOF,JSON.stringify(result,null,2)+'\n',{flag:'wx',mode:0o644});fs.chmodSync(process.env.RIFTASSIST_STAGING_PROOF,0o644);}console.log(JSON.stringify(result));return result;
   } catch(error){if(controller?.children)error.message+=' '+JSON.stringify(Object.fromEntries([...controller.children].map(([slot,p])=>[slot,{exit:p.exitCode,signal:p.signalCode}])));throw error;
   } finally {
     if(controller)for(const slot of ['proxy','b','a'])try{await controller.command('stop',slot);}catch{}
