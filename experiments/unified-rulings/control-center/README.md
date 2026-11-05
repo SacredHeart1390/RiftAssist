@@ -1,3 +1,5 @@
+> 최신 출시 방향: [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 교체**를 적용합니다. 별도 VM/병렬 운영은 필수가 아닙니다. 실제 Azure 변경·배포는 별도 승인 전 차단합니다.
+
 > 2026-11-05 출시 준비 2단계: [Ubuntu staging 구조·미구현/활성화 조건](STAGING.md), [승인 대기 Azure 읽기 조사 명령](AZURE-INSPECTION.md). 실제 Azure 설치/접속/배포는 실행하지 않았고, 기존 배포 화면은 합성 전용입니다.
 
 # RiftAssist Control Center — Windows 관리 MVP

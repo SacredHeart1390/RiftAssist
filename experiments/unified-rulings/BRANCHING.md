@@ -1,3 +1,5 @@
+> 후속 출시 준비: [기존 VM 단일 서비스 교체](control-center/REPLACEMENT.md). 아래 초기 staging 계획보다 이 문서가 우선합니다. 별도 VM이나 상시 병렬 운영은 필수 조건이 아닙니다.
+
 # v0.2.0 출시 준비 / v0.3.0 개발 분리
 
 2026-11-04 Asia/Seoul. 기준 커밋 `955f6e8fb85692e274a3ba919486dacf6440433c`(8차 완료 문서 포함). 사용자가 Windows10 합성 v020 배포·암호화 백업 복원·v017 routing rollback/기존 데이터 보존 성공을 보고했다. 이는 실제 Azure 배포·실제 선택 앱 staging 기동 검증이 아니다.

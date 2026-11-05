@@ -1,5 +1,7 @@
 param([Parameter(Mandatory=$true)][string]$PackageDirectory,[Parameter(Mandatory=$true)][string]$ArchivePath,[Parameter(Mandatory=$true)][string]$ExtractDirectory,[Parameter(Mandatory=$true)][string]$ReportPath)
 $ErrorActionPreference='Stop'
+if (!(Test-Path -LiteralPath (Join-Path $PackageDirectory 'REPLACEMENT.md'))) { throw 'Single-service replacement procedure is missing.' }
+if (!(Test-Path -LiteralPath (Join-Path $PackageDirectory 'LEGACY-BASELINE.md'))) { throw 'Trusted legacy reference audit is missing.' }
 if ((Test-Path -LiteralPath $ArchivePath) -or (Test-Path -LiteralPath $ExtractDirectory)) { throw 'Choose fresh disposable archive/extraction paths.' }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [IO.Compression.ZipFile]::CreateFromDirectory($PackageDirectory,$ArchivePath,[IO.Compression.CompressionLevel]::Optimal,$false)

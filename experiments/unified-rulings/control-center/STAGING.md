@@ -1,5 +1,7 @@
 # v0.2.0 라이브 출시 준비 2단계 — 제한된 Ubuntu staging
 
+> 후속 방향 변경: 실제 출시는 [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 중지/교체** 방식이다. 아래 별도 staging 토폴로지는 격리 시험의 기술 기록이며 추가 VM이나 병렬 운영의 필수 조건이 아니다.
+
 2026-11-05 Asia/Seoul · **release/v0.2.0만 변경**. develop/v0.3.0, feature/riot-api-v0.2, Draft PR #1의 head/base, 라이브 v017은 보존한다.
 
 이 코드는 실제 SSH·systemd·Caddy 어댑터를 포함하지만 Azure에는 설치/접속하지 않았다. 브로커는 `isolated-staging`만 허용하고 production 대상은 없다. 기존 WPF 배포 화면은 합성 전용을 유지하며 실제 staging 연결을 자동 활성화하지 않는다. 소스와 후보 worker의 v020 manifest는 **ready=false 그대로**다. 이 문서는 운영 배포 승인서가 아니다.

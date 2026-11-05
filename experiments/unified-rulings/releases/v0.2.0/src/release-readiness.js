@@ -1,6 +1,6 @@
 // A review report, never a deployment permit. Evidence is caller supplied and must be audited.
 const SHA=/^[a-f0-9]{40}$/;
-const gates=['rights','privacy','topology','caddy','broker','dataIsolation','backupRestore','rollback'];
+const gates=['rights','privacy','topology','autostart','caddy','broker','dataIsolation','backupRestore','rollback','resources'];
 function assessRelease({manifest,evidence={},commit}={}){
  const blockers=[];
  if(!manifest||manifest.releaseId!=='v0.2.0'||manifest.ready!==true)blockers.push('release-not-ready');
@@ -10,8 +10,9 @@ function assessRelease({manifest,evidence={},commit}={}){
  if(!['licensed-legacy','riot-official'].includes(evidence.sourceMode))blockers.push('data-source-mode-unconfirmed');
  if(evidence.sourceMode==='riot-official'&&!attested(evidence.riotApi))blockers.push('riot-api-approval-not-verified');
  for(const name of gates)if(!attested(evidence[name]))blockers.push(name+'-not-verified');
- if(!attested(evidence.staging)||evidence.staging.environment!=='isolated-staging'||evidence.staging.actualApplicationStarted!==true||evidence.staging.mockOnly!==false)blockers.push('actual-application-staging-required');
+ if(!attested(evidence.rehearsal)||!['isolated-ci','isolated-local'].includes(evidence.rehearsal.environment)||evidence.rehearsal.mode!=='single-instance-replacement'||evidence.rehearsal.actualApplicationStarted!==true||evidence.rehearsal.maxConcurrentVersions!==1)blockers.push('single-instance-application-rehearsal-required');
  return {schemaVersion:1,releaseFamily:'v0.2.0',commit:SHA.test(commit||'')?commit:null,
+   deploymentMode:'single-instance-replacement',additionalVmRequired:false,maxConcurrentVersions:1,
    reviewComplete:blockers.length===0,blockers,authorizedToDeploy:false,
    note:'Attestations are not independently verified here. Separate reviewed installation and explicit deployment approval remain mandatory.'};
 }

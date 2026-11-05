@@ -1,0 +1,340 @@
+TAP version 13
+# Subtest: replacement defaults block production before touching any service or source data
+ok 1 - replacement defaults block production before touching any service or source data
+  ---
+  duration_ms: 92.43258
+  type: 'test'
+  ...
+# Subtest: same ports are reused with stop then offline backup restore then exactly one new version
+ok 2 - same ports are reused with stop then offline backup restore then exactly one new version
+  ---
+  duration_ms: 192.746629
+  type: 'test'
+  ...
+# Subtest: rollback retains new encrypted reports keys and database without overwriting old data
+ok 3 - rollback retains new encrypted reports keys and database without overwriting old data
+  ---
+  duration_ms: 390.173692
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: preflight
+ok 4 - single-instance failure is observed and preserves data: preflight
+  ---
+  duration_ms: 54.628836
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: stop
+ok 5 - single-instance failure is observed and preserves data: stop
+  ---
+  duration_ms: 51.681599
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: quiescence
+ok 6 - single-instance failure is observed and preserves data: quiescence
+  ---
+  duration_ms: 43.553735
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: budget
+ok 7 - single-instance failure is observed and preserves data: budget
+  ---
+  duration_ms: 56.085593
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: snapshot
+ok 8 - single-instance failure is observed and preserves data: snapshot
+  ---
+  duration_ms: 48.320164
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: copy
+ok 9 - single-instance failure is observed and preserves data: copy
+  ---
+  duration_ms: 140.008722
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: select
+ok 10 - single-instance failure is observed and preserves data: select
+  ---
+  duration_ms: 144.097747
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: health
+ok 11 - single-instance failure is observed and preserves data: health
+  ---
+  duration_ms: 157.768454
+  type: 'test'
+  ...
+# Subtest: single-instance failure is observed and preserves data: caddy
+ok 12 - single-instance failure is observed and preserves data: caddy
+  ---
+  duration_ms: 131.404818
+  type: 'test'
+  ...
+# Subtest: backup failure never activates or changes source data
+ok 13 - backup failure never activates or changes source data
+  ---
+  duration_ms: 41.31349
+  type: 'test'
+  ...
+# Subtest: unknown schema is rejected on restored copy without migration or source UPDATE
+ok 14 - unknown schema is rejected on restored copy without migration or source UPDATE
+  ---
+  duration_ms: 135.489162
+  type: 'test'
+  ...
+# Subtest: missing rights or unknown autostart block planning without downtime
+ok 15 - missing rights or unknown autostart block planning without downtime
+  ---
+  duration_ms: 43.504745
+  type: 'test'
+  ...
+# Subtest: tampered expired and wrong inventory approvals cannot stop the service
+ok 16 - tampered expired and wrong inventory approvals cannot stop the service
+  ---
+  duration_ms: 30.416654
+  type: 'test'
+  ...
+# Subtest: idempotent replay returns original operation without new backup start or writes
+ok 17 - idempotent replay returns original operation without new backup start or writes
+  ---
+  duration_ms: 125.000206
+  type: 'test'
+  ...
+# Subtest: crash lock and interrupted history survive reopen with no automatic restart or cleanup
+ok 18 - crash lock and interrupted history survive reopen with no automatic restart or cleanup
+  ---
+  duration_ms: 29.183369
+  type: 'test'
+  ...
+# Subtest: candidate code drift and Caddy drift block planning without rewriting Caddy
+ok 19 - candidate code drift and Caddy drift block planning without rewriting Caddy
+  ---
+  duration_ms: 36.255096
+  type: 'test'
+  ...
+# Subtest: a retained failed candidate cannot be overwritten on a second deployment
+ok 20 - a retained failed candidate cannot be overwritten on a second deployment
+  ---
+  duration_ms: 135.055149
+  type: 'test'
+  ...
+# Subtest: fixed broker accepts no command or path and production launcher cannot accept a rehearsal descriptor
+ok 21 - fixed broker accepts no command or path and production launcher cannot accept a rehearsal descriptor
+  ---
+  duration_ms: 1.097445
+  type: 'test'
+  ...
+# Subtest: single-service Ubuntu override uses unchanged upstream ports and restores only its owned file
+ok 22 - single-service Ubuntu override uses unchanged upstream ports and restores only its owned file
+  ---
+  duration_ms: 29.089701
+  type: 'test'
+  ...
+# Subtest: Ubuntu compensation rejects a third party override instead of overwriting it
+ok 23 - Ubuntu compensation rejects a third party override instead of overwriting it
+  ---
+  duration_ms: 28.515596
+  type: 'test'
+  ...
+# Subtest: rollback health failure returns to the new version while retaining both datasets
+ok 24 - rollback health failure returns to the new version while retaining both datasets
+  ---
+  duration_ms: 253.468531
+  type: 'test'
+  ...
+# Subtest: recovery failure blocks further planning and does not auto-delete the candidate
+ok 25 - recovery failure blocks further planning and does not auto-delete the candidate
+  ---
+  duration_ms: 131.408662
+  type: 'test'
+  ...
+# Subtest: audit tampering blocks reopening and all followup writes
+ok 26 - audit tampering blocks reopening and all followup writes
+  ---
+  duration_ms: 138.38199
+  type: 'test'
+  ...
+# Subtest: legacy rollback pin uses actual reviewed bytes and detects drift without modifying the stale manifest
+ok 27 - legacy rollback pin uses actual reviewed bytes and detects drift without modifying the stale manifest
+  ---
+  duration_ms: 46.506423
+  type: 'test'
+  ...
+# Subtest: production copy refuses unknown or local-only hosting instead of silently changing settings
+ok 28 - production copy refuses unknown or local-only hosting instead of silently changing settings
+  ---
+  duration_ms: 114.537563
+  type: 'test'
+  ...
+# Subtest: only precomputed exact LF or CRLF checkout hashes of the immutable baseline are accepted
+ok 29 - only precomputed exact LF or CRLF checkout hashes of the immutable baseline are accepted
+  ---
+  duration_ms: 44.847041
+  type: 'test'
+  ...
+# Subtest: mixed line endings or a one-byte edit cannot be approved by changing the observed fingerprint
+ok 30 - mixed line endings or a one-byte edit cannot be approved by changing the observed fingerprint
+  ---
+  duration_ms: 48.301965
+  type: 'test'
+  ...
+# Subtest: missing and unexpected executable files block the trusted rollback reference
+ok 31 - missing and unexpected executable files block the trusted rollback reference
+  ---
+  duration_ms: 48.938162
+  type: 'test'
+  ...
+# Subtest: unknown or tampered baseline bytes fail closed without falling back to observed code
+ok 32 - unknown or tampered baseline bytes fail closed without falling back to observed code
+  ---
+  duration_ms: 0.517842
+  type: 'test'
+  ...
+# Subtest: staging inventory refuses production roots unapproved installs reused ports and mutable target fields
+ok 33 - staging inventory refuses production roots unapproved installs reused ports and mutable target fields
+  ---
+  duration_ms: 32.533469
+  type: 'test'
+  ...
+# Subtest: fixed site and exact installed package commit/hash are required before backup or transfer
+ok 34 - fixed site and exact installed package commit/hash are required before backup or transfer
+  ---
+  duration_ms: 24.024737
+  type: 'test'
+  ...
+# Subtest: server-signed exact approval stale version and expiry prevent forged old plans
+ok 35 - server-signed exact approval stale version and expiry prevent forged old plans
+  ---
+  duration_ms: 14.852999
+  type: 'test'
+  ...
+# Subtest: staging deployment uses actual SQLite snapshot encryption and independent restore while source/key remain intact
+ok 36 - staging deployment uses actual SQLite snapshot encryption and independent restore while source/key remain intact
+  ---
+  duration_ms: 205.279367
+  type: 'test'
+  ...
+# Subtest: failure preflight keeps the known-good v017 route database key and release
+ok 37 - failure preflight keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 28.17159
+  type: 'test'
+  ...
+# Subtest: failure start keeps the known-good v017 route database key and release
+ok 38 - failure start keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 95.477744
+  type: 'test'
+  ...
+# Subtest: failure health keeps the known-good v017 route database key and release
+ok 39 - failure health keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 91.782645
+  type: 'test'
+  ...
+# Subtest: failure route keeps the known-good v017 route database key and release
+ok 40 - failure route keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 133.559186
+  type: 'test'
+  ...
+# Subtest: failure post-health keeps the known-good v017 route database key and release
+ok 41 - failure post-health keeps the known-good v017 route database key and release
+  ---
+  duration_ms: 146.858049
+  type: 'test'
+  ...
+# Subtest: backup key or cipher corruption prevents activation and does not restore over source data
+ok 42 - backup key or cipher corruption prevents activation and does not restore over source data
+  ---
+  duration_ms: 189.538381
+  type: 'test'
+  ...
+# Subtest: rollback is separately signed routing approval and preserves new v020 reports and both keys
+ok 43 - rollback is separately signed routing approval and preserves new v020 reports and both keys
+  ---
+  duration_ms: 268.5523
+  type: 'test'
+  ...
+# Subtest: duplicate operation or uncertain retry never repeats transfer backup service start or routing
+ok 44 - duplicate operation or uncertain retry never repeats transfer backup service start or routing
+  ---
+  duration_ms: 173.553978
+  type: 'test'
+  ...
+# Subtest: unfinished operation and stale owner are visible without replay or automatic unlock
+ok 45 - unfinished operation and stale owner are visible without replay or automatic unlock
+  ---
+  duration_ms: 15.236573
+  type: 'test'
+  ...
+# Subtest: path links pinned config changes and port contention fail before touching any source records
+ok 46 - path links pinned config changes and port contention fail before touching any source records
+  ---
+  duration_ms: 13.276369
+  type: 'test'
+  ...
+# Subtest: backup failure retains the baseline and cannot create or start a candidate
+ok 47 - backup failure retains the baseline and cannot create or start a candidate
+  ---
+  duration_ms: 30.556289
+  type: 'test'
+  ...
+# Subtest: online backup captures committed WAL rows without checkpoint or source restore
+ok 48 - online backup captures committed WAL rows without checkpoint or source restore
+  ---
+  duration_ms: 125.450679
+  type: 'test'
+  ...
+# Subtest: failed rollback clearly requires recovery and retains candidate records
+ok 49 - failed rollback clearly requires recovery and retains candidate records
+  ---
+  duration_ms: 147.572255
+  type: 'test'
+  ...
+# Subtest: a concurrent request cannot acquire the deployment lock or repeat a pending write
+ok 50 - a concurrent request cannot acquire the deployment lock or repeat a pending write
+  ---
+  duration_ms: 144.755109
+  type: 'test'
+  ...
+# Subtest: port contention rejects preflight on real loopback before transfer or service start
+ok 51 - port contention rejects preflight on real loopback before transfer or service start
+  ---
+  duration_ms: 15.297003
+  type: 'test'
+  ...
+# Subtest: Caddy validation and reload failure recover the previous scoped include by CAS
+ok 52 - Caddy validation and reload failure recover the previous scoped include by CAS
+  ---
+  duration_ms: 12.805766
+  type: 'test'
+  ...
+# Subtest: audit corruption prevents later requests and source records remain untouched
+ok 53 - audit corruption prevents later requests and source records remain untouched
+  ---
+  duration_ms: 139.511984
+  type: 'test'
+  ...
+# Subtest: server unit templates contain only site-specific units and a protected isolated runtime
+ok 54 - server unit templates contain only site-specific units and a protected isolated runtime
+  ---
+  duration_ms: 17.327971
+  type: 'test'
+  ...
+# Subtest: a standalone staging marker cannot open an arbitrary existing data root or bypass its namespace
+ok 55 - a standalone staging marker cannot open an arbitrary existing data root or bypass its namespace
+  ---
+  duration_ms: 61.536863
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5240.222741

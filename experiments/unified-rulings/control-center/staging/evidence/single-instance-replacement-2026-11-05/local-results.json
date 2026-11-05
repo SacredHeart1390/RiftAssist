@@ -1,0 +1,25 @@
+{
+  "baseCommit": "14019c926b6938d9188a2f8fd4e04388258671b5",
+  "counts": {
+    "node": 195,
+    "compatibility": 6,
+    "legacy": 11,
+    "browser": 13,
+    "deployment": 29,
+    "csharp": 281,
+    "approvedInspectionSynthetic": 7,
+    "followupInspectionSynthetic": 4,
+    "legacySourceInspectionSynthetic": 4
+  },
+  "total": 550,
+  "finalSharedStagingAndReplacementChecks": 55,
+  "wpfCrossBuild": {
+    "errors": 0,
+    "warnings": 0,
+    "nativeGuiExecutedLocally": false
+  },
+  "azureConnections": 0,
+  "paidApiCalls": 0,
+  "operationalDataUsed": false,
+  "replacement32IncludedInNode195": true
+}

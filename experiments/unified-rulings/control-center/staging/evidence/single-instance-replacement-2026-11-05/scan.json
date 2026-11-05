@@ -1,0 +1,13 @@
+{
+  "scope": "staged",
+  "mainSha": "a69dff678ccd92ea3cc5cc58767ff13e7179f630",
+  "branch": "release/v0.2.0",
+  "files": 47,
+  "bytes": 374513,
+  "textFiles": 47,
+  "syntheticTestScreenshots": 0,
+  "findings": [],
+  "findingCount": 0,
+  "syntheticCredentialAllowlist": "Four exact, nonfunctional test strings only",
+  "limitations": "Scoped path/pattern inspection only; no guarantee of all-secret absence or historical blob removal."
+}

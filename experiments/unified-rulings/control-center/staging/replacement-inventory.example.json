@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "siteId": "00000000-0000-0000-0000-000000000000",
+  "mode": "single-instance-replacement",
+  "installationApproved": false,
+  "inventoryVerified": false,
+  "root": "/var/lib/riftassist-replacement/00000000-0000-0000-0000-000000000000",
+  "node": "/usr/bin/node",
+  "service": "riftassist.service",
+  "unitFile": "",
+  "unitHash": "",
+  "caddyFile": "/etc/caddy/Caddyfile",
+  "caddyHash": "",
+  "overrideFile": "/etc/systemd/system/riftassist.service.d/90-riftassist-release.conf",
+  "oldData": "/home/azureuser/RiftAssist/experiments/unified-rulings",
+  "oldCode": "/home/azureuser/RiftAssist/experiments/unified-rulings/releases/v0.1.7",
+  "candidateData": "/var/lib/riftassist-replacement/00000000-0000-0000-0000-000000000000/data/v0.2.0",
+  "candidateCode": "/var/lib/riftassist-replacement/00000000-0000-0000-0000-000000000000/releases/v0.2.0",
+  "candidateHash": "",
+  "commit": "",
+  "schemaHash": "",
+  "ports": [
+    3100,
+    3001,
+    3011,
+    3012
+  ],
+  "uid": null,
+  "gid": null,
+  "launcher": "/var/lib/riftassist-replacement/00000000-0000-0000-0000-000000000000/tools/replacement-launch.cjs",
+  "knowledgeHash": "",
+  "evidence": {
+    "topology": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "autostart": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "rights": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "privacy": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "backupPolicy": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "resources": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "configuration": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "compatibility": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    },
+    "rehearsal": {
+      "status": "unverified",
+      "commit": "",
+      "reference": ""
+    }
+  },
+  "oldCodeHash": ""
+}

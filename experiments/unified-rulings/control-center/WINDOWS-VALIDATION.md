@@ -1,3 +1,5 @@
+> 최신 출시 방향: [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 교체**를 적용합니다. 별도 VM/병렬 운영은 필수가 아닙니다. 실제 Azure 변경·배포는 별도 승인 전 차단합니다.
+
 > 출시 준비 2단계는 `STAGING.md`와 `AZURE-INSPECTION.md`를 먼저 확인하세요. 실제 SSH staging 실행은 설치 확인·활성화·개별 쓰기 승인이 필요하며 기본 비활성입니다.
 
 # RiftAssist Control Center — 검증 및 Windows 후속 확인

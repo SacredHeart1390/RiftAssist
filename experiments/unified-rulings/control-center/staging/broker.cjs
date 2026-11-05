@@ -102,4 +102,4 @@ function createBroker(rawConfig,io,{fixture=false,now=()=>Date.now()}={}) {
   }
   return{handle,config,status};
 }
-module.exports={createBroker};
+module.exports={createBroker,audit};

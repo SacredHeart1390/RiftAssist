@@ -1,0 +1,129 @@
+'use strict';
+// Single-instance stop/backup/replace/recover engine. No Azure invocation or installation here.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const P=require('./protocol.cjs'),V=require('./vault.cjs');
+const PROTOCOL='riftassist-replacement-1',terminal=new Set(['completed','rolled-back','failed-stable']);
+function config(raw,{rehearsal=false}={}) {
+  P.exact(raw,['schemaVersion','siteId','mode','installationApproved','inventoryVerified','root','node','service','unitFile','unitHash','caddyFile','caddyHash','overrideFile','oldData','oldCode','oldCodeHash','candidateData','candidateCode','candidateHash','commit','schemaHash','ports','uid','gid','launcher','knowledgeHash','evidence']);
+  if(raw.schemaVersion!==1||raw.mode!=='single-instance-replacement'||!P.uuid(raw.siteId)||raw.installationApproved!==true||raw.inventoryVerified!==true)P.fail('inventory-not-approved');
+  if(!/^[a-f0-9]{40}$/.test(raw.commit)||!['unitHash','caddyHash','oldCodeHash','candidateHash','schemaHash','knowledgeHash'].every(k=>P.sha(raw[k])))P.fail('inventory');
+  for(const name of ['root','node','unitFile','caddyFile','overrideFile','oldData','oldCode','candidateData','candidateCode','launcher']){
+    if(typeof raw[name]!=='string'||!path.isAbsolute(raw[name])||/[\r\n\0"\\%$]/.test(raw[name])||raw[name].includes(' '))P.fail('inventory-path');P.noLinks(raw[name]);
+  }
+  if(raw.root===raw.oldData||raw.oldData.startsWith(raw.root+path.sep)||raw.root.startsWith(raw.oldData+path.sep))P.fail('data-overlap');
+  if((!rehearsal&&(raw.candidateData!==path.join(raw.root,'data','v0.2.0')||raw.candidateCode!==path.join(raw.root,'releases','v0.2.0')))||raw.launcher!==path.join(raw.root,'tools','replacement-launch.cjs'))P.fail('inventory-path');
+  if(!Array.isArray(raw.ports)||raw.ports.length!==4||new Set(raw.ports).size!==4||raw.ports.some(p=>!Number.isInteger(p)||p<1024||p>65535))P.fail('ports');
+  if(![raw.uid,raw.gid].every(v=>Number.isInteger(v)&&v>=0))P.fail('inventory');
+  if(rehearsal){
+    const os=require('node:os'),temp=fs.realpathSync(os.tmpdir());
+    if(!['root','oldData','oldCode','candidateData','candidateCode','unitFile','caddyFile','overrideFile'].every(k=>raw[k].startsWith(temp+path.sep))||!/^riftassist-replacement-test-[a-f0-9-]{36}\.service$/.test(raw.service))P.fail('rehearsal-scope');
+  } else {
+    const observedData='/home/azureuser/RiftAssist/experiments/unified-rulings';
+    if(raw.root!=='/var/lib/riftassist-replacement/'+raw.siteId||raw.node!=='/usr/bin/node'||raw.oldData!==observedData||raw.oldCode!==observedData+'/releases/v0.1.7'||raw.service!=='riftassist.service'||raw.overrideFile!=='/etc/systemd/system/riftassist.service.d/90-riftassist-release.conf'||raw.unitFile!=='/etc/systemd/system/riftassist.service'||raw.caddyFile!=='/etc/caddy/Caddyfile'||raw.ports.join(',')!=='3100,3001,3011,3012'||raw.uid===0)P.fail('verified-topology-required');
+  }
+  return Object.freeze({...raw,rehearsal,maxDbBytes:16*1024*1024,inventoryHash:P.digest(raw)});
+}
+function owner(c){const o=P.readJSON(P.within(c.root,'owner.json'),4096);if(o.purpose!=='single-instance-replacement'||o.siteId!==c.siteId||o.inventoryHash!==c.inventoryHash)P.fail('owner');}
+// Installer-only, no remote RPC; never overwrites any existing installation/data.
+function initialize(c){
+  if(fs.existsSync(c.root))P.fail('exists');fs.mkdirSync(c.root,{recursive:true,mode:0o755});fs.chmodSync(c.root,0o755);
+  for(const name of ['private','operations','backups','data','releases','tools']){const d=P.within(c.root,name),mode=['data','releases','tools'].includes(name)?0o755:0o700;fs.mkdirSync(d,{mode});fs.chmodSync(d,mode);}
+  P.atomic(P.within(c.root,'owner.json'),{purpose:'single-instance-replacement',siteId:c.siteId,inventoryHash:c.inventoryHash},0o644);
+  fs.writeFileSync(P.within(c.root,'private','vault.key'),crypto.randomBytes(32),{flag:'wx',mode:0o600});
+  P.atomic(P.within(c.root,'state.json'),{generation:1,version:'v0.1.7'});
+}
+function schemaHash(db){return P.digest(db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' ORDER BY type,name").all());}
+function readArchive(c,id){
+  if(!P.uuid(id))P.fail('backup');const meta=P.readJSON(P.within(c.root,'backups',id+'.json')),sealed=fs.readFileSync(P.within(c.root,'backups',id+'.sealed'));
+  if(P.hash(sealed)!==meta.sha256)P.fail('backup-integrity');const key=fs.readFileSync(P.within(c.root,'private','vault.key'));let bytes;
+  try{bytes=V.open(sealed,key);return JSON.parse(bytes);}finally{key.fill(0);bytes?.fill(0);}
+}
+async function cloneBackup(c,id){
+  await V.verifyBackup(c,id);const archived=readArchive(c,id);if(archived.id!==id||archived.slot!=='a')P.fail('backup');
+  const privateRoot=path.join(c.candidateData,'private');P.noLinks(privateRoot);if(fs.existsSync(privateRoot))P.fail('retained-data');
+  fs.mkdirSync(privateRoot,{mode:0o700});let bytes=Buffer.from(archived.database,'base64');
+  const write=(name,value)=>{const fd=fs.openSync(path.join(privateRoot,name),'wx',0o600);try{fs.writeFileSync(fd,value);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}};
+  write('operations.sqlite',bytes);bytes.fill(0);
+  for(const [name,value]of Object.entries(archived.keys)){
+    if(!['storage.key','manager.key','sessions.key','session.key'].includes(name))P.fail('backup-key');bytes=Buffer.from(value,'base64');write(name,bytes);bytes.fill(0);
+  }
+  const db=new(require('node:sqlite').DatabaseSync)(path.join(privateRoot,'operations.sqlite'));
+  try {
+    if(schemaHash(db)!==c.schemaHash)P.fail('schema-unverified');
+    // Only the independent copy is adapted; there is no schema migration or source UPDATE.
+    const hosting=db.prepare("SELECT value FROM settings WHERE name='hosting'").get();
+    if(hosting&&!['none','external'].includes(JSON.parse(hosting.value).provider))P.fail('hosting-incompatible');
+    if(!c.rehearsal&&(!hosting||JSON.parse(hosting.value).provider!=='external'||JSON.parse(hosting.value).publicOrigin!=='https://riftassistant.app'))P.fail('public-origin-unverified');
+    db.prepare("INSERT INTO settings(name,value) VALUES ('appRelease',?) ON CONFLICT(name) DO UPDATE SET value=excluded.value").run(JSON.stringify('v0.2.0'));
+    if(schemaHash(db)!==c.schemaHash)P.fail('schema-changed');
+  } finally {db.close();}
+  if(process.platform!=='win32'){const fd=fs.openSync(privateRoot,'r');try{fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
+  return{sourceUnchanged:true,schemaUnchanged:true,settingsPreserved:true,releasePointerAdjusted:true};
+}
+function codeReceipt(folder,version='v0.2.0'){
+  const m=P.readJSON(path.join(folder,'app-release.json')),files={};
+  for(const [name,sha]of Object.entries(m.hashes||{}).filter(([name])=>/^(src|public|manager-ui|dev-fixtures)\//.test(name))){
+    if(name.split('/').some(p=>['..','.','private','node_modules'].includes(p))||!P.sha(sha))P.fail('release-path');
+    const file=P.within(folder,name);P.noLinks(file,true);if(P.hash(fs.readFileSync(file))!==sha)P.fail('release-integrity');files[name]=sha;
+  }
+  const required=['src/server.js','src/manager.js','src/operations-store.js',...(version==='v0.2.0'?['src/environment.js']:[])];
+  if(!['v0.1.7','v0.2.0'].includes(version)||Object.keys(files).length<20||!required.every(n=>files[n])||m.releaseId!==version||m.dataSchema!==2)P.fail('release-incomplete');
+  return{manifest:m,hash:P.digest({manifest:P.hash(fs.readFileSync(path.join(folder,'app-release.json'))),files})};
+}
+function legacyReceipt(folder){return require('./legacy-v017.cjs').receipt(folder);}
+
+function gates(c){
+  owner(c);const blockers=[],r=codeReceipt(c.candidateCode);if(r.hash!==c.candidateHash)blockers.push('candidate-drift');
+  if(!c.rehearsal)try{if(legacyReceipt(c.oldCode).hash!==c.oldCodeHash)blockers.push('rollback-reference-drift');}catch{blockers.push('rollback-reference-unverified');}
+  for(const [file,digest]of [[c.unitFile,c.unitHash],[c.caddyFile,c.caddyHash]]){P.noLinks(file,true);if(P.hash(fs.readFileSync(file))!==digest)blockers.push('configuration-drift');}
+  const e=c.evidence||{},attested=v=>v?.status==='verified'&&v.commit===c.commit&&typeof v.reference==='string'&&v.reference.length>=3;
+  for(const name of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal'])if(!attested(e[name]))blockers.push(name+'-not-verified');
+  if(!c.rehearsal&&(r.manifest.ready!==true||r.manifest.developmentOnly!==false))blockers.push('release-not-ready');
+  if(e.rehearsal?.mode!=='single-instance-replacement'||e.rehearsal?.actualApplicationStarted!==true||e.rehearsal?.maxConcurrentVersions!==1)blockers.push('single-instance-rehearsal-required');
+  return{mode:'single-instance-replacement',blockers,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
+}
+function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
+  const c=config(raw,{rehearsal});owner(c);const {audit}=require('./broker.cjs');audit(c,null);
+  const file=id=>{if(!P.uuid(id))P.fail('operation-id');return P.within(c.root,'operations',id+'.json');};
+  const current=()=>P.readJSON(P.within(c.root,'state.json'),4096);
+  function signature(body){const k=fs.readFileSync(P.within(c.root,'private','vault.key'));try{return crypto.createHmac('sha256',k).update(PROTOCOL+'\n'+JSON.stringify(body)).digest('hex');}finally{k.fill(0);}}
+  function save(op,state,code){op.state=state;if(code)op.failure=/^[a-z0-9-]{1,60}$/.test(code)?code:'replacement-failed';op.updatedAt=new Date(now()).toISOString();P.atomic(file(op.id),op);
+    audit(c,op.id,state,op.failure||'');
+  }
+  function status(){audit(c,null);const operations=fs.readdirSync(P.within(c.root,'operations')).filter(n=>/^[a-f0-9-]{36}\.json$/.test(n)).map(n=>P.readJSON(P.within(c.root,'operations',n)));return{protocol:PROTOCOL,mode:c.mode,inventoryHash:c.inventoryHash,state:current(),locked:fs.existsSync(P.within(c.root,'operation.lock')),uncertain:operations.some(o=>!terminal.has(o.state)),operations,additionalVmRequired:false};}
+  function plan(kind,id,deploymentId){
+    if(!P.uuid(id)||!['replace','rollback'].includes(kind))P.fail('protocol');if(status().locked||status().uncertain)P.fail('busy');
+    const previous=current();if(kind==='replace'&&previous.version!=='v0.1.7'||kind==='rollback'&&previous.version!=='v0.2.0')P.fail('stale');
+    if(kind==='replace'){if(!gates(c).readyForApprovedExecution)P.fail('release-blocked');if(fs.existsSync(path.join(c.candidateData,'private')))P.fail('retained-data');}
+    else {const old=P.readJSON(file(deploymentId));if(old.kind!=='replace'||old.state!=='completed')P.fail('rollback-target');if(!c.rehearsal&&legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-reference-drift');}
+    const body={protocol:PROTOCOL,id,kind,siteId:c.siteId,inventoryHash:c.inventoryHash,commit:c.commit,previous,expiresAt:now()+600000,deploymentId:deploymentId||null,impact:'brief-outage-single-service',target:kind==='replace'?'v0.2.0':'v0.1.7'};
+    return{...body,digest:signature(body)};
+  }
+  function validate(p,approval){const{digest,...body}=p||{};if(!P.uuid(p?.id)||p.inventoryHash!==c.inventoryHash||p.siteId!==c.siteId||p.protocol!==PROTOCOL||p.commit!==c.commit||digest!==signature(body)||approval!==digest||p.expiresAt<now()||p.expiresAt>now()+600000)P.fail('approval');if(JSON.stringify(current())!==JSON.stringify(p.previous))P.fail('stale');}
+  async function execute(p,approval){
+    if(!P.uuid(p?.id))P.fail('operation-id');if(fs.existsSync(file(p.id))){const old=P.readJSON(file(p.id));if(old.digest!==p.digest)P.fail('idempotency-conflict');return old;}
+    validate(p,approval);let fd;try{fd=fs.openSync(P.within(c.root,'operation.lock'),'wx',0o600);}catch{P.fail('busy');}const lockToken=crypto.randomUUID();fs.writeFileSync(fd,JSON.stringify({pid:process.pid,token:lockToken}));fs.fsyncSync(fd);fs.closeSync(fd);
+    let op={id:p.id,kind:p.kind,digest:p.digest,previous:p.previous,target:p.target,backupId:null},stopped=false,stopConfirmed=false,startAttempted=false,changed=false;
+    try {
+      validate(p,approval);save(op,'preflight');if(p.kind==='replace'&&!gates(c).readyForApprovedExecution)P.fail('release-blocked');await io.preflight(p.previous.version);
+      save(op,'stop-intent');stopped=true;await io.stop();await io.assertStopped();stopConfirmed=true;save(op,'stopped');
+      // Only now, with all app/manager/worker writers stopped, are DB/keys/config read.
+      await io.backupBudget(p.kind==='replace'?c.oldData:c.candidateData);const settings=await io.configurationSnapshot();
+      save(op,'backup');const b=await V.createPrivateBackup(c,p.kind==='replace'?'a':'b',p.id,path.join(p.kind==='replace'?c.oldData:c.candidateData,'private'),{version:p.previous.version,settings});op.backupId=b.id;
+      save(op,'backup-verified');
+      if(p.kind==='replace'){op.clone=await cloneBackup(c,p.id);await io.finalizeCandidate();}
+      else {const d=P.readJSON(file(p.deploymentId));await V.verifyBackup(c,d.backupId);}
+      save(op,'configuration-intent');changed=true;
+      await io.select(p.target,p.kind==='rollback'?readArchive(c,P.readJSON(file(p.deploymentId)).backupId).release.settings:null);save(op,'start-intent');
+      startAttempted=true;await io.start(p.target);save(op,'health');op.health=await io.health(p.target);await io.configurationUnchanged();
+      P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+1,version:p.target});save(op,p.kind==='replace'?'completed':'rolled-back');return op;
+    } catch(error){
+      const failure=error.code||'replacement-failed';
+      // Unknown stop/config/start outcomes are observed first. Never restart while a writer may live.
+      if(stopped)try{save(op,'recovery-stop',failure);if(stopConfirmed&&startAttempted)await io.stop();await io.assertStopped();if(changed)await io.restorePrevious(p.previous.version,op.backupId?readArchive(c,op.backupId).release.settings:null);await io.start(p.previous.version);await io.health(p.previous.version);await io.configurationUnchanged();save(op,'failed-stable',failure);}catch{save(op,'recovery-required',failure);}
+      else save(op,'failed-stable',failure);return op;
+    } finally {const lock=P.within(c.root,'operation.lock');if(P.readJSON(lock,4096).token!==lockToken)P.fail('lock-conflict');fs.unlinkSync(lock);}
+  }
+  return{config:c,status,gates:()=>gates(c),plan,execute,inspect:id=>P.readJSON(file(id))};
+}
+module.exports={PROTOCOL,config,initialize,schemaHash,codeReceipt,legacyReceipt,gates,createReplacement,cloneBackup,readArchive};

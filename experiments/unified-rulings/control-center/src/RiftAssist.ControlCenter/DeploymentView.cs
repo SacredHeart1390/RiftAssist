@@ -11,7 +11,7 @@ public sealed class DeploymentView:UserControl
     public Button Initialize{get;}=new(){Content="새 합성 배포 환경"};
     public Button Deploy{get;}=new(){Content="선택 버전 배포 (합성)"};
     public Button Rollback{get;}=new(){Content="선택 배포의 이전 버전으로 롤백 (합성)"};
-    public Button Production{get;}=new(){Content="Azure 라이브 배포 · 구성/설치/별도 승인 필요",IsEnabled=false};
+    public Button Production{get;}=new(){Content="Azure 단일 서비스 교체 · 미확인 구성/별도 승인 필요",IsEnabled=false};
     public TextBox Result{get;}=new(){IsReadOnly=true,AcceptsReturn=true,TextWrapping=TextWrapping.Wrap,VerticalScrollBarVisibility=ScrollBarVisibility.Auto};
     public TextBlock Status{get;}=new(){Text="실제 라이브: v0.1.7 (사용자 확인). 이번 화면은 격리 합성 대상만 지원합니다. Azure 상태는 기존 서버·운영 화면에서 조회하세요.",TextWrapping=TextWrapping.Wrap};
     public ComboBox Candidates{get;}=new(){MinWidth=400};
@@ -40,7 +40,7 @@ public sealed class DeploymentView:UserControl
         list=candidates??(()=>Remote().ListAsync(CancellationToken.None));package=getPackage??(c=>Remote().PackageAsync(c,CancellationToken.None));
         var root=new DockPanel{Margin=new Thickness(12)};Content=root;var top=new StackPanel();DockPanel.SetDock(top,Dock.Top);root.Children.Add(top);top.Children.Add(Status);
         top.Children.Add(new TextBlock{Text="운영 관리자/systemd 제어와 별도인 배포 대상입니다. 백업·데이터·키는 이 PC의 합성 환경에만 저장하며 GitHub/모델에 전송하지 않습니다.",TextWrapping=TextWrapping.Wrap});
-        top.Children.Add(new TextBlock{Text="Ubuntu staging 전용 어댑터·브로커는 별도 준비되어 있습니다. 이 화면은 합성 전용이며 실제 서버 설치·연결·쓰기 승인은 활성화하지 않습니다.",TextWrapping=TextWrapping.Wrap});
+        top.Children.Add(new TextBlock{Text="현재 VM의 단일 서비스 중지·백업·교체·복귀 엔진을 준비했습니다(REPLACEMENT.md). 별도 VM/병렬 운영은 필수가 아닙니다. 이 화면은 기존 합성 연습용이며 실제 설치·교체 승인은 아직 활성화하지 않습니다.",TextWrapping=TextWrapping.Wrap});
         var setup=new WrapPanel();var refresh=new Button{Content="현재 상태·이력 조회"};refresh.Click+=async(_,_)=>await RefreshAsync();var reconcile=new Button{Content="중단·미확정 작업 재조회"};reconcile.Click+=async(_,_)=>await Run(async c=>Render(await Current().CallAsync("reconcile",new{},c)));setup.Children.Add(Initialize);setup.Children.Add(Labs);setup.Children.Add(refresh);setup.Children.Add(reconcile);top.Children.Add(setup);
         top.Children.Add(new TextBlock{Text="선택 브랜치: "+RepairScope.BaseBranch+" (버전 분리 정책 · 이 화면에서 브랜치 자동 생성 없음)"});
         var select=new WrapPanel();var remote=new Button{Content="GitHub 개발 브랜치·CI 조회"};remote.Click+=async(_,_)=>await Run(async _=>{Candidates.ItemsSource=await list();Candidates.SelectedIndex=0;Status.Text="GitHub 조회 완료 · 아직 배포/패키지 준비 없음";});var prepare=new Button{Content="선택 커밋 패키지 준비"};prepare.Click+=async(_,_)=>await Run(async _=>{if(Candidates.SelectedItem is not DeploymentCandidate c)throw new ControlException("client-deploy-tests");selectedPackage=await package(c);pending=null;Status.Text="개발 코드 패키지 생성·해시 확인 · 합성 배포만 가능";});var local=new Button{Content="번들 코드로 합성 연습"};local.Click+=(_,_)=>{try{selectedPackage=bundled();pending=null;Status.Text="번들 패키지 준비 · GitHub CI 증거/운영 릴리스 아님";}catch(Exception e){Status.Text=UserErrors.Explain(e);}};select.Children.Add(remote);select.Children.Add(Candidates);select.Children.Add(prepare);select.Children.Add(local);top.Children.Add(select);

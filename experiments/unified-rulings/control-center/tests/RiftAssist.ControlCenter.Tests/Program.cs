@@ -163,6 +163,7 @@ try
     await PhaseSevenProofs.RunAsync(suite, backend!, temporary);
     await PhaseEightProofs.RunAsync(suite, backend!, temporary);
     await StagingProofs.RunAsync(suite, temporary);
+    await ReplacementProofs.RunAsync(suite, temporary);
     }
 }
 finally

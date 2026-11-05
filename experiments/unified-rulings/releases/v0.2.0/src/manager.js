@@ -17,6 +17,14 @@ if (![PORT, APP_PORT].every((port) => Number.isInteger(port) && port >= 1024 && 
 // Only the owned Control Center development child supplies ephemeral worker ports.
 let controlCenterWorkerPorts;
 let isolatedStagingPorts;
+let productionWorkerPorts;
+if (process.env.RIFTASSI_PRODUCTION_WORKER_PORTS) {
+  if (environment !== 'production') throw new Error('Production worker ports require production mode.');
+  productionWorkerPorts = JSON.parse(process.env.RIFTASSI_PRODUCTION_WORKER_PORTS);
+  if (!Array.isArray(productionWorkerPorts) || productionWorkerPorts.length !== 2
+      || productionWorkerPorts.some(p => !Number.isInteger(p) || p < 1024 || p > 65535)
+      || new Set([PORT, APP_PORT, ...productionWorkerPorts]).size !== 4) throw new Error('Invalid production worker ports.');
+}
 if (environment === 'staging') isolatedStagingPorts = require('./staging-policy').stagingPorts(ROOT);
 if (process.env.RIFTASSI_CC_WORKER_PORTS) {
   if (environment !== 'development') throw new Error('Control Center worker ports require development mode.');
@@ -36,7 +44,7 @@ const origins = new Set([`http://127.0.0.1:${PORT}`, `http://localhost:${PORT}`]
 const hosts = new Set([...origins].map((item) => new URL(item).host));
 let app = null, tunnel = null, changing = false, appReady = false, errorMessage = '', tunnelState = 'off';
 let activeOrigin = '';
-const appHost = createAppHost({ root: ROOT, port: APP_PORT, staging: Boolean(isolatedStagingPorts), ...(isolatedStagingPorts ? { workerPorts: isolatedStagingPorts.slice(2) } : controlCenterWorkerPorts ? { workerPorts: controlCenterWorkerPorts } : {}), onFailure: message => { app = null; appReady = false; errorMessage = message; } });
+const appHost = createAppHost({ root: ROOT, port: APP_PORT, staging: Boolean(isolatedStagingPorts), ...(isolatedStagingPorts ? { workerPorts: isolatedStagingPorts.slice(2) } : productionWorkerPorts ? { workerPorts: productionWorkerPorts } : controlCenterWorkerPorts ? { workerPorts: controlCenterWorkerPorts } : {}), onFailure: message => { app = null; appReady = false; errorMessage = message; } });
 const config = () => isolatedStagingPorts ? { provider: 'none', publicOrigin: require('./staging-policy').stagingOrigin(ROOT) } : store.setting('hosting', { provider: 'none', publicOrigin: '' });
 function ensureSourceMonitor() {
   // v0.2.0 imports are explicit. Never launch legacy network collectors automatically.

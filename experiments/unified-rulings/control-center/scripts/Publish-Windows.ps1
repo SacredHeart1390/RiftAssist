@@ -45,5 +45,7 @@ Copy-Item -LiteralPath (Join-Path $project 'PHASE6.md') -Destination (Join-Path 
 Copy-Item -LiteralPath (Join-Path $project 'PHASE7.md') -Destination (Join-Path $OutputDirectory 'PHASE7.md')
 Copy-Item -LiteralPath (Join-Path $project 'PHASE8.md') -Destination (Join-Path $OutputDirectory 'PHASE8.md')
 Copy-Item -LiteralPath (Join-Path $project 'STAGING.md') -Destination (Join-Path $OutputDirectory 'STAGING.md')
+Copy-Item -LiteralPath (Join-Path $project 'REPLACEMENT.md') -Destination (Join-Path $OutputDirectory 'REPLACEMENT.md')
+Copy-Item -LiteralPath (Join-Path $project 'LEGACY-BASELINE.md') -Destination (Join-Path $OutputDirectory 'LEGACY-BASELINE.md')
 Copy-Item -LiteralPath (Join-Path $project 'AZURE-INSPECTION.md') -Destination (Join-Path $OutputDirectory 'AZURE-INSPECTION.md')
 Write-Output 'Portable local-development package created. No installation, remote connection or live deployment was performed.'

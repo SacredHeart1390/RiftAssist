@@ -14,8 +14,14 @@ function checked(file, limit=MAX_DB) { noLinks(file,true);if(fs.statSync(file).s
 function unsealCell(value,key) { const b=Buffer.from(value,'base64');if(b.length<28)fail('backup-integrity');const d=crypto.createDecipheriv('aes-256-gcm',key,b.subarray(0,12));d.setAuthTag(b.subarray(12,28));const p=Buffer.concat([d.update(b.subarray(28)),d.final()]);try{JSON.parse(p);}finally{p.fill(0);} }
 async function createBackup(config, slot, operationId) {
   if (!uuid(operationId)||!['a','b'].includes(slot)) fail('backup');
-  const directory=within(config.root,'data',slot,'private'), snapshot=within(config.root,'private',operationId+'.snapshot.sqlite');
-  const source=path.join(directory,'operations.sqlite');noLinks(source,true);if(fs.statSync(source).size>MAX_DB)fail('backup-size');
+  return createPrivateBackup(config,slot,operationId,within(config.root,'data',slot,'private'),readJSON(within(config.root,'releases',slot,'release.json')));
+}
+// Trusted server-side caller only. These paths are never accepted from a remote request.
+async function createPrivateBackup(config,slot,operationId,directory,release) {
+  if(!uuid(operationId)||!['a','b'].includes(slot))fail('backup');noLinks(directory);
+  const snapshot=within(config.root,'private',operationId+'.snapshot.sqlite');
+  const limit=Math.min(config.maxDbBytes||MAX_DB,MAX_DB);
+  const source=path.join(directory,'operations.sqlite');noLinks(source,true);if(fs.statSync(source).size>limit)fail('backup-size');
   const keys={};let plain,wrap;
   const reservation=fs.openSync(snapshot,'wx',0o600);fs.closeSync(reservation);
   try {
@@ -25,10 +31,10 @@ async function createBackup(config, slot, operationId) {
       if (fs.existsSync(file)) {const b=checked(file,128);if(name==='storage.key'?b.length!==32:!(/^[a-f0-9]{64}\s*$/i.test(b.toString())))fail('backup-key');keys[name]=b.toString('base64');b.fill(0);}
     }
     if(!keys['storage.key'])fail('backup-key');
-    plain=Buffer.from(JSON.stringify({schemaVersion:1,id:operationId,slot,database:checked(snapshot).toString('base64'),keys,release:readJSON(within(config.root,'releases',slot,'release.json'))}));
+    plain=Buffer.from(JSON.stringify({schemaVersion:1,id:operationId,slot,database:checked(snapshot,limit).toString('base64'),keys,release}));
     wrap=checked(within(config.root,'private','vault.key'),32);if(wrap.length!==32)fail('backup-key');
     const sealed=seal(plain,wrap), target=within(config.root,'backups',operationId+'.sealed');
-    fs.writeFileSync(target,sealed,{flag:'wx',mode:0o600});
+    const sealedFile=fs.openSync(target,'wx',0o600);try{fs.writeFileSync(sealedFile,sealed);fs.fsyncSync(sealedFile);}finally{fs.closeSync(sealedFile);}
     const metadata={id:operationId,slot,sha256:hash(sealed),bytes:sealed.length,verified:false};
     atomic(within(config.root,'backups',operationId+'.json'),metadata);
     await verifyBackup(config,operationId);metadata.verified=true;atomic(within(config.root,'backups',operationId+'.json'),metadata);return metadata;
@@ -42,7 +48,7 @@ async function verifyBackup(config,id) {
   } catch {fail('backup-integrity');}
 }
 function restoreProbe(root,id) {
-  if(!uuid(id))fail('backup');noLinks(root);const owner=readJSON(within(root,'owner.json'),4096);if(owner.purpose!=='isolated-staging')fail('owner');
+  if(!uuid(id))fail('backup');noLinks(root);const owner=readJSON(within(root,'owner.json'),4096);if(!['isolated-staging','single-instance-replacement'].includes(owner.purpose))fail('owner');
   const metadata=readJSON(within(root,'backups',id+'.json'),4096), bytes=checked(within(root,'backups',id+'.sealed'),MAX_DB*2), key=checked(within(root,'private','vault.key'),32);
   if(metadata.id!==id||hash(bytes)!==metadata.sha256)fail('backup-integrity');
   const plain=open(bytes,key);key.fill(0);let value;
@@ -59,4 +65,4 @@ function restoreProbe(root,id) {
     return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,encryptedRows,keysPreserved:Object.keys(value.keys).length};
   } finally {db?.close();storage?.fill(0);fs.rmSync(probe,{recursive:true,force:true,maxRetries:3});}
 }
-module.exports={createBackup,verifyBackup,restoreProbe,seal,open};
+module.exports={createBackup,createPrivateBackup,verifyBackup,restoreProbe,seal,open};
