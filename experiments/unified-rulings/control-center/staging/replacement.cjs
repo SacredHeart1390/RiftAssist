@@ -8,7 +8,7 @@ function config(raw,{rehearsal=false}={}) {
   if(raw.schemaVersion!==1||raw.mode!=='single-instance-replacement'||!P.uuid(raw.siteId)||raw.installationApproved!==true||raw.inventoryVerified!==true)P.fail('inventory-not-approved');
   if(!/^[a-f0-9]{40}$/.test(raw.commit)||!['unitHash','caddyHash','oldCodeHash','candidateHash','schemaHash','knowledgeHash'].every(k=>P.sha(raw[k])))P.fail('inventory');
   for(const name of ['root','node','unitFile','caddyFile','overrideFile','oldData','oldCode','candidateData','candidateCode','launcher']){
-    if(typeof raw[name]!=='string'||!path.isAbsolute(raw[name])||/[\r\n\0"\\%$]/.test(raw[name])||raw[name].includes(' '))P.fail('inventory-path');P.noLinks(raw[name]);
+    if(typeof raw[name]!=='string'||!path.isAbsolute(raw[name])||/[\r\n\0"]/.test(raw[name])||!rehearsal&&(/[\\%$]/.test(raw[name])||raw[name].includes(' ')))P.fail('inventory-path');P.noLinks(raw[name]);
   }
   if(raw.root===raw.oldData||raw.oldData.startsWith(raw.root+path.sep)||raw.root.startsWith(raw.oldData+path.sep))P.fail('data-overlap');
   if((!rehearsal&&(raw.candidateData!==path.join(raw.root,'data','v0.2.0')||raw.candidateCode!==path.join(raw.root,'releases','v0.2.0')))||raw.launcher!==path.join(raw.root,'tools','replacement-launch.cjs'))P.fail('inventory-path');

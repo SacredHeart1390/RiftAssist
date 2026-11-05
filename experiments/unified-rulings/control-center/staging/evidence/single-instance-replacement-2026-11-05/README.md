@@ -13,3 +13,5 @@ Ubuntu24.04 code-only --network none 컨테이너에서 실제 v017 manager/gate
 실제 Windows10 기기·Azure 전환/유료 AI 품질·실제 운영 자료/원복은 이번 검증에 포함하지 않는다. 운영 autostart 실제 동작·활성 Caddy 경로·unit/drop-ins/KillMode·UID/GID/Node24·DB schema/크기/기타 설정·자료 권리/개인정보·메모리/복구키 보관·실제 도메인/PWA/쿠키 검수가 남는다. ready=false이며 설치/실제 교체는 별도 승인 전 차단한다. 최종 native Windows/Ubuntu 결과는 exact SHA의 Actions에서 확인한다.
 
 재개 후 실제 staged/unstaged 파일과 이전 로그를 보존하고 기준14019c9에서 이어갔다. 원본 Git tree의65파일·manifest64개를 감사해 기존9개와 추가script1개가 모두 정확한 CRLF/LF 차이임을 입증했다. 고정 원본65개의 정확한 hash 목록/기준 파일 hash를 별도로 pin하며 런타임 정규화/관찰값만을 정답으로 삼는 fallback은 없다. [자세한 근거·미확인 생성 commit·추가 승인안](../../../LEGACY-BASELINE.md). 실제 Azure 코드 비교는 아직 실행하지 않아 배포 차단을 유지한다.
+
+8d89bd7 첫 원격 CI: Ubuntu C#281 및 실제 systemd 앱unit1개·동일 포트·Caddy 무변경·백업/복원·구버전 복귀/제보 보존은 통과했다. Windows는 rehearsal 경로 검사가 Windows 구분자까지 거절해 새 suite30/32가 setup에서 실패했다. 운영 Linux 경로 검사는 그대로 두고 temp namespace에 한정한 rehearsal의 native 경로/공백 처리를 보완한다. 최종 exact SHA CI 결과는 Actions에서 별도 확인한다. 실패를 운영 검증 성공으로 표기하지 않는다.

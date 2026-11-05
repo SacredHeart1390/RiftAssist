@@ -2,193 +2,193 @@ TAP version 13
 # Subtest: replacement defaults block production before touching any service or source data
 ok 1 - replacement defaults block production before touching any service or source data
   ---
-  duration_ms: 96.922242
+  duration_ms: 103.487674
   type: 'test'
   ...
 # Subtest: same ports are reused with stop then offline backup restore then exactly one new version
 ok 2 - same ports are reused with stop then offline backup restore then exactly one new version
   ---
-  duration_ms: 235.08905
+  duration_ms: 201.417045
   type: 'test'
   ...
 # Subtest: rollback retains new encrypted reports keys and database without overwriting old data
 ok 3 - rollback retains new encrypted reports keys and database without overwriting old data
   ---
-  duration_ms: 393.560837
+  duration_ms: 295.361872
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: preflight
 ok 4 - single-instance failure is observed and preserves data: preflight
   ---
-  duration_ms: 57.063937
+  duration_ms: 41.428027
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: stop
 ok 5 - single-instance failure is observed and preserves data: stop
   ---
-  duration_ms: 41.822486
+  duration_ms: 35.715787
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: quiescence
 ok 6 - single-instance failure is observed and preserves data: quiescence
   ---
-  duration_ms: 43.647537
+  duration_ms: 46.027506
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: budget
 ok 7 - single-instance failure is observed and preserves data: budget
   ---
-  duration_ms: 44.688001
+  duration_ms: 44.055309
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: snapshot
 ok 8 - single-instance failure is observed and preserves data: snapshot
   ---
-  duration_ms: 44.079725
+  duration_ms: 48.768616
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: copy
 ok 9 - single-instance failure is observed and preserves data: copy
   ---
-  duration_ms: 165.523262
+  duration_ms: 140.477723
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: select
 ok 10 - single-instance failure is observed and preserves data: select
   ---
-  duration_ms: 154.577405
+  duration_ms: 150.802597
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: health
 ok 11 - single-instance failure is observed and preserves data: health
   ---
-  duration_ms: 149.179929
+  duration_ms: 145.877818
   type: 'test'
   ...
 # Subtest: single-instance failure is observed and preserves data: caddy
 ok 12 - single-instance failure is observed and preserves data: caddy
   ---
-  duration_ms: 162.598611
+  duration_ms: 148.348976
   type: 'test'
   ...
 # Subtest: backup failure never activates or changes source data
 ok 13 - backup failure never activates or changes source data
   ---
-  duration_ms: 40.238472
+  duration_ms: 52.225847
   type: 'test'
   ...
 # Subtest: unknown schema is rejected on restored copy without migration or source UPDATE
 ok 14 - unknown schema is rejected on restored copy without migration or source UPDATE
   ---
-  duration_ms: 163.249895
+  duration_ms: 147.848663
   type: 'test'
   ...
 # Subtest: missing rights or unknown autostart block planning without downtime
 ok 15 - missing rights or unknown autostart block planning without downtime
   ---
-  duration_ms: 45.567047
+  duration_ms: 42.146686
   type: 'test'
   ...
 # Subtest: tampered expired and wrong inventory approvals cannot stop the service
 ok 16 - tampered expired and wrong inventory approvals cannot stop the service
   ---
-  duration_ms: 30.011074
+  duration_ms: 31.124839
   type: 'test'
   ...
 # Subtest: idempotent replay returns original operation without new backup start or writes
 ok 17 - idempotent replay returns original operation without new backup start or writes
   ---
-  duration_ms: 142.388145
+  duration_ms: 154.280609
   type: 'test'
   ...
 # Subtest: crash lock and interrupted history survive reopen with no automatic restart or cleanup
 ok 18 - crash lock and interrupted history survive reopen with no automatic restart or cleanup
   ---
-  duration_ms: 29.001215
+  duration_ms: 33.99448
   type: 'test'
   ...
 # Subtest: candidate code drift and Caddy drift block planning without rewriting Caddy
 ok 19 - candidate code drift and Caddy drift block planning without rewriting Caddy
   ---
-  duration_ms: 40.570851
+  duration_ms: 61.323573
   type: 'test'
   ...
 # Subtest: a retained failed candidate cannot be overwritten on a second deployment
 ok 20 - a retained failed candidate cannot be overwritten on a second deployment
   ---
-  duration_ms: 155.166374
+  duration_ms: 140.66176
   type: 'test'
   ...
 # Subtest: fixed broker accepts no command or path and production launcher cannot accept a rehearsal descriptor
 ok 21 - fixed broker accepts no command or path and production launcher cannot accept a rehearsal descriptor
   ---
-  duration_ms: 1.313777
+  duration_ms: 1.565959
   type: 'test'
   ...
 # Subtest: single-service Ubuntu override uses unchanged upstream ports and restores only its owned file
 ok 22 - single-service Ubuntu override uses unchanged upstream ports and restores only its owned file
   ---
-  duration_ms: 29.330936
+  duration_ms: 32.925604
   type: 'test'
   ...
 # Subtest: Ubuntu compensation rejects a third party override instead of overwriting it
 ok 23 - Ubuntu compensation rejects a third party override instead of overwriting it
   ---
-  duration_ms: 32.406266
+  duration_ms: 25.30523
   type: 'test'
   ...
 # Subtest: rollback health failure returns to the new version while retaining both datasets
 ok 24 - rollback health failure returns to the new version while retaining both datasets
   ---
-  duration_ms: 322.684061
+  duration_ms: 261.265994
   type: 'test'
   ...
 # Subtest: recovery failure blocks further planning and does not auto-delete the candidate
 ok 25 - recovery failure blocks further planning and does not auto-delete the candidate
   ---
-  duration_ms: 150.344806
+  duration_ms: 152.08026
   type: 'test'
   ...
 # Subtest: audit tampering blocks reopening and all followup writes
 ok 26 - audit tampering blocks reopening and all followup writes
   ---
-  duration_ms: 170.144701
+  duration_ms: 148.869454
   type: 'test'
   ...
 # Subtest: legacy rollback pin uses actual reviewed bytes and detects drift without modifying the stale manifest
 ok 27 - legacy rollback pin uses actual reviewed bytes and detects drift without modifying the stale manifest
   ---
-  duration_ms: 45.694315
+  duration_ms: 56.669162
   type: 'test'
   ...
 # Subtest: production copy refuses unknown or local-only hosting instead of silently changing settings
 ok 28 - production copy refuses unknown or local-only hosting instead of silently changing settings
   ---
-  duration_ms: 137.74845
+  duration_ms: 137.525287
   type: 'test'
   ...
 # Subtest: only precomputed exact LF or CRLF checkout hashes of the immutable baseline are accepted
 ok 29 - only precomputed exact LF or CRLF checkout hashes of the immutable baseline are accepted
   ---
-  duration_ms: 49.996718
+  duration_ms: 50.6362
   type: 'test'
   ...
 # Subtest: mixed line endings or a one-byte edit cannot be approved by changing the observed fingerprint
 ok 30 - mixed line endings or a one-byte edit cannot be approved by changing the observed fingerprint
   ---
-  duration_ms: 49.539843
+  duration_ms: 54.066886
   type: 'test'
   ...
 # Subtest: missing and unexpected executable files block the trusted rollback reference
 ok 31 - missing and unexpected executable files block the trusted rollback reference
   ---
-  duration_ms: 47.076974
+  duration_ms: 44.828228
   type: 'test'
   ...
 # Subtest: unknown or tampered baseline bytes fail closed without falling back to observed code
 ok 32 - unknown or tampered baseline bytes fail closed without falling back to observed code
   ---
-  duration_ms: 0.662296
+  duration_ms: 0.608127
   type: 'test'
   ...
 1..32
@@ -199,4 +199,4 @@ ok 32 - unknown or tampered baseline bytes fail closed without falling back to o
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 3378.402113
+# duration_ms 3125.579511
