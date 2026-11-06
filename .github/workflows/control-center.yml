@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: '24.22.1'
           package-manager-cache: false
       - uses: actions/setup-dotnet@v5
         with:
@@ -48,6 +48,7 @@ jobs:
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
+          python staging/release-blockers.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
@@ -149,7 +150,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: '24.22.1'
           package-manager-cache: false
       - uses: actions/setup-dotnet@v5
         with:
@@ -167,6 +168,7 @@ jobs:
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
+          python staging/release-blockers.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs

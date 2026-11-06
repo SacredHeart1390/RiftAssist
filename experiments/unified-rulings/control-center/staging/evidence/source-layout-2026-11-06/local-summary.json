@@ -1,0 +1,35 @@
+{
+  "scope": "synthetic-local-only",
+  "branch": "release/v0.2.0",
+  "node": 230,
+  "csharp": 284,
+  "compatibility": 6,
+  "unchangedV017": 11,
+  "browserMobilePwa": 17,
+  "deploymentLab": 29,
+  "python": 27,
+  "totalDistinctChecks": 604,
+  "failed": 0,
+  "wpfCrossBuild": {
+    "errors": 0,
+    "warnings": 0,
+    "nativeWindowsExecutedLocally": false
+  },
+  "azureConnections": 0,
+  "operationalDataAccesses": 0,
+  "paidApiCalls": 0,
+  "additionalProbeRunOnAzure": false,
+  "additionalProbeSha256": "3fce265ce5d45dec329f79f31a4b08122b84bd37bc32240a25f2ce2dfc7c328a",
+  "sourceReady": false,
+  "reportedSourceResult": {
+    "matchedCodeFiles": 65,
+    "referenceVerified": false,
+    "additionalPathsKnown": false
+  },
+  "strictLegacyVerifierChanged": false,
+  "knownSourceBaselineChanged": false,
+  "nodeRuntimesVerified": [
+    "v24.19.0",
+    "v24.22.1"
+  ]
+}

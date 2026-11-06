@@ -1,8 +1,10 @@
+> 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
+
 # v0.2.0 실제 출시 준비 — 기존 VM의 단일 서비스 교체
 
 사용자의 배포 방향 변경을 반영한다. **현재 VM·riftassistant.app·HTTPS·Caddy·3001/3100을 유지하며 한 버전만 실행한다. 별도 VM/상시 병렬 운영/추가 Azure 비용은 필수가 아니다.** 짧은 중단을 허용한다. 이전 STAGING.md는 격리 어댑터의 기술 기록이며 라이브 출시의 필수 토폴로지가 아니다.
 
-`staging/replacement-inventory.example.json`은 확인된 경로/포트와 미확인 필드를 구분한 비활성 예시다. installationApproved/inventoryVerified=false, UID/GID·hash·근거는 미확인으로 남겼으며 승인 flag만 바꿔 실행할 수 없다. 실제 Caddy 활성 경로·unit 파일·runtime가 제안과 다르면 코드/설치안을 수정·재검증해야 한다.
+`staging/replacement-inventory.example.json`은 확인된 경로/포트와 미확인 필드를 구분한 비활성 예시다. installationApproved/inventoryVerified=false, UID/GID1000/1000·Node v24.22.1을 반영했고 hash·근거는 미확인으로 남겼으며 승인 flag만 바꿔 실행할 수 없다. 실제 Caddy 활성 경로·unit 파일·runtime가 제안과 다르면 코드/설치안을 수정·재검증해야 한다.
 
 이 문서는 배포 승인서가 아니다. release/v0.2.0만 변경하고 ready=false를 유지한다. 실제 Azure 접속/변경, 운영 DB·키 접근/복사, 서비스 중지, 설치, 배포는 이번에 실행하지 않는다. 사용자가 제공한 조사 요약만 이용하며 원시 조사 JSON이나 실제 사용자 자료를 저장하지 않는다.
 
@@ -14,7 +16,7 @@ manager가 loopback3100 인증 서버와 loopback3001 gateway를 소유하고, �
 
 SQLite 열린 파일 경로 메타데이터에서 관찰된 DataRoot는 /home/azureuser/RiftAssist/experiments/unified-rulings다. 내용·키를 읽어 확인한 것은 아니다. 기존 루트를 새 앱으로 직접 열거나 덮지 않는다.
 
-Caddy는 active/running/enabled이고 caddy 계정, /usr/bin/caddy, 관찰 파일 /etc/caddy/Caddyfile에 riftassistant.app 및 reverse_proxy 127.0.0.1:3001이 있다. 관찰 SHA256은 8e0555371405aae75914650e0654efb403731a6975901bc529fc46609444fdfd다. **이 파일이 실제 활성 config인지 아직 미확인**이다.443 리스너의 소유 PID도 미확인이다. 이번 방식은 Caddy config·인증서·443을 수정하거나 reload하지 않는다. 같은3001로 새 앱을 시작한다.
+Caddy는 active/running/enabled이고 caddy 계정, /usr/bin/caddy, 관찰 파일 /etc/caddy/Caddyfile에 riftassistant.app 및 reverse_proxy 127.0.0.1:3001이 있다. 관찰 SHA256은 8e0555371405aae75914650e0654efb403731a6975901bc529fc46609444fdfd다. 사용자의 추가 조사로 이 파일이 실제 활성 config임을 확인했다. 위 SHA는 이전 관찰값이므로 현재 hash는 다시 pin해야 한다.443 리스너의 소유 PID도 미확인이다. 이번 방식은 Caddy config·인증서·443을 수정하거나 reload하지 않는다. 같은3001로 새 앱을 시작한다.
 
 riftassist-autostart.service는 enabled/inactive/dead이며 주 서비스에 의존한다. **실제 실행 명령/타이머·소켓·재시작 시 개입 여부는 미확인**이다. 기존 helper를 그대로 실행해도 안전하다고 추정하지 않는다. 배포 어댑터는 helper가 없거나 검토 후 명시적으로 차단됐다는 증거 없이는 중단한다. 자동 mask/disable/삭제를 구현하거나 실행하지 않았다. helper 원문에서 키/쿠키를 출력하지 않는 추가 조사와 helper 조정안의 별도 승인이 필요하다.
 
@@ -56,7 +58,7 @@ operation ID·서명·inventory/SHA·상태 세대가 다른 재요청은 거절
 
 현재 복원 probe/봉인 구현은 메모리에 전체 snapshot을 다루므로 단일 교체 경로는 DB/snapshot16MiB 상한과 작업 직전 MemAvailable >=128MiB+8×DB 크기를 적용한다. 부모/복원 자식이 겹치는 비용을 고려한 보수적 상한이며887MiB에서 실측한 보증은 아니다. 큰 DB나 메모리 부족은 중단하고 streaming/offline 도구 또는 별도 수동 검증을 설계한다. 추가 VM을 자동 생성하지 않는다. 기존 staging 경로의 상한128MiB는 이 단일 교체의 한도로 사용하지 않는다.
 
-현재 차단: autostart 실행/개입 정책, unit/drop-ins·UID/GID·Node24·활성 Caddy 경로, 실제 DB schema/크기·추가 설정/키 목록, 기존 카드·이미지·번역 및 규칙/사례 권한, 개인정보 운영자 연락처/법적 정보·보관/삭제·외부 AI 전송 조건, 실제 workload 메모리, 복구키/백업 보관, 실제 도메인 PWA/쿠키 전환·복귀, 위 결과에 근거한 readiness 결정과 설치/배포 승인이다. ready=true를 자동으로 설정하는 기능은 없다.
+현재 차단: autostart 실행/개입 정책, unit/drop-ins·KillMode/cgroup·현재 설정 hash(UID/GID·Node v24.22.1·Caddy 활성 경로는 확인), 실제 DB schema/크기·추가 설정/키 목록, 기존 카드·이미지·번역 및 규칙/사례 권한, 개인정보 운영자 연락처/법적 정보·보관/삭제·외부 AI 전송 조건, 실제 workload 메모리, 복구키/백업 보관, 실제 도메인 PWA/쿠키 전환·복귀, 위 결과에 근거한 readiness 결정과 설치/배포 승인이다. ready=true를 자동으로 설정하는 기능은 없다.
 
 API 승인 전에도 권한 확인된 규칙 검색·제보·관리·허가 범위 내 카드 검색과 격리 mock 시험을 개발할 수 있다. Riot API 미승인·Riftnaru 이용 권한 미확인은 서로 다른 확인 사항이며 API 승인만으로 기존 자료 이용 권한이 생기지 않는다. 원래자료 보존과 새 버전 공개 제한을 함께 유지한다.
 
@@ -95,7 +97,7 @@ helper가 별도 스크립트/숨겨진 환경 설정을 참조하면 이 조사
 
 ## 두 원문을 한 번에 실행하는 승인 범위
 
-기존 조사(원문inspect-azure.py)의 승인을 확장하지 않는다. 사용자가 a7dbf966의 topology 및 고정65개 소스 hash 검사 원문을 승인했다. 아래 두 가지 읽기 조사만 사용자 PC에서 실행한다. 설치/DB·키 접근/배포 승인으로 확대하지 않는다. 실제 설치·DB/키 접근·변경은 포함하지 않는다. 아직 실제 서버에서 실행하지 않았다.
+기존 조사(원문inspect-azure.py)의 승인을 확장하지 않는다. 사용자가 a7dbf966의 topology 및 고정65개 소스 hash 검사 원문을 승인했다. 아래 두 가지 읽기 조사만 사용자 PC에서 실행한다. 설치/DB·키 접근/배포 승인으로 확대하지 않는다. 실제 설치·DB/키 접근·변경은 포함하지 않는다. 사용자가 실행한 요약 결과를 2026-11-06 반영했으며 원시 JSON은 확보하지 않았다.
 
 ```powershell
 # 최신 검증 Windows ZIP의 최상위에서 실행. 두 hash 모두 먼저 검사한다.

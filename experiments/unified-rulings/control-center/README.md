@@ -1,3 +1,5 @@
+> 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
+
 > 최신 실행 절차: [출시 확인표·승인된 두 조사 한 번에 실행·백업 사전검사·롤백 비용 보호](RELEASE-CHECKLIST.md). 실제 Azure 설치/중지/DB·키 접근/배포는 별도 승인 대상이며 ready=false를 유지합니다.
 
 > 최신 출시 방향: [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 교체**를 적용합니다. 별도 VM/병렬 운영은 필수가 아닙니다. 실제 Azure 변경·배포는 별도 승인 전 차단합니다.

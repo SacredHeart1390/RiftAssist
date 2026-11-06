@@ -1,10 +1,12 @@
+> 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
+
 # v0.2.0 단일 서비스 교체 — 최종 준비 확인표
 
-2026-11-05. release/v0.2.0 전용. **실제 Azure 설치·DB/키 접근·중지·배포 승인이 아니다. ready=false를 유지한다.** 추가 VM 없이 기존 VM/도메인/HTTPS/Caddy/3001/3100에서 앱 한 버전만 실행한다. 사용자 제공 메타데이터 외 운영 정보는 미확인이다.
+2026-11-06 갱신. release/v0.2.0 전용. **실제 Azure 설치·DB/키 접근·중지·배포 승인이 아니다. ready=false를 유지한다.** 추가 VM 없이 기존 VM/도메인/HTTPS/Caddy/3001/3100에서 앱 한 버전만 실행한다. 사용자 제공 메타데이터 외 운영 정보는 미확인이다.
 
-## 1. 지금 실행 가능한 승인된 조사
+## 1. 완료된 기존 읽기 조사 및 새 승인 범위
 
-최신 Windows 패키지를 새 폴더에 해제하고 EXE가 있는 최상위에서 PowerShell을 연다. 아래 하나의 절차는 두 원문을 모두 검증한 뒤 승인된 조사 두 개만 순차 실행한다. 최초 Verify는 SSH 없이 검사한다. 키 내용·환경값·DB·질문/제보·일반 stderr를 읽거나 출력·저장하지 않는다. 실제 SSH 접속 로그와 소량 조회 부하는 생긴다. 프로필의 고정 대상은 azureuser@20.222.152.195, Windows OpenSSH, 기존 known_hosts/riftassistant-key.pem 경로다. 대상이 바뀌었다면 실행하지 않고 절차부터 재검토한다. 보안 정책/실행 정책을 낮추지 않는다.
+기존 두 조사는 사용자 PC에서 완료됐다. 재실행이 필요할 때만 다음 기존 절차를 사용한다. 새 추가 경로/helper 조사는 SOURCE-EXTRAS-AND-AUTOSTART.md의 별도 승인이 필요하다. Windows 패키지를 새 폴더에 해제하고 EXE가 있는 최상위에서 PowerShell을 연다. 아래 하나의 절차는 두 원문을 모두 검증한 뒤 승인된 조사 두 개만 순차 실행한다. 최초 Verify는 SSH 없이 검사한다. 키 내용·환경값·DB·질문/제보·일반 stderr를 읽거나 출력·저장하지 않는다. 실제 SSH 접속 로그와 소량 조회 부하는 생긴다. 프로필의 고정 대상은 azureuser@20.222.152.195, Windows OpenSSH, 기존 known_hosts/riftassistant-key.pem 경로다. 대상이 바뀌었다면 실행하지 않고 절차부터 재검토한다. 보안 정책/실행 정책을 낮추지 않는다.
 
 ```powershell
 # ZIP 최상위. 다운로드한 패키지가 성공한 release/v0.2.0 CI의 것인지 먼저 확인.
@@ -26,9 +28,10 @@
 
 - [ ] main/develop/feature/PR1 보존, release SHA와 Windows/Ubuntu/브라우저 CI 성공 확인.
 - [ ] Azure의65개 v017 소스가 고정 Git 원본과 일치하고 deploymentCodeHash 확보. 원본·manifest 수정 금지.
-- [ ] 실제 unit FragmentPath/drop-ins/ExecStart/WorkingDirectory/UID/GID/KillMode/cgroup/Node 버전 확인. 현재 어댑터는 Node24와 /etc/systemd/system/riftassist.service를 검증한다. 다르면 코드/시험 수정이 먼저다.
+- [x] 사용자 보고 UID/GID1000/1000, Node v24.22.1, Caddy 활성 경로 /etc/caddy/Caddyfile 반영.
+- [ ] 실제 unit FragmentPath/drop-ins/ExecStart/WorkingDirectory/KillMode/cgroup 확인. 현재 어댑터는 승인 inventory의 정확한 Node 버전과 /etc/systemd/system/riftassist.service를 검증한다. 실제 unit 경로가 다르면 코드/시험 수정이 먼저다.
 - [ ] autostart의 시작·재부팅·오류복구 개입 확인. helper 조정·mask가 필요하면 원복안과 별도 승인. 현재 기본 어댑터는 미확인/enabled helper를 차단한다. 단순 mask만으로 v017의 장기 자동복구가 보장되지는 않는다.
-- [ ] Caddy의 실제 활성 경로와 기존 설정 hash·도메인/인증서 확인. Caddy 변경/reload는 교체 작업에 없다.
+- [ ] 현재 Caddy 설정 hash·도메인/인증서 확인. 활성 경로 /etc/caddy/Caddyfile은 확인됐다. Caddy 변경/reload는 교체 작업에 없다.
 - [ ] 추가 DB/외부 설정/필수 키·확장 파일·로그 보존 범위 확인. 현재 구현은 private/operations.sqlite와3개 확인된 키 및 DB 안의 설정/질문/제보/이력, unit/Caddy/owned override를 다룬다. 미확인 파일이 모두 백업된다고 가정하지 않는다.
 - [ ] 승인된 knowledge 후보와 권한 증거, 개인정보 운영자 연락처/법적 정보·보관/삭제·국외 AI 전송 조건 확정. 기존1527개 카드/이미지/번역의 권한을 API 승인으로 대체하지 않는다.
 - [ ] 백업 wrapping key 분리 보관·오프호스트 암호화 보관·접근자·보관기간·복구 담당자·RPO/RTO 확정. 이번 작업에서 실제 키/백업을 생성·복사하지 않는다.

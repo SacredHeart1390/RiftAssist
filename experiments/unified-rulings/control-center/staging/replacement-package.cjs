@@ -1,7 +1,7 @@
 'use strict';
 // Offline, code-only preparation. No SSH, DB, keys, systemd or operational filesystem access.
 const fs=require('node:fs'),path=require('node:path'),P=require('./protocol.cjs'),R=require('./replacement.cjs');
-const modules=['replacement.cjs','replacement-ubuntu.cjs','replacement-launch.cjs','replacement-serve.cjs','protocol.cjs','files.cjs','vault.cjs','restore-probe.cjs','broker.cjs','legacy-v017.cjs','legacy-v017-baseline.json','ubuntu-io.cjs','data-compatibility.cjs'];
+const modules=['replacement.cjs','replacement-ubuntu.cjs','replacement-launch.cjs','replacement-serve.cjs','protocol.cjs','files.cjs','vault.cjs','restore-probe.cjs','broker.cjs','legacy-v017.cjs','legacy-assessment.cjs','legacy-v017-baseline.json','ubuntu-io.cjs','data-compatibility.cjs'];
 function prepare(release,destination,{siteId,commit}){
   if(!P.uuid(siteId)||!(/^[a-f0-9]{40}$/.test(commit||'')))P.fail('package-identity');P.noLinks(destination);if(fs.existsSync(destination))P.fail('exists');
   const receipt=R.codeReceipt(release),root='/var/lib/riftassist-replacement/'+siteId,files={};

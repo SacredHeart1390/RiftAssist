@@ -52,3 +52,6 @@ Write-Output 'Portable local-development package created. No installation, remot
 
 Copy-Item -LiteralPath (Join-Path $project 'scripts/Invoke-ReleasePreparation.ps1') -Destination (Join-Path $OutputDirectory 'Invoke-ReleasePreparation.ps1')
 Copy-Item -LiteralPath (Join-Path $project 'RELEASE-CHECKLIST.md') -Destination (Join-Path $OutputDirectory 'RELEASE-CHECKLIST.md')
+
+Copy-Item -LiteralPath (Join-Path $project 'scripts/Invoke-AdditionalInspection.ps1') -Destination (Join-Path $OutputDirectory 'Invoke-AdditionalInspection.ps1')
+Copy-Item -LiteralPath (Join-Path $project 'SOURCE-EXTRAS-AND-AUTOSTART.md') -Destination (Join-Path $OutputDirectory 'SOURCE-EXTRAS-AND-AUTOSTART.md')

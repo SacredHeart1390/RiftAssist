@@ -36,3 +36,44 @@ test('offline installation package has complete broker and launcher dependencies
   assert.throws(()=>M.prepare(s.c.candidateCode,out,{siteId:s.c.siteId,commit}),/exists/);fs.appendFileSync(path.join(out,'candidate/src/server.js'),'\n// altered');assert.throws(()=>M.verify(out),/package-integrity/);
 }));
 test('offline package verification rejects an extra private or unknown file without exporting its contents',()=>run(async(s)=>{const M=require('./replacement-package.cjs'),out=path.join(s.temporary,'code-only');M.prepare(path.resolve(__dirname,'../../releases/v0.2.0'),out,{siteId:s.c.siteId,commit:'b'.repeat(40)});fs.mkdirSync(path.join(out,'private'));fs.writeFileSync(path.join(out,'private','synthetic-not-a-key'),'synthetic');assert.throws(()=>M.verify(out),/unapproved-code-file/);}));
+
+test('reported Azure identity is documented without turning inventory or release readiness on',()=>{
+  const example=require('./replacement-inventory.example.json'),observed=require('./azure-observations-2026-11-06.json');assert.equal(example.uid,1000);assert.equal(example.gid,1000);assert.equal(example.nodeVersion,'v24.22.1');assert.equal(example.caddyFile,'/etc/caddy/Caddyfile');assert.equal(example.installationApproved,false);assert.equal(example.inventoryVerified,false);assert.equal(observed.legacy.referenceVerified,false);assert.equal(observed.autostart.behaviorVerified,false);assert.equal(observed.authorizedToDeploy,false);
+});
+test('runtime pin is mandatory and changing a minor runtime or identity fails before any service command',()=>run(async(s)=>{
+  const missing={...s.raw};delete missing.nodeVersion;assert.throws(()=>R.config(missing,{rehearsal:true}),/runtime-pin-required/);
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false,uid:1000,gid:1000,nodeVersion:'v24.22.1'});let writes=0;io.run=async()=>{writes++;};io.runtimeIdentity=async()=>({uid:1000,gid:1000,version:'v24.22.1'});await io.assertRuntimeIdentity();io.runtimeIdentity=async()=>({uid:1000,gid:1000,version:'v24.22.2'});await assert.rejects(()=>io.assertRuntimeIdentity(),/runtime-unverified/);io.runtimeIdentity=async()=>({uid:1001,gid:1000,version:'v24.22.1'});await assert.rejects(()=>io.assertRuntimeIdentity(),/service-identity/);assert.equal(writes,0);
+}));
+async function legacyFixture(fn){const s=await fixture({realLegacy:true});try{await fn(s);}finally{s.cleanup();}}
+test('65 matching code files and extra artifacts are separate findings and never a deployment approval',()=>legacyFixture(async s=>{
+  fs.mkdirSync(path.join(s.c.oldCode,'__pycache__'));fs.writeFileSync(path.join(s.c.oldCode,'.DS_Store'),'synthetic');const a=require('./legacy-assessment.cjs').assess(s.c.oldCode);assert.equal(a.baselineCodeFilesMatched,65);assert.equal(a.baselineCodeVerified,true);assert.equal(a.layoutVerified,false);assert.equal(a.deploymentReferenceVerified,false);assert.equal(a.authorizedToDeploy,false);assert.equal(a.verifiedCodeHash,s.c.oldCodeHash);assert.equal(a.additionalPaths.length,2);assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-unexpected-file/);
+  const g=R.gates({...s.c,rehearsal:false});assert.ok(g.blockers.includes('rollback-reference-unverified'));assert.ok(g.blockers.includes('rollback-layout-unreviewed'));assert.equal(g.rollbackSourceAssessment.baselineCodeVerified,true);assert.equal(g.readyForApprovedExecution,false);
+}));
+test('diagnostic never opens extra database key log or nested directory contents and never emits unknown names',()=>legacyFixture(async s=>{
+  const folder=path.join(s.c.oldCode,'private');fs.mkdirSync(folder);const sensitive=path.join(folder,'person-fixture.sqlite');fs.writeFileSync(sensitive,'synthetic-private-content');fs.writeFileSync(path.join(s.c.oldCode,'person-fixture.key'),'synthetic-private-content');const original=fs.readFileSync;fs.readFileSync=function(file,...args){if(typeof file==='string'&&(/person-fixture|\/private\//.test(file)))throw Error('Forbidden content open');return original.call(this,file,...args);};
+  try{const a=require('./legacy-assessment.cjs').assess(s.c.oldCode),json=JSON.stringify(a);assert.equal(a.baselineCodeVerified,true);assert.equal(a.extraContentsRead,false);assert.ok(!json.includes('person-fixture'));assert.ok(!json.includes('synthetic-private-content'));assert.equal(a.additionalPaths.find(x=>x.label==='private').kind,'directory');}finally{fs.readFileSync=original;}
+}));
+test('unexpected public files are flagged as possible exposure even when their names are suppressed',()=>legacyFixture(async s=>{
+  fs.writeFileSync(path.join(s.c.oldCode,'public/person-fixture.json'),'synthetic');const a=require('./legacy-assessment.cjs').assess(s.c.oldCode);assert.equal(a.additionalPaths[0].parent,'public');assert.equal(a.additionalPaths[0].category,'public-exposure-risk');assert.equal(a.additionalPaths[0].label,'redacted');assert.equal(a.deploymentReferenceVerified,false);
+}));
+test('baseline byte tamper remains distinct from harmless-looking generated artifacts',()=>legacyFixture(async s=>{
+  const p=path.join(s.c.oldCode,'src/paths.js'),b=fs.readFileSync(p);b[b.length-2]^=1;fs.writeFileSync(p,b);fs.writeFileSync(path.join(s.c.oldCode,'.DS_Store'),'synthetic');const a=require('./legacy-assessment.cjs').assess(s.c.oldCode);assert.equal(a.baselineCodeFilesMatched,64);assert.equal(a.baselineCodeVerified,false);assert.equal(a.verifiedCodeHash,null);assert.equal(a.deploymentReferenceVerified,false);assert.ok(a.issues.includes('src/paths.js:unverified'));
+}));
+test('assessment refuses to declare a complete layout when the directory budget is exceeded',()=>legacyFixture(async s=>{
+  for(let n=0;n<1002;n++)fs.writeFileSync(path.join(s.c.oldCode,'extra-'+n),'');const a=require('./legacy-assessment.cjs').assess(s.c.oldCode);assert.equal(a.assessmentComplete,false);assert.equal(a.layoutVerified,false);assert.ok(a.additionalPaths.length<=200);assert.equal(a.authorizedToDeploy,false);
+}));
+test('autostart enabled inactive activating queued or child states block service stop without disabling the helper',()=>run(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let writes=0;io.run=async()=>{writes++;return '';};
+  for(const h of [{LoadState:'loaded',UnitFileState:'enabled',ActiveState:'inactive',MainPID:'0',Job:''},{LoadState:'masked',UnitFileState:'masked',ActiveState:'activating',MainPID:'0',Job:''},{LoadState:'masked',UnitFileState:'masked',ActiveState:'inactive',MainPID:'0',Job:'12 start'},{LoadState:'masked',UnitFileState:'masked',ActiveState:'inactive',MainPID:'9',Job:''}]){io.observed=async()=>h;await assert.rejects(()=>io.stop(),/autostart-unresolved/);}
+  assert.equal(writes,0);
+}));
+test('autostart absence and reviewed masked quiescence are accepted only without pending jobs',()=>run(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let commands=[];io.run=async args=>{commands.push(args);return '';};for(const h of [{LoadState:'not-found',ActiveState:'inactive',MainPID:'0',Job:''},{LoadState:'masked',UnitFileState:'masked-runtime',ActiveState:'inactive',MainPID:'0',Job:''}]){io.observed=async()=>h;assert.equal((await io.assertAutostartQuiescent()).quiescent,true);}
+  await io.stop();assert.deepEqual(commands,[['stop',s.c.service]]);assert.ok(!commands.flat().includes('mask'));
+}));
+test('helper state is rechecked at stop and after shutdown rather than relying on an earlier preflight',()=>run(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let current={LoadState:'masked',UnitFileState:'masked',ActiveState:'inactive',MainPID:'0',Job:''},writes=0;io.observed=async()=>current;io.run=async()=>{writes++;return '';};await io.assertAutostartQuiescent();current={...current,UnitFileState:'enabled',LoadState:'loaded'};await assert.rejects(()=>io.stop(),/autostart-unresolved/);await assert.rejects(()=>io.assertStopped(),/autostart-unresolved/);assert.equal(writes,0);
+}));
+test('masked inactive helper still blocks stop if an orphan writer remains in its cgroup',()=>run(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let writes=0,groups=[];io.observed=async()=>({LoadState:'masked',UnitFileState:'masked',ActiveState:'inactive',MainPID:'0',Job:''});io.run=async()=>{writes++;return '';};io.assertEmptyControlGroup=service=>{groups.push(service);P.fail('writers-still-running');};await assert.rejects(()=>io.stop(),/autostart-unresolved/);assert.deepEqual(groups,['riftassist-autostart.service']);assert.equal(writes,0);
+}));

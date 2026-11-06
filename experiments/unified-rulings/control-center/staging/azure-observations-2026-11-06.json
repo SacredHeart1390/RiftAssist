@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "providedOn": "2026-11-06",
+  "timezone": "Asia/Seoul",
+  "source": "user-reported sanitized inspection summary; raw JSON not received",
+  "service": {
+    "name": "riftassist.service",
+    "active": true,
+    "enabled": true,
+    "managerEntryConfirmed": true,
+    "fragmentPath": null,
+    "killMode": null
+  },
+  "identity": {
+    "uid": 1000,
+    "gid": 1000
+  },
+  "node": {
+    "path": "/usr/bin/node",
+    "version": "v24.22.1"
+  },
+  "caddy": {
+    "activeConfigPath": "/etc/caddy/Caddyfile",
+    "currentFileSha256": null
+  },
+  "autostart": {
+    "name": "riftassist-autostart.service",
+    "active": false,
+    "enabled": true,
+    "behaviorVerified": false
+  },
+  "legacy": {
+    "matchedCodeFiles": 65,
+    "reportedCodeHashesAllMatch": true,
+    "referenceVerified": false,
+    "issues": [
+      "unexpected-directory",
+      "unexpected-file"
+    ],
+    "extraPathsKnown": false,
+    "deploymentCodeHash": null
+  },
+  "installationApproved": false,
+  "inventoryVerified": false,
+  "authorizedToDeploy": false
+}

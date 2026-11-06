@@ -1,11 +1,12 @@
 'use strict';
 // Single-instance stop/backup/replace/recover engine. No Azure invocation or installation here.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const P=require('./protocol.cjs'),V=require('./vault.cjs');
+const P=require('./protocol.cjs'),V=require('./vault.cjs'),A=require('./legacy-assessment.cjs');
 const PROTOCOL='riftassist-replacement-1',terminal=new Set(['completed','rolled-back','qualified','failed-stable']);
 function config(raw,{rehearsal=false}={}) {
-  P.exact(raw,['schemaVersion','siteId','mode','installationApproved','inventoryVerified','root','node','service','unitFile','unitHash','caddyFile','caddyHash','overrideFile','oldData','oldCode','oldCodeHash','candidateData','candidateCode','candidateHash','commit','schemaHash','ports','uid','gid','launcher','knowledgeHash','evidence']);
+  P.exact(raw,['schemaVersion','siteId','mode','installationApproved','inventoryVerified','root','node','nodeVersion','service','unitFile','unitHash','caddyFile','caddyHash','overrideFile','oldData','oldCode','oldCodeHash','candidateData','candidateCode','candidateHash','commit','schemaHash','ports','uid','gid','launcher','knowledgeHash','evidence']);
   if(raw.schemaVersion!==1||raw.mode!=='single-instance-replacement'||!P.uuid(raw.siteId)||raw.installationApproved!==true||raw.inventoryVerified!==true)P.fail('inventory-not-approved');
+  if(typeof raw.nodeVersion!=='string'||!/^v24\.\d+\.\d+$/.test(raw.nodeVersion))P.fail('runtime-pin-required');
   if(!/^[a-f0-9]{40}$/.test(raw.commit)||!['unitHash','caddyHash','oldCodeHash','candidateHash','schemaHash','knowledgeHash'].every(k=>P.sha(raw[k])))P.fail('inventory');
   for(const name of ['root','node','unitFile','caddyFile','overrideFile','oldData','oldCode','candidateData','candidateCode','launcher']){
     if(typeof raw[name]!=='string'||!path.isAbsolute(raw[name])||/[\r\n\0"]/.test(raw[name])||!rehearsal&&(/[\\%$]/.test(raw[name])||raw[name].includes(' ')))P.fail('inventory-path');P.noLinks(raw[name]);
@@ -89,13 +90,15 @@ function legacyReceipt(folder){return require('./legacy-v017.cjs').receipt(folde
 
 function gates(c){
   owner(c);const blockers=[],r=codeReceipt(c.candidateCode);if(r.hash!==c.candidateHash)blockers.push('candidate-drift');
+  let rollbackSourceAssessment=null;
+  if(!c.rehearsal){try{rollbackSourceAssessment=A.assess(c.oldCode);if(!rollbackSourceAssessment.layoutVerified)blockers.push('rollback-layout-unreviewed');}catch{blockers.push('rollback-assessment-unavailable');}}
   if(!c.rehearsal)try{if(legacyReceipt(c.oldCode).hash!==c.oldCodeHash)blockers.push('rollback-reference-drift');}catch{blockers.push('rollback-reference-unverified');}
   for(const [file,digest]of [[c.unitFile,c.unitHash],[c.caddyFile,c.caddyHash]]){P.noLinks(file,true);if(P.hash(fs.readFileSync(file))!==digest)blockers.push('configuration-drift');}
   const e=c.evidence||{},attested=v=>v?.status==='verified'&&v.commit===c.commit&&typeof v.reference==='string'&&v.reference.length>=3;
   for(const name of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal'])if(!attested(e[name]))blockers.push(name+'-not-verified');
   if(!c.rehearsal&&(r.manifest.ready!==true||r.manifest.developmentOnly!==false))blockers.push('release-not-ready');
   if(e.rehearsal?.mode!=='single-instance-replacement'||e.rehearsal?.actualApplicationStarted!==true||e.rehearsal?.maxConcurrentVersions!==1)blockers.push('single-instance-rehearsal-required');
-  return{mode:'single-instance-replacement',blockers,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
+  return{mode:'single-instance-replacement',blockers,rollbackSourceAssessment,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
 }
 function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   const c=config(raw,{rehearsal});owner(c);const {audit}=require('./broker.cjs');audit(c,null);

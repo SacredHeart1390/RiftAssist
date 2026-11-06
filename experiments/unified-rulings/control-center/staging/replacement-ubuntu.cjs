@@ -31,16 +31,14 @@ class UbuntuReplacementIO {
   }
   async observed(service=this.config.service){
     if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
-    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath']);
+    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job']);
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
   async preflight(version){
-    const c=this.config,o=await this.observed(),helper=await this.observed('riftassist-autostart.service');
+    const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
     if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||o.Group!=='azureuser'||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
-    try{const options={timeout:3000,maxBuffer:128,env:{PATH:'/usr/bin:/bin',LANG:'C'}};const uid=Number((await execFile('/usr/bin/id',['-u','azureuser'],options)).stdout.trim()),gid=Number((await execFile('/usr/bin/id',['-g','azureuser'],options)).stdout.trim());if(uid!==c.uid||gid!==c.gid)P.fail('service-identity');if(!/^v24\./.test((await execFile(c.node,['--version'],options)).stdout))P.fail('runtime-unverified');}catch(error){if(error.code==='runtime-unverified')throw error;P.fail('service-identity');}
+    await this.assertRuntimeIdentity();
     if(version==='v0.1.7'&&fs.existsSync(c.overrideFile)&&P.hash(bounded(c.overrideFile))!==P.hash(budgetGuard(c)))P.fail('override-already-exists');
-    // Unknown/enabled autostart is a blocker, not silently disabled or treated as harmless.
-    if(helper.LoadState!=='not-found'&&(!['masked','masked-runtime'].includes(helper.UnitFileState)||helper.ActiveState==='active'))P.fail('autostart-unresolved');
     await this.configurationUnchanged();
     if(R.legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-code-drift');
     if(version==='v0.1.7'){
@@ -49,12 +47,37 @@ class UbuntuReplacementIO {
     }
     const disk=fs.statfsSync(c.root);if(disk.bavail*disk.bsize<512*1024*1024)P.fail('disk');return{singleService:true,caddyUnchanged:true};
   }
-  async stop(){await this.run(['stop',this.config.service]);}
+  async runtimeIdentity(){
+    const options={timeout:3000,maxBuffer:128,env:{PATH:'/usr/bin:/bin',LANG:'C'}};
+    const uid=Number((await execFile('/usr/bin/id',['-u','azureuser'],options)).stdout.trim()),gid=Number((await execFile('/usr/bin/id',['-g','azureuser'],options)).stdout.trim());
+    return{uid,gid,version:(await execFile(this.config.node,['--version'],options)).stdout.trim()};
+  }
+  async assertRuntimeIdentity(){
+    let r;try{r=await this.runtimeIdentity();}catch{P.fail('service-identity');}
+    if(r.uid!==this.config.uid||r.gid!==this.config.gid)P.fail('service-identity');
+    if(r.version!==this.config.nodeVersion)P.fail('runtime-unverified');
+  }
+  async assertAutostartQuiescent(){
+    const h=await this.observed('riftassist-autostart.service');
+    const absent=h.LoadState==='not-found',masked=h.LoadState==='masked'&&['masked','masked-runtime'].includes(h.UnitFileState);
+    if((!absent&&!masked)||!['inactive','failed'].includes(h.ActiveState)||Number(h.MainPID)!==0||!['','0'].includes(h.Job??'missing'))P.fail('autostart-unresolved');
+    try{this.assertEmptyControlGroup('riftassist-autostart.service');}catch{P.fail('autostart-unresolved');}
+    return{absent,masked,quiescent:true};
+  }
+  async stop(){await this.assertAutostartQuiescent();await this.run(['stop',this.config.service]);}
   async assertStopped(){
+    await this.assertAutostartQuiescent();
     const c=this.config,o=await this.observed();if(!['inactive','failed'].includes(o.ActiveState)||Number(o.MainPID)!==0)P.fail('stop-unconfirmed');
-    const group='/sys/fs/cgroup/system.slice/'+c.service;
-    const check=dir=>{if(!fs.existsSync(dir))return;P.noLinks(dir);const procs=path.join(dir,'cgroup.procs');if(fs.existsSync(procs)&&fs.readFileSync(procs,'utf8').trim())P.fail('writers-still-running');for(const e of fs.readdirSync(dir,{withFileTypes:true}))if(e.isDirectory())check(path.join(dir,e.name));};check(group);
+    this.assertEmptyControlGroup(c.service);
     for(const port of c.ports)if(!await available(port))P.fail('ports-not-released');
+  }
+  assertEmptyControlGroup(service){
+    if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
+    const group='/sys/fs/cgroup/system.slice/'+service;let visited=0;
+    const check=(dir,depth=0)=>{if(!fs.existsSync(dir))return;if(++visited>256||depth>16)P.fail('cgroup-budget');P.noLinks(dir);
+      const procs=path.join(dir,'cgroup.procs');if(fs.existsSync(procs)&&fs.readFileSync(procs,'utf8').trim())P.fail('writers-still-running');
+      for(const e of fs.readdirSync(dir,{withFileTypes:true}))if(e.isDirectory())check(path.join(dir,e.name),depth+1);
+    };check(group);
   }
   async backupBudget(data){
     const c=this.config,file=path.join(data,'private/operations.sqlite');P.noLinks(file,true);const bytes=fs.statSync(file).size;
@@ -97,7 +120,7 @@ class UbuntuReplacementIO {
     if((version==='v0.1.7'?R.legacyReceipt(c.oldCode):R.codeReceipt(c.candidateCode)).hash!==(version==='v0.1.7'?c.oldCodeHash:c.candidateHash))P.fail('release-integrity');
     const root=version==='v0.1.7'?c.oldData:c.candidateData;
     try{for(const name of ['storage.key','manager.key','sessions.key']){const file=path.join(root,'private',name);P.noLinks(file,true);const size=fs.statSync(file).size;if(name==='storage.key'?size!==32:!(/^[a-f0-9]{64}\s*$/i.test(bounded(file).toString())))P.fail('restart-keyset-unverified');}}catch{P.fail('restart-keyset-unverified');}
-    await this.assertStopped();await this.run(['start',c.service]);
+    await this.assertStopped();await this.assertRuntimeIdentity();await this.run(['start',c.service]);
     if(version==='v0.1.7')await this.startOriginalApp();
   }
   async managerStatus(version){

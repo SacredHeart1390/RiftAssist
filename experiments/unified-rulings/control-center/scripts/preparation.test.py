@@ -21,4 +21,12 @@ class Preparation(unittest.TestCase):
         self.assertNotIn('Start-Transcript',s)
         self.assertNotIn('Set-Content',s)
         self.assertNotIn('sudo ',s)
+    def test_new_scope_is_separate_from_the_approved_original_probes_and_defaults_to_blocked(self):
+        s=(ROOT/'scripts/Invoke-AdditionalInspection.ps1').read_text()
+        digest=hashlib.sha256((ROOT/'staging/inspect-release-blockers.py').read_bytes()).hexdigest()
+        self.assertIn(digest,s)
+        self.assertIn("[switch]$Approved",s)
+        self.assertLess(s.index("if($Mode -eq 'Inspect' -and !$Approved)"),s.index('$ssh=Join-Path'))
+        self.assertIn('StrictHostKeyChecking=yes',s)
+        self.assertNotIn('inspect-release-blockers.py',(ROOT/'scripts/Invoke-ReleasePreparation.ps1').read_text())
 if __name__=='__main__':unittest.main()
