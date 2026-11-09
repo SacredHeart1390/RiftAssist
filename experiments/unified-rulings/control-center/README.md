@@ -1,10 +1,4 @@
-> 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
-
-> 최신 실행 절차: [출시 확인표·승인된 두 조사 한 번에 실행·백업 사전검사·롤백 비용 보호](RELEASE-CHECKLIST.md). 실제 Azure 설치/중지/DB·키 접근/배포는 별도 승인 대상이며 ready=false를 유지합니다.
-
-> 최신 출시 방향: [REPLACEMENT.md](REPLACEMENT.md)의 **기존 VM·단일 서비스 교체**를 적용합니다. 별도 VM/병렬 운영은 필수가 아닙니다. 실제 Azure 변경·배포는 별도 승인 전 차단합니다.
-
-> 2026-11-05 출시 준비 2단계: [Ubuntu staging 구조·미구현/활성화 조건](STAGING.md), [승인 대기 Azure 읽기 조사 명령](AZURE-INSPECTION.md). 실제 Azure 설치/접속/배포는 실행하지 않았고, 기존 배포 화면은 합성 전용입니다.
+> 현재 출시 경로(2026-11-09): [수동 SSH 교체 절차](MANUAL-LIVE-RELEASE.md) · [최소 공개 기능](MINIMUM-LIVE-SCOPE.md) · [확정 라이브 로드맵](LIVE-ROADMAP.md). **Control Center 자동 배포나 상시 broker는 초기 출시 필수 조건이 아닙니다.** 회사 PowerShell 5.1에서는 ZIP의 INSPECT-CONSOLE.txt/MAINTENANCE-CONSOLE.txt를 텍스트로 열어 명령을 직접 붙입니다. 실행 정책을 바꾸지 않습니다. 현재 ready=false이며 실제 설치/데이터 처리/교체는 별도 승인 전 차단합니다.
 
 # RiftAssist Control Center — Windows 관리 MVP
 

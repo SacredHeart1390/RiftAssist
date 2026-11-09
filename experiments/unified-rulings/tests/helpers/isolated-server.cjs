@@ -83,7 +83,7 @@ async function isolatedServer(t, plans, options = {}) {
     await fs.writeFile(path.join(dir, name), bytes);
   }
   const manifest = { schemaVersion: 1, compatibleSchema: 2, releaseId: dataId, validationStatus: 'validated', hashes,
-    sources: { core: { version: fixture.provenance.coreVersion }, officialSync: { checkedAt: '2026-10-23T00:00:00.000Z' }, riftjudge: { coverage: 'complete' } } };
+    sources: { core: { version: fixture.provenance.coreVersion }, officialSync: { checkedAt: '2026-10-23T00:00:00.000Z' }, riftjudge: { coverage: 'complete' }, ...(options.sources||{}) } };
   await fs.writeFile(path.join(dir, 'manifest.json'), JSON.stringify(manifest));
   await fs.writeFile(path.join(directory, 'knowledge-releases/active.json'), JSON.stringify({ releaseId: dataId }));
   const planPath = path.join(directory, 'mock-plan.json');

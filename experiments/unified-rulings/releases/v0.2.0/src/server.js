@@ -19,6 +19,8 @@ const { createSourceTranslations } = require('./source-translations');
 const { createStore } = require('./operations-store');
 const { createAccess } = require('./access-control');
 const { createCardAccess } = require('./card-access');
+const minimumRelease=require('./minimum-release');
+const minimumScope=()=>minimumRelease.restricted(requestKnowledge.getStore()||knowledge.current());
 
 const ROOT = DATA_ROOT;
 const PUBLIC_DIR = path.join(APP_ROOT, 'public');
@@ -62,7 +64,7 @@ const sourceTranslations = createSourceTranslations({
   getTerminology: () => terminology.glossary((requestKnowledge.getStore() || knowledge.current()).evidence),
   root: ROOT, model: OPENAI_MODEL, reasoningEffort: OPENAI_REASONING_EFFORT,
   maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS,
-  isEnabled: aiEnabled, getApiKey: () => process.env.OPENAI_API_KEY,
+  isEnabled: ()=>aiEnabled()&&!minimumScope(), getApiKey: () => process.env.OPENAI_API_KEY,
   log: appendLog,
   reserve: (owner) => store.reserveCall(owner, 'translation'), settle: store.finishCall,
 });
@@ -128,6 +130,7 @@ function sourceGlossary(item) {
 }
 
 async function prepareLocalization(kind, item) {
+  if(minimumScope())return {...item,localization:null};
   if (kind === 'rule' && item.officialTextKo) return item;
   try { return { ...item, localization: await sourceTranslations.prepare(kind, item, sourceGlossary(item)) }; }
   catch { console.warn('Source translation cache unavailable.'); return { ...item, localization: null }; }
@@ -289,6 +292,7 @@ async function searchJudgeRemote(question, cards = []) {
 }
 
 async function searchJudge(question, cards = []) {
+  if(minimumScope()){judgeSearchAvailable=false;return [];}
   const snapshot = requestKnowledge.getStore() || knowledge.current();
   const english = `${englishJudgeQuery(question)} ${translatedTerms(question).join(' ')}`;
   const local = require('./judge-index').searchJudgeIndex(snapshot.judgeIndex, question, english, cards);
@@ -684,6 +688,7 @@ async function initialize() {
   await knowledge.initialize();
   const server = http.createServer((req, res) => requestKnowledge.run(cardAccess.snapshot(knowledge.current()), () => {
     res.setHeader('X-RiftAssist-Release','v0.2.0');
+    res.setHeader('X-Robots-Tag','noindex, nofollow');
     const snapshot = requestKnowledge.getStore();
     const { evidence, cardCatalog, evidenceCountByDocument } = snapshot;
     const cardCatalogAvailable = cardCatalog.cards.length > 0;
@@ -695,12 +700,13 @@ async function initialize() {
       if(req.headers['x-riftassist-client']&&req.headers['x-riftassist-client']!=='v0.2.0'){sendJson(res,409,{code:'client_version_changed',error:'서비스 버전이 변경됐습니다. 입력 내용을 보관한 뒤 새로고침해 주세요. / Reload after saving your input.'});return;}
       try { access.session(req, res); } catch (error) { sendJson(res, error.statusCode || 401, { error: error.message }); return; }
     }
+    if(['GET','HEAD'].includes(req.method)&&url.pathname==='/robots.txt'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?'':'User-agent: *\nAllow: /\nDisallow: /api/\n');return;}
     if(req.method==='GET'&&url.pathname==='/api/release'){sendJson(res,200,{releaseId:'v0.2.0',version:'0.2.0'});return;}
     if (req.method === 'GET' && url.pathname === '/api/health') {
       try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
       sendJson(res, 200, {
         ok: true, version: '0.2.0', appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
-        features: { imageAttachments: false },
+        features: { imageAttachments: false, sourceTranslations:!minimumScope(), thirdPartyCases:!minimumScope() },
         retention: { questionDays: 7, metadataDays: 30, reportDays: 90, imagesStored: false },
         aiConfigured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null,
         aiGenerationEnabled: aiEnabled(),
@@ -708,7 +714,7 @@ async function initialize() {
         indexedRuleCount: evidence.filter((item) => item.ruleId).length,
         indexedSupplementCount: evidence.filter((item) => !item.ruleId).length,
         evidenceCountByDocument,
-        riftJudgeSearchEnabled: true, riftJudgeSearchAvailable: judgeSearchAvailable,
+        riftJudgeSearchEnabled: !minimumScope(), riftJudgeSearchAvailable: judgeSearchAvailable,
         cardCatalog: { available: cardCatalogAvailable, version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess },
         generationBudget: { maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS, maxInputCharacters: MAX_MODEL_INPUT_CHARS },
       });
@@ -747,6 +753,7 @@ async function initialize() {
       }); return;
     }
     if (req.method === 'POST' && url.pathname === '/api/sources/translate') {
+      if(minimumScope()){sendJson(res,403,{code:'source_translation_restricted'});return;}
       // A translation can only use server-registered public source snapshots, never client text or URLs.
       if (!/^application\/json(?:;|$)/iu.test(req.headers['content-type'] || '')) { sendJson(res, 415, { code: 'json_required' }); return; }
       readJson(req).then(async (body) => {

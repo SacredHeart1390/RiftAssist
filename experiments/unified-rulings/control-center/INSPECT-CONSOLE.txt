@@ -1,0 +1,47 @@
+# Paste this literal block into PowerShell 5.1 at the extracted ZIP root. No .ps1 execution/policy change.
+function Invoke-RiftAssistPredeploymentInspection {
+  # Windows PowerShell 5.1 or PowerShell 7. No installation/deployment commands.
+  [CmdletBinding()]
+  param([ValidateSet('Verify','Inspect')][string]$Mode='Verify',
+        [switch]$Approved,[string]$PackageDirectory=(Get-Location).Path)
+  $ErrorActionPreference='Stop'
+  if($Mode -eq 'Inspect' -and !$Approved){throw 'Separate approval required for both proposed probes. SSH not run.'}
+  $checks=@(
+    @{Name='inspect-release-blockers.py';Sha='3fce265ce5d45dec329f79f31a4b08122b84bd37bc32240a25f2ce2dfc7c328a';Protocol='riftassist-release-blockers-1'},
+    @{Name='inspect-maintenance-metadata.py';Sha='e281e31584353aa2a17281d5cfa9bc890f66fdbc759389852d1d07b35b83484f';Protocol='riftassist-maintenance-metadata-1'}
+  )
+  if(!$PackageDirectory){$PackageDirectory=if(Test-Path -LiteralPath (Join-Path $PSScriptRoot 'staging')){$PSScriptRoot}else{Split-Path $PSScriptRoot -Parent}}
+  $root=(Resolve-Path -LiteralPath $PackageDirectory).Path
+  # Validate BOTH proposed byte sequences before ANY SSH invocation.
+  $sources=@()
+  foreach($check in $checks){
+    $file=Join-Path $root ('staging/'+$check.Name)
+    if((Get-Item -LiteralPath $file).Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Probe link rejected; SSH not run.'}
+    $bytes=[IO.File]::ReadAllBytes($file);$sha=[Security.Cryptography.SHA256]::Create()
+    try{$digest=[BitConverter]::ToString($sha.ComputeHash($bytes)).Replace('-','').ToLowerInvariant()}finally{$sha.Dispose()}
+    if($digest -cne $check.Sha){throw 'Proposed probe SHA256 mismatch; SSH not run.'}
+    $sources+=,[Text.Encoding]::ASCII.GetString($bytes)
+  }
+  if($Mode -eq 'Verify'){
+    [pscustomobject]@{separateApprovalRequired=$true;verifiedProbes=2;sshCommands=0;authorizedToInstall=$false;authorizedToDeploy=$false}
+    return
+  }
+  $ssh=Join-Path $env:WINDIR 'System32/OpenSSH/ssh.exe'
+  if(!(Test-Path -LiteralPath $ssh -PathType Leaf)){throw 'Windows OpenSSH client is missing.'}
+  for($i=0;$i -lt $checks.Count;$i++){
+    # Only fixed Python stdin execution. Private key contents/values never enter argv.
+    $output=@($sources[$i] | & $ssh -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ConnectionAttempts=1 -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=1 -o ForwardAgent=no -o ForwardX11=no -o ClearAllForwardings=yes -o PermitLocalCommand=no -o LogLevel=ERROR -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" azureuser@20.222.152.195 'python3 -B -' 2>$null)
+    if($LASTEXITCODE -ne 0){throw 'SSH inspection failed. Raw stderr and response are suppressed. No retry.'}
+    $json=$output -join "`n"
+    if($json.Length -gt 65536){throw 'Inspection response too large; suppressed.'}
+    try{$report=$json|ConvertFrom-Json -ErrorAction Stop}catch{throw 'Inspection response was not valid JSON; suppressed.'}
+    if($report.protocol -cne $checks[$i].Protocol -or $report.readOnly -ne $true){throw 'Inspection protocol mismatch; suppressed.'}
+    # The reviewed probes emit metadata/hash results only. No automatic files/transcripts.
+    $report|ConvertTo-Json -Depth 12
+  }
+
+}
+# Default is local SHA verification only; no SSH.
+Invoke-RiftAssistPredeploymentInspection -Mode Verify -PackageDirectory (Get-Location).Path | ConvertTo-Json -Depth 5
+# Only AFTER separate approval of the exact probe/source/hash, enter this separate command:
+# Invoke-RiftAssistPredeploymentInspection -Mode Inspect -Approved -PackageDirectory (Get-Location).Path

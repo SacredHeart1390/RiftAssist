@@ -1,3 +1,5 @@
+> 2026-11-09 실행 경로: [MANUAL-LIVE-RELEASE.md](MANUAL-LIVE-RELEASE.md)가 우선합니다. 아래의 상시 broker 설치안은 선택적 자동화 경로입니다. 초기 출시는 같은 엔진을 SSH에서 일회성으로 실행하며 broker 서비스/포트/sudoers를 추가하지 않습니다. .env가 있으면 명시적 승인 하에 암호화 백업하고 허용된 설정만 새 데이터 루트에 복원합니다. 실제 설치/운영 처리는 아직 실행하지 않았습니다.
+
 > 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
 
 # v0.2.0 실제 출시 준비 — 기존 VM의 단일 서비스 교체

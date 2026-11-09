@@ -66,7 +66,8 @@ async function cloneBackup(c,id){
     if(schemaHash(db)!==c.schemaHash)P.fail('schema-changed');
   } finally {db.close();}
   if(process.platform!=='win32'){const fd=fs.openSync(privateRoot,'r');try{fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
-  return{sourceUnchanged:true,schemaUnchanged:true,settingsPreserved:true,releasePointerAdjusted:true};
+  const runtimeConfig=require('./runtime-config.cjs').restore(c.candidateData,archived.configurationFiles?.['.env']);
+  return{sourceUnchanged:true,schemaUnchanged:true,settingsPreserved:true,releasePointerAdjusted:true,runtimeConfig};
 }
 function codeReceipt(folder,version='v0.2.0'){
   const m=P.readJSON(path.join(folder,'app-release.json')),files={};
@@ -112,7 +113,7 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   function plan(kind,id,deploymentId){
     if(!P.uuid(id)||!['replace','rollback','qualify-backup'].includes(kind))P.fail('protocol');if(status().locked||status().uncertain)P.fail('busy');
     const previous=current();if(kind!=='rollback'&&previous.version!=='v0.1.7'||kind==='rollback'&&previous.version!=='v0.2.0')P.fail('stale');
-    if(kind==='qualify-backup'&&!c.rehearsal){const report=gates(c);if(report.blockers.some(v=>!['release-not-ready','rights-not-verified','rehearsal-not-verified'].includes(v)))P.fail('qualification-blocked');}
+    if(kind==='qualify-backup'&&!c.rehearsal){const report=gates(c);if(report.blockers.some(v=>!['release-not-ready','rights-not-verified','rehearsal-not-verified','compatibility-not-verified'].includes(v)))P.fail('qualification-blocked');}
     if(kind==='replace'){if(!gates(c).readyForApprovedExecution)P.fail('release-blocked');if(fs.existsSync(path.join(c.candidateData,'private')))P.fail('retained-data');}
     else if(kind==='rollback'){const old=P.readJSON(file(deploymentId));if(old.kind!=='replace'||old.state!=='completed')P.fail('rollback-target');if(!c.rehearsal&&legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-reference-drift');}
     const body={protocol:PROTOCOL,id,kind,siteId:c.siteId,inventoryHash:c.inventoryHash,commit:c.commit,previous,expiresAt:now()+600000,deploymentId:deploymentId||null,impact:'brief-outage-single-service',target:kind==='replace'?'v0.2.0':'v0.1.7'};
@@ -129,7 +130,7 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
       // Only now, with all app/manager/worker writers stopped, are DB/keys/config read.
       await io.backupBudget(p.kind==='rollback'?c.candidateData:c.oldData);const settings=await io.configurationSnapshot();
       const sourceIsOld=p.kind!=='rollback';
-      save(op,'backup');const b=await V.createPrivateBackup(c,sourceIsOld?'a':'b',p.id,path.join(sourceIsOld?c.oldData:c.candidateData,'private'),{version:p.previous.version,settings});op.backupId=b.id;
+      save(op,'backup');const b=await V.createPrivateBackup(c,sourceIsOld?'a':'b',p.id,path.join(sourceIsOld?c.oldData:c.candidateData,'private'),{version:p.previous.version,settings},{captureRuntimeConfig:true});op.backupId=b.id;
       op.probe=await V.verifyBackup(c,b.id);requireCompatible(c,op.probe,p.previous.version);
       save(op,'backup-verified');
       if(p.kind==='qualify-backup'){

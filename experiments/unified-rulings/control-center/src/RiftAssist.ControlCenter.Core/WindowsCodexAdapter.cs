@@ -78,7 +78,7 @@ public sealed class WindowsCodexAdapter(ToolPaths tools,IToolRunner runner):IRea
         var result=await runner.RunAsync(new(tools.Codex,args,work.Source,packet.Text,1200,16777216,Line,new Dictionary<string,string>{{"TEMP",work.Temp},{"TMP",work.Temp}}),c);
         if(result.Exit!=0||!finished)throw new ControlException("client-real-codex-interrupted");return new(summary,input,output);
     }
-    public static IReadOnlyList<string> RegressionPaths => new[]{"ruling-regression.test.cjs","legal-operations.test.cjs","card-access.test.cjs","v020-environment.test.cjs","card-translation.test.cjs","card-sync.test.cjs","card-review.test.cjs","control-center.test.cjs","control-center-operations.test.cjs","release-readiness.test.cjs","compatibility-matrix.test.cjs"}.Select(p=>RepairScope.Prefix+"tests/"+p).ToArray();
+    public static IReadOnlyList<string> RegressionPaths => new[]{"ruling-regression.test.cjs","legal-operations.test.cjs","card-access.test.cjs","v020-environment.test.cjs","card-translation.test.cjs","card-sync.test.cjs","card-review.test.cjs","control-center.test.cjs","control-center-operations.test.cjs","release-readiness.test.cjs","minimum-release.test.cjs","release-transition.test.cjs","compatibility-matrix.test.cjs"}.Select(p=>RepairScope.Prefix+"tests/"+p).ToArray();
     public async Task<RealTestReport> TestAsync(IRepairWorkspace work,RealRepairJob job,CancellationToken c)
     {
         if(!OperatingSystem.IsWindows())throw new ControlException("client-real-isolation");

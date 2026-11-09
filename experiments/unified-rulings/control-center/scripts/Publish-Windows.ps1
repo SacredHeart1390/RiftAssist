@@ -55,3 +55,5 @@ Copy-Item -LiteralPath (Join-Path $project 'RELEASE-CHECKLIST.md') -Destination 
 
 Copy-Item -LiteralPath (Join-Path $project 'scripts/Invoke-AdditionalInspection.ps1') -Destination (Join-Path $OutputDirectory 'Invoke-AdditionalInspection.ps1')
 Copy-Item -LiteralPath (Join-Path $project 'SOURCE-EXTRAS-AND-AUTOSTART.md') -Destination (Join-Path $OutputDirectory 'SOURCE-EXTRAS-AND-AUTOSTART.md')
+
+foreach($name in @('INSPECT-CONSOLE.txt','MAINTENANCE-CONSOLE.txt','MANUAL-LIVE-RELEASE.md','MINIMUM-LIVE-SCOPE.md','LIVE-ROADMAP.md','LIVE-PREPARATION-VALIDATION.md')){Copy-Item -LiteralPath (Join-Path $project $name) -Destination (Join-Path $OutputDirectory $name)}

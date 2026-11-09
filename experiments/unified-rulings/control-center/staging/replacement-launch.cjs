@@ -9,8 +9,8 @@ async function main(file){
   const receipt=R.codeReceipt(c.source);if(receipt.hash!==c.candidateHash||receipt.manifest.ready!==true||receipt.manifest.developmentOnly!==false)P.fail('release-not-ready');
   const db=new(require('node:sqlite').DatabaseSync)(path.join(c.data,'private/operations.sqlite'),{readOnly:true});let aiEnabled;
   try{const row=db.prepare("SELECT value FROM settings WHERE name='aiEnabled'").get();aiEnabled=row?JSON.parse(row.value):true;}finally{db.close();}
-  if(aiEnabled&&(process.env.RIFTASSI_EXTERNAL_MODE!=='live'||process.env.RIFTASSI_ALLOW_EXTERNAL_CALLS!=='true'||!process.env.OPENAI_API_KEY))P.fail('provider-activation-not-approved');
-  const env={...process.env,RIFTASSI_DATA_ROOT:c.data,RIFTASSI_ALLOW_PRODUCTION_START:'true',RIFTASSI_PRESERVE_V017_SESSION:'true',MANAGER_PORT:String(c.ports[0]),APP_PORT:String(c.ports[1]),PUBLIC_PORT:String(c.ports[1]),PUBLIC_ORIGIN:'https://riftassistant.app',RIFTASSI_PRODUCTION_WORKER_PORTS:JSON.stringify(c.ports.slice(2)),RIFTASSI_CARD_POLICY:'verified-only',LOG_CONTENT:'false'};
+  const inherited=require('./runtime-config.cjs').providerEnvironment(c.data,process.env,{aiEnabled,liveProviderApproved:c.liveProviderApproved===true});
+  const env={...inherited,RIFTASSI_DATA_ROOT:c.data,RIFTASSI_ALLOW_PRODUCTION_START:'true',RIFTASSI_PRESERVE_V017_SESSION:'true',MANAGER_PORT:String(c.ports[0]),APP_PORT:String(c.ports[1]),PUBLIC_PORT:String(c.ports[1]),PUBLIC_ORIGIN:'https://riftassistant.app',RIFTASSI_PRODUCTION_WORKER_PORTS:JSON.stringify(c.ports.slice(2)),RIFTASSI_CARD_POLICY:'verified-only',LOG_CONTENT:'false'};
   const child=fork(path.join(c.source,'src/manager.js'),[],{cwd:c.data,env,stdio:['ignore','ignore','ignore','ipc']});let stopping=false;
   for(const sig of ['SIGTERM','SIGINT'])process.on(sig,()=>{stopping=true;child.kill('SIGTERM');});child.once('exit',code=>process.exit(stopping?0:code||1));
   const origin='http://127.0.0.1:'+c.ports[0],deadline=Date.now()+25000;let response;

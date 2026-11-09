@@ -10,7 +10,7 @@ try {
   foreach($entry in $zip.Entries) {
     if ($entry.FullName.StartsWith('/') -or $entry.FullName.Contains('\') -or $entry.FullName.Split('/') -contains '..') { throw 'Unexpected archive path.' }
   }
-  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.2.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','staging/serve.cjs','staging/inspect-azure.py','staging/mock-services.cjs','staging-manifest.json','STAGING.md','AZURE-INSPECTION.md','PHASE8.md','Invoke-ReleasePreparation.ps1','Invoke-AdditionalInspection.ps1','SOURCE-EXTRAS-AND-AUTOSTART.md','RELEASE-CHECKLIST.md','staging/inspect-replacement-topology.py','staging/inspect-legacy-source.py')) {
+  foreach($name in @('RiftAssist.ControlCenter.exe','RiftAssist.ControlCenter.Core.dll','backend-manifest.json','runtime/node.exe','runtime/runtime.json','backend/v0.2.0/src/card-review-auth.js','deployment/control.cjs','deployment/lab.cjs','deployment-manifest.json','staging/serve.cjs','staging/inspect-azure.py','staging/mock-services.cjs','staging-manifest.json','STAGING.md','AZURE-INSPECTION.md','PHASE8.md','Invoke-ReleasePreparation.ps1','Invoke-AdditionalInspection.ps1','INSPECT-CONSOLE.txt','MAINTENANCE-CONSOLE.txt','MANUAL-LIVE-RELEASE.md','MINIMUM-LIVE-SCOPE.md','LIVE-ROADMAP.md','SOURCE-EXTRAS-AND-AUTOSTART.md','RELEASE-CHECKLIST.md','staging/inspect-replacement-topology.py','staging/inspect-legacy-source.py')) {
     if (!$zip.GetEntry($name)) { throw 'Required file is missing from the archive root/layout.' }
   }
   if (@($zip.Entries | Where-Object { $_.FullName -like '*/RiftAssist.ControlCenter.exe' }).Count -ne 0) { throw 'Executable must not be nested.' }
@@ -36,3 +36,5 @@ Write-Output $report
 $additionalDenied=$false
 try{ & (Join-Path $ExtractDirectory 'Invoke-AdditionalInspection.ps1') -Mode Inspect -PackageDirectory $ExtractDirectory }catch{$additionalDenied=$_.Exception.Message -like 'Separate approval required*'}
 if(!$additionalDenied){throw 'New inspection must be blocked without separate approval.'}
+
+& (Join-Path $PSScriptRoot 'Test-ConsoleInstructions.ps1') -PackageDirectory $ExtractDirectory

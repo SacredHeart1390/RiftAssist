@@ -1,0 +1,27 @@
+# Paste literal commands only AFTER approved code/config installation. Defines a function; no SSH at load.
+function Invoke-RiftAssistMaintenance {
+  [CmdletBinding()]
+  param([Parameter(Mandatory=$true)][ValidateSet('status','reconcile','preflight','plan','backup-plan','rollback-plan','inspect','replace','rollback','qualify-backup')][string]$Method,
+        [Parameter(Mandatory=$true)][string]$SiteId,[Parameter(Mandatory=$true)][string]$InventoryHash,
+        [hashtable]$Payload=@{},[switch]$ConnectionApproved,[switch]$OperationApproved)
+  $ErrorActionPreference='Stop'
+  if(!$ConnectionApproved){throw 'Actual SSH connection approval required. SSH not run.'}
+  if($SiteId -cnotmatch '^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$' -or $InventoryHash -cnotmatch '^[a-f0-9]{64}$'){throw 'Invalid reviewed site binding. SSH not run.'}
+  $write=$Method -in @('replace','rollback','qualify-backup')
+  if($write -and !$OperationApproved){throw 'Separate exact maintenance/deployment approval required. SSH not run.'}
+  $id=[Guid]::NewGuid().ToString('D')
+  $json=@{protocol='riftassist-replacement-1';requestId=$id;inventoryHash=$InventoryHash;method=$Method;payload=$Payload}|ConvertTo-Json -Depth 14 -Compress
+  if([Text.Encoding]::UTF8.GetByteCount($json) -gt 65536){throw 'Request too large. SSH not run.'}
+  $remote='/usr/bin/sudo -n -- /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw /var/lib/riftassist-replacement/'+$SiteId+'/tools/replacement-serve.cjs'
+  $ssh=Join-Path $env:WINDIR 'System32/OpenSSH/ssh.exe'
+  try{
+    $output=@($json|& $ssh -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ConnectionAttempts=1 -o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=1 -o ForwardAgent=no -o ForwardX11=no -o ClearAllForwardings=yes -o PermitLocalCommand=no -o LogLevel=ERROR -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" azureuser@20.222.152.195 $remote 2>$null)
+    if($LASTEXITCODE -ne 0){throw 'response-unconfirmed'}
+    $text=$output -join "`n"
+    if($text.Length -gt 2000000){throw 'response-unconfirmed'}
+    $r=$text|ConvertFrom-Json -ErrorAction Stop
+    if($r.protocol -cne 'riftassist-replacement-1' -or $r.requestId -cne $id -or $r.inventoryHash -cne $InventoryHash -or $r.ok -ne $true){throw 'response-unconfirmed'}
+  }catch{throw 'Maintenance response unconfirmed. Do not repeat a write; inspect/status first. Raw stderr suppressed.'}
+  $r.result
+}
+# No default invocation. Fill site/hash only from the approved exact installation receipt.

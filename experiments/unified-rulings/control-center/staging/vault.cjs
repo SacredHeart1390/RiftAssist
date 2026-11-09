@@ -17,7 +17,7 @@ async function createBackup(config, slot, operationId) {
   return createPrivateBackup(config,slot,operationId,within(config.root,'data',slot,'private'),readJSON(within(config.root,'releases',slot,'release.json')));
 }
 // Trusted server-side caller only. These paths are never accepted from a remote request.
-async function createPrivateBackup(config,slot,operationId,directory,release) {
+async function createPrivateBackup(config,slot,operationId,directory,release,{captureRuntimeConfig=false}={}) {
   if(!uuid(operationId)||!['a','b'].includes(slot))fail('backup');noLinks(directory);
   const snapshot=within(config.root,'private',operationId+'.snapshot.sqlite');
   const limit=Math.min(config.maxDbBytes||MAX_DB,MAX_DB);
@@ -31,7 +31,8 @@ async function createPrivateBackup(config,slot,operationId,directory,release) {
       if (fs.existsSync(file)) {const b=checked(file,128);if(name==='storage.key'?b.length!==32:!(/^[a-f0-9]{64}\s*$/i.test(b.toString())))fail('backup-key');keys[name]=b.toString('base64');b.fill(0);}
     }
     if(!keys['storage.key'])fail('backup-key');
-    plain=Buffer.from(JSON.stringify({schemaVersion:1,id:operationId,slot,database:checked(snapshot,limit).toString('base64'),keys,release}));
+    const configurationFiles={};if(captureRuntimeConfig){const b=require('./runtime-config.cjs').read(path.dirname(directory));if(b){try{configurationFiles['.env']=b.toString('base64');}finally{b.fill(0);}}}
+    plain=Buffer.from(JSON.stringify({schemaVersion:1,id:operationId,slot,database:checked(snapshot,limit).toString('base64'),keys,release,configurationFiles}));
     wrap=checked(within(config.root,'private','vault.key'),32);if(wrap.length!==32)fail('backup-key');
     const sealed=seal(plain,wrap), target=within(config.root,'backups',operationId+'.sealed');
     const sealedFile=fs.openSync(target,'wx',0o600);try{fs.writeFileSync(sealedFile,sealed);fs.fsyncSync(sealedFile);}finally{fs.closeSync(sealedFile);}
@@ -62,7 +63,9 @@ function restoreProbe(root,id) {
     for(const [table,columns]of Object.entries({requests:['question','response','trace'],reports:['content','snapshot'],report_history:['note']})) {
       for(const row of db.prepare('SELECT '+columns.join(',')+' FROM '+table).iterate())for(const cell of Object.values(row))if(cell){unsealCell(cell,storage);encryptedRows++;}
     }
-    return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,encryptedRows,keysPreserved:Object.keys(value.keys).length,keyNames:Object.keys(value.keys).sort(),compatibility:require('./data-compatibility.cjs').inspect(db)};
+    const files=value.configurationFiles||{};if(Object.keys(files).some(n=>n!=='.env'))fail('runtime-config-format');
+    const env=files['.env']===undefined?null:Buffer.from(files['.env'],'base64');let runtimeConfig;try{runtimeConfig=require('./runtime-config.cjs').report(env);}finally{env?.fill(0);}
+    return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,runtimeConfig,encryptedRows,keysPreserved:Object.keys(value.keys).length,keyNames:Object.keys(value.keys).sort(),compatibility:require('./data-compatibility.cjs').inspect(db)};
   } finally {db?.close();storage?.fill(0);fs.rmSync(probe,{recursive:true,force:true,maxRetries:3});}
 }
 module.exports={createBackup,createPrivateBackup,verifyBackup,restoreProbe,seal,open};

@@ -20,7 +20,7 @@ function prepareWorker(c){
   const worker=P.within(c.candidateData,'releases','v0.2.0');if(fs.existsSync(worker))P.fail('retained-release');
   fs.mkdirSync(path.dirname(worker),{recursive:true,mode:0o700});fs.cpSync(c.candidateCode,worker,{recursive:true,errorOnExist:true,force:false});
   P.atomic(path.join(c.candidateData,'.riftassist-environment.json'),{releaseFamily:'v0.2.0',environment:'production'});
-  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash},0o644);
+  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true},0o644);
   const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,e.name);P.noLinks(file);if(e.isDirectory())walk(file);else fs.chownSync(file,c.uid,c.gid);}fs.chownSync(dir,c.uid,c.gid);};walk(c.candidateData);
 }
 class UbuntuReplacementIO {
@@ -31,14 +31,16 @@ class UbuntuReplacementIO {
   }
   async observed(service=this.config.service){
     if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
-    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job']);
+    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths']);
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
   async preflight(version){
     const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
     if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||o.Group!=='azureuser'||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
+    this.assertReviewedDropIns(o);
     await this.assertRuntimeIdentity();
     if(version==='v0.1.7'&&fs.existsSync(c.overrideFile)&&P.hash(bounded(c.overrideFile))!==P.hash(budgetGuard(c)))P.fail('override-already-exists');
+    this.assertRuntimeConfigurationApproved(version);
     await this.configurationUnchanged();
     if(R.legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-code-drift');
     if(version==='v0.1.7'){
@@ -46,6 +48,22 @@ class UbuntuReplacementIO {
       if(knowledgeHash(c.candidateData).hash!==c.knowledgeHash)P.fail('knowledge-drift');
     }
     const disk=fs.statfsSync(c.root);if(disk.bavail*disk.bsize<512*1024*1024)P.fail('disk');return{singleService:true,caddyUnchanged:true};
+  }
+  readReviewedDropIn(file){return bounded(file);}
+  assertReviewedDropIns(observed){
+    const c=this.config,pins=c.evidence.configuration?.dropInHashes||{};
+    if(!pins||typeof pins!=='object'||Array.isArray(pins)||typeof observed.DropInPaths!=='string')P.fail('drop-ins-unverified');
+    const current=observed.DropInPaths.trim()?observed.DropInPaths.trim().split(/\s+/):[];
+    for(const [file,hash] of Object.entries(pins)){
+      if(!/^\/(?:etc|run|usr\/lib)\/systemd\/system\/riftassist\.service\.d\/[A-Za-z0-9_.-]+\.conf$/.test(file)||file===c.overrideFile||!P.sha(hash)||!current.includes(file))P.fail('drop-ins-unverified');
+      if(P.hash(this.readReviewedDropIn(file))!==hash)P.fail('drop-in-drift');
+    }
+    for(const file of current){if(Object.hasOwn(pins,file))continue;if(file!==c.overrideFile)P.fail('drop-ins-unverified');const hash=P.hash(bounded(file));if(![P.hash(override(c)),P.hash(budgetGuard(c))].includes(hash))P.fail('override-conflict');}
+  }
+  assertRuntimeConfigurationApproved(version){
+    if(!['v0.1.7','v0.2.0'].includes(version))P.fail('version');
+    const c=this.config,data=version==='v0.1.7'?c.oldData:c.candidateData;
+    if(fs.existsSync(path.join(data,'.env'))&&c.evidence.configuration?.runtimeEnvBackupApproved!==true)P.fail('runtime-config-approval-required');
   }
   async runtimeIdentity(){
     const options={timeout:3000,maxBuffer:128,env:{PATH:'/usr/bin:/bin',LANG:'C'}};
@@ -120,7 +138,7 @@ class UbuntuReplacementIO {
     if((version==='v0.1.7'?R.legacyReceipt(c.oldCode):R.codeReceipt(c.candidateCode)).hash!==(version==='v0.1.7'?c.oldCodeHash:c.candidateHash))P.fail('release-integrity');
     const root=version==='v0.1.7'?c.oldData:c.candidateData;
     try{for(const name of ['storage.key','manager.key','sessions.key']){const file=path.join(root,'private',name);P.noLinks(file,true);const size=fs.statSync(file).size;if(name==='storage.key'?size!==32:!(/^[a-f0-9]{64}\s*$/i.test(bounded(file).toString())))P.fail('restart-keyset-unverified');}}catch{P.fail('restart-keyset-unverified');}
-    await this.assertStopped();await this.assertRuntimeIdentity();await this.run(['start',c.service]);
+    await this.assertStopped();this.assertReviewedDropIns(await this.observed());await this.assertRuntimeIdentity();await this.run(['start',c.service]);
     if(version==='v0.1.7')await this.startOriginalApp();
   }
   async managerStatus(version){

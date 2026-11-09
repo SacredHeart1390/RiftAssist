@@ -39,6 +39,8 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           node scripts/protocol-vectors.cjs
+          node scripts/console-instructions.cjs
+          ./scripts/Test-ConsoleInstructions.ps1
           node scripts/backend-manifest.cjs
           python scripts/verify-icon.py
           node scripts/deployment-manifest.cjs
@@ -49,6 +51,7 @@ jobs:
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
           python staging/release-blockers.test.py
+          python staging/maintenance-metadata.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
@@ -169,6 +172,7 @@ jobs:
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
           python staging/release-blockers.test.py
+          python staging/maintenance-metadata.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
@@ -187,6 +191,26 @@ jobs:
       - name: Single service stop backup replace and rollback with unchanged Caddy (synthetic data only)
         run: |
           sudo env RIFTASSIST_TEST_CADDY="$RUNNER_TEMP/riftassist-caddy-package/unpacked/usr/bin/caddy" RIFTASSIST_REPLACEMENT_PROOF="$RUNNER_TEMP/control-center-replacement-proof.json" "$(command -v node)" staging/replacement-integration.cjs --systemd
+      - name: Build reviewed code-only manual release capsule (no broker installation)
+        run: |
+          node - "$RUNNER_TEMP/RiftAssist-v0.2.0-manual-release" "$GITHUB_SHA" <<'JS'
+          const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+          const out=process.argv[2],commit=process.argv[3];
+          const proof=require('./staging/replacement-package.cjs').prepare('../releases/v0.2.0',out,{siteId:crypto.randomUUID(),commit,mode:'manual-ssh'});
+          const temp=fs.mkdtempSync(path.join(process.env.RUNNER_TEMP,'riftassist-schema-'));
+          try {
+            require('../releases/v0.2.0/src/operations-store.js').createStore(temp).close();
+            const db=new(require('node:sqlite').DatabaseSync)(path.join(temp,'private/operations.sqlite'),{readOnly:true});
+            try{proof.expectedSchemaHash=require('./staging/data-compatibility.cjs').schemaHash(db);}finally{db.close();}
+          } finally {fs.rmSync(temp,{recursive:true,force:true});}
+          fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'control-center-manual-package-proof.json'),JSON.stringify(proof,null,2)+'\n');
+          console.log(JSON.stringify(proof));
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-v0.2.0-manual-release
+          path: ${{ runner.temp }}/RiftAssist-v0.2.0-manual-release/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: RiftAssist-ControlCenter-ubuntu-ssh-proof
@@ -194,4 +218,5 @@ jobs:
             ${{ runner.temp }}/control-center-ubuntu-proof.json
             ${{ runner.temp }}/control-center-real-staging-proof.json
             ${{ runner.temp }}/control-center-replacement-proof.json
+            ${{ runner.temp }}/control-center-manual-package-proof.json
           if-no-files-found: error

@@ -1,28 +1,10 @@
-> 2026-11-06 확인 결과와 새 승인안: [추가 경로·autostart 조사](SOURCE-EXTRAS-AND-AUTOSTART.md). UID/GID1000/1000·Node v24.22.1·Caddy 활성 경로가 확인됐습니다. 기준65개 hash 일치와 전체 referenceVerified=false를 분리하며 추가 경로/helper 동작 검토 전에는 교체를 차단합니다. 이전 문서의 이 항목들에 대한 미확인 표기는 이 관찰로 갱신합니다.
+# v0.2.0 실제 교체 확인표
 
-# v0.2.0 단일 서비스 교체 — 최종 준비 확인표
+2026-11-09. [최신 수동 SSH 절차](MANUAL-LIVE-RELEASE.md)가 실행 기준이다. 기존 VM·Caddy·포트에서 앱 한 버전만 실행한다. ready=false이며 운영 변경 승인이 아니다.
 
-2026-11-06 갱신. release/v0.2.0 전용. **실제 Azure 설치·DB/키 접근·중지·배포 승인이 아니다. ready=false를 유지한다.** 추가 VM 없이 기존 VM/도메인/HTTPS/Caddy/3001/3100에서 앱 한 버전만 실행한다. 사용자 제공 메타데이터 외 운영 정보는 미확인이다.
+## 1. 읽기 조사
 
-## 1. 완료된 기존 읽기 조사 및 새 승인 범위
-
-기존 두 조사는 사용자 PC에서 완료됐다. 재실행이 필요할 때만 다음 기존 절차를 사용한다. 새 추가 경로/helper 조사는 SOURCE-EXTRAS-AND-AUTOSTART.md의 별도 승인이 필요하다. Windows 패키지를 새 폴더에 해제하고 EXE가 있는 최상위에서 PowerShell을 연다. 아래 하나의 절차는 두 원문을 모두 검증한 뒤 승인된 조사 두 개만 순차 실행한다. 최초 Verify는 SSH 없이 검사한다. 키 내용·환경값·DB·질문/제보·일반 stderr를 읽거나 출력·저장하지 않는다. 실제 SSH 접속 로그와 소량 조회 부하는 생긴다. 프로필의 고정 대상은 azureuser@20.222.152.195, Windows OpenSSH, 기존 known_hosts/riftassistant-key.pem 경로다. 대상이 바뀌었다면 실행하지 않고 절차부터 재검토한다. 보안 정책/실행 정책을 낮추지 않는다.
-
-```powershell
-# ZIP 최상위. 다운로드한 패키지가 성공한 release/v0.2.0 CI의 것인지 먼저 확인.
-& .\Invoke-ReleasePreparation.ps1 -Mode Verify -PackageDirectory (Get-Location).Path
-# 이미 승인된 읽기 조사만 실행. 파일/결과 자동 저장이나 재시도 없음.
-& .\Invoke-ReleasePreparation.ps1 -Mode Inspect -PackageDirectory (Get-Location).Path
-```
-
-실행 원문은 **a7dbf966f7361dfa9fba34416caf6409bfcd6047**에서 변경하지 않았다.
-
-| 원문 | SHA256 |
-|---|---|
-| inspect-replacement-topology.py | 6d0a68ff75eeccc45235d5607b72704ef9079f159d94f1fc52bf74acd36cbfa1 |
-| inspect-legacy-source.py | 5d353f19ff44ff1218ddfdc5b09e4fa5a2126f29c6fa24fc9404cb56d2a98166 |
-
-공유할 것은 두 검증된 JSON의 메타데이터·hash 결과뿐이다. 예기치 않은 원시 SSH 출력/로그/키/DB는 보내지 않는다. source referenceVerified=false면 복귀 기준이 없으므로 설치·교체를 계속 차단한다. topology의 behaviorVerified=false는 helper의 실제 동작이 확인됐다는 뜻이 아니다. 참조 스크립트가 있으면 별도 승인된 범위로 검토한다. 443 소유/숨겨진 환경 확장·wrapper는 이 조사로 확정하지 않는다.
+기존 a7dbf966 두 조사는 완료됐다. 재실행할 필요가 없다. 기준65개 일치와 추가 경로/helper 미확인을 구분한다. 새로운 두 원문/해시와 영향은 MANUAL-LIVE-RELEASE.md 1절을 한 번에 검토·승인받는다. 회사 PC에서는 INSPECT-CONSOLE.txt 전체를 PowerShell5.1 콘솔에 직접 붙인다. 기본 Verify는 SSH0회이며 -Mode Inspect -Approved는 별도 승인 후 사용자가 실행한다. .ps1 파일 실행/회사 정책 변경/동적 우회는 하지 않는다.
 
 ## 2. 설치 이전 확정할 사항
 
@@ -32,19 +14,21 @@
 - [ ] 실제 unit FragmentPath/drop-ins/ExecStart/WorkingDirectory/KillMode/cgroup 확인. 현재 어댑터는 승인 inventory의 정확한 Node 버전과 /etc/systemd/system/riftassist.service를 검증한다. 실제 unit 경로가 다르면 코드/시험 수정이 먼저다.
 - [ ] autostart의 시작·재부팅·오류복구 개입 확인. helper 조정·mask가 필요하면 원복안과 별도 승인. 현재 기본 어댑터는 미확인/enabled helper를 차단한다. 단순 mask만으로 v017의 장기 자동복구가 보장되지는 않는다.
 - [ ] 현재 Caddy 설정 hash·도메인/인증서 확인. 활성 경로 /etc/caddy/Caddyfile은 확인됐다. Caddy 변경/reload는 교체 작업에 없다.
-- [ ] 추가 DB/외부 설정/필수 키·확장 파일·로그 보존 범위 확인. 현재 구현은 private/operations.sqlite와3개 확인된 키 및 DB 안의 설정/질문/제보/이력, unit/Caddy/owned override를 다룬다. 미확인 파일이 모두 백업된다고 가정하지 않는다.
+- [ ] 추가 DB/외부 설정/필수 키·확장 파일·로그 보존 범위 확인. 현재 구현은 private/operations.sqlite와3개 확인된 키 및 DB 안의 설정/질문/제보/이력, unit/Caddy/owned override를 다룬다. .env가 있으면 별도 처리 승인 후 암호화 archive에 원본을 보존하고 허용된 설정만 새 루트로 복원한다. 알 수 없는 설정은 교체를 차단한다. 미확인 파일이 모두 백업된다고 가정하지 않는다.
 - [ ] 승인된 knowledge 후보와 권한 증거, 개인정보 운영자 연락처/법적 정보·보관/삭제·국외 AI 전송 조건 확정. 기존1527개 카드/이미지/번역의 권한을 API 승인으로 대체하지 않는다.
 - [ ] 백업 wrapping key 분리 보관·오프호스트 암호화 보관·접근자·보관기간·복구 담당자·RPO/RTO 확정. 이번 작업에서 실제 키/백업을 생성·복사하지 않는다.
 
 ## 3. 코드 전용 설치 패키지와 승인 분리
 
-`staging/replacement-package.cjs`는 로컬의 검증된 v020 코드·고정 production broker 의존성만 새 디렉터리에 복사한다. codeReceipt의 전체 manifest/추가 파일 거절, symlink 거절, 비밀 패턴 검사를 적용한다. 운영 DB/키/knowledge/사용자 기록/개발용 서비스 실행 fixture는 포함하지 않는다. 합성 dev-fixtures는 앱 소스에 포함되지만 공개용 knowledge로 설치하지 않는다. 실제 source checkout에서만 다음처럼 만든다.
+초기 출시에는 manual-ssh 모드를 쓴다. 아래 broker 경로/wrapper/sudoers 항목은 기존 선택적 자동화 설계이며 설치 필수 사항이 아니다. 실제 대상·외부 checksum pin·fresh site 초기화는 MANUAL-LIVE-RELEASE.md를 따른다.
+
+`staging/replacement-package.cjs`는 로컬의 검증된 v020 코드·고정 일회성 도구 의존성만 새 디렉터리에 복사한다. codeReceipt의 전체 manifest/추가 파일 거절, symlink 거절, 비밀 패턴 검사를 적용한다. 운영 DB/키/knowledge/사용자 기록/개발용 서비스 실행 fixture는 포함하지 않는다. 합성 dev-fixtures는 앱 소스에 포함되지만 공개용 knowledge로 설치하지 않는다. 실제 source checkout에서만 다음처럼 만든다.
 
 ```javascript
 // Node24, 로컬 저장소의 control-center에서 실행하는 준비 코드 예시. SSH 아님.
 const M = require('./staging/replacement-package.cjs');
 // siteId, commit은 검토한 실제 UUID/전체 release commit으로 제공한다.
-const proof = M.prepare('../releases/v0.2.0', '/tmp/새로운-준비-폴더', {siteId, commit});
+const proof = M.prepare('../releases/v0.2.0', '/tmp/새로운-준비-폴더', {siteId, commit, mode:'manual-ssh'});
 // 별도로 신뢰한 CI/검토 결과의 planSha256을 pin해 다시 검사한다.
 M.verify('/tmp/새로운-준비-폴더', {expectedPlanHash: proof.planSha256});
 ```
@@ -63,6 +47,8 @@ M.verify('/tmp/새로운-준비-폴더', {expectedPlanHash: proof.planSha256});
 파일 hash 목록은 디지털 서명이 아니다. 성공한 CI commit·별도 전달/검토한 planSha256·후보 code hash와 일치해야 한다. 경로가 존재하면 덮어쓰지 않는다. broker 코드/권한/좁은 sudoers·SSH principal 설정, inactive 설치 및 root vault 생성은 **별도 설치 승인 후** 수행할 작업이다. 아직 서버 설치기나 자동 설치 명령을 운영 검증했다고 주장하지 않는다. 실제 unit/helper/권한 정보가 미확정이므로 설치 명령을 추측해 제공하지 않는다. 서비스 변경·Caddy 변경은 설치 범위에서 분리한다.
 
 ## 4. ready=false에서 실제 DB 호환성 확인하는 유지보수 단계
+
+별도 qualify-backup은 선택적 추가 훈련이다. 실제 replace transaction에도 중지 후 백업/독립 복원/schema·키 검사가 포함되므로 불필요한 추가 운영 중단을 요구하지 않는다.
 
 운영 DB/키 접근·중지를 포함하므로 **별도 유지보수 승인**이 필요하다. inactive 설치 후 inventory·topology/원본/개인정보/백업 정책/자원/설정 증거를 검토한다. `backup-plan` → 표시된 정확한 계획 승인 → `qualify-backup`은 기존 v017 중지 → 일관성 백업 → 독립 restore·schema/암호화/키/설정 검사 → 같은 v017 정상 인증·앱 시작 → HTTPS 검사 순서다. v020 실행/DB clone/라우팅 변경은 없다. ready=false 그대로 진행 가능하며 카드 권한 미확인 자료를 새 버전에 공개하지 않는다. 결과 qualified는 배포 승인이 아니다.
 
