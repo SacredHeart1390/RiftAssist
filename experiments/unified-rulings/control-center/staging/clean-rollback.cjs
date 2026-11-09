@@ -27,7 +27,8 @@ function isolation(c){return c.rollbackCode?'PrivateMounts=yes\nBindReadOnlyPath
 function assertNamespace(c,o,{installed=false}={}){
   if(!c.rollbackCode)return;
   for(const name of ['RootDirectory','RootImage','BindPaths','BindReadOnlyPaths','InaccessiblePaths','EnvironmentFiles'])if(typeof o[name]!=='string')P.fail('rollback-namespace-unverified');
-  if(o.RootDirectory||o.RootImage||o.BindPaths||o.EnvironmentFiles)P.fail('rollback-namespace-conflict');
+  if(o.RootDirectory||o.RootImage||o.BindPaths)P.fail('rollback-namespace-conflict');
+  require('./runtime-config.cjs').environmentReferences(c,o.EnvironmentFiles,{installed});
   if(!installed){if(o.BindReadOnlyPaths||o.InaccessiblePaths)P.fail('rollback-namespace-conflict');return;}
   const target=c.rollbackCode+':'+c.oldCode;
   if(![target,target+':rbind',target+':norbind'].includes(o.BindReadOnlyPaths)||o.InaccessiblePaths!==c.oldCode+'/scripts'||o.PrivateMounts!=='yes'||o.NoNewPrivileges!=='yes')P.fail('rollback-namespace-unverified');

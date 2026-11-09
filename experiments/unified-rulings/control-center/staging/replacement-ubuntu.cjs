@@ -4,8 +4,10 @@ const fs=require('node:fs'),path=require('node:path');
 const {promisify}=require('node:util'),execFile=promisify(require('node:child_process').execFile);
 const P=require('./protocol.cjs'),R=require('./replacement.cjs');
 const {available}=require('./ubuntu-io.cjs');
-function override(c){return '[Service]\nWorkingDirectory='+c.candidateData+'\nExecStart=\nExecStart='+c.node+' '+c.launcher+' '+P.within(c.root,'launch.json')+'\nTimeoutStopSec=115\nReadOnlyPaths='+c.candidateData+'/releases '+c.candidateData+'/knowledge-releases\n'+require('./clean-rollback.cjs').isolation(c);}
-function budgetGuard(c){return '# RiftAssist '+(c.rollbackCode?c.oldCodeHash:c.siteId)+' rollback budget guard\n[Service]\nEnvironment=OPENAI_GENERATION_ENABLED=false\n'+(c.rollbackCode?'ExecStart=\nExecStart='+c.node+' '+c.oldCode+'/src/manager.js\n':'')+require('./clean-rollback.cjs').isolation(c);}
+const HELPER='riftassist-autostart.service',HELPER_GUARD='/etc/systemd/system/'+HELPER+'.d/90-riftassist-maintenance.conf',HELPER_SENTINEL='/var/lib/riftassist-replacement/autostart-enabled';
+const helperGuard='[Unit]\n# Owned RiftAssist maintenance guard; remove only after verified legacy recovery.\nConditionPathExists='+HELPER_SENTINEL+'\n';
+function override(c){return '[Unit]\nStartLimitIntervalSec=300\nStartLimitBurst=3\n[Service]\nEnvironment=\nEnvironmentFile=\nRestartSec=5\nWorkingDirectory='+c.candidateData+'\nExecStart=\nExecStart='+c.node+' '+c.launcher+' '+P.within(c.root,'launch.json')+'\nTimeoutStopSec=115\nReadOnlyPaths='+c.candidateData+'/releases '+c.candidateData+'/knowledge-releases\n'+require('./clean-rollback.cjs').isolation(c);}
+function budgetGuard(c){return '# RiftAssist '+(c.rollbackCode?c.oldCodeHash:c.siteId)+' rollback budget guard\n[Service]\nEnvironmentFile=\nEnvironment=OPENAI_GENERATION_ENABLED=false\n'+(c.rollbackCode?'ExecStart=\nExecStart='+c.node+' '+c.oldCode+'/src/manager.js\n':'')+require('./clean-rollback.cjs').isolation(c);}
 function bounded(file){P.noLinks(file,true);if(fs.statSync(file).size>65536)P.fail('configuration-size');return fs.readFileSync(file);}
 function knowledgeHash(root){
   const active=P.readJSON(path.join(root,'knowledge-releases','active.json'),4096);if(!/^[a-zA-Z0-9_.-]{1,100}$/.test(active.releaseId)||['.','..'].includes(active.releaseId))P.fail('knowledge');
@@ -20,7 +22,7 @@ function prepareWorker(c){
   const worker=P.within(c.candidateData,'releases','v0.2.0');if(fs.existsSync(worker))P.fail('retained-release');
   fs.mkdirSync(path.dirname(worker),{recursive:true,mode:0o700});fs.cpSync(c.candidateCode,worker,{recursive:true,errorOnExist:true,force:false});
   P.atomic(path.join(c.candidateData,'.riftassist-environment.json'),{releaseFamily:'v0.2.0',environment:'production'});
-  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true},0o644);
+  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true,generationEnabled:c.evidence.configuration?.generationEnabled??null},0o644);
   const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,e.name);P.noLinks(file);if(e.isDirectory())walk(file);else fs.chownSync(file,c.uid,c.gid);}fs.chownSync(dir,c.uid,c.gid);};walk(c.candidateData);
 }
 class UbuntuReplacementIO {
@@ -29,12 +31,14 @@ class UbuntuReplacementIO {
     try{return(await execFile('/usr/bin/systemctl',args,{timeout:125000,maxBuffer:32768,env:{PATH:'/usr/bin:/bin',LANG:'C',SYSTEMD_PAGER:'cat'}})).stdout;}
     catch{P.fail('systemd-result-uncertain');}
   }
+  helperPaths(){return{service:HELPER,guard:HELPER_GUARD,sentinel:HELPER_SENTINEL};}
+  helperScriptHash(){return this.helperScriptHash();}
   async observed(service=this.config.service){
-    if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
+    if(![this.config.service,this.helperPaths().service].includes(service))P.fail('service');
     const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths,Type,Restart,Requires,Wants,After,PartOf,BindsTo,RootDirectory,RootImage,BindPaths,BindReadOnlyPaths,InaccessiblePaths,PrivateMounts,NoNewPrivileges,EnvironmentFiles']);
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
-  async preflight(version){
+  async preflight(version,{kind='replace'}={}){
     const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
     if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||!['','azureuser'].includes(o.Group)||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
     require('./clean-rollback.cjs').assertNamespace(c,o,{installed:fs.existsSync(c.overrideFile)});
@@ -47,12 +51,12 @@ class UbuntuReplacementIO {
     if(R.rollbackReceipt(c).hash!==c.oldCodeHash)P.fail('rollback-code-drift');
     if(version==='v0.1.7'){
       require('./legacy-v017.cjs').assertCompatibleStore(c.candidateCode);
-      if(knowledgeHash(c.candidateData).hash!==c.knowledgeHash)P.fail('knowledge-drift');
+      if(kind!=='qualify-backup'&&knowledgeHash(c.candidateData).hash!==c.knowledgeHash)P.fail('knowledge-drift');
     }
     const budget=await this.backupBudget(version==='v0.1.7'?c.oldData:c.candidateData);return{singleService:true,caddyUnchanged:true,backupBudget:budget};
   }
   assertMainServiceShape(o){
-    if(o.Type!=='simple'||o.Restart!=='on-failure'||typeof o.Wants!=='string'||!o.Wants.split(/\s+/).includes('riftassist-autostart.service')||['Requires','BindsTo'].some(k=>typeof o[k]!=='string'||o[k].split(/\s+/).includes('riftassist-autostart.service')))P.fail('main-service-shape-unverified');
+    if(o.Type!=='simple'||o.Restart!=='on-failure'||typeof o.Wants!=='string'||!o.Wants.split(/\s+/).includes(this.helperPaths().service)||['Requires','BindsTo'].some(k=>typeof o[k]!=='string'||o[k].split(/\s+/).includes(this.helperPaths().service)))P.fail('main-service-shape-unverified');
   }
   readReviewedDropIn(file){return bounded(file);}
   assertReviewedDropIns(observed){
@@ -81,11 +85,51 @@ class UbuntuReplacementIO {
     if(r.version!==this.config.nodeVersion)P.fail('runtime-unverified');
   }
   async assertAutostartQuiescent(){
-    const h=await this.observed('riftassist-autostart.service');
+    const h=await this.observed(this.helperPaths().service);
     const absent=h.LoadState==='not-found',masked=h.LoadState==='masked'&&['masked','masked-runtime'].includes(h.UnitFileState);
-    if((!absent&&!masked)||!['inactive','failed'].includes(h.ActiveState)||Number(h.MainPID)!==0||!['','0'].includes(h.Job??'missing'))P.fail('autostart-unresolved');
-    try{this.assertEmptyControlGroup('riftassist-autostart.service');}catch{P.fail('autostart-unresolved');}
-    return{absent,masked,quiescent:true};
+    const guarded=h.LoadState==='loaded'&&h.DropInPaths===this.helperPaths().guard&&this.helperGuardPresent();
+    if((!absent&&!masked&&!guarded)||!['inactive','failed'].includes(h.ActiveState)||Number(h.MainPID)!==0||!['','0'].includes(h.Job??'missing'))P.fail('autostart-unresolved');
+    try{this.assertEmptyControlGroup(this.helperPaths().service);}catch{P.fail('autostart-unresolved');}
+    return{absent,masked,guarded,quiescent:true};
+  }
+  helperGuardPresent(){
+    const {guard,sentinel}=this.helperPaths();
+    P.noLinks(sentinel);const base=path.dirname(sentinel);P.noLinks(base);const parent=fs.statSync(base);if(parent.uid!==0||(parent.mode&0o022))P.fail('autostart-guard-permissions');
+    if(fs.existsSync(sentinel))P.fail('autostart-sentinel-conflict');
+    if(!fs.existsSync(guard))return false;
+    for(const file of [guard,path.dirname(guard)]){P.noLinks(file,file===guard);const s=fs.statSync(file);if(s.uid!==0||(s.mode&0o022))P.fail('autostart-guard-permissions');}
+    if(!bounded(guard).equals(Buffer.from(helperGuard)))P.fail('autostart-guard-conflict');
+    return true;
+  }
+  async prepareAutostart(){
+    // Called only inside a separately approved mutating replacement transaction.
+    const c=this.config,{guard}=this.helperPaths();await this.configurationUnchanged();const main=await this.observed();this.assertMainServiceShape(main);
+    const a=c.evidence.autostart;
+    if(a?.policy!=='condition-guard-restore-on-legacy'||a.scriptPath!=='/home/azureuser/riftassist-autostart.py'||!P.sha(a.scriptSha256))P.fail('autostart-policy-unapproved');
+    if(this.helperScriptHash()!==a.scriptSha256)P.fail('autostart-source-drift');
+    const h=await this.observed(this.helperPaths().service);this.assertHelperShape(h);
+    const exists=this.helperGuardPresent();
+    if(h.DropInPaths!==(exists?guard:''))P.fail('autostart-drop-ins-unverified');
+    if(!['inactive','failed'].includes(h.ActiveState)||Number(h.MainPID)!==0||!['','0'].includes(h.Job??'missing'))P.fail('autostart-state-drift');
+    let mutation=false;
+    try{
+      if(!exists){mutation=true;fs.mkdirSync(path.dirname(guard),{recursive:true,mode:0o755});P.noLinks(path.dirname(guard));const parent=fs.statSync(path.dirname(guard));if(parent.uid!==0||(parent.mode&0o022))P.fail('autostart-guard-permissions');P.atomic(guard,helperGuard,0o644);}
+      mutation=true;await this.run(['daemon-reload']);await this.assertAutostartQuiescent();
+      return{policy:a.policy,guarded:true,originalEnabledStatePreserved:true};
+    }catch(e){if(mutation)P.fail('autostart-guard-uncertain');throw e;}
+  }
+  assertHelperShape(h){
+    if(h.LoadState!=='loaded'||h.UnitFileState!=='enabled'||h.Type!=='oneshot'||h.Restart!=='on-failure'||['Requires','After','PartOf'].some(k=>typeof h[k]!=='string'||!h[k].split(/\s+/).includes(this.config.service)))P.fail('autostart-topology-drift');
+  }
+  async finishMaintenance(version){
+    const {guard}=this.helperPaths();if(version==='v0.2.0'){await this.assertAutostartQuiescent();return;}
+    if(version!=='v0.1.7')P.fail('version');
+    await this.configurationUnchanged();await this.assertAutostartQuiescent();const h=await this.observed(this.helperPaths().service);this.assertHelperShape(h);
+    if(this.helperScriptHash()!==this.config.evidence.autostart.scriptSha256)P.fail('autostart-source-drift');
+    if(!this.helperGuardPresent())P.fail('autostart-guard-conflict');
+    try{fs.unlinkSync(guard);await this.run(['daemon-reload']);const after=await this.observed(this.helperPaths().service);this.assertHelperShape(after);if(after.DropInPaths!=='')P.fail('autostart-drop-ins-unverified');}
+    catch{P.fail('autostart-restoration-uncertain');}
+    // No /api/start replay: original Wants relationship is restored for the next boot.
   }
   async stop(){await this.assertAutostartQuiescent();await this.run(['stop',this.config.service]);}
   async assertStopped(){
@@ -95,7 +139,7 @@ class UbuntuReplacementIO {
     for(const port of c.ports)if(!await available(port))P.fail('ports-not-released');
   }
   assertEmptyControlGroup(service){
-    if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
+    if(![this.config.service,this.helperPaths().service].includes(service))P.fail('service');
     const group='/sys/fs/cgroup/system.slice/'+service;let visited=0;
     const check=(dir,depth=0)=>{if(!fs.existsSync(dir))return;if(++visited>256||depth>16)P.fail('cgroup-budget');P.noLinks(dir);
       const procs=path.join(dir,'cgroup.procs');if(fs.existsSync(procs)&&fs.readFileSync(procs,'utf8').trim())P.fail('writers-still-running');
@@ -108,7 +152,10 @@ class UbuntuReplacementIO {
   resources(){const disk=fs.statfsSync(this.config.root),mem=/^MemAvailable:\s+(\d+) kB$/m.exec(fs.readFileSync('/proc/meminfo','utf8'));return{freeDisk:disk.bavail*disk.bsize,availableMemory:mem?Number(mem[1])*1024:0};}
   async configurationSnapshot(){
     const c=this.config;await this.configurationUnchanged();
-    return{unit:bounded(c.unitFile).toString('base64'),caddy:bounded(c.caddyFile).toString('base64'),override:fs.existsSync(c.overrideFile)?bounded(c.overrideFile).toString('base64'):null};
+    if(c.evidence.configuration?.runtimeEnvBackupApproved!==true)P.fail('runtime-config-approval-required');
+    const o=await this.observed(),refs=require('./runtime-config.cjs').environmentReferences(c,o.EnvironmentFiles,{installed:fs.existsSync(c.overrideFile)});
+    const raw=await this.run(['show',c.service,'--no-pager','--property=Environment','--value']);
+    return{unit:bounded(c.unitFile).toString('base64'),caddy:bounded(c.caddyFile).toString('base64'),override:fs.existsSync(c.overrideFile)?bounded(c.overrideFile).toString('base64'):null,unitEnvironment:Buffer.from(raw).toString('base64'),environmentFileUsed:refs.references===1};
   }
   async configurationUnchanged(){const c=this.config;if(P.hash(bounded(c.unitFile))!==c.unitHash||P.hash(bounded(c.caddyFile))!==c.caddyHash)P.fail('configuration-drift');}
   async finalizeCandidate(){prepareWorker(this.config);}
@@ -188,4 +235,4 @@ class UbuntuReplacementIO {
     return{version,localApplication:true,adminAuthenticated:true,https200:true,paidAiInvoked:false,aiPausedForBudgetReconciliation:paused};
   }
 }
-module.exports={UbuntuReplacementIO,override,budgetGuard,knowledgeHash,prepareWorker};
+module.exports={UbuntuReplacementIO,override,budgetGuard,knowledgeHash,prepareWorker,helperGuard};

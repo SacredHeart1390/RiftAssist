@@ -16,13 +16,14 @@ function prepare(release,destination,{siteId,commit,mode='restricted-broker',leg
   for(const name of modules){const file=P.within(__dirname,name);P.noLinks(file,true);if(mode==='restricted-broker')add('broker/staging/'+name,fs.readFileSync(file));add('site/tools/'+name,fs.readFileSync(file));}
   const lab=fs.readFileSync(P.within(path.resolve(__dirname,'..'),'deployment/lab.cjs'));if(mode==='restricted-broker')add('broker/deployment/lab.cjs',lab);add('site/deployment/lab.cjs',lab);
   if(mode==='restricted-broker')add('broker/riftassist-replacement-broker',Buffer.from(require('./templates.cjs').replacementWrapper),0o755);
+  add('REPLACEMENT-INSTRUCTIONS.md',fs.readFileSync(path.resolve(__dirname,'../FINAL-LAUNCH.md')));
   const sums=Object.entries(files).sort(([a],[b])=>a.localeCompare(b,'en')).map(([n,v])=>P.hash(v.bytes)+'  '+n).join('\n')+'\n';
   add('SHA256SUMS',Buffer.from(sums));
   const hashes=Object.fromEntries(Object.entries(files).sort(([a],[b])=>a.localeCompare(b,'en')).map(([n,v])=>[n,P.hash(v.bytes)]));
   const plan={protocol:'riftassist-replacement-installation-plan-1',siteId,commit,mode,requiresPermanentBroker:mode!=='manual-ssh',rollbackReferenceHash:legacy.hash,candidateHash:receipt.hash,sourceReady:receipt.manifest.ready===true,installationApproved:false,authorizedToDeploy:false,
     targets:{rollbackCode:'/var/lib/riftassist-rollback/'+legacy.hash+'/v0.1.7',candidate:root+'/releases/v0.2.0',siteTools:root+'/tools',siteDependency:root+'/deployment/lab.cjs',broker:mode==='manual-ssh'?null:'/usr/local/lib/riftassist-replacement',wrapper:mode==='manual-ssh'?null:'/usr/local/libexec/riftassist-replacement-broker',inventory:'/etc/riftassist-replacement/inventory.json',newData:root+'/data/v0.2.0'},
     constraints:{existingPathsMustBeAbsent:true,rootOwnedCode:true,separateUserOwnedData:true,serviceChangesDuringInstallation:false,dbAndKeysIncluded:false,knowledgeIncluded:false,caddyChanges:false,additionalVm:false},
-    blockers:['review-actual-topology-and-autostart','pin-unit-caddy-identity-runtime','approved-knowledge-rights-and-privacy','review-inventory-and-backup-policy','separate-inactive-installation-approval','approved-offline-backup-and-independent-restore','release-readiness-decision','separate-replacement-approval'],files:hashes};
+    blockers:['approve-reviewed-autostart-guard-and-environment-policy','validate-pinned-configuration-and-environment-references','approved-knowledge-rights-and-privacy','review-inventory-and-backup-policy','separate-inactive-installation-approval','approved-offline-backup-and-independent-restore','release-readiness-decision','separate-replacement-approval'],files:hashes};
   // All source/hash/secret checks complete before creating any destination.
   fs.mkdirSync(destination,{recursive:true,mode:0o700});
   for(const [name,v]of Object.entries(files)){const file=P.within(destination,name);fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o755});fs.writeFileSync(file,v.bytes,{flag:'wx',mode:v.mode});}

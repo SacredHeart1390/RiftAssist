@@ -108,7 +108,7 @@ test('unknown backup schema or settings never starts the candidate',()=>run(asyn
 test('completion journal failure compensates the persisted active-version pointer as well as the service',()=>run(async(s,io,e)=>{const p=e.plan('replace',id()),original=P.atomic;let failed=false;P.atomic=(file,value,...args)=>{if(file===path.join(s.c.root,'operations',p.id+'.json')&&value.state==='completed'&&!failed){failed=true;P.fail('synthetic-journal-failure');}return original(file,value,...args);};try{const r=await e.execute(p,p.digest);assert.equal(r.state,'failed-stable');assert.equal(io.running,'v0.1.7');assert.equal(e.status().state.version,'v0.1.7');assert.ok(e.status().state.generation>p.previous.generation);assert.ok(fs.existsSync(path.join(s.c.candidateData,'private/operations.sqlite')));}finally{P.atomic=original;}}));
 test('read-only reconciliation exposes configuration drift without restarting or modifying history',()=>run(async(s,io,e)=>{io.selected='v0.2.0';const before=io.calls.length,r=await e.reconcile();assert.equal(r.uncertain,true);assert.equal(r.observed.configurationTarget,'v0.2.0');assert.equal(io.calls.length,before);assert.equal(e.status().state.version,'v0.1.7');}));
 test('memory and disk budgets fail closed before allocating a backup snapshot',()=>run(async(s)=>{const io=new UbuntuReplacementIO({...s.c,rehearsal:false});io.resources=()=>({availableMemory:1,freeDisk:2**40});await assert.rejects(()=>io.backupBudget(s.c.oldData),/backup-memory-budget/);io.resources=()=>({availableMemory:2**32,freeDisk:1});await assert.rejects(()=>io.backupBudget(s.c.oldData),/backup-disk-budget/);assert.equal(fs.readdirSync(path.join(s.c.root,'backups')).length,0);}));
-test('rollback budget pause uses only the owned drop-in and leaves old DB settings intact',()=>run(async(s)=>{const io=new UbuntuReplacementIO({...s.c,rehearsal:false});io.assertStopped=async()=>{};io.run=async()=>'';const snap=await io.configurationSnapshot(),db=path.join(s.c.oldData,'private/operations.sqlite'),before=P.hash(fs.readFileSync(db));await io.select('v0.2.0');await io.select('v0.1.7',snap);assert.equal(fs.readFileSync(s.c.overrideFile,'utf8'),budgetGuard(s.c));assert.equal(P.hash(fs.readFileSync(db)),before);assert.ok(!budgetGuard(s.c).includes('ExecStart'));}));
+test('rollback budget pause uses only the owned drop-in and leaves old DB settings intact',()=>run(async(s)=>{const io=new UbuntuReplacementIO({...s.c,rehearsal:false});io.assertStopped=async()=>{};io.run=async()=>'';io.observed=async()=>({EnvironmentFiles:''});const snap=await io.configurationSnapshot(),db=path.join(s.c.oldData,'private/operations.sqlite'),before=P.hash(fs.readFileSync(db));await io.select('v0.2.0');await io.select('v0.1.7',snap);assert.equal(fs.readFileSync(s.c.overrideFile,'utf8'),budgetGuard(s.c));assert.equal(P.hash(fs.readFileSync(db)),before);assert.ok(!budgetGuard(s.c).includes('ExecStart'));}));
 test('compensation cannot overwrite a third-party change even when restoring the new version',()=>run(async(s)=>{const io=new UbuntuReplacementIO({...s.c,rehearsal:false});io.assertStopped=async()=>{};io.run=async()=>'';fs.writeFileSync(s.c.overrideFile,'# independent operator change\n');await assert.rejects(()=>io.restorePrevious('v0.2.0',{override:Buffer.from(override(s.c)).toString('base64')}),/override-conflict/);assert.equal(fs.readFileSync(s.c.overrideFile,'utf8'),'# independent operator change\n');}));
 test('missing keyset blocks a real adapter restart before systemd can regenerate secrets',async()=>{const s=await fixture({realLegacy:true});try{const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let calls=0;io.run=async()=>{calls++;return '';};io.assertStopped=async()=>{};const file=path.join(s.c.oldData,'private/storage.key');fs.unlinkSync(file);await assert.rejects(()=>io.start('v0.1.7'),/restart-keyset-unverified/);assert.equal(calls,0);assert.equal(fs.existsSync(file),false);}finally{s.cleanup();}});
 async function managerFixture(t,options={}){
@@ -185,7 +185,7 @@ test('backup qualification can report unsupported runtime config without mislabe
   fs.writeFileSync(path.join(s.c.oldData,'.env'),'export UNREVIEWED=fixture\n');const p=e.plan('qualify-backup',id()),r=await e.execute(p,p.digest);assert.equal(r.state,'qualified');assert.equal(r.probe.integrity,true);assert.equal(r.probe.runtimeConfig.validated,false);assert.equal(r.probe.runtimeConfig.requiresReview,true);assert.equal(io.running,'v0.1.7');assert.equal(fs.existsSync(path.join(s.c.candidateData,'.env')),false);
 }));
 test('runtime config cannot be read during production maintenance without its explicit data/config approval',()=>run(async s=>{
-  fs.writeFileSync(path.join(s.c.oldData,'.env'),'OPENAI_API_KEY=development-mock-only\n');const io=new UbuntuReplacementIO({...s.c,rehearsal:false});assert.throws(()=>io.assertRuntimeConfigurationApproved('v0.1.7'),/runtime-config-approval-required/);const approved=new UbuntuReplacementIO({...s.c,rehearsal:false,evidence:{...s.c.evidence,configuration:{...s.c.evidence.configuration,runtimeEnvBackupApproved:true}}});approved.assertRuntimeConfigurationApproved('v0.1.7');
+  fs.writeFileSync(path.join(s.c.oldData,'.env'),'OPENAI_API_KEY=development-mock-only\n');const io=new UbuntuReplacementIO({...s.c,rehearsal:false,evidence:{...s.c.evidence,configuration:{...s.c.evidence.configuration,runtimeEnvBackupApproved:false}}});assert.throws(()=>io.assertRuntimeConfigurationApproved('v0.1.7'),/runtime-config-approval-required/);const approved=new UbuntuReplacementIO({...s.c,rehearsal:false,evidence:{...s.c.evidence,configuration:{...s.c.evidence.configuration,runtimeEnvBackupApproved:true}}});approved.assertRuntimeConfigurationApproved('v0.1.7');
 }));
 test('manual capsule reuses the one-shot maintenance entry without a permanent broker executable or new port',()=>run(async s=>{
  const M=require('./replacement-package.cjs'),target=path.join(s.temporary,'manual');const proof=M.prepare(path.resolve(__dirname,'../../releases/v0.2.0'),target,{siteId:s.c.siteId,commit:'c'.repeat(40),mode:'manual-ssh'});assert.equal(proof.requiresPermanentBroker,false);assert.equal(proof.mode,'manual-ssh');assert.equal(fs.existsSync(path.join(target,'broker')),false);assert.equal(fs.existsSync(path.join(target,'site/tools/replacement-serve.cjs')),true);assert.equal(fs.existsSync(path.join(target,'site/tools/runtime-config.cjs')),true);assert.equal(P.readJSON(path.join(target,'INSTALLATION-PLAN.json')).targets.wrapper,null);assert.equal(proof.authorizedToDeploy,false);assert.equal(require(path.join(target,'site/tools/replacement-package.cjs')).verify(target,{expectedPlanHash:proof.planSha256}).authorizedToDeploy,false);
@@ -196,4 +196,121 @@ test('manual deployment cannot ignore an unreviewed or changed existing systemd 
 test('manual one-shot maintenance cannot run tools from a different candidate site',()=>{const f=require('./replacement-serve.cjs').trustedLocation,root='/var/lib/riftassist-replacement/11111111-1111-1111-1111-111111111111';assert.equal(f(root+'/tools',root),true);assert.equal(f(root+'\\tools',root),false);assert.equal(f('/usr/local/lib/riftassist-replacement/staging',root),true);assert.equal(f('/var/lib/riftassist-replacement/22222222-2222-2222-2222-222222222222/tools',root),false);});
 test('preserved API credentials never implicitly activate live calls and paused operation needs no paid provider',()=>run(async s=>{
  const c=require('./runtime-config.cjs');fs.writeFileSync(path.join(s.c.candidateData,'.env'),'OPENAI_API_KEY=development-mock-only\nOPENAI_GENERATION_ENABLED=true\n');assert.throws(()=>c.providerEnvironment(s.c.candidateData,{}, {aiEnabled:true}),/provider-activation-not-approved/);const enabled=c.providerEnvironment(s.c.candidateData,{}, {aiEnabled:true,liveProviderApproved:true});assert.equal(enabled.RIFTASSI_EXTERNAL_MODE,'live');assert.equal(enabled.OPENAI_API_KEY,'development-mock-only');assert.throws(()=>c.providerEnvironment(s.c.candidateData,{RIFTASSI_EXTERNAL_MODE:'live',RIFTASSI_ALLOW_EXTERNAL_CALLS:'true'}, {aiEnabled:true}),/provider-activation-not-approved/);fs.unlinkSync(path.join(s.c.candidateData,'.env'));assert.doesNotThrow(()=>c.providerEnvironment(s.c.candidateData,{}, {aiEnabled:false}));
+}));
+
+test('final user observations pin unit Caddy and helper without authorizing deployment or inventing environment paths',()=>{
+ const o=require('./azure-observations-2026-11-09.json'),i=require('./replacement-inventory.example.json');
+ assert.equal(i.unitHash,o.service.unitFileHash);assert.equal(i.caddyHash,o.caddy.currentFileSha256);assert.equal(i.evidence.autostart.scriptSha256,o.autostart.scriptSha256);
+ assert.equal(o.service.requiresHelper,false);assert.equal(o.service.bindsToHelper,false);assert.equal(o.service.environmentFilesPresent,true);assert.equal(o.service.environmentFilePathsKnown,false);
+ assert.equal(i.installationApproved,false);assert.equal(i.inventoryVerified,false);assert.equal(o.authorizedToDeploy,false);assert.equal(o.autostart.scriptExecuted,false);
+});
+test('environment reference policy accepts only exact old dotenv metadata and requires reset after selection',()=>run(async s=>{
+ const C=require('./runtime-config.cjs'),c={...s.c,evidence:{...s.c.evidence,configuration:{environmentFilesPolicy:'old-data-dotenv-only-reset'}}};
+ const raw=path.join(c.oldData,'.env')+' (ignore_errors=no)';assert.equal(C.environmentReferences(c,raw).contentsRead,false);
+ assert.throws(()=>C.environmentReferences(s.c,raw),/environment-policy-unapproved/);
+ for(const invalid of ['/etc/private.env (ignore_errors=no)',raw+' '+raw,'-'+raw,raw+'\n'])assert.throws(()=>C.environmentReferences(c,invalid),/environment-reference-outside-approved-scope/);
+ assert.throws(()=>C.environmentReferences(c,raw,{installed:true}),/environment-reference-not-reset/);
+ const ns={RootDirectory:'',RootImage:'',BindPaths:'',BindReadOnlyPaths:'',InaccessiblePaths:'',EnvironmentFiles:raw};
+ require('./clean-rollback.cjs').assertNamespace({...c,rollbackCode:path.join(c.root,'rollback/v0.1.7')},ns);
+ assert.match(override(c),/Environment=\nEnvironmentFile=\n/);assert.match(budgetGuard(c),/EnvironmentFile=\n/);
+}));
+test('unit and dotenv precedence is explicit and ambiguous shell encoding is not evaluated',()=>{
+ const C=require('./runtime-config.cjs'),b=s=>Buffer.from(s).toString('base64');
+ const unit=b('OPENAI_MODEL=unit-model OPENAI_API_KEY=development-mock-only NODE_OPTIONS=""');
+ const file=Buffer.from('OPENAI_MODEL=file-model\n');
+ assert.equal(C.effective(file,unit,true).values.OPENAI_MODEL,'file-model');assert.equal(C.effective(file,unit,false).values.OPENAI_MODEL,'unit-model');
+ assert.equal(C.effective(file,unit).values.NODE_OPTIONS,undefined);
+ for(const value of ['OPENAI_MODEL=bad\\value','OPENAI_MODEL="broken','OPENAI_MODEL=a\nUNREVIEWED=value']){
+  if(value.includes('\n'))assert.equal(C.effectiveReport(null,b(value)).requiresReview,true);
+  else assert.throws(()=>C.unitBytes(b(value)),/runtime-config-format/);
+ }
+});
+test('inline unit settings are sealed with the stopped WAL snapshot and restored only into new data',()=>run(async(s,io,e)=>{
+ const snapshot=io.configurationSnapshot.bind(io),unit=Buffer.from('OPENAI_API_KEY=development-mock-only OPENAI_MODEL=unit-model').toString('base64');
+ io.configurationSnapshot=async()=>({...await snapshot(),unitEnvironment:unit,environmentFileUsed:false});
+ fs.writeFileSync(path.join(s.c.oldData,'.env'),'OPENAI_MODEL=file-model\n');
+ const p=e.plan('replace',id()),op=await e.execute(p,p.digest);assert.equal(op.state,'completed');
+ assert.equal(require('./runtime-config.cjs').launchEnvironment(s.c.candidateData,{}).OPENAI_MODEL,'unit-model');
+ assert.equal(op.probe.runtimeConfig.unitEnvironmentPreserved,true);assert.ok(!JSON.stringify(e.status()).includes(unit));
+ assert.ok(!fs.readFileSync(path.join(s.c.root,'backups',p.id+'.sealed')).includes('development-mock-only'));
+}));
+test('explicit AI activation cannot follow copied or inherited flags without provider approval',()=>run(async s=>{
+ const C=require('./runtime-config.cjs');fs.writeFileSync(path.join(s.c.candidateData,'.env'),'OPENAI_API_KEY=development-mock-only\nOPENAI_GENERATION_ENABLED=false\n');
+ assert.throws(()=>C.providerEnvironment(s.c.candidateData,{}, {aiEnabled:true,generationEnabled:true}),/provider-activation-not-approved/);
+ assert.equal(C.providerEnvironment(s.c.candidateData,{}, {aiEnabled:true,liveProviderApproved:true,generationEnabled:true}).OPENAI_GENERATION_ENABLED,'true');
+ assert.equal(C.providerEnvironment(s.c.candidateData,{}, {aiEnabled:true,generationEnabled:false}).OPENAI_GENERATION_ENABLED,'false');
+}));
+function helperIo(s){
+ const hash='5f84d469b9186eff14039068bdc84019fbd21c3e23b02b5bc8d6d0d93e9c6de1';
+ const c={...s.c,rehearsal:false,evidence:{...s.c.evidence,autostart:{policy:'condition-guard-restore-on-legacy',scriptPath:'/home/azureuser/riftassist-autostart.py',scriptSha256:hash}}},io=new UbuntuReplacementIO(c);
+ const base=path.join(s.temporary,'helper-control');fs.mkdirSync(base,{mode:0o700});
+ const paths={service:'riftassist-autostart.service',guard:path.join(base,'helper.d/90-riftassist-maintenance.conf'),sentinel:path.join(base,'autostart-enabled')};
+ io.helperPaths=()=>paths;io.helperScriptHash=()=>hash;io.assertEmptyControlGroup=()=>{};io.run=async()=>'';
+ io.observed=async service=>service===paths.service?{LoadState:'loaded',UnitFileState:'enabled',Type:'oneshot',Restart:'on-failure',Requires:c.service,After:c.service,PartOf:c.service,ActiveState:'inactive',MainPID:'0',Job:'',DropInPaths:fs.existsSync(paths.guard)?paths.guard:''}:{Type:'simple',Restart:'on-failure',Wants:paths.service,Requires:'',BindsTo:''};
+ const original=fs.statSync;fs.statSync=(file,...args)=>{const value=original(file,...args);if(String(file).startsWith(base))Object.defineProperty(value,'uid',{value:0});return value;};
+ return{io,paths,restore:()=>{fs.statSync=original;}};
+}
+test('owned condition guard preserves enabled state and is removed only after healthy legacy recovery',()=>run(async s=>{
+ const h=helperIo(s);try{
+  const r=await h.io.prepareAutostart();assert.equal(r.originalEnabledStatePreserved,true);assert.equal(await h.io.helperGuardPresent(),true);
+  await h.io.finishMaintenance('v0.2.0');assert.equal(fs.existsSync(h.paths.guard),true);
+  await h.io.finishMaintenance('v0.1.7');assert.equal(fs.existsSync(h.paths.guard),false);
+ }finally{h.restore();}
+}));
+test('helper drift conflicting guard or enabling sentinel cannot be overwritten or treated as quiescent',()=>run(async s=>{
+ const h=helperIo(s);try{
+  h.io.helperScriptHash=()=> '0'.repeat(64);await assert.rejects(()=>h.io.prepareAutostart(),/autostart-source-drift/);assert.equal(fs.existsSync(h.paths.guard),false);
+  fs.mkdirSync(path.dirname(h.paths.guard));fs.writeFileSync(h.paths.guard,'independent operator content');
+  assert.throws(()=>h.io.helperGuardPresent(),/autostart-guard-conflict/);assert.equal(fs.readFileSync(h.paths.guard,'utf8'),'independent operator content');
+  fs.writeFileSync(h.paths.sentinel,'do not enable');assert.throws(()=>h.io.helperGuardPresent(),/autostart-sentinel-conflict/);
+ }finally{h.restore();}
+}));
+test('helper guard preflight compensation and final restoration are part of the approved operation journal',()=>run(async(s,io,e)=>{
+ let guarded=false;io.prepareAutostart=async()=>{guarded=true;return{guarded:true};};io.finishMaintenance=async version=>{if(version==='v0.1.7')guarded=false;};
+ io.fault='preflight';const p=e.plan('qualify-backup',id()),op=await e.execute(p,p.digest);assert.equal(op.state,'failed-stable');assert.equal(guarded,false);assert.equal(io.calls.includes('stop'),false);
+}));
+test('uncertain helper mutation or restoration blocks retries instead of repeating control requests',()=>run(async(s,io,e)=>{
+ let count=0;io.prepareAutostart=async()=>{count++;P.fail('autostart-guard-uncertain');};
+ const p=e.plan('qualify-backup',id()),op=await e.execute(p,p.digest);assert.equal(op.state,'recovery-required');assert.equal(count,1);assert.equal(io.calls.includes('stop'),false);assert.throws(()=>e.plan('qualify-backup',id()),/busy/);
+}));
+test('worker watchdog distinguishes manual stop and never replays start or any settings write',async()=>{
+ const L=require('./replacement-launch.cjs'),normal={appRunning:true,changing:false,error:'',activeOrigin:'https://riftassistant.app'};
+ assert.equal(L.statusRequiresRestart(normal),false);assert.equal(L.statusRequiresRestart({...normal,appRunning:false,error:'worker failure'}),true);
+ assert.equal(L.statusRequiresRestart({...normal,appRunning:false,error:'previous error',activeOrigin:''}),false);
+ const original=global.fetch,calls=[];global.fetch=async(url,options)=>{calls.push([url,options]);return new Response(JSON.stringify({...normal,appRunning:false,error:'worker failure'}));};
+ try{await assert.rejects(()=>L.watchManager('http://127.0.0.1:3100','synthetic-token',new AbortController().signal,{pause:async()=>{}}),/manager-watch-failed/);assert.equal(calls.length,1);assert.ok(calls.every(x=>x[0].endsWith('/api/status')&&!x[1].method));}finally{global.fetch=original;}
+});
+test('watchdog renews an expired session without restarting a stopped app and bounds read failures',async()=>{
+ const L=require('./replacement-launch.cjs'),original=global.fetch,ac=new AbortController();let reads=0,renewals=0;
+ global.fetch=async()=>++reads===1?new Response('{}',{status:401}):new Response(JSON.stringify({appRunning:false,changing:false,error:'',activeOrigin:''}));
+ try{await L.watchManager('http://127.0.0.1:3100','synthetic-token',ac.signal,{pause:async()=>{if(reads===2)ac.abort();},renew:async()=>{renewals++;return'synthetic-token';}});assert.equal(renewals,1);assert.equal(reads,2);
+ reads=0;global.fetch=async()=>{reads++;throw Error('synthetic-sensitive-output');};await assert.rejects(()=>L.watchManager('http://127.0.0.1:3100','synthetic-token',new AbortController().signal,{pause:async()=>{}}),/manager-watch-failed/);assert.equal(reads,3);
+ }finally{global.fetch=original;}
+});
+test('fixed approved maintenance entry binds inventory and operation ID and never replays a lost write',()=>run(async(s,io,e)=>{
+ const invoke=require('./replacement-serve.cjs').approvedOperation,opid=id();
+ await assert.rejects(()=>invoke(e,'qualify-backup','0'.repeat(64),opid),/approval/);assert.equal(io.calls.length,0);
+ const result=await invoke(e,'qualify-backup',s.c.inventoryHash,opid);assert.equal(result.state,'qualified');const count=io.calls.length;
+ assert.equal((await invoke(e,'qualify-backup',s.c.inventoryHash,opid)).id,opid);assert.equal(io.calls.length,count);
+ await assert.rejects(()=>invoke(e,'replace',s.c.inventoryHash,opid),/idempotency-conflict/);
+}));
+test('fixed maintenance entry returns interrupted journal without a new plan or control request',()=>run(async(s,io,e)=>{
+ const opid=id();P.atomic(path.join(s.c.root,'operations',opid+'.json'),{id:opid,kind:'qualify-backup',state:'stop-intent'});
+ const result=await require('./replacement-serve.cjs').approvedOperation(e,'qualify-backup',s.c.inventoryHash,opid);
+ assert.equal(result.state,'stop-intent');assert.deepEqual(io.calls,[]);
+}));
+test('helper restoration failure is journaled once without a second start or unguard request',()=>run(async(s,io,e)=>{
+ let attempts=0;io.prepareAutostart=async()=>({guarded:true});io.finishMaintenance=async()=>{attempts++;P.fail('autostart-restoration-uncertain');};
+ const p=e.plan('qualify-backup',id()),op=await e.execute(p,p.digest);assert.equal(op.state,'recovery-required');assert.equal(attempts,1);assert.equal(io.calls.filter(x=>x==='start').length,1);assert.equal(e.status().uncertain,true);
+}));
+test('unit inline secrets cannot be queried without configuration-content approval even when dotenv is absent',()=>run(async s=>{
+ const io=new UbuntuReplacementIO({...s.c,rehearsal:false,evidence:{...s.c.evidence,configuration:{runtimeEnvBackupApproved:false}}});let queried=0;
+ io.configurationUnchanged=async()=>{};io.run=async()=>{queried++;return 'OPENAI_API_KEY=development-mock-only';};
+ await assert.rejects(()=>io.configurationSnapshot(),/runtime-config-approval-required/);assert.equal(queried,0);
+}));
+test('a retained service-wide lock blocks different immutable site profiles without altering their state',()=>run(async(s,io,e)=>{
+ const lock=path.join(path.dirname(s.c.root),'service-operation.lock');P.atomic(lock,{pid:2147483647,token:id(),siteId:id()});
+ assert.equal(e.status().locked,true);assert.throws(()=>e.plan('qualify-backup',id()),/busy/);assert.deepEqual(io.calls,[]);
+ const siteId=id(),root=path.join(path.dirname(s.c.root),siteId),raw={...s.raw,siteId,root,launcher:path.join(root,'tools/replacement-launch.cjs')},c=R.config(raw,{rehearsal:true});R.initialize(c);
+ const another=R.createReplacement(raw,new FakeReplacementIO(c),{rehearsal:true});assert.equal(another.status().locked,true);assert.throws(()=>another.plan('qualify-backup',id()),/busy/);assert.equal(fs.existsSync(lock),true);
 }));

@@ -1,5 +1,8 @@
 # 통합 조사 연결 점검과 이번 출시의 실행 경로
 
+> 최종 통합 읽기 조사는 사용자가 완료했다. 아래 과거 조사/설치 설명은 이력이며 다시 실행하지 않는다. 현재 승인 범위·설치·데이터 검증·교체 절차는 [FINAL-LAUNCH.md](FINAL-LAUNCH.md)만 따른다. EnvironmentFiles 존재 및 helper 원문 hash는 최신 observations에 반영됐으며, mask를 전제로 한 과거 절차는 새 condition guard 정책으로 대체됐다.
+
+
 2026-11-09, release/v0.2.0. 실제 Azure 접속·설치·서비스 제어·운영 데이터 접근은 실행하지 않았다.
 
 ## 현재 사용할 수 있는 연결

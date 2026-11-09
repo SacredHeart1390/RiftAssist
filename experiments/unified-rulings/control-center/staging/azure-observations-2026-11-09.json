@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "providedOn": "2026-11-09",
-  "source": "user-reported sanitized summaries; latest launch-details-1 completed with readOnly true; raw JSON not received",
+  "source": "user-reported final integrated read-only inspection; sanitized summary only; no direct Azure connection by Codex",
   "sshExitCodesReported": [
     0,
     0
@@ -17,7 +17,18 @@
     "dropInCount": 0,
     "workingDirectory": "/home/azureuser/RiftAssist/experiments/unified-rulings/releases/v0.1.7",
     "wantsAutostart": true,
-    "unitFileHash": null
+    "unitFileHash": "64fdc9a5864920bc599dedeaa3ee394b62e31e7132267c1cf9eb3b39a943d4d3",
+    "requiresHelper": false,
+    "bindsToHelper": false,
+    "environmentFilesPresent": true,
+    "environmentFilePathsKnown": false,
+    "namespaceValuesEmpty": {
+      "RootDirectory": true,
+      "RootImage": true,
+      "BindPaths": true,
+      "BindReadOnlyPaths": true,
+      "InaccessiblePaths": true
+    }
   },
   "autostart": {
     "name": "riftassist-autostart.service",
@@ -31,14 +42,31 @@
     "execStartVerified": false,
     "behaviorVerified": false,
     "referencedScriptName": "riftassist-autostart.py",
-    "scriptContentsRead": false
+    "scriptContentsRead": true,
+    "scriptPath": "/home/azureuser/riftassist-autostart.py",
+    "scriptSha256": "5f84d469b9186eff14039068bdc84019fbd21c3e23b02b5bc8d6d0d93e9c6de1",
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o664",
+    "sourceStructureReviewed": true,
+    "sourceReadByApprovedProbe": true,
+    "scriptExecuted": false,
+    "loginRetriesMaximum": 30,
+    "behaviorSummary": [
+      "reads manager key from file",
+      "POST /api/login",
+      "GET /api/status",
+      "POST /api/start only when app stopped"
+    ],
+    "execStartTargetObserved": true,
+    "behaviorVerificationMethod": "source structure only; production execution not performed"
   },
   "caddy": {
     "active": true,
     "enabled": true,
     "dropInCount": 0,
     "activeConfigPath": "/etc/caddy/Caddyfile",
-    "currentFileSha256": null
+    "currentFileSha256": "8e0555371405aae75914650e0654efb403731a6975901bc529fc46609444fdfd"
   },
   "identity": {
     "uid": 1000,
@@ -108,5 +136,13 @@
   },
   "installationApproved": false,
   "inventoryVerified": false,
-  "authorizedToDeploy": false
+  "authorizedToDeploy": false,
+  "finalInspection": {
+    "readOnly": true,
+    "privateFilesOpened": 0,
+    "sensitiveFileContentsRead": false,
+    "helperCodeExecuted": false,
+    "environmentValuesEmitted": false,
+    "authorizedToDeploy": false
+  }
 }

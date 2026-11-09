@@ -64,7 +64,7 @@ function restoreProbe(root,id) {
       for(const row of db.prepare('SELECT '+columns.join(',')+' FROM '+table).iterate())for(const cell of Object.values(row))if(cell){unsealCell(cell,storage);encryptedRows++;}
     }
     const files=value.configurationFiles||{};if(Object.keys(files).some(n=>n!=='.env'))fail('runtime-config-format');
-    const env=files['.env']===undefined?null:Buffer.from(files['.env'],'base64');let runtimeConfig;try{runtimeConfig=require('./runtime-config.cjs').report(env);}finally{env?.fill(0);}
+    const env=files['.env']===undefined?null:Buffer.from(files['.env'],'base64');let runtimeConfig;try{runtimeConfig=require('./runtime-config.cjs').effectiveReport(env,value.release?.settings?.unitEnvironment,value.release?.settings?.environmentFileUsed!==false);}finally{env?.fill(0);}
     return{protocol:'riftassist-restore-1',id,verified:true,integrity:true,runtimeConfig,encryptedRows,keysPreserved:Object.keys(value.keys).length,keyNames:Object.keys(value.keys).sort(),compatibility:require('./data-compatibility.cjs').inspect(db)};
   } finally {db?.close();storage?.fill(0);fs.rmSync(probe,{recursive:true,force:true,maxRetries:3});}
 }

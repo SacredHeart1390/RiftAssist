@@ -1,72 +1,160 @@
-# 다음 실행: 표적 읽기 → 승인된 코드 설치 → 데이터 검사 → 단일 교체
+# v0.2.0 설치·데이터 검증·최종 교체 승인서와 실행 절차
 
-연결 권한 점검과 이번 출시의 최소 조사 경로는 [INSPECTION-ACCESS.md](INSPECTION-ACCESS.md)를 따른다. 현재 Azure 자동 접속은 미설정이며, 보호된 접근을 새로 설치하기보다 기존 고정 통합 조사를 마지막 한 번 사용하는 경로를 선택했다. 이 문서는 조사나 운영 변경을 승인하지 않는다.
+최종 통합 읽기 조사는 완료됐다. 새 조사·VM·상시 병렬 서비스·범용 배포 프레임워크는 만들지 않는다. 이 문서의 명령은 **아직 실행하지 않았고 승인 전 실행 금지**다. 코드/패키지는 ready=false, developmentOnly=true다. 다른 브랜치·원본 v017·운영 데이터·shared active.json은 수정하지 않았다.
 
-2026-11-09, release/v0.2.0. 이번 작업에서는 실제 Azure SSH/설치/서비스 제어/DB·키·.env 내용 접근을 하지 않았다. ready=false와 운영 변경 차단을 유지한다. 원본 v017/추가 파일/기록/다른 branch/PR1은 그대로다. Control Center 원클릭 완성/상시 broker/새 VM/병렬 서비스는 요구하지 않는다.
+## 확정 근거와 검증 경계
 
-## 1. 원본을 수정하지 않는 복귀 기준
+| 항목 | 사용자 최종 관찰 / 적용 정책 |
+|---|---|
+| main | riftassist.service, simple/on-failure/control-group, enabled; Node v24.22.1, UID/GID1000/1000 |
+| 실행 구조 | manager3100/gateway3001/worker3011,3012; 기존 VM/도메인/443/Caddy 유지, 앱 버전1개만 실행 |
+| main unit | /etc/systemd/system/riftassist.service, SHA256 `64fdc9a5864920bc599dedeaa3ee394b62e31e7132267c1cf9eb3b39a943d4d3` |
+| Caddy | /etc/caddy/Caddyfile, SHA256 `8e0555371405aae75914650e0654efb403731a6975901bc529fc46609444fdfd`, upstream127.0.0.1:3001; 수정/reload하지 않음 |
+| namespace | RootDirectory/RootImage/BindPaths/BindReadOnlyPaths/InaccessiblePaths 비어 있음, main drop-in0 |
+| 환경 참조 | EnvironmentFiles **있음**, 실제 참조 경로는 전달받지 않아 추정하지 않음. 승인된 유지보수 preflight에서 경로 메타데이터만 검증 |
+| helper | /home/azureuser/riftassist-autostart.py, SHA256 `5f84d469b9186eff14039068bdc84019fbd21c3e23b02b5bc8d6d0d93e9c6de1`,1000/1000,0664 |
+| helper 동작 | source 구조 확인: 파일의 관리자 키로3100 login 최대30회, status 후 앱이 꺼졌을 때 start. 실제 script 실행 시험 아님 |
+| 관계 | main→helper Wants, Requires/BindsTo 아님. helper→main Requires/After/PartOf, oneshot/on-failure, inactive/enabled |
+| 자원 | 관찰 당시 MemAvailable595,943,424B, FreeDisk59,778,879,488B. 실제 실행 직전 다시 현재 자원 검사 |
+| 데이터 | DB3,452,928B+WAL976,472B+SHM32,768B; .env436B,storage.key32B,manager/sessions.key각64B. 내용/schema/복호화는 **미검증** |
 
-확인된 추가 항목은 node_modules775·package-lock.json664이며1000/1000이다. package-lock은 npm 설치 재현 자료로 Node가 일반 실행 때 자동 해석하는 파일은 아니다. 그러나 pdfjs-dist5.6.205는 원래 package.json에 선언돼 있고, 수동 sync-rules의 bare import 및 자동 collector의 RIFTASSI_PDFJS_PATH/별도 Node 설치 경로 import가 있다. 설치 의존성/환경까지 검증됐다고 가정하지 않는다. group 쓰기 가능은 변조 가능성이지 변조 증거가 아니다.
+요약은 사용자 제공 사실이며 원시 조사 JSON을 새로 수집한 것이 아니다. 상세는 staging/azure-observations-2026-11-09.json. hash drift는 helper 제어 전, main 중단/설정 선택 전후에 검사하며 다르면 쓰기를 중단한다. helper script0664는 그대로 두고 hash를 재검사한다. v020에서는 실행을 차단한다. legacy 복귀 후 원래 사용자/그룹의 향후 변조 가능성까지 제거했다고 주장하지 않는다. chmod/chown으로 원본을 고치는 승인은 포함하지 않는다.
 
-기존 strict `legacy-v017` 검증을 변경하지 않았다. 원본 폴더 전체 referenceVerified는 계속 false다. 새 package에는 Git 기준65개를 exact-byte 검증한 **별도 clean rollback 코드**만 넣는다. node_modules/lock/운영 DB·키·자료는 넣지 않는다. 설치 대상은 `/var/lib/riftassist-rollback/<검증 code hash>/v0.1.7`이며 root 소유·group/other 쓰기 금지다. 같은 검증본은 새 배포 profile에서도 읽기 검증 후 재사용하며 덮어쓰지 않는다.
+## A. 코드 설치 승인 — 운영 데이터 처리·서비스 변경 없음
 
-`rollbackCode`를 명시한 모드에서 원본65개 검증은 유지하고, 실행/복귀 reference는 새65개 전체 strict receipt로 분리한다. `rollbackSourceAssessment`는 원본의 미검증 상태를 그대로 보고하고 `rollbackExecutionReference`가 별도 reference를 표시한다. 원본 extras를 허용하는 fallback은 없다. 코드 hash·소유권·namespace 증거가 없으면 차단한다.
+승인할 대상은 **exact commit/CI/capsule plan SHA256/checksum manifest SHA256/완성된 public inventory SHA256/site UUID**다. CI의 `RiftAssist-v0.2.0-manual-release`는 코드 전용이고 root의 REPLACEMENT-INSTRUCTIONS.md가 이 문서다. 별도 approval-kit의 profile.review.json은 site/코드/Node/UID/GID/unit/Caddy/schema 기대값을 채운 **검토 초안**이다. flags/evidence를 일괄 true로 바꾸지 않는다. knowledgeHash의 64개0은 미제공 후보 표식이며 검증된 규칙 hash가 아니다.
 
-서비스의 **private mount namespace 안에서만** clean 코드를 기존 v017 경로에 `BindReadOnlyPaths`로 보인다. 호스트 원본은 이동/삭제/덮어쓰기/chmod하지 않는다. 같은 옛 경로를 사용하는 manager와 worker가 clean 코드를 읽고 DataRoot/DB·키·기록은 기존 위치를 사용한다. readonly binding이 실패하면 systemd가 프로세스를 기동하지 못하며 미검증 원본을 실행하는 우회는 없다. RootDirectory/RootImage/다른 bind/EnvironmentFiles 등 미검토 설정은 사전 차단하고, start 직전에도 실제 effective binding을 확인한다.
+승인 범위:
 
-clean rollback에서는 scripts 경로를 서비스 내부에서만 inaccessible로 만들어 자동 수집을 중지하고 NODE_OPTIONS/NODE_PATH/PDFJS 설정을 비운다. main ExecStart는 확인된 Node+원래 manager 경로로 고정한다. AI 생성은 예산/상태 대조 전까지 중지한다. 기존 관리자·규칙/검색·제보·기록 접근을 복귀시키는 유지보수 계약이며 모든 기존 자동 수집/AI 설정이 그대로 활성이라고 주장하지 않는다. fallback이 노출하는 기존 자료·외부 사례·캐시의 권리/개인정보 범위도 최종 rights/privacy 검토에 포함해야 하며 clean 코드 검증이 자료 허가를 부여하지 않는다.
+- 새 `/var/lib/riftassist-replacement-upload/<SITE>/code`에 검증 코드만 준비.
+- root 소유·타 사용자 쓰기 금지의 `/etc/riftassist-replacement/inventory.json` 설치.
+- 새 `/var/lib/riftassist-replacement/<SITE>`의 tools/deployment/releases/v0.2.0/data/v0.2.0 및 private/operations/backups/owner 생성, **새** vault.key 생성. 서비스 공통 잠금은 유지보수 실행 시에만 `/var/lib/riftassist-replacement/service-operation.lock`에 생성한다.
+- `/var/lib/riftassist-rollback/<검증된65개 code hash>/v0.1.7` strict clean reference 설치/동일 hash 재사용. original node_modules/lock/코드·권한은 유지.
+- installer는 기존 DB·키·.env·사용자 기록을 열지 않는다. unit/helper/Caddy를 바꾸지 않으며 신규 broker/port/sudoers를 설치하지 않는다.
 
-## 2. 가능하면 마지막 한 번에 묶는 표적 읽기 승인안
+설치 프로필은 owner hash에 고정된다. A만 승인했다면 B 승인으로 자동 승격하지 않는다. **가장 짧은 경로는 A와 B의 범위를 각각 명시하여 한 답변에서 승인**하고 그 범위에 맞는 profile을 먼저 확정하는 것이다. 별도 qualification용 profile/site를 최종 ready profile로 몰래 수정하지 않는다. 최종 배포는 새 불변 site를 만들고 동일한 global clean reference를 재사용할 수 있다. 서로 다른 site도 공통 service-operation.lock으로 중복 교체를 차단한다.
 
-새 원문: `staging/inspect-final-launch.py`. 실제 실행 전 해당 commit의 원문과 `FINAL-INSPECTION.txt`에 pin된 SHA256을 함께 승인받는다. 기존 승인된 metadata-only 스크립트의 범위를 바꾸지 않았다.
+### 설치 명령
 
-- helper unit의 ExecStart에서 실제 발견된 `riftassist-autostart.py` **한 파일**만 읽는다. 고정 허용 위치5곳 중 실제 참조된 한 경로에만 접근하며 경로를 추측해 순회하지 않는다. 불일치/symlink/hardlink/크기 초과는 거절한다. 해당 source를 AST로 parse할 뿐 import/eval/exec하지 않는다. 주석과 미등록 문자열·숫자·bytes는 제거/치환하고 구조와 고정 API/필드 이름만 반환한다. 원문은 서버 메모리에서만 처리하며 파일로 저장하지 않는다. 하드코딩된 비밀 리터럴이 있을 수 있어 source 읽기 자체도 이번 새 승인 대상이다. 이 redacted 구조가 실행 가능한 원본이나 자동 behaviorVerified=true는 아니다.
-- main/helper2개 고정 unit의 관계·namespace/EnvironmentFiles 존재 여부·drop-in 수를 묶어 확인한다. Environment 값·원시 argv는 출력하지 않는다. main→helper Requires/BindsTo가 있으면 mask 후 main 시작까지 막힐 수 있으므로 먼저 중단한다.
-- 확인된 `/etc/systemd/system/riftassist.service`와 `/etc/caddy/Caddyfile` source를 bounded 읽어 SHA256만 반환한다. 설정 본문·환경 비밀값은 출력하지 않는다. Caddy import가 있으면 자동으로 다른 설정을 읽지 않는다.
-- DB/WAL·키·.env·사용자 기록·의존성 내용은 읽거나 hash하지 않는다. sudo/서비스 제어/HTTP 요청/설치/파일 쓰기가 없고 Python `-I -S -B` 격리 stdin 실행이다. 새 포트/프로그램 설치도 없다. SSH 로그·작은 읽기 부하는 생길 수 있다.
+먼저 승인된 code capsule과 public inventory만 기존 SSH/SCP로 새 사용자 업로드 폴더에 전송한다. DB·키·.env·백업을 업로드 폴더에 넣지 않는다. 업로드 및 아래 root 작업 자체도 A 승인 대상이다. 기존 대상이 있으면 중단하고 재실행/덮어쓰지 않는다.
 
-PowerShell5.1에서 `FINAL-INSPECTION.txt`의 **한 줄만** 붙인다. 두 명령은 각각 독립돼 있고 함수 정의/멀티라인 붙여넣기/.ps1 실행/정책 변경이 필요 없다. Verify 줄은 SSH0회, Inspect 줄은 이 새 범위 승인 후 사용자가 실행한다. 전체 파일을 한꺼번에 붙이지 않는다. raw stderr/잘못된 응답 억제·호스트 검증·SHA 선검증·재시도 금지를 유지한다. source가 고정 범위 밖이거나 미지원 구문/추가 import 때문에 검토가 불완전하면 범위를 임의 확대하지 않는다. 필요 시 한 표적만 추가 승인한다.
+회사 PC에서는 기존 Windows OpenSSH로 대화형 shell을 열고 **각 명령을 한 줄씩** 실행할 수 있다. .ps1 실행이나 실행 정책 변경은 필요 없다. SSH 개인키 내용은 전송/출력하지 않는다.
 
-결과를 보고 helper의 실제 login/start/지연·재시도·파일/서비스 제어를 검토한다. 중지 전 helper quiescence와 유지보수 차단/원복 승인이 필요하다. disable만으로 Wants 실행을 막을 수 없고 mask도 별도 운영 변경이다. 기존 unit/부팅 상태를 보존하고 장기 복구가 보장되는지 확인하지 않은 채 helper를 영구 차단하지 않는다. 신규 v020 launcher는 정상 관리자 로그인 후 앱을 시작하며 service Restart=on-failure를 유지한다.
-
-## 3. 최소 코드 설치 명령 — 아직 승인되지 않음
-
-읽기 결과·권리/개인정보·실제 pin을 반영한 inventory를 만든 뒤 **설치 승인**을 받는다. inventory에 키/쿠키/사용자 내용은 넣지 않는다. 현재 package는 ready=false 검토용이다. ready 변경은 별도 승인된 source commit/CI/package로만 하며 초기화된 site의 owner/hash를 재등록하지 않는다. 별도 DB qualification 후 새 source profile을 준비해도 동일한 clean reference와 guard를 유지할 수 있다.
-
-승인된 exact code-only package를 `/var/lib/riftassist-replacement-upload/<site UUID>/code`에 **root 소유·타 사용자 쓰기 금지**로 준비한다. 기존 경로를 덮어쓰지 않고 업로드는 코드만 한다. 외부 CI proof의 plan hash와 SHA256SUMS hash를 독립 확인한 뒤 링크/특수 파일/hardlink를 거절하고 모든 hash를 검사한다. 상세 외부 checksum 선검증은 MANUAL-LIVE-RELEASE.md 3절을 따른다. 미검증 package 코드를 root로 먼저 실행하지 않는다.
-
-아래는 **확정된 UUID/CI hash/profile의 설치 승인 후에만** root 관리 shell에서 실행할 최소 절차다. CODE/PLAN_SHA256을 임의 값으로 채우지 않는다. global inventory는 root 소유이고 `/etc/riftassist-replacement`도 타 사용자 쓰기가 없어야 한다.
-
-```bash
-set -eu
-CODE="/var/lib/riftassist-replacement-upload/<승인-UUID>/code"
-cd "$CODE"
-# 외부 plan/SHA256SUMS pin 및 링크 검사를 먼저 완료한 뒤:
-sha256sum --check --strict SHA256SUMS
-/usr/bin/node "$CODE/site/tools/install-code.cjs" "$PLAN_SHA256"
+```powershell
+ssh -F NUL -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ForwardAgent=no -o ClearAllForwardings=yes -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" azureuser@20.222.152.195
 ```
 
-installer는 고정 inventory와 exact package/site/commit/clean code hash를 대조하고, 새 site·도구·v020 코드·새 private wrapping key 및 검증된 rollback 코드만 준비한다. 기존 v017/DB·키/.env/Caddy/unit 내용은 열지 않고 서비스/설정을 바꾸지 않는다. 기존 mirror는 strict hash·root 소유권을 확인해 재사용하며 수정하지 않는다. 새 site가 존재하거나 응답/설치가 불명확하면 자동 재설치/삭제하지 않는다. 결과 receipt의 authorizedToDeploy=false를 유지한다.
+승인된 capsule을 압축 해제한 로컬 폴더에서 아래 업로드 3줄을 **각각 독립 한 줄**로 실행한다. `<SITE>`는 CI plan의 UUID다. 첫 mkdir 실패 시 후속 전송을 하지 않는다. approved-inventory.json은 승인된 공개 설정이며 키 파일이 아니다. Windows EXE·운영 DB·키·.env는 업로드 대상에 없다.
 
-별도로 권한 확인된 rules-only knowledge 후보를 새 candidate DataRoot에만 준비하고 active pointer+manifest의 knowledgeHash를 inventory에 pin한다. 원본 shared active.json은 변경하지 않는다. 미승인 카드/이미지/번역·사례를 섞지 않는다. 실제 승인 규칙과 운영자 개인정보 항목이 없으면 준비 완료로 간주하지 않는다.
+```powershell
+ssh -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" azureuser@20.222.152.195 'umask 077; mkdir /home/azureuser/riftassist-code-<SITE>'
+scp -F NUL -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" -r .\candidate .\rollback .\site .\INSTALLATION-PLAN.json .\SHA256SUMS .\REPLACEMENT-INSTRUCTIONS.md azureuser@20.222.152.195:/home/azureuser/riftassist-code-<SITE>/
+scp -F NUL -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" .\approved-inventory.json azureuser@20.222.152.195:/home/azureuser/riftassist-inventory-<SITE>.json
+```
 
-## 4. 데이터 검사·실제 교체·복귀의 승인 경계
+이하 승인된 root 관리 shell에서 실행한다. `<...>`는 approval-kit/CI proof와 승인된 profile의 **실제 값**으로 먼저 채운다. 개인정보/키는 변수에 넣지 않는다.
 
-현재 메타데이터 DB+WAL+SHM4,462,168bytes는 자원 검사상 수용 가능하다. 키 길이/존재만으로 schema/복호화 검증을 통과시키지 않는다. 실제 DB·3키·.env 처리와 서비스 중단은 설치와 별도 승인이다.
+```bash
+RIFT_SITE='<SITE>'; RIFT_PLAN='<planSha256>'; RIFT_SUMS='<checksumManifestSha256>'; RIFT_PROFILE_SHA='<승인 inventory 파일 SHA256>'
+RIFT_CODE="/var/lib/riftassist-replacement-upload/$RIFT_SITE/code"; RIFT_ROOT="/var/lib/riftassist-replacement/$RIFT_SITE"
+test ! -e "$RIFT_CODE" && mkdir -p -m0755 "$RIFT_CODE" && cp -RP "/home/azureuser/riftassist-code-$RIFT_SITE/." "$RIFT_CODE/"
+python3 -c 'import os,stat,sys; assert all((stat.S_ISDIR(s.st_mode) or stat.S_ISREG(s.st_mode) and s.st_nlink==1) for d,ds,fs in os.walk(sys.argv[1],followlinks=False) for n in ds+fs for s in [os.lstat(os.path.join(d,n))]),"capsule-shape-rejected"' "$RIFT_CODE"
+chown -Rh root:root "$RIFT_CODE" && chmod -R u+rwX,go-w "$RIFT_CODE"
+cd "$RIFT_CODE" && printf '%s  INSTALLATION-PLAN.json\n%s  SHA256SUMS\n' "$RIFT_PLAN" "$RIFT_SUMS" | sha256sum --check --strict
+sha256sum --check --strict SHA256SUMS
+```
 
-기존 MAINTENANCE-CONSOLE의 고정 JSON endpoint를 수동 SSH로 일회성 실행한다. 승인된 profile로 `status/preflight → plan → 승인된 replace`를 수행한다. replace는 writer/cgroup·3001/3100/3011/3012 종료 → SQLite backup API의 WAL 포함 snapshot → AES-GCM 봉인 → 독립 integrity/schema/실제 암호문 복호화/설정 검사 → 새 데이터 사본 → v020 단독 시작 → 관리자 인증·HTTPS/버전 확인 순이다. **검증 전 원본 덮어쓰기/자동 migration/DB 본체만 복사하지 않는다.** 별도 qualification을 원하면 명시적 유지보수 승인으로 같은 백업/복원 검사 후 clean v017 유지보수 모드에 복귀한다.
+링크/특수 파일/다중 hardlink·외부 pin/전체 hash를 확인하기 전에 package의 Node 코드를 root로 실행하지 않는다. root upload parent도 root 소유·타 사용자 쓰기 금지가 필요하다. 실패 후 기존 준비 폴더를 자동 삭제하지 않는다.
 
-실패 복귀는 사전 승인된 transaction 범위에서 clean v017 binding+원래 DataRoot로 돌아간다. Caddy/443/TLS/도메인은 변경하지 않는다. 정상 교체 후 rollback은 별도 계획/승인을 받으며 새 v020 DB·키·제보를 먼저 보존/검사하고 삭제/역 migration/구 DB와 자동 병합하지 않는다. AI 예산 대조 전 생성은 중지한다. 응답 유실은 status/inspect/reconcile부터 확인하고 실패 쓰기를 재전송하거나 lock을 지우지 않는다. transaction 밖의 새로운 복구 변경은 다시 승인받는다.
+승인된 public inventory는 코드 밖에 준비하고, 링크가 아닌 일반 파일인지와 외부 SHA를 확인한 뒤 고정 위치에 설치한다. 기존 inventory는 덮어쓰지 않는다.
 
-## 다음에 필요한 것
+```bash
+test ! -L "/home/azureuser/riftassist-inventory-$RIFT_SITE.json" && test -f "/home/azureuser/riftassist-inventory-$RIFT_SITE.json"
+printf '%s  %s\n' "$RIFT_PROFILE_SHA" "/home/azureuser/riftassist-inventory-$RIFT_SITE.json" | sha256sum --check --strict
+install -d -m0755 /etc/riftassist-replacement && test ! -e /etc/riftassist-replacement/inventory.json && install -m0644 "/home/azureuser/riftassist-inventory-$RIFT_SITE.json" /etc/riftassist-replacement/inventory.json
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_CODE/site/tools/install-code.cjs" "$RIFT_PLAN"
+```
 
-1. 위 표적 source/config 읽기 승인 및 사용자 PC 실행 결과. 이미 끝난 전체 metadata 조사를 반복하지 않는다.
-2. 허가된 규칙 후보·운영자 연락처/처리 조건, 복구키 분리 보관·백업 보관/삭제·RPO/RTO, helper 차단/부팅/원복 정책 확정.
-3. 검증된 exact package/profile의 코드 설치 승인.
-4. 운영 데이터 백업·독립 복원과 중단 승인, ready 변경/최종 교체 승인. 필요한 승인 범위를 한 답변에 묶을 수 있지만 서로 자동 승격하지 않는다.
+설치 receipt의 siteId/inventoryHash/clean reference hash를 대조한다. `sourceReady=false`, `operationalDataRead=false`, `serviceChanged=false`, `authorizedToDeploy=false`가 정상이다. profile 파일 SHA256과 receipt의 inventoryHash(JSON canonical digest)는 **서로 다른 값**이다. 이후 명령에는 receipt.inventoryHash를 쓴다.
 
-실제 운영 호환성과 자료 권리 확인이 안 된 항목을 true로 채우지 않는다. API 승인 대기나 Control Center 자동화 완성 자체는 최소 출시 gate가 아니다.
+## B. 운영 데이터 백업·독립 복원 검증 승인 — 짧은 중단, v020 공개 없음
 
-## 저장된 로컬 검증 범위
+명시적으로 승인할 범위:
 
-Node257·버전 호환6·v017회귀11·Chromium17·기존lab29·C#284·Python43 = **647/647** 통과 로그가 남아 있다. WPF 교차 빌드는 경고/오류0이다. 최종 조사 UTF-8 BOM 처리와 격리 Python 인수도 검사했다. 실제 systemd namespace 기동/복귀는 이 commit의 Ubuntu CI에서 별도 검증하며 CI 전에 통과했다고 주장하지 않는다. Windows PowerShell5.1·실제 WPF·추출 package도 같은 exact commit에서 확인한다. 실제 Azure/운영 데이터/유료 API 시험을 대신하지 않는다.
+1. main/helper 관계·unit/Caddy/helper SHA drift 및 EnvironmentFiles **참조 메타데이터** 확인. 원본 DataRoot의 `.env` 한 파일 참조 또는 참조 없음만 허용한다. 여러 파일/다른 경로/미지원 escape면 본문을 열지 않고 중단한다. 새 조사 코드를 만들지 않는다.
+2. root 소유 helper drop-in `/etc/systemd/system/riftassist-autostart.service.d/90-riftassist-maintenance.conf` 생성과 daemon-reload. `ConditionPathExists=/var/lib/riftassist-replacement/autostart-enabled`가 없으므로 helper 실행을 막는다. 이 marker를 만들지 않는다. 원본 helper 파일/unit/enable 상태는 변경하지 않는다. 다른 drop-in/활성 helper/진행 job/남은 cgroup은 중단 조건이다. **mask는 사용하지 않아 /etc의 실제 unit 파일과 충돌하지 않는다.**
+3. riftassist.service 중지, manager/gateway/worker cgroup과3100/3001/3011/3012 종료 확인. 이 뒤에만 DB/WAL·storage/manager/sessions 키·.env 및 systemd inline 환경설정 본문을 서버 메모리에서 처리한다.
+4. SQLite backup API로 WAL의 commit을 포함한 일관 snapshot → DB·키·원본.env·unit/Caddy/owned override/inline 환경값을 AES-GCM으로 봉인 → 별도 프로세스의 새 임시 DB에서 integrity/schema/실제 암호문 복호화/키3개·설정 검사. DB 본체 단순복사·schema migration·원본 UPDATE 없음.
+5. 원본은 유지하고 임시 평문은 제거한다. 암호화 archive와 wrapping key는 서버 private0700/0600에만 보관한다. GitHub/로그/PR/Codex/로컬 사용자 PC로 보내지 않는다. 단일 VM 내부 복원 검증이며 VM 소실 대비 외부 보관을 완료했다는 뜻이 아니다.
+6. 검증 후 clean65 namespace+기존 DataRoot로 v017 복귀, 정상 관리자 login/start/HTTPS 검사. 완료 후 정확히 소유한 helper drop-in만 제거하고 daemon-reload하여 **다음 재시작/부팅의 원래 Wants 동작을 복구**한다. 제거 직후 /api/start를 반복 호출하지 않는다.
+
+qualification의 v017 복귀는 유지보수 계약이다. 기존 코드·DB·키·쿠키·관리자·기록을 유지하지만 **AI 생성과 자동 수집은 보류**한다. 원래 unit EnvironmentFiles는 서비스 내부에서 reset하고 unsafe Node 주입 변수를 지운다. DB의 AI 설정을 덮어쓰지 않는다. AI 예산 대조와 최종 승인 전에는 과금 기능을 다시 켜지 않는다.
+
+관찰된 4,462,168B의 DB/WAL/SHM 기준 보수적 예산은 메모리169,915,072B·디스크572,568,256B로 관찰 자원 안에 든다. 코드가 실제 실행 전 재검사한다. 16MiB snapshot 상한·여유 부족은 중단한다. 예상 중단은 수분의 유지보수 창으로 계획하되 실제 VM 시간은 아직 미측정이다. 10분 창을 제안하며 승인 시 사용자가 확정한다.
+
+### 한 줄 실행 — 별도 B 승인 후에만
+
+아래 `--approved-*`는 이미 받은 승인을 operator가 실행 의도로 전달하는 고정 entry다. flag 자체가 사용자 승인을 대신하지 않는다. public inventoryHash와 미리 정한 operation UUID만 인수로 받으며 키·쿠키·파일 본문은 인수에 없다. 같은 UUID 재실행은 기존 journal만 반환하고 새 stop/backup을 실행하지 않는다.
+
+```bash
+RIFT_INVENTORY_HASH='<설치 receipt.inventoryHash>'; RIFT_OPERATION='<기록해 둔 새 UUID>'
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_ROOT/tools/replacement-serve.cjs" --approved-qualify-backup "$RIFT_INVENTORY_HASH" "$RIFT_OPERATION"
+```
+
+PowerShell5.1에서 shell 변수/함수 없이 직접 실행할 때는 다음 **독립 한 줄**을 사용한다. `<SITE>`, `<HASH>`, `<UUID>`는 위 승인된 값이다. 실패한 쓰기를 새 UUID로 재실행하지 않는다.
+
+```powershell
+ssh -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -o ConnectionAttempts=1 -o ForwardAgent=no -o ClearAllForwardings=yes -o UserKnownHostsFile="$env:USERPROFILE/.ssh/known_hosts" -i "$env:USERPROFILE/.ssh/riftassistant-key.pem" azureuser@20.222.152.195 '/usr/bin/sudo -n -- /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw /var/lib/riftassist-replacement/<SITE>/tools/replacement-serve.cjs --approved-qualify-backup <HASH> <UUID>'
+```
+
+성공은 result.state=`qualified`, probe.integrity=true, keyNames에 필수3개, compatibility.schemaHash=기대값, limits/AI/hosting 검사 통과, health의 version=v017이다. runtimeConfig.requiresReview=true면 백업 자체가 정상이어도 **출시 설정은 미해결**이다. 원본.env/systemd 문법·미지원 항목은 임의로 버리지 않는다. cookie/session은 보존하되 관리자 메모리 login 세션은 정상 재로그인한다. HTTP/ok=true만으로 성공 판정하지 않는다.
+
+## C. 최종 v020 교체 승인 — B와 별도
+
+실제 권한 확인된 rules-only 후보·개인정보 문서·B 결과·복구키/백업 정책·최종 CI를 확인한 뒤, 사용자가 ready/developmentOnly 변경과 **exact 최종 source/profile/capsule의 교체**를 승인해야 한다. 현재 작업에서는 ready를 바꾸지 않는다. B용 site/profile의 hash/owner를 나중에 조작하지 않고 새 불변 최종 site를 준비한다. global inventory의 C profile 전환도 별도 설치 승인에 포함한다. 기존 journal이 qualified이고 두 lock이 없음을 확인한 뒤, 승인된 이전 inventory 파일 SHA를 CAS 확인하고 기존 public inventory를 이전 site에 보존한 다음 root-owned 새 파일을 atomic rename한다. 기존 DB/키나 owner를 덮지 않는다.
+
+승인된 rules-only knowledge를 새 candidateData에만 준비하고 실제 active+manifest hash를 inventory에 pin한다. shared active.json을 고치지 않는다. 새 지식/자료 설치도 C 준비 승인에 명시한다. 리프트나루 카드·이미지·번역1527개/제3자 사례는 넣지 않는다. fallback에 노출될 기존 자료의 권리 범위도 별도로 확인해야 하며 clean65 검증은 자료 이용 허가를 부여하지 않는다.
+
+환경 이전은 unit 인라인→EnvironmentFile 순서 또는 Node dotenv fallback의 실제 우선순위를 반영하고, 새0600.env에는 허용된 공급자 설정만 복원한다. 원본은 암호화 archive에 그대로 보존한다. 새 서비스 drop-in은 Environment와 EnvironmentFile을 reset하여 원래 파일의 키/포트가 새 DataRoot 설정을 덮지 않게 한다. launch descriptor가 root-owned인 조건과 full code/knowledge/schema/key hash 경계를 유지한다. liveProviderApproved와 generationEnabled의 실제 공개 서비스 승인 여부는 사용자가 정한다. 모델명은 검증된 기존 설정을 보존하며 강제 변경하지 않는다.
+
+실행 순서: helper guard → drift/자원 → old stop/cgroup/ports → 새 일관 backup/독립 restore → 새 데이터 사본·v020 release pointer만 조정 → owned main drop-in CAS → daemon-reload → 같은 riftassist.service 시작 → 관리자 인증/앱/규칙/HTTPS200/TLS/공개 api/release 검증. Caddy/도메인/인증서/443/3001/3100 유지, 버전 동시 실행 없음. 실제 유료 AI를 health check로 호출하지 않는다.
+
+```bash
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_ROOT/tools/replacement-serve.cjs" --approved-replace "$RIFT_INVENTORY_HASH" "$RIFT_OPERATION"
+```
+
+성공은 result.state=`completed`와 version=v020이다. v020은 helper guard를 유지한다. 부팅/manager 장애는 root-owned 런처가 매번 정상 login/start하며 systemd의 on-failure/control-group이 감독한다. worker 실패는 15초 간격 GET status로 감지해 owner를 실패 종료하고 cgroup 정리 후 다시 기동한다. 수동 앱 stop은 다시 시작하지 않는다. status 조회3회 연속 실패는 fail-closed, 세션 만료는 제한된 정상 재인증이다. start/settings 변경 요청을 주기적으로 반복하지 않는다. 새 main drop-in의 RestartSec5, 300초 내3회 제한으로 재시작 폭주를 막는다.
+
+후속 확인: PC/모바일 KO·EN 질문/근거, 무권한 카드·사례 차단, 세션별 제보 등록/조회, Control Center 정상 자동 SSH/admin 인증, 한도·AI 상태, PWA 오래된 cache/이전 탭·cookie 동작. 실제 AI 표본 검수·외부 전송·비용은 별도 승인 범위다.
+
+## 실패·수동 복귀
+
+정상 배포 실패는 중지/버전·원본/설정이 검증된 조건에서 clean v017로 자동 복귀하고 helper 부팅 동작을 복구한다. backup-integrity 실패·writer 생존·guard/설정 drift·응답 유실·복귀 실패는 `recovery-required`로 차단한다. 임의 원본 실행/DB 덮어쓰기/새 stop·start 자동 재전송은 하지 않는다. 강제 종료 후 journal/lock은 남기고 status→reconcile→inspect부터 읽는다. lock 삭제나 uncertain 쓰기 재실행은 새로운 복구 승인이 필요하다.
+
+기존 MAINTENANCE-CONSOLE.txt의 status/reconcile/inspect는 조회용으로 유지한다. site 잠금과 service-operation.lock 모두 강제 삭제하지 않는다. 실제 SSH 조회도 승인된 연결 범위에서만 실행한다. `--approved-*`에 동일 operation UUID를 다시 주면 상태만 조회하며 실행을 반복하지 않는다. 결과가 nonterminal이면 새 UUID를 만들지 않는다.
+
+서버의 승인된 root shell에서 쓰기 재실행 없이 현재 상태를 보는 한 줄이다. `<UUID>`는 상관관계용 새 request UUID다. `method`를 `reconcile`로 바꾸면 실제 service/config target 메타데이터를 대조한다. `inspect`는 payload를 `{"operationId":"<원래UUID>"}`로 지정한다. 세 방법 모두 변경 요청을 실행하지 않는다.
+
+```bash
+printf '%s\n' '{"protocol":"riftassist-replacement-1","requestId":"<UUID>","inventoryHash":"<HASH>","method":"status","payload":{}}' | /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_ROOT/tools/replacement-serve.cjs"
+```
+
+recovery-required에서 검증되지 않은 DB를 덮거나 기존 원본 ExecStart로 강제 시작하는 범용 복구 명령은 제공하지 않는다. status/inspect의 안전한 상태·실패 코드로 원인을 특정한 뒤, 보존된 verified backup/clean reference의 범위를 지정한 별도 복구 승인을 받는다. 이는 정상 rollback 명령과 구분된다.
+
+정상 교체 후 수동 롤백은 **별도 승인**한다. 새 v020 기록/키/config를 먼저 봉인·독립 검사하고 old clean code+old DataRoot로 복귀한다. v020 DB·추가 제보는 그대로 보존하며 원본에 덮거나 역 migration/자동 merge하지 않는다.
+
+```bash
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_ROOT/tools/replacement-serve.cjs" --approved-rollback "$RIFT_INVENTORY_HASH" '<새 rollback UUID>' '<completed 배포 operation UUID>'
+```
+
+성공은 `rolled-back`, 새 기록이 남은 별도 candidate DB 존재, old HTTPS/admin/규칙 정상, AI 예산 pause다. helper guard 제거는 원본 hash·관계·enabled 상태가 유지된 때만 수행한다. 안전한 제거 결과가 불명확하면 자동 재시도하지 않는다. helper의0664 향후 변조 위험이나 원래 데이터 권한을 이 절차가 해결했다고 간주하지 않는다.
+
+## 사용자가 결정/제공할 최소 항목
+
+- 공개/AI 입력 허가와 최신성이 확인된 **실제 규칙 파일 및 출처·권리 검토 reference**. 최소 카드0/사례0. legacy fallback 데이터의 공개 범위에 대한 권리 검토도 필요하다. 권리 미확인을 운영 승인만으로 대체하지 않는다.
+- 개인정보처리자 성명/법적 명칭, 연락처·권리 행사 창구, 처리 근거/고지·동의/국외 이전·위탁 해당 여부, 실제 시행일. 현재 동의 수집 전용 기능이 없으므로 제출 자체를 동의로 간주하지 않는다. v1.0까지 미룰 항목이 아니다.
+- 백업 보관·파기 기간, 접근자, VM 외부의 암호화 보관 장소와 **복구키 분리 보관 담당/방법**, 목표 RPO/RTO 및 유지보수 시간. 현재 archive 자동 삭제는 없다. 실제 backup/key 반출은 별도 승인 전 하지 않는다.
+- 기존 한도·모델은 보존한다. 최종 라이브에서 AI를 켤지, 복귀 시 일시 중지한 예산을 대조한 뒤 켤지 명시한다. 개발/CI는 계속 mock이고 유료 호출을 하지 않는다.
+- A 코드 설치, B 중단/데이터 처리·복원 검증, C ready 변경·최종 교체(조건부 자동 복귀 포함)의 **각 승인**. A+B를 명확히 구분해 함께 승인할 수 있으나 C를 포함했다고 가정하지 않는다.
+
+이번 작업은 코드·합성 검증·패키징만 수행한다. 운영 schema/키 복호화·백업·데이터/법적 조건이 확인되지 않은 상태를 verified/ready=true로 바꾸지 않는다.

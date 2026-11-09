@@ -67,7 +67,7 @@ async function cloneBackup(c,id){
     if(schemaHash(db)!==c.schemaHash)P.fail('schema-changed');
   } finally {db.close();}
   if(process.platform!=='win32'){const fd=fs.openSync(privateRoot,'r');try{fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
-  const runtimeConfig=require('./runtime-config.cjs').restore(c.candidateData,archived.configurationFiles?.['.env']);
+  const runtimeConfig=require('./runtime-config.cjs').restore(c.candidateData,archived.configurationFiles?.['.env'],archived.release?.settings?.unitEnvironment,archived.release?.settings?.environmentFileUsed!==false);
   return{sourceUnchanged:true,schemaUnchanged:true,settingsPreserved:true,releasePointerAdjusted:true,runtimeConfig};
 }
 function codeReceipt(folder,version='v0.2.0'){
@@ -106,17 +106,18 @@ function gates(c){
 }
 function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   const c=config(raw,{rehearsal});owner(c);const {audit}=require('./broker.cjs');audit(c,null);
+  const serviceLock=path.join(path.dirname(c.root),'service-operation.lock');P.noLinks(serviceLock);
   const file=id=>{if(!P.uuid(id))P.fail('operation-id');return P.within(c.root,'operations',id+'.json');};
   const current=()=>{const s=P.readJSON(P.within(c.root,'state.json'),4096);if(!Number.isSafeInteger(s.generation)||s.generation<1||!['v0.1.7','v0.2.0'].includes(s.version))P.fail('state-drift');return s;};
   function signature(body){const k=fs.readFileSync(P.within(c.root,'private','vault.key'));try{return crypto.createHmac('sha256',k).update(PROTOCOL+'\n'+JSON.stringify(body)).digest('hex');}finally{k.fill(0);}}
   function save(op,state,code){op.state=state;if(code)op.failure=/^[a-z0-9-]{1,60}$/.test(code)?code:'replacement-failed';op.updatedAt=new Date(now()).toISOString();P.atomic(file(op.id),op);
     audit(c,op.id,state,op.failure||'');
   }
-  function status(){audit(c,null);const operations=fs.readdirSync(P.within(c.root,'operations')).filter(n=>/^[a-f0-9-]{36}\.json$/.test(n)).map(n=>P.readJSON(P.within(c.root,'operations',n)));return{protocol:PROTOCOL,mode:c.mode,inventoryHash:c.inventoryHash,state:current(),locked:fs.existsSync(P.within(c.root,'operation.lock')),uncertain:operations.some(o=>!terminal.has(o.state)),operations,additionalVmRequired:false};}
+  function status(){audit(c,null);P.noLinks(serviceLock);const operations=fs.readdirSync(P.within(c.root,'operations')).filter(n=>/^[a-f0-9-]{36}\.json$/.test(n)).map(n=>P.readJSON(P.within(c.root,'operations',n)));return{protocol:PROTOCOL,mode:c.mode,inventoryHash:c.inventoryHash,state:current(),locked:fs.existsSync(serviceLock)||fs.existsSync(P.within(c.root,'operation.lock')),uncertain:operations.some(o=>!terminal.has(o.state)),operations,additionalVmRequired:false};}
   function plan(kind,id,deploymentId){
     if(!P.uuid(id)||!['replace','rollback','qualify-backup'].includes(kind))P.fail('protocol');if(status().locked||status().uncertain)P.fail('busy');
     const previous=current();if(kind!=='rollback'&&previous.version!=='v0.1.7'||kind==='rollback'&&previous.version!=='v0.2.0')P.fail('stale');
-    if(kind==='qualify-backup'&&!c.rehearsal){const report=gates(c);if(report.blockers.some(v=>!['release-not-ready','rights-not-verified','rehearsal-not-verified','compatibility-not-verified'].includes(v)))P.fail('qualification-blocked');}
+    if(kind==='qualify-backup'&&!c.rehearsal){const report=gates(c);if(report.blockers.some(v=>!['release-not-ready','rights-not-verified','privacy-not-verified','rehearsal-not-verified','compatibility-not-verified'].includes(v)))P.fail('qualification-blocked');}
     if(kind==='replace'){if(!gates(c).readyForApprovedExecution)P.fail('release-blocked');if(fs.existsSync(path.join(c.candidateData,'private')))P.fail('retained-data');}
     else if(kind==='rollback'){const old=P.readJSON(file(deploymentId));if(old.kind!=='replace'||old.state!=='completed')P.fail('rollback-target');if(!c.rehearsal&&rollbackReceipt(c).hash!==c.oldCodeHash)P.fail('rollback-reference-drift');}
     const body={protocol:PROTOCOL,id,kind,siteId:c.siteId,inventoryHash:c.inventoryHash,commit:c.commit,previous,expiresAt:now()+600000,deploymentId:deploymentId||null,impact:'brief-outage-single-service',target:kind==='replace'?'v0.2.0':'v0.1.7'};
@@ -126,9 +127,15 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   async function execute(p,approval){
     if(!P.uuid(p?.id))P.fail('operation-id');if(fs.existsSync(file(p.id))){const old=P.readJSON(file(p.id));if(old.digest!==p.digest)P.fail('idempotency-conflict');return old;}
     validate(p,approval);let fd;try{fd=fs.openSync(P.within(c.root,'operation.lock'),'wx',0o600);}catch{P.fail('busy');}const lockToken=crypto.randomUUID();fs.writeFileSync(fd,JSON.stringify({pid:process.pid,token:lockToken}));fs.fsyncSync(fd);fs.closeSync(fd);
-    let op={id:p.id,kind:p.kind,digest:p.digest,previous:p.previous,target:p.target,backupId:null},stopped=false,stopConfirmed=false,startAttempted=false,changed=false;
+    let op={id:p.id,kind:p.kind,digest:p.digest,previous:p.previous,target:p.target,backupId:null},stopped=false,stopConfirmed=false,startAttempted=false,changed=false,helperPrepared=false,finishing=false,serviceLockOwned=false;
+    const finish=async version=>{if(helperPrepared&&io.finishMaintenance){finishing=true;await io.finishMaintenance(version);finishing=false;}};
     try {
-      validate(p,approval);save(op,'preflight');if(p.kind==='replace'&&!gates(c).readyForApprovedExecution)P.fail('release-blocked');await io.preflight(p.previous.version);
+      P.noLinks(serviceLock);if(!c.rehearsal){const parent=fs.statSync(path.dirname(serviceLock));if(parent.uid!==0||(parent.mode&0o022))P.fail('service-lock-permissions');}
+      let globalFd;try{globalFd=fs.openSync(serviceLock,'wx',0o600);}catch{P.fail('busy');}
+      serviceLockOwned=true;try{fs.writeFileSync(globalFd,JSON.stringify({pid:process.pid,token:lockToken,siteId:c.siteId,operationId:p.id}));fs.fsyncSync(globalFd);}finally{fs.closeSync(globalFd);}
+      validate(p,approval);save(op,'preflight');if(p.kind==='replace'&&!gates(c).readyForApprovedExecution)P.fail('release-blocked');
+      if(io.prepareAutostart){op.autostart=await io.prepareAutostart();helperPrepared=true;save(op,'preflight');}
+      await io.preflight(p.previous.version,{kind:p.kind});
       save(op,'stop-intent');stopped=true;await io.stop();await io.assertStopped();stopConfirmed=true;save(op,'stopped');
       // Only now, with all app/manager/worker writers stopped, are DB/keys/config read.
       await io.backupBudget(p.kind==='rollback'?c.candidateData:c.oldData);const settings=await io.configurationSnapshot();
@@ -138,16 +145,17 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
       save(op,'backup-verified');
       if(p.kind==='qualify-backup'){
         save(op,'restart-original-intent');startAttempted=true;await io.start('v0.1.7');op.health=await io.health('v0.1.7');await io.configurationUnchanged();
-        P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+1,version:'v0.1.7'});save(op,'qualified');return op;
+        P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+1,version:'v0.1.7'});await finish('v0.1.7');save(op,'qualified');return op;
       }
       if(p.kind==='replace'){op.clone=await cloneBackup(c,p.id);await io.finalizeCandidate();}
       else {const d=P.readJSON(file(p.deploymentId));await V.verifyBackup(c,d.backupId);}
       save(op,'configuration-intent');changed=true;
       await io.select(p.target,p.kind==='rollback'?readArchive(c,P.readJSON(file(p.deploymentId)).backupId).release.settings:null);op.aiPauseOnRollback=p.kind==='rollback';save(op,'start-intent');
       startAttempted=true;await io.start(p.target);save(op,'health');op.health=await io.health(p.target);await io.configurationUnchanged();
-      P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+1,version:p.target});save(op,p.kind==='replace'?'completed':'rolled-back');return op;
+      P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+1,version:p.target});await finish(p.target);save(op,p.kind==='replace'?'completed':'rolled-back');return op;
     } catch(error){
       const failure=error.code||'replacement-failed';
+      if(finishing||failure==='autostart-guard-uncertain'){save(op,'recovery-required',failure);return op;}
       if(stopped&&failure==='backup-integrity'){save(op,'recovery-required',failure);return op;}
       // Unknown stop/config/start outcomes are observed first. Never restart while a writer may live.
       if(stopped)try{
@@ -159,10 +167,10 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
           if(s.generation!==p.previous.generation+1||s.version!==p.target)P.fail('state-drift');
           P.atomic(P.within(c.root,'state.json'),{generation:p.previous.generation+2,version:p.previous.version});
         }
-        save(op,'failed-stable',failure);
+        await finish(p.previous.version);save(op,'failed-stable',failure);
       }catch{save(op,'recovery-required',failure);}
-      else save(op,'failed-stable',failure);return op;
-    } finally {const lock=P.within(c.root,'operation.lock');if(P.readJSON(lock,4096).token!==lockToken)P.fail('lock-conflict');fs.unlinkSync(lock);}
+      else try{await finish(p.previous.version);save(op,'failed-stable',failure);}catch{save(op,'recovery-required',failure);}return op;
+    } finally {if(serviceLockOwned){if(P.readJSON(serviceLock,4096).token!==lockToken)P.fail('lock-conflict');fs.unlinkSync(serviceLock);}const lock=P.within(c.root,'operation.lock');if(P.readJSON(lock,4096).token!==lockToken)P.fail('lock-conflict');fs.unlinkSync(lock);}
   }
   async function reconcile(){const s=status(),observed=await io.observe();return{...s,observed,uncertain:s.uncertain||s.locked||observed.configurationTarget!==s.state.version||observed.serviceActive!==true};}
   return{config:c,status,reconcile,gates:()=>gates(c),plan,execute,inspect:id=>P.readJSON(file(id))};

@@ -8,9 +8,9 @@
   "node": "/usr/bin/node",
   "service": "riftassist.service",
   "unitFile": "/etc/systemd/system/riftassist.service",
-  "unitHash": "",
+  "unitHash": "64fdc9a5864920bc599dedeaa3ee394b62e31e7132267c1cf9eb3b39a943d4d3",
   "caddyFile": "/etc/caddy/Caddyfile",
-  "caddyHash": "",
+  "caddyHash": "8e0555371405aae75914650e0654efb403731a6975901bc529fc46609444fdfd",
   "overrideFile": "/etc/systemd/system/riftassist.service.d/90-riftassist-release.conf",
   "oldData": "/home/azureuser/RiftAssist/experiments/unified-rulings",
   "oldCode": "/home/azureuser/RiftAssist/experiments/unified-rulings/releases/v0.1.7",
@@ -38,7 +38,10 @@
     "autostart": {
       "status": "unverified",
       "commit": "",
-      "reference": ""
+      "reference": "user final integrated inspection; control policy still requires operational approval",
+      "policy": "condition-guard-restore-on-legacy",
+      "scriptPath": "/home/azureuser/riftassist-autostart.py",
+      "scriptSha256": "5f84d469b9186eff14039068bdc84019fbd21c3e23b02b5bc8d6d0d93e9c6de1"
     },
     "rights": {
       "status": "unverified",
@@ -66,7 +69,9 @@
       "reference": "",
       "dropInHashes": {},
       "runtimeEnvBackupApproved": false,
-      "liveProviderApproved": false
+      "liveProviderApproved": false,
+      "environmentFilesPolicy": "old-data-dotenv-only-reset",
+      "generationEnabled": null
     },
     "compatibility": {
       "status": "unverified",

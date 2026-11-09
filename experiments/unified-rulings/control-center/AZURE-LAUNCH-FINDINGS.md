@@ -1,5 +1,8 @@
 > 현재 실행 기준: [FINAL-LAUNCH.md](FINAL-LAUNCH.md). 원본을 보존한 별도 strict65 rollback 코드와 service-only readonly binding, 마지막 표적 source/config 조사 및 승인별 설치/교체 절차를 따른다. 이전 원본 extras 전체 검증을 true로 바꾸지 않는다.
 
+> 최종 통합 읽기 조사는 사용자가 완료했다. 아래 과거 조사/설치 설명은 이력이며 다시 실행하지 않는다. 현재 승인 범위·설치·데이터 검증·교체 절차는 [FINAL-LAUNCH.md](FINAL-LAUNCH.md)만 따른다. EnvironmentFiles 존재 및 helper 원문 hash는 최신 observations에 반영됐으며, mask를 전제로 한 과거 절차는 새 condition guard 정책으로 대체됐다.
+
+
 # Azure 실제 관찰 반영과 남은 최소 출시 조건
 
 2026-11-09. release/v0.2.0 전용. 사용자가 두 읽기 조사의 SSH 종료0/정상 JSON을 보고했다. 원시 JSON 대신 제공된 요약을 `staging/azure-observations-2026-11-09.json`에 기록했다. 이 작업에서는 실제 SSH/서버 변경/DB·키·환경 파일 내용 접근을 하지 않았다. installationApproved/inventoryVerified/authorizedToDeploy와 app ready는 false다.

@@ -3,6 +3,7 @@
 const fs=require('node:fs'),path=require('node:path');
 function check(root,targets,output){
   if(!root.startsWith(fs.realpathSync(require('node:os').tmpdir())+path.sep)||!targets.every(t=>t.startsWith(root+path.sep))||!output.startsWith(root+path.sep))throw Error('fixture');
+  if(process.env.RIFTASSIST_ENV_RESET_CANARY!==undefined)throw Error('environment-file-not-reset');
   for(const t of targets){
     if(fs.existsSync(path.join(t,'node_modules'))||fs.existsSync(path.join(t,'package-lock.json'))||!fs.existsSync(path.join(t,'src/manager.js')))throw Error('namespace-source');
     let denied=false;try{fs.readFileSync(path.join(t,'scripts/source-monitor.js'));}catch{denied=true;}if(!denied)throw Error('collector-visible');

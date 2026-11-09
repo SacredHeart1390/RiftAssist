@@ -3,9 +3,15 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process');
 const P=require('./protocol.cjs'),R=require('./replacement.cjs'),{fixture,FakeReplacementIO}=require('./replacement-fixture.cjs'),{health,proxyHealth,available}=require('./ubuntu-io.cjs');
 class ActualIO extends FakeReplacementIO{
-  constructor(s,controller,{systemd=false,tools=__dirname,unitFile=null}={}){super(s.c);this.s=s;this.controller=controller;this.systemd=systemd;this.tools=tools;this.unitFile=unitFile;this.child=null;this.running=null;this.selected='v0.1.7';this.activeMax=0;}
+  constructor(s,controller,{systemd=false,tools=__dirname,unitFile=null}={}){super(s.c);this.s=s;this.controller=controller;this.systemd=systemd;this.tools=tools;this.unitFile=unitFile;this.child=null;this.running=null;this.selected='v0.1.7';this.activeMax=0;
+    this.helper='riftassist-replacement-helper-test-'+s.c.siteId+'.service';this.helperUnit='/run/systemd/system/'+this.helper;this.helperDropIn=this.helperUnit+'.d/90-riftassist-maintenance.conf';this.helperMarker=path.join(s.c.oldData,'helper-started');
+    if(systemd){
+      this.prepareAutostart=async()=>{fs.mkdirSync(path.dirname(this.helperDropIn),{recursive:true});P.atomic(this.helperDropIn,require('./replacement-ubuntu.cjs').helperGuard,0o644);this.command(['daemon-reload']);return{syntheticHelperGuard:true};};
+      this.finishMaintenance=async version=>{if(fs.existsSync(this.helperMarker))P.fail('helper-interfered');if(version==='v0.1.7'){fs.unlinkSync(this.helperDropIn);this.command(['daemon-reload']);}};
+    }
+  }
   command(args){if(!this.systemd)P.fail('fixture');return execFileSync('/usr/bin/systemctl',args,{stdio:'ignore'});}
-  unitText(version){const slot=version==='v0.1.7'?'a':'b';return '[Unit]\nDescription=RiftAssist disposable single-service replacement\n[Service]\nType=simple\nUser='+this.c.uid+'\nGroup='+this.c.gid+'\nWorkingDirectory='+path.join(this.s.stage.root,'data',slot)+'\nExecStart='+this.c.node+' --require '+this.tools+'/mock-legacy.cjs '+this.tools+'/replacement-rehearsal-runner.cjs '+path.join(this.s.stage.root,'launch',slot+'.json')+'\nKillMode=control-group\nTimeoutStopSec=115\nRestart=no\n'+(this.systemd?require('./clean-rollback.cjs').isolation(this.c)+'BindReadOnlyPaths='+this.c.rollbackCode+':'+path.join(this.c.oldData,'releases/v0.1.7')+'\nInaccessiblePaths='+path.join(this.c.oldData,'releases/v0.1.7/scripts')+'\nExecStartPre='+this.c.node+' '+this.tools+'/namespace-proof.cjs '+this.s.temporary+' '+path.join(this.c.oldData,'namespace-proof.json')+' '+this.c.oldCode+' '+path.join(this.c.oldData,'releases/v0.1.7')+'\n':'')+(version==='v0.1.7'&&this.aiPaused?'Environment=RIFTASSIST_REHEARSAL_PAUSE_AI=true\n':'');}
+  unitText(version){const slot=version==='v0.1.7'?'a':'b';return '[Unit]\nDescription=RiftAssist disposable single-service replacement\n'+(this.systemd?'Wants='+this.helper+'\n':'')+'[Service]\nType=simple\nEnvironmentFile='+path.join(this.s.temporary,'systemd-only.env')+'\nEnvironmentFile=\nUser='+this.c.uid+'\nGroup='+this.c.gid+'\nWorkingDirectory='+path.join(this.s.stage.root,'data',slot)+'\nExecStart='+this.c.node+' --require '+this.tools+'/mock-legacy.cjs '+this.tools+'/replacement-rehearsal-runner.cjs '+path.join(this.s.stage.root,'launch',slot+'.json')+'\nKillMode=control-group\nTimeoutStopSec=115\nRestart=no\n'+(this.systemd?require('./clean-rollback.cjs').isolation(this.c)+'BindReadOnlyPaths='+this.c.rollbackCode+':'+path.join(this.c.oldData,'releases/v0.1.7')+'\nInaccessiblePaths='+path.join(this.c.oldData,'releases/v0.1.7/scripts')+'\nExecStartPre='+this.c.node+' '+this.tools+'/namespace-proof.cjs '+this.s.temporary+' '+path.join(this.c.oldData,'namespace-proof.json')+' '+this.c.oldCode+' '+path.join(this.c.oldData,'releases/v0.1.7')+'\n':'')+(version==='v0.1.7'&&this.aiPaused?'Environment=RIFTASSIST_REHEARSAL_PAUSE_AI=true\n':'');}
   async preflight(){if(!this.running)P.fail('fixture-stopped');await this.configurationUnchanged();}
   async stop(){
     this.calls.push('stop');if(this.systemd)this.command(['stop',this.c.service]);
@@ -18,7 +24,7 @@ class ActualIO extends FakeReplacementIO{
   }
   async backupBudget(){/* bounded synthetic SQLite only */}
   async configurationSnapshot(){await this.configurationUnchanged();return{selected:this.selected};}
-  async finalizeCandidate(){require('./files.cjs').chownTree(this.s.stage,path.join(this.c.candidateData,'private'));}
+  async finalizeCandidate(){require('./files.cjs').chownTree(this.s.stage,this.c.candidateData);}
   async select(version){await this.assertStopped();this.selected=version;this.aiPaused=version==='v0.1.7';if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
   async restorePrevious(version,snapshot,{pauseAi=false}={}){await this.select(version);this.aiPaused=version==='v0.1.7'&&pauseAi;if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
   async start(version){
@@ -47,8 +53,16 @@ async function main({systemd=false}={}){
       unitFile='/run/systemd/system/'+s.c.service;if(fs.existsSync(unitFile))P.fail('existing-unit');
     }
     if(systemd){for(const target of [s.c.oldCode,path.join(s.c.oldData,'releases/v0.1.7')]){fs.mkdirSync(path.join(target,'node_modules'),{mode:0o775});fs.chmodSync(path.join(target,'node_modules'),0o775);fs.writeFileSync(path.join(target,'package-lock.json'),'{}',{mode:0o664});fs.chmodSync(path.join(target,'package-lock.json'),0o664);}}
-    io=new ActualIO(s,controller,{systemd,tools,unitFile});if(systemd){fs.writeFileSync(unitFile,io.unitText('v0.1.7'),{flag:'wx',mode:0o644});io.command(['daemon-reload']);}
-    await io.start('v0.1.7');await health(s.stage,'a');await controller.command('start','proxy');
+    io=new ActualIO(s,controller,{systemd,tools,unitFile});if(systemd){fs.writeFileSync(path.join(s.temporary,'systemd-only.env'),'RIFTASSIST_ENV_RESET_CANARY=unexpected\n',{mode:0o644});
+      fs.writeFileSync(path.join(s.c.oldData,'.env'),'OPENAI_MODEL=synthetic-model\n',{mode:0o600});require('./files.cjs').chownTree(s.stage,s.c.oldData);
+      fs.writeFileSync(unitFile,'[Service]\nExecStart=/usr/bin/true\nEnvironmentFile='+path.join(s.c.oldData,'.env')+'\n',{flag:'wx',mode:0o644});io.command(['daemon-reload']);
+      const envMetadata=execFileSync('/usr/bin/systemctl',['show',s.c.service,'--property=EnvironmentFiles','--value'],{encoding:'utf8'}).trim();
+      require('./runtime-config.cjs').environmentReferences({...s.c,evidence:{...s.c.evidence,configuration:{environmentFilesPolicy:'old-data-dotenv-only-reset'}}},envMetadata);
+      fs.writeFileSync(io.helperUnit,'[Unit]\nRequires='+s.c.service+'\nAfter='+s.c.service+'\nPartOf='+s.c.service+'\n[Service]\nType=oneshot\nUser='+s.c.uid+'\nGroup='+s.c.gid+'\nExecStart=/usr/bin/touch '+io.helperMarker+'\nRestart=on-failure\n',{flag:'wx',mode:0o644});
+      fs.writeFileSync(unitFile,io.unitText('v0.1.7'),{mode:0o644});io.command(['daemon-reload']);}
+    await io.start('v0.1.7');await health(s.stage,'a');
+    if(systemd){for(let n=0;n<100&&!fs.existsSync(io.helperMarker);n++)await new Promise(r=>setTimeout(r,20));if(!fs.existsSync(io.helperMarker))P.fail('initial-helper-not-invoked');fs.unlinkSync(io.helperMarker);}
+    await controller.command('start','proxy');
     let tls=false;for(let n=0;n<150;n++){try{await proxyHealth(s.stage,'v0.1.7');tls=true;break;}catch{}await new Promise(r=>setTimeout(r,100));}if(!tls)P.fail('initial-tls');
     const engine=R.createReplacement(s.raw,io,{rehearsal:true}),q=engine.plan('qualify-backup',crypto.randomUUID()),qualified=await engine.execute(q,q.digest);if(qualified.state!=='qualified')P.fail('qualification-failed');const p=engine.plan('replace',crypto.randomUUID()),deployed=await engine.execute(p,p.digest);if(deployed.state!=='completed')P.fail('rehearsal-'+deployed.state+'-'+deployed.failure);
     const dbfile=path.join(s.c.candidateData,'private/operations.sqlite');let db=new(require('node:sqlite').DatabaseSync)(dbfile,{readOnly:true}),reports;try{reports=db.prepare('SELECT count(*) n FROM reports').get().n;}finally{db.close();}if(reports<2)P.fail('reports-not-preserved');
@@ -56,13 +70,18 @@ async function main({systemd=false}={}){
     db=new(require('node:sqlite').DatabaseSync)(dbfile,{readOnly:true});try{if(db.prepare('SELECT count(*) n FROM reports').get().n!==reports)P.fail('new-record-loss');}finally{db.close();}
     db=new(require('node:sqlite').DatabaseSync)(path.join(s.c.oldData,'private/operations.sqlite'),{readOnly:true});try{if(db.prepare('SELECT count(*) n FROM reports').get().n!==1)P.fail('old-record-loss');}finally{db.close();}
     for(const key of ['storage.key','sessions.key','manager.key'])if(P.hash(fs.readFileSync(path.join(s.c.oldData,'private',key)))!==P.hash(fs.readFileSync(path.join(s.c.candidateData,'private',key))))P.fail('key-not-preserved');
+    if(systemd){
+      const envMetadata=execFileSync('/usr/bin/systemctl',['show',s.c.service,'--property=EnvironmentFiles','--value'],{encoding:'utf8'}).trim();if(envMetadata!=='')P.fail('environment-file-reset-unverified');
+      await io.stop();await io.assertStopped();await io.start('v0.1.7');await io.health('v0.1.7');
+      for(let n=0;n<100&&!fs.existsSync(io.helperMarker);n++)await new Promise(r=>setTimeout(r,20));if(!fs.existsSync(io.helperMarker))P.fail('legacy-helper-not-restored');
+    }
     const oldHealth=await(await fetch('http://127.0.0.1:'+s.c.ports[1]+'/api/health')).json();if(oldHealth.aiEnabled!==false)P.fail('rollback-budget-not-paused');
     if(R.codeReceipt(s.c.candidateCode).manifest.ready!==false)P.fail('source-readiness-changed');
     if(P.hash(fs.readFileSync(s.c.caddyFile))!==configHash||P.hash(fs.readFileSync(path.join(s.stage.root,'proxy/route.caddy')))!==routeHash)P.fail('caddy-changed');
     if(systemd){const ns=JSON.parse(fs.readFileSync(path.join(s.c.oldData,'namespace-proof.json')));if(!ns.originalExtrasInvisible||!ns.collectorScriptsInaccessible||!fs.existsSync(path.join(s.c.oldCode,'node_modules')))P.fail('namespace-proof');for(const target of [s.c.oldCode,path.join(s.c.oldData,'releases/v0.1.7')])if((fs.statSync(path.join(target,'node_modules')).mode&0o777)!==0o775||(fs.statSync(path.join(target,'package-lock.json')).mode&0o777)!==0o664)P.fail('original-extra-mode-changed');}
-    const proof={cleanRollbackNamespaceVerified:systemd,originalExtrasPreserved:systemd,protocol:'riftassist-replacement-proof-1',mode:'single-instance-replacement',actualSystemd:systemd,appServiceUnits:systemd?1:0,actualV017ManagerGatewayWorker:true,legacyEphemeralPortsInjectedInMemory:true,actualV020ManagerGatewayWorker:true,samePortsReused:true,maxConcurrentVersions:io.activeMax,caddyConfigurationUnchanged:true,httpsVerified:true,encryptedBackupAndRestore:true,originalRecordsPreserved:true,postReplacementReportsRetained:reports,rolledBack:rolled.state==='rolled-back',additionalVmRequired:false,sourceReady:false,backupQualifiedWhileNotReady:qualified.state==='qualified',rollbackGenerationPaused:oldHealth.aiEnabled===false,productionConnections:0,paidApiCalls:0};
+    const proof={environmentFilesResetVerified:systemd,helperBlockedDuringReplacement:systemd,legacyHelperRestoredOnServiceRestart:systemd,cleanRollbackNamespaceVerified:systemd,originalExtrasPreserved:systemd,protocol:'riftassist-replacement-proof-1',mode:'single-instance-replacement',actualSystemd:systemd,appServiceUnits:systemd?1:0,actualV017ManagerGatewayWorker:true,legacyEphemeralPortsInjectedInMemory:true,actualV020ManagerGatewayWorker:true,samePortsReused:true,maxConcurrentVersions:io.activeMax,caddyConfigurationUnchanged:true,httpsVerified:true,encryptedBackupAndRestore:true,originalRecordsPreserved:true,postReplacementReportsRetained:reports,rolledBack:rolled.state==='rolled-back',additionalVmRequired:false,sourceReady:false,backupQualifiedWhileNotReady:qualified.state==='qualified',rollbackGenerationPaused:oldHealth.aiEnabled===false,productionConnections:0,paidApiCalls:0};
     if(process.env.RIFTASSIST_REPLACEMENT_PROOF){fs.writeFileSync(process.env.RIFTASSIST_REPLACEMENT_PROOF,JSON.stringify(proof,null,2)+'\n',{flag:'wx',mode:0o644});fs.chmodSync(process.env.RIFTASSIST_REPLACEMENT_PROOF,0o644);}console.log(JSON.stringify(proof));return proof;
-  }finally{if(io)await io.stop();await controller.close();if(unitFile&&fs.existsSync(unitFile)){fs.unlinkSync(unitFile);execFileSync('/usr/bin/systemctl',['daemon-reload'],{stdio:'ignore'});}s.cleanup();}
+  }finally{if(io)await io.stop();await controller.close();if(systemd&&io){try{execFileSync('/usr/bin/systemctl',['stop',io.helper],{stdio:'ignore'});}catch{}if(fs.existsSync(io.helperUnit))fs.unlinkSync(io.helperUnit);fs.rmSync(path.dirname(io.helperDropIn),{recursive:true,force:true});}if(unitFile&&fs.existsSync(unitFile)){fs.unlinkSync(unitFile);execFileSync('/usr/bin/systemctl',['daemon-reload'],{stdio:'ignore'});}s.cleanup();}
 }
 if(require.main===module)main({systemd:process.argv.includes('--systemd')}).catch(e=>{console.error(e.code||'replacement-rehearsal-failed');process.exitCode=1;});
 module.exports={main,ActualIO};
