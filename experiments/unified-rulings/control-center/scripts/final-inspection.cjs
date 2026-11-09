@@ -2,7 +2,11 @@
 // Emits independent literal console commands, never invokes PowerShell or SSH.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..'),name='inspect-final-launch.py';
+// Changing the probe requires a deliberate source review and a new approval pin.
+// --write must never silently authorize a modified remote program.
+const reviewSha='b5ad2101ddcec04cbd9a1502efdba5b401edaea68a1cd594cc15277242262326';
 const sha=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'staging',name))).digest('hex');
+if(sha!==reviewSha)throw Error('Inspection source differs from the fixed review pin; no instructions generated.');
 function command(mode){return `& {
 $ErrorActionPreference='Stop';
 try {
@@ -18,7 +22,9 @@ $raw=@($source|& $ssh -F NUL -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o
 if($LASTEXITCODE -ne 0){throw 'ssh'};
 $json=$raw -join "\u0060n";if($json.Length -gt 65536){throw 'size'};
 $r=$json|ConvertFrom-Json -ErrorAction Stop;
-if($r.protocol -cne 'riftassist-final-launch-1' -or $r.readOnly -ne $true -or $r.authorizedToDeploy -ne $false -or $r.privateFilesOpened -ne 0 -or $r.sensitiveFileContentsRead -ne $false -or $r.helperCodeExecuted -ne $false){throw 'protocol'};
+$allowed=@('protocol','readOnly','main','helper','unitSource','caddySource','privateFilesOpened','sensitiveFileContentsRead','helperCodeExecuted','environmentValuesEmitted','authorizedToDeploy');
+if(@($r.PSObject.Properties.Name|Where-Object {$_ -cnotin $allowed}).Count -ne 0){throw 'unexpected-field'};
+if($r.protocol -cne 'riftassist-final-launch-1' -or $r.readOnly -isnot [bool] -or $r.readOnly -ne $true -or $r.authorizedToDeploy -isnot [bool] -or $r.authorizedToDeploy -ne $false -or ($r.privateFilesOpened -isnot [int] -and $r.privateFilesOpened -isnot [long]) -or $r.privateFilesOpened -ne 0 -or $r.sensitiveFileContentsRead -isnot [bool] -or $r.sensitiveFileContentsRead -ne $false -or $r.helperCodeExecuted -isnot [bool] -or $r.helperCodeExecuted -ne $false -or $r.environmentValuesEmitted -isnot [bool] -or $r.environmentValuesEmitted -ne $false){throw 'protocol'};
 $r|ConvertTo-Json -Depth 12;
 }catch{throw 'Fixed inspection rejected or SSH response unconfirmed. Raw diagnostics suppressed; no retry.'}
 }`.split('\n').map(l=>l.trim()).filter(Boolean).join(' ');}

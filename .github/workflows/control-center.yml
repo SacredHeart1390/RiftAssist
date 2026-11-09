@@ -42,10 +42,9 @@ jobs:
           node scripts/console-instructions.cjs
           node scripts/one-line-inspection.cjs
           node scripts/final-inspection.cjs
-          node scripts/final-inspection.cjs
+          node --test scripts/final-inspection.test.cjs
           ./scripts/Test-ConsoleInstructions.ps1
           ./scripts/Test-OneLineInspection.ps1
-          ./scripts/Test-FinalInspection.ps1
           ./scripts/Test-FinalInspection.ps1
           node scripts/backend-manifest.cjs
           python scripts/verify-icon.py
@@ -59,7 +58,6 @@ jobs:
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
-          python staging/final-inspection.test.py
           python staging/final-inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
@@ -175,6 +173,7 @@ jobs:
           python -m pip install paramiko==4.0.0
           node scripts/deployment-manifest.cjs
           node scripts/staging-manifest.cjs
+          node --test scripts/final-inspection.test.cjs
           python staging/inspection.test.py
           python staging/replacement-inspection.test.py
           python staging/legacy-inspection.test.py
@@ -183,7 +182,6 @@ jobs:
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
-          python staging/final-inspection.test.py
           python staging/final-inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
@@ -239,5 +237,6 @@ jobs:
           path: |
             experiments/unified-rulings/control-center/FINAL-INSPECTION.txt
             experiments/unified-rulings/control-center/FINAL-LAUNCH.md
+            experiments/unified-rulings/control-center/INSPECTION-ACCESS.md
             experiments/unified-rulings/control-center/staging/inspect-final-launch.py
           if-no-files-found: error

@@ -14,11 +14,17 @@ try{
   if(!$lines[1].Contains($binding)){throw 'Fixed SSH binding is missing.'}
   $mock=@'
 $global:MockSshCalls=0
-function Mock-FixedSsh { process { $global:MockSshCalls++; $global:LASTEXITCODE=0; [pscustomobject]@{protocol='riftassist-final-launch-1';readOnly=$true;authorizedToDeploy=$false;privateFilesOpened=0;sensitiveFileContentsRead=$false;helperCodeExecuted=$false}|ConvertTo-Json -Compress } }
+function Mock-FixedSsh { process { $global:MockSshCalls++; $global:LASTEXITCODE=0; [pscustomobject]@{protocol='riftassist-final-launch-1';readOnly=$true;authorizedToDeploy=$false;privateFilesOpened=0;sensitiveFileContentsRead=$false;helperCodeExecuted=$false;environmentValuesEmitted=$false}|ConvertTo-Json -Compress } }
 '@
   $body=$mock+"`n"+$lines[1].Replace($binding,'$ssh=''Mock-FixedSsh''')+"`n"+'if($global:MockSshCalls -ne 1){throw ''Expected one mock SSH call.''}'
   $output=& $exe -NoLogo -NoProfile -NonInteractive -Command $body
   if($LASTEXITCODE -ne 0 -or (($output-join "`n")|ConvertFrom-Json).privateFilesOpened -ne 0){throw 'PowerShell 5.1 mock inspect failed.'}
+  foreach($replacement in @('environmentValuesEmitted=$true','environmentValuesEmitted=''false''','environmentValuesEmitted=$false;unexpected=''synthetic-do-not-emit''')) {
+    $unsafeMock=$mock.Replace('environmentValuesEmitted=$false',$replacement)
+    $body=$unsafeMock+"`n"+'$blocked=$false;try{'+$lines[1].Replace($binding,'$ssh=''Mock-FixedSsh''')+'}catch{$blocked=$true};if(!$blocked){throw ''Unexpected or unsafe response accepted.''}'
+    $output=& $exe -NoLogo -NoProfile -NonInteractive -Command $body
+    if($LASTEXITCODE -ne 0 -or ($output-join "`n").Contains('synthetic-do-not-emit')){throw 'Unsafe response was not suppressed.'}
+  }
   $bad=$lines[1].Replace($report.sourceSha256,('0'*64)).Replace($binding,'$ssh=''Mock-FixedSsh''')
   $body=$mock+"`n"+'$blocked=$false;try{'+$bad+'}catch{$blocked=$true};if(!$blocked -or $global:MockSshCalls -ne 0){throw ''Hash mismatch must block before SSH.''}'
   & $exe -NoLogo -NoProfile -NonInteractive -Command $body
