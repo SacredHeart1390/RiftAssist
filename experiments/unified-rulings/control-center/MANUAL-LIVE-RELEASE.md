@@ -55,10 +55,24 @@ package의 siteId로 제안하는 대상은 /var/lib/riftassist-replacement/<UUI
 # 기존 .env/DB/키/백업은 이 CODE 안에 넣지 않는다.
 set -eu
 cd "$CODE"
+# metadata만 검사. 링크/특수 파일/다중 hardlink를 먼저 거절하며 이름/내용을 출력하지 않음.
+python3 - <<'PY'
+import os, stat
+for folder, directories, files in os.walk('.', followlinks=False):
+    for name in directories + files:
+        s = os.lstat(os.path.join(folder, name))
+        if not (stat.S_ISREG(s.st_mode) or stat.S_ISDIR(s.st_mode)) or (stat.S_ISREG(s.st_mode) and s.st_nlink != 1):
+            raise SystemExit('capsule-shape-rejected')
+PY
 printf '%s  INSTALLATION-PLAN.json\n' "$PLAN_SHA256" | sha256sum --check --strict
 printf '%s  SHA256SUMS\n' "$SUMS_SHA256" | sha256sum --check --strict
 # 먼저 symlink/hardlink·범위 밖 항목이 없음을 확인하고, 아래 목록의 코드만 대상으로 한다.
 sha256sum --check --strict SHA256SUMS
+# 위 외부 pin/전체 hash 확인 후에만 검증된 Node 모듈 실행. 추가/누락 파일도 거절.
+/usr/bin/node - "$CODE/site/tools/replacement-package.cjs" "$CODE" "$PLAN_SHA256" <<'JS'
+const verify=require(process.argv[2]).verify;
+verify(process.argv[3],{expectedPlanHash:process.argv[4]});
+JS
 ```
 
 압축/복사 중 경로 traversal·링크·추가 파일·존재하는 대상은 거절한다. 서버 사용자 쓰기가 가능한 upload에서 root 코드로 실행하지 않는다. 새 root 전용 준비 폴더에 안전하게 코드만 복사하고 동일 외부 pin과 전체 SHA를 다시 검사한 뒤 사용한다. Node verify만 믿고 아직 검증하지 않은 package 코드를 root로 먼저 실행하지 않는다. GNU checksum 파일도 외부 pin이 맞아야 신뢰한다. 공개 package hash는 디지털 서명/허가를 대신하지 않는다.

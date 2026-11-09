@@ -1,7 +1,7 @@
 'use strict';
 // Fixed installed endpoint; no generic remote command, caller paths or fixture switch.
 const fs=require('node:fs'),P=require('./protocol.cjs'),R=require('./replacement.cjs');
-function trustedLocation(directory,root){return directory===require('node:path').join(root,'tools')||directory==='/usr/local/lib/riftassist-replacement/staging';}
+function trustedLocation(directory,root){return directory===require('node:path').posix.join(root,'tools')||directory==='/usr/local/lib/riftassist-replacement/staging';}
 async function serve(){
   if(process.platform!=='linux'||process.geteuid()!==0||process.argv.length!==2)P.fail('installation-not-approved');
   const file='/etc/riftassist-replacement/inventory.json';P.noLinks(file,true);const stat=fs.statSync(file);if(stat.uid!==0||(stat.mode&0o022))P.fail('inventory-permissions');
