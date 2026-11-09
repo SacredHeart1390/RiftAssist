@@ -226,6 +226,22 @@ jobs:
           name: RiftAssist-v0.2.0-manual-release
           path: ${{ runner.temp }}/RiftAssist-v0.2.0-manual-release/
           if-no-files-found: error
+          include-hidden-files: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: RiftAssist-v0.2.0-manual-release
+          path: ${{ runner.temp }}/RiftAssist-v0.2.0-manual-release-downloaded/
+      - name: Verify actual uploaded code capsule including hidden baseline files
+        run: |
+          node - "$RUNNER_TEMP/RiftAssist-v0.2.0-manual-release-downloaded" <<'JS'
+          const fs=require('node:fs'),path=require('node:path');
+          const expected=JSON.parse(fs.readFileSync(path.join(process.env.RUNNER_TEMP,'control-center-manual-package-proof.json')));
+          const result=require('./staging/replacement-package.cjs').verify(process.argv[2],{expectedPlanHash:expected.planSha256});
+          if(result.filesVerified!==expected.filesVerified||result.checksumManifestSha256!==expected.checksumManifestSha256)throw Error('Uploaded capsule differs.');
+          const proof={uploadedCapsuleVerified:true,hiddenBaselineFilesPreserved:true,...result};
+          fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'control-center-downloaded-capsule-proof.json'),JSON.stringify(proof,null,2)+'\n');
+          console.log(JSON.stringify(proof));
+          JS
       - uses: actions/upload-artifact@v4
         with:
           name: RiftAssist-ControlCenter-ubuntu-ssh-proof
@@ -235,6 +251,7 @@ jobs:
             ${{ runner.temp }}/control-center-replacement-proof.json
             ${{ runner.temp }}/control-center-manual-package-proof.json
             ${{ runner.temp }}/control-center-installation-inventory.review.json
+            ${{ runner.temp }}/control-center-downloaded-capsule-proof.json
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v4
