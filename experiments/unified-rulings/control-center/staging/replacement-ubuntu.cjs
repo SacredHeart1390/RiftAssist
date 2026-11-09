@@ -31,12 +31,13 @@ class UbuntuReplacementIO {
   }
   async observed(service=this.config.service){
     if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
-    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths']);
+    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths,Type,Restart,Requires,Wants,After,PartOf,BindsTo']);
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
   async preflight(version){
     const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
-    if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||o.Group!=='azureuser'||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
+    if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||!['','azureuser'].includes(o.Group)||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
+    this.assertMainServiceShape(o);
     this.assertReviewedDropIns(o);
     await this.assertRuntimeIdentity();
     if(version==='v0.1.7'&&fs.existsSync(c.overrideFile)&&P.hash(bounded(c.overrideFile))!==P.hash(budgetGuard(c)))P.fail('override-already-exists');
@@ -47,7 +48,10 @@ class UbuntuReplacementIO {
       require('./legacy-v017.cjs').assertCompatibleStore(c.candidateCode);
       if(knowledgeHash(c.candidateData).hash!==c.knowledgeHash)P.fail('knowledge-drift');
     }
-    const disk=fs.statfsSync(c.root);if(disk.bavail*disk.bsize<512*1024*1024)P.fail('disk');return{singleService:true,caddyUnchanged:true};
+    const budget=await this.backupBudget(version==='v0.1.7'?c.oldData:c.candidateData);return{singleService:true,caddyUnchanged:true,backupBudget:budget};
+  }
+  assertMainServiceShape(o){
+    if(o.Type!=='simple'||o.Restart!=='on-failure'||typeof o.Wants!=='string'||!o.Wants.split(/\s+/).includes('riftassist-autostart.service')||['Requires','BindsTo'].some(k=>typeof o[k]!=='string'||o[k].split(/\s+/).includes('riftassist-autostart.service')))P.fail('main-service-shape-unverified');
   }
   readReviewedDropIn(file){return bounded(file);}
   assertReviewedDropIns(observed){
@@ -98,9 +102,7 @@ class UbuntuReplacementIO {
     };check(group);
   }
   async backupBudget(data){
-    const c=this.config,file=path.join(data,'private/operations.sqlite');P.noLinks(file,true);const bytes=fs.statSync(file).size;
-    const r=this.resources();if(bytes>c.maxDbBytes||r.availableMemory<128*1024*1024+bytes*8)P.fail('backup-memory-budget');
-    if(r.freeDisk<512*1024*1024+bytes*8)P.fail('backup-disk-budget');
+    const B=require('./backup-budget.cjs');return B.assertFits(B.metadata(data,this.config.maxDbBytes),this.resources());
   }
   resources(){const disk=fs.statfsSync(this.config.root),mem=/^MemAvailable:\s+(\d+) kB$/m.exec(fs.readFileSync('/proc/meminfo','utf8'));return{freeDisk:disk.bavail*disk.bsize,availableMemory:mem?Number(mem[1])*1024:0};}
   async configurationSnapshot(){

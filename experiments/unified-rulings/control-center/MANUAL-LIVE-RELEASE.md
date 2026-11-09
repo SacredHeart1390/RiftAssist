@@ -1,3 +1,5 @@
+> 2026-11-09 실제 두 조사 반영: [확인된 토폴로지·추가2항목·WAL 자원·최소 승인/한 줄 명령](AZURE-LAUNCH-FINDINGS.md)이 최신 근거입니다. 이미 완료한 두 조사는 반복하지 않습니다. 새 조사는 ONE-LINE-INSPECTION.txt의 독립된 한 줄을 별도 승인 후 사용하며 ready=false를 유지합니다.
+
 # 가장 빠른 안전 경로: 수동 SSH + 기존 일회성 교체 코드
 
 2026-11-09 한국. 실제 SSH/설치/운영 DB·키·설정 접근/서비스 제어/배포를 이 작업에서 실행하지 않았다. ready=false다. 모르는 운영값을 채우거나 현재 package를 배포 가능하다고 선언하지 않는다.
@@ -148,7 +150,7 @@ Invoke-RiftAssistMaintenance -Method rollback -SiteId $siteId -InventoryHash $in
 
 .env는 원본 그대로 암호화 envelope에 보존하고, 새 경로에는 허용된 OpenAI 설정만0600으로 복원한다. port/DataRoot/로그 등 배포 제어 설정은 강제로 새 경계에 맞추고 개수를 기록한다. 모르는 설정/형식은 새 앱 기동 전에 차단해 구 앱으로 복귀한다. 유효한 백업인데 env 문법만 지원하지 않는 것은 백업 손상으로 오인하지 않고 qualification 결과에 review 필요로 남긴다. 실제 값·key/hash fingerprint는 결과/로그/Git에 출력하지 않는다. provider flag는 키 존재만으로 활성화하지 않는다. backup wrapping key와 DB key를 포함할 수 있는 봉인 파일은 서버 private에 두고 GitHub artifact/PR/Codex로 보내지 않는다. 오프호스트 암호화 보관·복구키·RPO/RTO·보관/삭제 정책은 운영자 필수 확인이다.
 
-DB/snapshot16MiB, MemAvailable≥128MiB+8×DB, disk≥512MiB+8×DB 상한이 있다. 운영 lstat 결과가 크거나 WAL/부하가 불확실하면 중단하고 실제 백업에 맞는 도구/승인을 검토한다. 테스트가 작은 DB였다고 실제 데이터를 보증하지 않는다. 중단 예산은 기존 systemctl/앱/SSH timeout을 포함하며 실측 전 정확한 분 수를 약속하지 않는다.
+DB/snapshot16MiB, MemAvailable≥128MiB+8×(DB+WAL+SHM), disk≥512MiB+8×(DB+WAL+SHM) 상한이 있다. 운영 lstat 결과가 크거나 WAL/부하가 불확실하면 중단하고 실제 백업에 맞는 도구/승인을 검토한다. 테스트가 작은 DB였다고 실제 데이터를 보증하지 않는다. 중단 예산은 기존 systemctl/앱/SSH timeout을 포함하며 실측 전 정확한 분 수를 약속하지 않는다.
 
 ## 5. 실패·복귀와 승인 범위
 

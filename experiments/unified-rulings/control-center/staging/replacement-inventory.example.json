@@ -7,7 +7,7 @@
   "root": "/var/lib/riftassist-replacement/00000000-0000-0000-0000-000000000000",
   "node": "/usr/bin/node",
   "service": "riftassist.service",
-  "unitFile": "",
+  "unitFile": "/etc/systemd/system/riftassist.service",
   "unitHash": "",
   "caddyFile": "/etc/caddy/Caddyfile",
   "caddyHash": "",
@@ -63,7 +63,10 @@
     "configuration": {
       "status": "unverified",
       "commit": "",
-      "reference": ""
+      "reference": "",
+      "dropInHashes": {},
+      "runtimeEnvBackupApproved": false,
+      "liveProviderApproved": false
     },
     "compatibility": {
       "status": "unverified",

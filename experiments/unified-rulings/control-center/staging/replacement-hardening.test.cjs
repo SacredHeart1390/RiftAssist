@@ -2,6 +2,51 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),http=require('node:http');
 const R=require('./replacement.cjs'),P=require('./protocol.cjs'),{fixture,FakeReplacementIO}=require('./replacement-fixture.cjs'),{UbuntuReplacementIO,override,budgetGuard}=require('./replacement-ubuntu.cjs');
 const id=()=>crypto.randomUUID();
+test('reported Azure DB WAL SHM and resources fit a conservative budget without claiming restore success',()=>{
+  const o=require('./azure-observations-2026-11-09.json'),B=require('./backup-budget.cjs'),f=o.dataMetadata.files;
+  const b=B.estimate({dbBytes:f['private/operations.sqlite'],walBytes:f['private/operations.sqlite-wal'],shmBytes:f['private/operations.sqlite-shm']});
+  assert.equal(b.snapshotUpperBound,4429400);assert.equal(b.requiredMemory,169915072);assert.equal(b.requiredDisk,572568256);
+  assert.equal(B.assertFits(b,o.resources),b);assert.equal(b.actualRestoreVerified,false);assert.equal(b.mainFileCopyPermitted,false);
+  assert.equal(o.legacy.metadataEnumerationComplete,true);assert.equal(o.legacy.referenceVerified,false);assert.equal(o.autostart.behaviorVerified,false);assert.equal(o.authorizedToDeploy,false);
+});
+test('WAL growth and invalid resource readings fail before a snapshot can be allocated',()=>{
+  const B=require('./backup-budget.cjs'),resources={availableMemory:2**32,freeDisk:2**40};
+  assert.throws(()=>B.assertFits(B.estimate({dbBytes:1024,walBytes:17*1024*1024}),resources),/backup-snapshot-budget/);
+  assert.throws(()=>B.estimate({dbBytes:1,walBytes:-1}),/backup-metadata/);
+  assert.throws(()=>B.assertFits(B.estimate({dbBytes:1024}),{...resources,availableMemory:NaN}),/backup-memory-budget/);
+});
+test('actual Ubuntu budget includes sidecar sizes without reading contents and rejects hardlinked sidecars',()=>run(async s=>{
+  const B=require('./backup-budget.cjs'),wal=path.join(s.c.oldData,'private/operations.sqlite-wal'),shm=path.join(s.c.oldData,'private/operations.sqlite-shm');
+  fs.writeFileSync(wal,Buffer.alloc(4096));fs.writeFileSync(shm,Buffer.alloc(32768));
+  const b=B.metadata(s.c.oldData,s.c.maxDbBytes);assert.equal(b.walBytes,4096);assert.equal(b.shmBytes,32768);
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});io.resources=()=>({availableMemory:b.requiredMemory-1,freeDisk:2**40});await assert.rejects(()=>io.backupBudget(s.c.oldData),/backup-memory-budget/);
+  fs.linkSync(wal,wal+'.test-link');assert.throws(()=>B.metadata(s.c.oldData,s.c.maxDbBytes),/path/);
+}));
+test('observed main service type restart and autostart dependency are mandatory without masking or writes',()=>run(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false}),ok={Type:'simple',Restart:'on-failure',Wants:'network.target riftassist-autostart.service',Requires:'',BindsTo:''};
+  io.assertMainServiceShape(ok);for(const delta of [{Type:'forking'},{Restart:'always'},{Wants:''},{Requires:'riftassist-autostart.service'},{BindsTo:'riftassist-autostart.service'},{Requires:undefined}])assert.throws(()=>io.assertMainServiceShape({...ok,...delta}),/main-service-shape-unverified/);
+}));
+test('an unset systemd Group uses only the verified pinned primary group and identity drift still blocks',()=>legacyFixture(async s=>{
+  const io=new UbuntuReplacementIO({...s.c,rehearsal:false});
+  io.observed=async()=>({LoadState:'loaded',ActiveState:'active',User:'azureuser',Group:'',KillMode:'control-group',FragmentPath:s.c.unitFile,WorkingDirectory:s.c.oldCode,ControlGroup:'/system.slice/'+s.c.service,Type:'simple',Restart:'on-failure',Wants:'riftassist-autostart.service',Requires:'',BindsTo:'',DropInPaths:''});
+  io.assertAutostartQuiescent=async()=>({quiescent:true});io.runtimeIdentity=async()=>({uid:s.c.uid,gid:s.c.gid,version:s.c.nodeVersion});io.resources=()=>({availableMemory:2**32,freeDisk:2**40});
+  io.run=async()=>{throw Error('No service command permitted in this proof');};
+  assert.equal((await io.preflight('v0.1.7')).singleService,true);
+  io.runtimeIdentity=async()=>({uid:s.c.uid,gid:s.c.gid+1,version:s.c.nodeVersion});await assert.rejects(()=>io.preflight('v0.1.7'),/service-identity/);
+}));
+test('single-service encrypted backup and clone retain committed WAL-only report data',()=>run(async(s,io,e)=>{
+  const make=require('../../releases/v0.2.0/src/operations-store.js').createStore,store=make(s.c.oldData),file=path.join(s.c.oldData,'private/operations.sqlite');
+  const keep=new(require('node:sqlite').DatabaseSync)(file);keep.exec('PRAGMA wal_autocheckpoint=0');
+  try{
+    const before=P.hash(fs.readFileSync(file)),owner=store.hash('synthetic-wal-replacement');
+    const report=store.report(owner,{clientKey:id(),category:'app',description:'Synthetic WAL-only replacement report'});
+    assert.equal(P.hash(fs.readFileSync(file)),before);assert.ok(fs.statSync(file+'-wal').size>32);
+    const budget=new UbuntuReplacementIO({...s.c,rehearsal:false});budget.resources=()=>({availableMemory:2**32,freeDisk:2**40});io.backupBudget=data=>budget.backupBudget(data);
+    const plan=e.plan('replace',id()),result=await e.execute(plan,plan.digest);assert.equal(result.state,'completed');
+    const candidate=make(s.c.candidateData);try{assert.ok(candidate.listReports(owner).some(r=>r.id===report.id));}finally{candidate.close();}
+    assert.equal(store.listReports(owner).some(r=>r.id===report.id),true);
+  }finally{keep.close();store.close();}
+}));
 async function run(fn){const s=await fixture();try{const io=new FakeReplacementIO(s.c),e=R.createReplacement(s.raw,io,{rehearsal:true});await fn(s,io,e);}finally{s.cleanup();}}
 test('backup qualification preserves ready false and original service without creating candidate data',()=>run(async(s,io,e)=>{const p=e.plan('qualify-backup',id()),r=await e.execute(p,p.digest);assert.equal(r.state,'qualified');assert.equal(r.probe.compatibility.schemaHash,s.c.schemaHash);assert.deepEqual(r.probe.keyNames,['manager.key','sessions.key','storage.key']);assert.equal(io.running,'v0.1.7');assert.equal(e.status().state.version,'v0.1.7');assert.equal(fs.existsSync(path.join(s.c.candidateData,'private')),false);assert.equal(io.calls.includes('copy'),false);assert.equal(R.codeReceipt(s.c.candidateCode).manifest.ready,false);}));
 test('qualification replay cannot repeat downtime or create a second backup',()=>run(async(s,io,e)=>{const p=e.plan('qualify-backup',id()),r=await e.execute(p,p.digest),count=io.calls.length;assert.equal((await e.execute(p,p.digest)).id,r.id);assert.equal(io.calls.length,count);assert.throws(()=>e.plan('rollback',id(),r.id),/stale/);}));

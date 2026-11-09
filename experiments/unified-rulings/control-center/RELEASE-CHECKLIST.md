@@ -1,3 +1,5 @@
+> 2026-11-09 실제 두 조사 반영: [확인된 토폴로지·추가2항목·WAL 자원·최소 승인/한 줄 명령](AZURE-LAUNCH-FINDINGS.md)이 최신 근거입니다. 이미 완료한 두 조사는 반복하지 않습니다. 새 조사는 ONE-LINE-INSPECTION.txt의 독립된 한 줄을 별도 승인 후 사용하며 ready=false를 유지합니다.
+
 # v0.2.0 실제 교체 확인표
 
 2026-11-09. [최신 수동 SSH 절차](MANUAL-LIVE-RELEASE.md)가 실행 기준이다. 기존 VM·Caddy·포트에서 앱 한 버전만 실행한다. ready=false이며 운영 변경 승인이 아니다.
