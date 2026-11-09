@@ -58,7 +58,7 @@ internal static class SshRegressionProofs
         File.WriteAllText(worker, """
         const fs = require('node:fs'); const [mode, expected] = process.argv.slice(2);
         if (mode === 'early') { fs.closeSync(0); process.stderr.write('Permission denied (publickey). synthetic-sensitive-output\n'); process.exitCode=255; }
-        else if (mode === 'hang') { fs.writeFileSync(expected+'.pid',String(process.pid)); setInterval(()=>{},1000); }
+        else if (mode === 'hang') { fs.writeFileSync(expected+'.pid.tmp',String(process.pid)); fs.renameSync(expected+'.pid.tmp',expected+'.pid'); setInterval(()=>{},1000); }
         else if (mode === 'limit') { process.stdout.write('x'.repeat(70000)); setInterval(()=>{},1000); }
         else if (mode === 'invalid-utf8') { process.stdout.write(Buffer.from([0xff,0xfe])); }
         else {
@@ -96,13 +96,26 @@ internal static class SshRegressionProofs
             catch (ControlException e) { ProofSuite.Equal(e.Code, "client-ssh-response-invalid"); }
         });
         await suite.CheckAsync("real hanging child respects cancellation and is reaped", async () => {
-            using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
-            try { await SshProcessIo.RunAsync(Info("hang"), command.StandardInput, timeout.Token); throw new InvalidOperationException(); }
-            catch (OperationCanceledException) { ProofSuite.True(timeout.IsCancellationRequested); }
-            if (File.Exists(expectedFile + ".pid")) {
+            // Cancellation used to race writeFileSync's create/truncate/write, leaving
+            // an empty PID file on loaded Windows runners. Require atomic readiness
+            // first: the test must prove a live child was actually cancelled.
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var running = SshProcessIo.RunAsync(Info("hang"), command.StandardInput, timeout.Token);
+            try {
+                while (!File.Exists(expectedFile + ".pid") && !running.IsCompleted && !timeout.IsCancellationRequested)
+                    await Task.Delay(10);
+                ProofSuite.True(File.Exists(expectedFile + ".pid"));
                 var pid = int.Parse(File.ReadAllText(expectedFile + ".pid"));
+                using (var started = Process.GetProcessById(pid)) ProofSuite.True(!started.HasExited);
+                var watch = Stopwatch.StartNew(); timeout.Cancel();
+                try { await running; throw new InvalidOperationException(); }
+                catch (OperationCanceledException) { ProofSuite.True(timeout.IsCancellationRequested); }
+                ProofSuite.True(watch.Elapsed < TimeSpan.FromSeconds(8));
                 try { using var child = Process.GetProcessById(pid); ProofSuite.True(child.HasExited); }
                 catch (ArgumentException) { } // Exited process already removed by the OS.
+            } finally {
+                timeout.Cancel();
+                try { await running; } catch (OperationCanceledException) { }
             }
         });
         await suite.CheckAsync("local executable launch failure is sanitized and distinct", async () => {

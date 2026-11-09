@@ -45,3 +45,5 @@ v0.2.n에서 별도 승인 후, 기존 개인키 대신 조사 전용 키를 생
 ## 이번 변경 검증
 
 로컬 Node257·버전 호환6·v017회귀11·Chromium17·기존lab29·고정 pin 회귀3·C#284·Python43 = **650/650** 통과, WPF 교차 빌드 경고/오류0. 최초 기본 sandbox 실행에서는 loopback listen이 EPERM으로 실패했으며, 로컬 통신이 허용된 실행으로 다시 검증했다. 실제 Windows PowerShell5.1 응답 거절 시험·native WPF·systemd 교체/복귀는 이 commit의 CI에서 확인하며 로컬 결과로 대체하지 않는다. 범위/패턴 기반 staged 검사에서 민감 파일·자격증명 패턴 발견0이며 전체 이력의 비밀정보 부재를 보증하는 검사는 아니다. v017·운영 SQLite·키·다른 브랜치 수정 없음.
+
+최초 CI c7a034a에서는 Windows source C#290/290 후 package C#288/289였다. 250ms 고정 취소가 합성 자식의 PID 파일 생성과 쓰기 사이에 겹쳐 빈 파일을 읽은 경쟁 조건이었다. fixture가 PID를 atomic rename으로 게시하고 부모가 실제 live child 준비를 확인한 뒤 취소하도록 수정했다. 취소 후 종료 시간과 프로세스 수거 검사는 유지하며, 단순 재실행이나 예외 무시로 통과시키지 않는다. 이 보완의 최종 CI 결과는 GitHub exact commit에서 확인한다.
