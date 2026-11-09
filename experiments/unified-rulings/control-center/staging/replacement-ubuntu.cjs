@@ -4,8 +4,8 @@ const fs=require('node:fs'),path=require('node:path');
 const {promisify}=require('node:util'),execFile=promisify(require('node:child_process').execFile);
 const P=require('./protocol.cjs'),R=require('./replacement.cjs');
 const {available}=require('./ubuntu-io.cjs');
-function override(c){return '[Service]\nWorkingDirectory='+c.candidateData+'\nExecStart=\nExecStart='+c.node+' '+c.launcher+' '+P.within(c.root,'launch.json')+'\nTimeoutStopSec=115\nReadOnlyPaths='+c.candidateData+'/releases '+c.candidateData+'/knowledge-releases\n';}
-function budgetGuard(c){return '# RiftAssist '+c.siteId+' rollback budget guard\n[Service]\nEnvironment=OPENAI_GENERATION_ENABLED=false\n';}
+function override(c){return '[Service]\nWorkingDirectory='+c.candidateData+'\nExecStart=\nExecStart='+c.node+' '+c.launcher+' '+P.within(c.root,'launch.json')+'\nTimeoutStopSec=115\nReadOnlyPaths='+c.candidateData+'/releases '+c.candidateData+'/knowledge-releases\n'+require('./clean-rollback.cjs').isolation(c);}
+function budgetGuard(c){return '# RiftAssist '+(c.rollbackCode?c.oldCodeHash:c.siteId)+' rollback budget guard\n[Service]\nEnvironment=OPENAI_GENERATION_ENABLED=false\n'+(c.rollbackCode?'ExecStart=\nExecStart='+c.node+' '+c.oldCode+'/src/manager.js\n':'')+require('./clean-rollback.cjs').isolation(c);}
 function bounded(file){P.noLinks(file,true);if(fs.statSync(file).size>65536)P.fail('configuration-size');return fs.readFileSync(file);}
 function knowledgeHash(root){
   const active=P.readJSON(path.join(root,'knowledge-releases','active.json'),4096);if(!/^[a-zA-Z0-9_.-]{1,100}$/.test(active.releaseId)||['.','..'].includes(active.releaseId))P.fail('knowledge');
@@ -31,19 +31,20 @@ class UbuntuReplacementIO {
   }
   async observed(service=this.config.service){
     if(![this.config.service,'riftassist-autostart.service'].includes(service))P.fail('service');
-    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths,Type,Restart,Requires,Wants,After,PartOf,BindsTo']);
+    const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths,Type,Restart,Requires,Wants,After,PartOf,BindsTo,RootDirectory,RootImage,BindPaths,BindReadOnlyPaths,InaccessiblePaths,PrivateMounts,NoNewPrivileges,EnvironmentFiles']);
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
   async preflight(version){
     const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
     if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||!['','azureuser'].includes(o.Group)||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
+    require('./clean-rollback.cjs').assertNamespace(c,o,{installed:fs.existsSync(c.overrideFile)});
     this.assertMainServiceShape(o);
     this.assertReviewedDropIns(o);
     await this.assertRuntimeIdentity();
     if(version==='v0.1.7'&&fs.existsSync(c.overrideFile)&&P.hash(bounded(c.overrideFile))!==P.hash(budgetGuard(c)))P.fail('override-already-exists');
     this.assertRuntimeConfigurationApproved(version);
     await this.configurationUnchanged();
-    if(R.legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-code-drift');
+    if(R.rollbackReceipt(c).hash!==c.oldCodeHash)P.fail('rollback-code-drift');
     if(version==='v0.1.7'){
       require('./legacy-v017.cjs').assertCompatibleStore(c.candidateCode);
       if(knowledgeHash(c.candidateData).hash!==c.knowledgeHash)P.fail('knowledge-drift');
@@ -126,7 +127,7 @@ class UbuntuReplacementIO {
   async restorePrevious(version,snapshot,{pauseAi=false}={}){
     const c=this.config;await this.assertStopped();await this.configurationUnchanged();if(!snapshot)P.fail('configuration-snapshot');
     const current=fs.existsSync(c.overrideFile)?bounded(c.overrideFile):null;
-    const previous=version==='v0.1.7'&&pauseAi?Buffer.from(budgetGuard(c)):snapshot.override===null?null:Buffer.from(snapshot.override,'base64');
+    const previous=version==='v0.1.7'&&(pauseAi||c.rollbackCode)?Buffer.from(budgetGuard(c)):snapshot.override===null?null:Buffer.from(snapshot.override,'base64');
     if((current?.toString('base64')||null)!==(previous?.toString('base64')||null)){
       if(current&&![P.hash(override(c)),P.hash(budgetGuard(c))].includes(P.hash(current)))P.fail('override-conflict');
       if(version==='v0.1.7'&&current&&![P.hash(override(c)),P.hash(budgetGuard(c))].includes(P.hash(current)))P.fail('override-conflict');
@@ -137,10 +138,15 @@ class UbuntuReplacementIO {
   }
   async start(version){
     if(!['v0.1.7','v0.2.0'].includes(version))P.fail('version');const c=this.config;
-    if((version==='v0.1.7'?R.legacyReceipt(c.oldCode):R.codeReceipt(c.candidateCode)).hash!==(version==='v0.1.7'?c.oldCodeHash:c.candidateHash))P.fail('release-integrity');
+    if((version==='v0.1.7'?R.rollbackReceipt(c):R.codeReceipt(c.candidateCode)).hash!==(version==='v0.1.7'?c.oldCodeHash:c.candidateHash))P.fail('release-integrity');
     const root=version==='v0.1.7'?c.oldData:c.candidateData;
     try{for(const name of ['storage.key','manager.key','sessions.key']){const file=path.join(root,'private',name);P.noLinks(file,true);const size=fs.statSync(file).size;if(name==='storage.key'?size!==32:!(/^[a-f0-9]{64}\s*$/i.test(bounded(file).toString())))P.fail('restart-keyset-unverified');}}catch{P.fail('restart-keyset-unverified');}
-    await this.assertStopped();this.assertReviewedDropIns(await this.observed());await this.assertRuntimeIdentity();await this.run(['start',c.service]);
+    await this.assertStopped();
+    if(version==='v0.1.7'&&c.rollbackCode){
+      if(fs.existsSync(c.overrideFile)&&![P.hash(override(c)),P.hash(budgetGuard(c))].includes(P.hash(bounded(c.overrideFile))))P.fail('override-conflict');
+      fs.mkdirSync(path.dirname(c.overrideFile),{recursive:true,mode:0o755});P.atomic(c.overrideFile,budgetGuard(c),0o644);await this.run(['daemon-reload']);
+    }
+    const selected=await this.observed();this.assertReviewedDropIns(selected);require('./clean-rollback.cjs').assertNamespace(c,selected,{installed:true});await this.assertRuntimeIdentity();await this.run(['start',c.service]);
     if(version==='v0.1.7')await this.startOriginalApp();
   }
   async managerStatus(version){

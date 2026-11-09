@@ -41,8 +41,12 @@ jobs:
           node scripts/protocol-vectors.cjs
           node scripts/console-instructions.cjs
           node scripts/one-line-inspection.cjs
+          node scripts/final-inspection.cjs
+          node scripts/final-inspection.cjs
           ./scripts/Test-ConsoleInstructions.ps1
           ./scripts/Test-OneLineInspection.ps1
+          ./scripts/Test-FinalInspection.ps1
+          ./scripts/Test-FinalInspection.ps1
           node scripts/backend-manifest.cjs
           python scripts/verify-icon.py
           node scripts/deployment-manifest.cjs
@@ -55,6 +59,8 @@ jobs:
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
+          python staging/final-inspection.test.py
+          python staging/final-inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
@@ -177,6 +183,8 @@ jobs:
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
+          python staging/final-inspection.test.py
+          python staging/final-inspection.test.py
           node --test --test-reporter=tap deployment/lab.test.cjs
           node --test --test-reporter=tap staging/staging.test.cjs
           node --test --test-reporter=tap staging/replacement.test.cjs staging/replacement-hardening.test.cjs
@@ -223,4 +231,13 @@ jobs:
             ${{ runner.temp }}/control-center-real-staging-proof.json
             ${{ runner.temp }}/control-center-replacement-proof.json
             ${{ runner.temp }}/control-center-manual-package-proof.json
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-final-readonly-inspection
+          path: |
+            experiments/unified-rulings/control-center/FINAL-INSPECTION.txt
+            experiments/unified-rulings/control-center/FINAL-LAUNCH.md
+            experiments/unified-rulings/control-center/staging/inspect-final-launch.py
           if-no-files-found: error

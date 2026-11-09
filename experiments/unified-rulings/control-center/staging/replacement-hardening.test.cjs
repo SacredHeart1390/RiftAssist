@@ -2,6 +2,59 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),http=require('node:http');
 const R=require('./replacement.cjs'),P=require('./protocol.cjs'),{fixture,FakeReplacementIO}=require('./replacement-fixture.cjs'),{UbuntuReplacementIO,override,budgetGuard}=require('./replacement-ubuntu.cjs');
 const id=()=>crypto.randomUUID();
+// Synthetic ownership only; production still requires actual root-owned immutable code.
+function rootMirrorMetadata(folder){folder=path.resolve(folder,'../..');const original=fs.lstatSync;fs.lstatSync=(file,...args)=>{const stat=original(file,...args);if(String(file)===folder||String(file).startsWith(folder+path.sep))Object.defineProperty(stat,'uid',{value:0});return stat;};return()=>{fs.lstatSync=original;};}
+test('clean rollback copies exactly trusted 65 files without trusting or changing node_modules and lock',()=>legacyFixture(async s=>{
+  const C=require('./clean-rollback.cjs'),target=path.join(s.temporary,'clean-copy');
+  fs.mkdirSync(path.join(s.c.oldCode,'node_modules'));fs.writeFileSync(path.join(s.c.oldCode,'package-lock.json'),'synthetic untrusted lock');
+  const r=C.prepare(s.c.oldCode,target);assert.equal(r.referenceVerified,true);assert.equal(r.hash,s.c.oldCodeHash);assert.equal(r.sourceDirectoryTrusted,false);
+  assert.equal(fs.existsSync(path.join(target,'node_modules')),false);assert.equal(fs.existsSync(path.join(target,'package-lock.json')),false);
+  assert.equal(fs.readFileSync(path.join(s.c.oldCode,'package-lock.json'),'utf8'),'synthetic untrusted lock');assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-unexpected-file/);
+  fs.appendFileSync(path.join(target,'src/server.js'),'\n// changed');assert.throws(()=>R.legacyReceipt(target),/legacy-baseline-mismatch/);
+}));
+test('clean reference refuses a changed original byte before creating a destination',()=>legacyFixture(async s=>{
+  const target=path.join(s.temporary,'clean-copy');fs.appendFileSync(path.join(s.c.oldCode,'src/server.js'),'\n// changed');assert.throws(()=>require('./clean-rollback.cjs').prepare(s.c.oldCode,target),/legacy-baseline-mismatch/);assert.equal(fs.existsSync(target),false);
+}));
+test('code-only installer creates a fresh root and strict rollback source without opening operational contents or changing service configuration',()=>legacyFixture(async s=>{
+  const M=require('./replacement-package.cjs'),out=path.join(s.temporary,'capsule'),proof=M.prepare(path.resolve(__dirname,'../../releases/v0.2.0'),out,{siteId:s.c.siteId,commit:s.c.commit,mode:'manual-ssh'}),root=path.join(s.temporary,'fresh-install');
+  const raw={...s.raw,root,rollbackCode:path.join(root,'rollback/v0.1.7'),candidateCode:path.join(root,'releases/v0.2.0'),candidateData:path.join(root,'data/v0.2.0'),launcher:path.join(root,'tools/replacement-launch.cjs'),candidateHash:proof.candidateHash,oldCodeHash:proof.rollbackReferenceHash};
+  const original=fs.readFileSync;fs.readFileSync=function(file,...args){if(typeof file==='string'&&file.startsWith(s.c.oldData+path.sep))throw Error('Operational reads forbidden');return original.call(this,file,...args);};
+  let result;try{result=require('./install-code.cjs').install(out,raw,proof.planSha256,{rehearsal:true});}finally{fs.readFileSync=original;}
+  assert.equal(result.operationalDataRead,false);assert.equal(result.serviceChanged,false);assert.equal(result.authorizedToDeploy,false);assert.equal(result.sourceReady,false);
+  assert.equal(R.legacyReceipt(raw.rollbackCode).hash,proof.rollbackReferenceHash);assert.equal(fs.readFileSync(s.c.unitFile,'utf8'),'synthetic unit only\n');
+  assert.throws(()=>require('./install-code.cjs').install(out,raw,proof.planSha256,{rehearsal:true}),/exists/);assert.equal(fs.existsSync(path.join(raw.candidateData,'private')),false);
+}));
+test('clean reference paths are fixed and a namespace cannot fall back to host extras',()=>run(async s=>{
+  const C=require('./clean-rollback.cjs'),c={...s.c,rollbackCode:path.join(s.c.root,'rollback/v0.1.7')},o={RootDirectory:'',RootImage:'',BindPaths:'',BindReadOnlyPaths:'',InaccessiblePaths:'',EnvironmentFiles:''};
+  assert.throws(()=>R.config({...s.raw,rollbackCode:s.c.oldCode},{rehearsal:true}),/rollback-reference-path/);C.assertNamespace(c,o);
+  assert.throws(()=>C.assertNamespace(c,o,{installed:true}),/rollback-namespace-unverified/);
+  const installed={...o,BindReadOnlyPaths:c.rollbackCode+':'+c.oldCode+':rbind',InaccessiblePaths:c.oldCode+'/scripts',PrivateMounts:'yes',NoNewPrivileges:'yes'};C.assertNamespace(c,installed,{installed:true});
+  assert.throws(()=>C.assertNamespace(c,{...installed,BindPaths:'/unreviewed'} ,{installed:true}),/rollback-namespace-conflict/);
+  assert.throws(()=>C.assertNamespace(c,{...installed,BindReadOnlyPaths:'-'+installed.BindReadOnlyPaths},{installed:true}),/rollback-namespace-unverified/);
+  assert.match(override(c),/BindReadOnlyPaths=/);assert.match(budgetGuard(c),/NODE_OPTIONS=/);
+}));
+test('a verified clean rollback guard remains identical across fresh candidate profile generations',()=>run(async s=>{
+  const c={...s.c,rollbackCode:'/var/lib/riftassist-rollback/'+s.c.oldCodeHash+'/v0.1.7'};
+  assert.equal(budgetGuard(c),budgetGuard({...c,siteId:id(),root:path.join(s.temporary,'another-generation')}));
+  assert.match(budgetGuard(c),/ExecStart=\nExecStart=/);assert.match(budgetGuard(c),/OPENAI_GENERATION_ENABLED=false/);
+}));
+test('production gates keep original layout untrusted and require strict clean reference plus isolation evidence',async()=>{
+  const s=await fixture({realLegacy:true,cleanRollback:true}),restoreOwnership=rootMirrorMetadata(s.c.rollbackCode);try{
+    fs.mkdirSync(path.join(s.c.oldCode,'node_modules'));fs.writeFileSync(path.join(s.c.oldCode,'package-lock.json'),'{}');
+    const c={...s.c,rehearsal:false},g=R.gates(c);assert.equal(g.rollbackSourceAssessment.layoutVerified,false);assert.equal(g.rollbackSourceAssessment.deploymentReferenceVerified,false);assert.equal(g.rollbackExecutionReference.referenceVerified,true);assert.equal(g.rollbackExecutionReference.originalDirectoryTrusted,false);
+    assert.ok(!g.blockers.includes('rollback-reference-unverified'));assert.ok(g.blockers.includes('rollback-isolation-not-verified'));assert.ok(g.blockers.includes('release-not-ready'));assert.equal(g.authorizedToDeploy,false);
+    fs.appendFileSync(path.join(s.c.oldCode,'src/server.js'),'\n// altered');assert.ok(R.gates(c).blockers.includes('original-baseline-unverified'));
+    fs.appendFileSync(path.join(s.c.rollbackCode,'src/server.js'),'\n// altered');assert.ok(R.gates(c).blockers.includes('rollback-reference-unverified'));
+  }finally{restoreOwnership();s.cleanup();}
+});
+test('clean rollback refuses to start any service if its effective namespace is missing',async()=>{
+  const s=await fixture({realLegacy:true,cleanRollback:true}),restoreOwnership=rootMirrorMetadata(s.c.rollbackCode);try{
+    const io=new UbuntuReplacementIO({...s.c,rehearsal:false});let calls=[];io.assertStopped=async()=>{};io.run=async a=>{calls.push(a);};
+    io.observed=async()=>({DropInPaths:s.c.overrideFile,RootDirectory:'',RootImage:'',BindPaths:'',BindReadOnlyPaths:'',InaccessiblePaths:'',EnvironmentFiles:''});
+    io.assertRuntimeIdentity=async()=>{};await assert.rejects(()=>io.start('v0.1.7'),/rollback-namespace-unverified/);
+    assert.deepEqual(calls,[['daemon-reload']]);assert.equal(fs.existsSync(path.join(s.c.oldCode,'node_modules')),false);
+  }finally{restoreOwnership();s.cleanup();}
+});
 test('reported Azure DB WAL SHM and resources fit a conservative budget without claiming restore success',()=>{
   const o=require('./azure-observations-2026-11-09.json'),B=require('./backup-budget.cjs'),f=o.dataMetadata.files;
   const b=B.estimate({dbBytes:f['private/operations.sqlite'],walBytes:f['private/operations.sqlite-wal'],shmBytes:f['private/operations.sqlite-shm']});

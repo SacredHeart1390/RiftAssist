@@ -4,13 +4,14 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const P=require('./protocol.cjs'),V=require('./vault.cjs'),A=require('./legacy-assessment.cjs');
 const PROTOCOL='riftassist-replacement-1',terminal=new Set(['completed','rolled-back','qualified','failed-stable']);
 function config(raw,{rehearsal=false}={}) {
-  P.exact(raw,['schemaVersion','siteId','mode','installationApproved','inventoryVerified','root','node','nodeVersion','service','unitFile','unitHash','caddyFile','caddyHash','overrideFile','oldData','oldCode','oldCodeHash','candidateData','candidateCode','candidateHash','commit','schemaHash','ports','uid','gid','launcher','knowledgeHash','evidence']);
+  P.exact(raw,['schemaVersion','siteId','mode','installationApproved','inventoryVerified','root','node','nodeVersion','service','unitFile','unitHash','caddyFile','caddyHash','overrideFile','oldData','oldCode','rollbackCode','oldCodeHash','candidateData','candidateCode','candidateHash','commit','schemaHash','ports','uid','gid','launcher','knowledgeHash','evidence']);
   if(raw.schemaVersion!==1||raw.mode!=='single-instance-replacement'||!P.uuid(raw.siteId)||raw.installationApproved!==true||raw.inventoryVerified!==true)P.fail('inventory-not-approved');
   if(typeof raw.nodeVersion!=='string'||!/^v24\.\d+\.\d+$/.test(raw.nodeVersion))P.fail('runtime-pin-required');
   if(!/^[a-f0-9]{40}$/.test(raw.commit)||!['unitHash','caddyHash','oldCodeHash','candidateHash','schemaHash','knowledgeHash'].every(k=>P.sha(raw[k])))P.fail('inventory');
   for(const name of ['root','node','unitFile','caddyFile','overrideFile','oldData','oldCode','candidateData','candidateCode','launcher']){
     if(typeof raw[name]!=='string'||!path.isAbsolute(raw[name])||/[\r\n\0"]/.test(raw[name])||!rehearsal&&(/[\\%$]/.test(raw[name])||raw[name].includes(' ')))P.fail('inventory-path');P.noLinks(raw[name]);
   }
+  if(raw.rollbackCode!==undefined){if(raw.rollbackCode!==(rehearsal?path.join(raw.root,'rollback','v0.1.7'):'/var/lib/riftassist-rollback/'+raw.oldCodeHash+'/v0.1.7'))P.fail('rollback-reference-path');P.noLinks(raw.rollbackCode);}
   if(raw.root===raw.oldData||raw.oldData.startsWith(raw.root+path.sep)||raw.root.startsWith(raw.oldData+path.sep))P.fail('data-overlap');
   if((!rehearsal&&(raw.candidateData!==path.join(raw.root,'data','v0.2.0')||raw.candidateCode!==path.join(raw.root,'releases','v0.2.0')))||raw.launcher!==path.join(raw.root,'tools','replacement-launch.cjs'))P.fail('inventory-path');
   if(!Array.isArray(raw.ports)||raw.ports.length!==4||new Set(raw.ports).size!==4||raw.ports.some(p=>!Number.isInteger(p)||p<1024||p>65535))P.fail('ports');
@@ -88,18 +89,20 @@ function codeReceipt(folder,version='v0.2.0'){
   return{manifest:m,hash:P.digest({manifest:P.hash(fs.readFileSync(path.join(folder,'app-release.json'))),files})};
 }
 function legacyReceipt(folder){return require('./legacy-v017.cjs').receipt(folder);}
+function rollbackReceipt(c){return require('./clean-rollback.cjs').receipt(c);}
 
 function gates(c){
   owner(c);const blockers=[],r=codeReceipt(c.candidateCode);if(r.hash!==c.candidateHash)blockers.push('candidate-drift');
-  let rollbackSourceAssessment=null;
-  if(!c.rehearsal){try{rollbackSourceAssessment=A.assess(c.oldCode);if(!rollbackSourceAssessment.layoutVerified)blockers.push('rollback-layout-unreviewed');}catch{blockers.push('rollback-assessment-unavailable');}}
-  if(!c.rehearsal)try{if(legacyReceipt(c.oldCode).hash!==c.oldCodeHash)blockers.push('rollback-reference-drift');}catch{blockers.push('rollback-reference-unverified');}
+  let rollbackSourceAssessment=null,rollbackExecutionReference=null;
+  if(!c.rehearsal){try{rollbackSourceAssessment=A.assess(c.oldCode);if(c.rollbackCode?!rollbackSourceAssessment.baselineCodeVerified:!rollbackSourceAssessment.layoutVerified)blockers.push(c.rollbackCode?'original-baseline-unverified':'rollback-layout-unreviewed');}catch{blockers.push('rollback-assessment-unavailable');}}
+  if(!c.rehearsal)try{const legacy=rollbackReceipt(c);rollbackExecutionReference={kind:c.rollbackCode?'clean-code-namespace':'original-code',referenceVerified:legacy.referenceVerified,hash:legacy.hash,originalDirectoryTrusted:!c.rollbackCode,collectorPaused:Boolean(c.rollbackCode),generationPaused:Boolean(c.rollbackCode)};if(legacy.hash!==c.oldCodeHash)blockers.push('rollback-reference-drift');}catch{blockers.push('rollback-reference-unverified');}
   for(const [file,digest]of [[c.unitFile,c.unitHash],[c.caddyFile,c.caddyHash]]){P.noLinks(file,true);if(P.hash(fs.readFileSync(file))!==digest)blockers.push('configuration-drift');}
   const e=c.evidence||{},attested=v=>v?.status==='verified'&&v.commit===c.commit&&typeof v.reference==='string'&&v.reference.length>=3;
   for(const name of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal'])if(!attested(e[name]))blockers.push(name+'-not-verified');
+  if(c.rollbackCode&&!c.rehearsal&&(!attested(e.rollbackIsolation)||e.rollbackIsolation.method!=='systemd-readonly-bind'||e.rollbackIsolation.collectorPaused!==true||e.rollbackIsolation.generationPaused!==true))blockers.push('rollback-isolation-not-verified');
   if(!c.rehearsal&&(r.manifest.ready!==true||r.manifest.developmentOnly!==false))blockers.push('release-not-ready');
   if(e.rehearsal?.mode!=='single-instance-replacement'||e.rehearsal?.actualApplicationStarted!==true||e.rehearsal?.maxConcurrentVersions!==1)blockers.push('single-instance-rehearsal-required');
-  return{mode:'single-instance-replacement',blockers,rollbackSourceAssessment,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
+  return{mode:'single-instance-replacement',blockers,rollbackSourceAssessment,rollbackExecutionReference,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
 }
 function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   const c=config(raw,{rehearsal});owner(c);const {audit}=require('./broker.cjs');audit(c,null);
@@ -115,7 +118,7 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
     const previous=current();if(kind!=='rollback'&&previous.version!=='v0.1.7'||kind==='rollback'&&previous.version!=='v0.2.0')P.fail('stale');
     if(kind==='qualify-backup'&&!c.rehearsal){const report=gates(c);if(report.blockers.some(v=>!['release-not-ready','rights-not-verified','rehearsal-not-verified','compatibility-not-verified'].includes(v)))P.fail('qualification-blocked');}
     if(kind==='replace'){if(!gates(c).readyForApprovedExecution)P.fail('release-blocked');if(fs.existsSync(path.join(c.candidateData,'private')))P.fail('retained-data');}
-    else if(kind==='rollback'){const old=P.readJSON(file(deploymentId));if(old.kind!=='replace'||old.state!=='completed')P.fail('rollback-target');if(!c.rehearsal&&legacyReceipt(c.oldCode).hash!==c.oldCodeHash)P.fail('rollback-reference-drift');}
+    else if(kind==='rollback'){const old=P.readJSON(file(deploymentId));if(old.kind!=='replace'||old.state!=='completed')P.fail('rollback-target');if(!c.rehearsal&&rollbackReceipt(c).hash!==c.oldCodeHash)P.fail('rollback-reference-drift');}
     const body={protocol:PROTOCOL,id,kind,siteId:c.siteId,inventoryHash:c.inventoryHash,commit:c.commit,previous,expiresAt:now()+600000,deploymentId:deploymentId||null,impact:'brief-outage-single-service',target:kind==='replace'?'v0.2.0':'v0.1.7'};
     return{...body,digest:signature(body)};
   }
@@ -164,4 +167,4 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   async function reconcile(){const s=status(),observed=await io.observe();return{...s,observed,uncertain:s.uncertain||s.locked||observed.configurationTarget!==s.state.version||observed.serviceActive!==true};}
   return{config:c,status,reconcile,gates:()=>gates(c),plan,execute,inspect:id=>P.readJSON(file(id))};
 }
-module.exports={PROTOCOL,config,initialize,schemaHash,codeReceipt,legacyReceipt,gates,createReplacement,cloneBackup,readArchive};
+module.exports={PROTOCOL,config,initialize,schemaHash,codeReceipt,legacyReceipt,rollbackReceipt,gates,createReplacement,cloneBackup,readArchive};

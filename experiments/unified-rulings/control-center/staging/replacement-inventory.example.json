@@ -77,8 +77,17 @@
       "status": "unverified",
       "commit": "",
       "reference": ""
+    },
+    "rollbackIsolation": {
+      "status": "unverified",
+      "commit": "",
+      "reference": "",
+      "method": "systemd-readonly-bind",
+      "collectorPaused": true,
+      "generationPaused": true
     }
   },
   "oldCodeHash": "",
-  "nodeVersion": "v24.22.1"
+  "nodeVersion": "v24.22.1",
+  "rollbackCode": "/var/lib/riftassist-rollback/<verified-code-hash>/v0.1.7"
 }

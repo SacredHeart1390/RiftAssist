@@ -1,3 +1,5 @@
+> 현재 실행 기준: [FINAL-LAUNCH.md](FINAL-LAUNCH.md). 원본을 보존한 별도 strict65 rollback 코드와 service-only readonly binding, 마지막 표적 source/config 조사 및 승인별 설치/교체 절차를 따른다. 이전 원본 extras 전체 검증을 true로 바꾸지 않는다.
+
 > 2026-11-09 실제 두 조사 반영: [확인된 토폴로지·추가2항목·WAL 자원·최소 승인/한 줄 명령](AZURE-LAUNCH-FINDINGS.md)이 최신 근거입니다. 이미 완료한 두 조사는 반복하지 않습니다. 새 조사는 ONE-LINE-INSPECTION.txt의 독립된 한 줄을 별도 승인 후 사용하며 ready=false를 유지합니다.
 
 # 가장 빠른 안전 경로: 수동 SSH + 기존 일회성 교체 코드

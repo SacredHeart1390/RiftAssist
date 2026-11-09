@@ -2,7 +2,7 @@
 // Local synthetic records only. Never construct this from operational inventory.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const P=require('./protocol.cjs'),F=require('./files.cjs'),R=require('./replacement.cjs');
-async function fixture({realLegacy=false,caddy=process.execPath,uid=process.getuid?.()||0,gid=process.getgid?.()||0}={}){
+async function fixture({realLegacy=false,cleanRollback=false,caddy=process.execPath,uid=process.getuid?.()||0,gid=process.getgid?.()||0}={}){
   const s=await require('./fixture.cjs').site({realLegacy,caddy,appUid:uid,appGid:gid}),st=s.config;
   if(realLegacy){for(const name of ['scripts','package.json'])fs.cpSync(path.resolve(__dirname,'../../releases/v0.1.7',name),path.join(st.root,'releases/a/code',name),{recursive:true,errorOnExist:true,force:false});}
   const baseline=require('../../releases/v0.2.0/src/operations-store.js').createStore(path.join(st.root,'data/a'));try{baseline.setSetting('appRelease','v0.1.7');baseline.setSetting('hosting',{provider:'none',publicOrigin:'https://localhost:'+st.proxyPort});}finally{baseline.close();}
@@ -20,7 +20,8 @@ async function fixture({realLegacy=false,caddy=process.execPath,uid=process.getu
   Object.assign(evidence.rehearsal,{mode:'single-instance-replacement',actualApplicationStarted:true,maxConcurrentVersions:1});
   const raw={schemaVersion:1,siteId:st.siteId,mode:'single-instance-replacement',installationApproved:true,inventoryVerified:true,root,node:process.execPath,nodeVersion:process.version,service:'riftassist-replacement-test-'+st.siteId+'.service',unitFile,unitHash:P.hash(fs.readFileSync(unitFile)),caddyFile,caddyHash:P.hash(fs.readFileSync(caddyFile)),overrideFile,oldData:path.join(st.root,'data/a'),oldCode:path.join(st.root,'releases/a/code'),candidateData:path.join(st.root,'data/b'),candidateCode:path.join(st.root,'releases/b/code'),candidateHash:R.codeReceipt(path.join(st.root,'releases/b/code')).hash,commit:s.packet.commit,schemaHash:schema,ports:st.ports.a,uid,gid,launcher:path.join(root,'tools/replacement-launch.cjs'),knowledgeHash:require('./replacement-ubuntu.cjs').knowledgeHash(path.join(st.root,'data/b')).hash,evidence};
   raw.oldCodeHash=realLegacy?R.legacyReceipt(raw.oldCode).hash:P.hash(fs.readFileSync(path.join(raw.oldCode,'app-release.json')));
-  const c=R.config(raw,{rehearsal:true});R.initialize(c);return{...s,stage,raw,c};
+  if(cleanRollback){if(!realLegacy)P.fail('fixture');raw.rollbackCode=path.join(root,'rollback/v0.1.7');}
+  const c=R.config(raw,{rehearsal:true});R.initialize(c);if(cleanRollback)require('./clean-rollback.cjs').prepare(raw.oldCode,raw.rollbackCode);return{...s,stage,raw,c};
 }
 class FakeReplacementIO{
   constructor(c){this.c=c;this.running='v0.1.7';this.selected='v0.1.7';this.fault='none';this.calls=[];this.maxConcurrentVersions=1;}

@@ -1,41 +1,112 @@
 {
   "schemaVersion": 1,
   "providedOn": "2026-11-09",
-  "source": "user-reported sanitized summaries of two completed SSH inspections; raw JSON not received",
-  "sshExitCodesReported": [0, 0],
+  "source": "user-reported sanitized summaries; latest launch-details-1 completed with readOnly true; raw JSON not received",
+  "sshExitCodesReported": [
+    0,
+    0
+  ],
   "service": {
-    "name": "riftassist.service", "active": true, "enabled": true,
-    "type": "simple", "restart": "on-failure", "killMode": "control-group",
-    "fragmentPath": "/etc/systemd/system/riftassist.service", "dropInCount": 0,
+    "name": "riftassist.service",
+    "active": true,
+    "enabled": true,
+    "type": "simple",
+    "restart": "on-failure",
+    "killMode": "control-group",
+    "fragmentPath": "/etc/systemd/system/riftassist.service",
+    "dropInCount": 0,
     "workingDirectory": "/home/azureuser/RiftAssist/experiments/unified-rulings/releases/v0.1.7",
-    "wantsAutostart": true, "unitFileHash": null
+    "wantsAutostart": true,
+    "unitFileHash": null
   },
   "autostart": {
-    "name": "riftassist-autostart.service", "active": false, "enabled": true,
-    "type": "oneshot", "restart": "on-failure",
-    "requiresMain": true, "afterMain": true, "partOfMain": true,
-    "execStartVerified": false, "behaviorVerified": false
+    "name": "riftassist-autostart.service",
+    "active": false,
+    "enabled": true,
+    "type": "oneshot",
+    "restart": "on-failure",
+    "requiresMain": true,
+    "afterMain": true,
+    "partOfMain": true,
+    "execStartVerified": false,
+    "behaviorVerified": false,
+    "referencedScriptName": "riftassist-autostart.py",
+    "scriptContentsRead": false
   },
-  "caddy": {"active": true, "enabled": true, "dropInCount": 0, "activeConfigPath": "/etc/caddy/Caddyfile", "currentFileSha256": null},
-  "identity": {"uid": 1000, "gid": 1000},
-  "node": {"path": "/usr/bin/node", "version": "v24.22.1", "observationCarriedFromPreviousSummary": true},
+  "caddy": {
+    "active": true,
+    "enabled": true,
+    "dropInCount": 0,
+    "activeConfigPath": "/etc/caddy/Caddyfile",
+    "currentFileSha256": null
+  },
+  "identity": {
+    "uid": 1000,
+    "gid": 1000
+  },
+  "node": {
+    "path": "/usr/bin/node",
+    "version": "v24.22.1",
+    "observationCarriedFromPreviousSummary": true
+  },
   "legacy": {
-    "knownPathsObserved": 65, "previousCodeHashesAllMatched": true,
+    "knownPathsObserved": 65,
+    "previousCodeHashesAllMatched": true,
     "codeHashesRecheckedInLatestInspection": false,
-    "metadataEnumerationComplete": true, "metadataEnumerationIssues": [],
+    "metadataEnumerationComplete": true,
+    "metadataEnumerationIssues": [],
     "extras": [
-      {"label": "node_modules", "kind": "directory", "category": "dependency-execution-risk", "uid": 1000, "gid": 1000, "groupOrWorldWritable": true},
-      {"label": "redacted", "kind": "file", "category": "execution-or-configuration-risk", "uid": 1000, "gid": 1000, "groupOrWorldWritable": true}
+      {
+        "label": "node_modules",
+        "kind": "directory",
+        "category": "dependency-execution-risk",
+        "uid": 1000,
+        "gid": 1000,
+        "groupOrWorldWritable": true,
+        "mode": "0o775"
+      },
+      {
+        "label": "package-lock.json",
+        "kind": "file",
+        "category": "execution-or-configuration-risk",
+        "uid": 1000,
+        "gid": 1000,
+        "groupOrWorldWritable": true,
+        "mode": "0o664"
+      }
     ],
-    "extraContentsRead": false, "referenceVerified": false, "deploymentCodeHash": null
+    "extraContentsRead": false,
+    "referenceVerified": false,
+    "deploymentCodeHash": null
   },
   "dataMetadata": {
     "root": "/home/azureuser/RiftAssist/experiments/unified-rulings",
-    "files": {".env": 436, "private/operations.sqlite": 3452928, "private/operations.sqlite-wal": 976472, "private/operations.sqlite-shm": 32768, "private/storage.key": 32, "private/manager.key": 64, "private/sessions.key": 64},
-    "allRegular": true, "symlinks": false, "allLinkCounts": 1,
-    "uid": 1000, "gid": 1000, "groupOrWorldReadable": false, "groupOrWorldWritable": false,
-    "contentsRead": false, "schemaVerified": false, "decryptRestoreVerified": false
+    "files": {
+      ".env": 436,
+      "private/operations.sqlite": 3452928,
+      "private/operations.sqlite-wal": 976472,
+      "private/operations.sqlite-shm": 32768,
+      "private/storage.key": 32,
+      "private/manager.key": 64,
+      "private/sessions.key": 64
+    },
+    "allRegular": true,
+    "symlinks": false,
+    "allLinkCounts": 1,
+    "uid": 1000,
+    "gid": 1000,
+    "groupOrWorldReadable": false,
+    "groupOrWorldWritable": false,
+    "contentsRead": false,
+    "schemaVerified": false,
+    "decryptRestoreVerified": false
   },
-  "resources": {"availableMemory": 595943424, "freeDisk": 59778879488, "pointInTimeOnly": true},
-  "installationApproved": false, "inventoryVerified": false, "authorizedToDeploy": false
+  "resources": {
+    "availableMemory": 595943424,
+    "freeDisk": 59778879488,
+    "pointInTimeOnly": true
+  },
+  "installationApproved": false,
+  "inventoryVerified": false,
+  "authorizedToDeploy": false
 }
