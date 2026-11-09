@@ -27,7 +27,7 @@ function launchEnvironment(data,inherited){const bytes=read(data);if(!bytes)retu
 function providerEnvironment(data,inherited,{aiEnabled,liveProviderApproved=false}){
   const env=launchEnvironment(data,inherited);
   if(liveProviderApproved){env.RIFTASSI_EXTERNAL_MODE='live';env.RIFTASSI_ALLOW_EXTERNAL_CALLS='true';}
-  if(aiEnabled&&env.OPENAI_GENERATION_ENABLED==='true'&&(env.RIFTASSI_EXTERNAL_MODE!=='live'||env.RIFTASSI_ALLOW_EXTERNAL_CALLS!=='true'||!env.OPENAI_API_KEY))P.fail('provider-activation-not-approved');
+  if(aiEnabled&&env.OPENAI_GENERATION_ENABLED==='true'&&(!liveProviderApproved||env.RIFTASSI_EXTERNAL_MODE!=='live'||env.RIFTASSI_ALLOW_EXTERNAL_CALLS!=='true'||!env.OPENAI_API_KEY))P.fail('provider-activation-not-approved');
   return env;
 }
 module.exports={read,parse,report,restore,launchEnvironment,providerEnvironment};

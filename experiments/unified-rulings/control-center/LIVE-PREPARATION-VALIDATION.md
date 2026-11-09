@@ -30,3 +30,5 @@ WPF/.NET10 Windows x64 교차 빌드는 오류/경고0이다. Linux에서는 WPF
 - Azure65개 hash 일치와 추가 경로 미확인은 분리한다. 추가 경로/autostart·실제 unit/config·데이터 크기/schema/키·자료 권리/개인정보 확정은 아직 필수다. 새 읽기 조사 승인과 실제 설치/백업/교체 승인은 서로 다르다.
 
 첫 Windows CI에서 Linux 전용 trustedLocation 경로를 OS 기본 path.join으로 조합해 유효한 Ubuntu 경로를 거절했다. posix.join으로 고정해 수정했으며 Windows 경로/다른 site 허용으로 해결하지 않았다. 기존 본체/브라우저/Ubuntu systemd CI의 성공과 이 중간 Windows 실패를 구분한다. 최종 exact SHA의 CI 재검증이 필요하다. manual capsule에는 기존 verify 모듈도 hash-list에 포함해 GNU 검증 후 추가 파일까지 검사한다.
+
+과금 보호를 추가 확인해 상속한 live 플래그가 있더라도 활성 AI 프로필은 liveProviderApproved가 없으면 거절하도록 보완했다. 키/플래그 보존을 신규 실행 승인으로 간주하지 않는다. 실제 API를 호출하지 않고 합성 설정으로 검증했다.
