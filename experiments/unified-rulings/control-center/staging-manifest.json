@@ -35,7 +35,7 @@
     "protocol.cjs": "20d3bd4167985e9d3d505455a8810331ee3b3f5215ebe99dad69315e261f9171",
     "release-blockers.test.py": "173476ec6f33ca86817e71410732275fb52991793c3860b000cc8a8e228641fc",
     "replacement-fixture.cjs": "f5f8c936b5cffae25207823a387f1d29357fa682e9cd6c1c6fed827f19e3ddf3",
-    "replacement-hardening.test.cjs": "ac7bbfae0e8a3987d9eb56d388c0cb931b0ee445dc35c4593bd5f5ca21449314",
+    "replacement-hardening.test.cjs": "d1b45f9cb72f10c610f2e7d89a079ad95d1a79be6a397620fa38bbb04a8821be",
     "replacement-inspection.test.py": "0720b622b268aa179d2310e9f0714b2fac98ebfc044e4b18bcc459ce164b86fd",
     "replacement-integration.cjs": "99611d41cffac2eaeccb2ac0edfff6e542129a6e84db9a68a0aed515d2a7173d",
     "replacement-inventory.example.json": "be946f24fb699bd44d93f1a64ec4b9ebebdcf038f122ffa9fd1998c97ff85bd3",

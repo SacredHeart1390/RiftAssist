@@ -247,14 +247,17 @@ function helperIo(s){
  const paths={service:'riftassist-autostart.service',guard:path.join(base,'helper.d/90-riftassist-maintenance.conf'),sentinel:path.join(base,'autostart-enabled')};
  io.helperPaths=()=>paths;io.helperScriptHash=()=>hash;io.assertEmptyControlGroup=()=>{};io.run=async()=>'';
  io.observed=async service=>service===paths.service?{LoadState:'loaded',UnitFileState:'enabled',Type:'oneshot',Restart:'on-failure',Requires:c.service,After:c.service,PartOf:c.service,ActiveState:'inactive',MainPID:'0',Job:'',DropInPaths:fs.existsSync(paths.guard)?paths.guard:''}:{Type:'simple',Restart:'on-failure',Wants:paths.service,Requires:'',BindsTo:''};
- const original=fs.statSync;fs.statSync=(file,...args)=>{const value=original(file,...args);if(String(file).startsWith(base))Object.defineProperty(value,'uid',{value:0});return value;};
- return{io,paths,restore:()=>{fs.statSync=original;}};
+ // Windows ACL metadata is not POSIX mode metadata. Supply both fields for this
+ // synthetic Linux adapter fixture; production checks remain unchanged.
+ let trusted=true;const original=fs.statSync;fs.statSync=(file,...args)=>{const value=original(file,...args);if(String(file).startsWith(base)){Object.defineProperty(value,'uid',{value:0});Object.defineProperty(value,'mode',{value:trusted?value.mode&~0o022:value.mode|0o022});}return value;};
+ return{io,paths,untrustPermissions:()=>{trusted=false;},restore:()=>{fs.statSync=original;}};
 }
 test('owned condition guard preserves enabled state and is removed only after healthy legacy recovery',()=>run(async s=>{
  const h=helperIo(s);try{
   const r=await h.io.prepareAutostart();assert.equal(r.originalEnabledStatePreserved,true);assert.equal(await h.io.helperGuardPresent(),true);
   await h.io.finishMaintenance('v0.2.0');assert.equal(fs.existsSync(h.paths.guard),true);
   await h.io.finishMaintenance('v0.1.7');assert.equal(fs.existsSync(h.paths.guard),false);
+  h.untrustPermissions();assert.throws(()=>h.io.helperGuardPresent(),/autostart-guard-permissions/);
  }finally{h.restore();}
 }));
 test('helper drift conflicting guard or enabling sentinel cannot be overwritten or treated as quiescent',()=>run(async s=>{
