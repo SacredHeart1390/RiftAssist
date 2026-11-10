@@ -15,7 +15,7 @@ async function fixture(t,{ready=true}={}){
   fs.writeFileSync(path.join(knowledge,'knowledge-releases/active.json'),JSON.stringify({releaseId:k.manifest.releaseId}));
   raw.knowledgeHash=require('../staging/replacement-ubuntu.cjs').knowledgeHash(knowledge).hash;
   const inventory=path.join(temp,'inventory.json');fs.writeFileSync(inventory,JSON.stringify(raw));
-  const policy=B.reviewPolicy(commit);for(const n of ['rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])policy[n]={status:'verified',commit,reference:'synthetic test policy only'};
+  const policy=B.reviewPolicy(commit);for(const n of ['appAuthorization','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])policy[n]={status:'verified',commit,reference:'synthetic test policy only'};policy.appAuthorization.kind='written-license';
   Object.assign(policy,{controllerName:'Synthetic Test Operator',privacyEmail:'synthetic@example.invalid',privacyLegalReference:'Synthetic nonproduction fixture',externalBackupLocation:'synthetic separate device',separateRecoveryKeyCustody:'synthetic separate vault'});
   const node=path.join(temp,'fixture-node'),license=path.join(temp,'license');fs.writeFileSync(node,'Synthetic binary placeholder, never executed.');fs.writeFileSync(license,'Synthetic license fixture.');
   const root=path.join(temp,'kit'),report=B.build({capsule,inventory,knowledge,policy,node,license,destination:root,ci:{commit,controlRunId:1,rulesRunId:2,requiredJobsSucceeded:true}});

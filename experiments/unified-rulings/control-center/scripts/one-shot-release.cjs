@@ -32,7 +32,8 @@ function inspect(root){
   if(raw.installationApproved!==true||raw.inventoryVerified!==true)blockers.push('inventory-not-final');
   const attested=v=>v?.status==='verified'&&v.commit===m.commit&&useful(v.reference);
   for(const n of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal','rollbackIsolation'])if(!attested(raw.evidence?.[n]))blockers.push(n+'-not-verified');
-  for(const n of ['rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
+  for(const n of ['appAuthorization','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
+  if(!['written-license','approved-app-specific-api-key'].includes(policy.appAuthorization?.kind))blockers.push('riot-app-authorization-required');
   if(!useful(policy.controllerName)||!useful(policy.privacyEmail)||!/^\S+@\S+\.\S+$/.test(policy.privacyEmail)||!useful(policy.privacyLegalReference))blockers.push('privacy-details-missing');
   if(policy.backupRetentionDays!==30||policy.backupAccessPersons!==1||!useful(policy.externalBackupLocation)||!useful(policy.separateRecoveryKeyCustody))blockers.push('backup-custody-missing');
   const cfg=raw.evidence?.configuration;

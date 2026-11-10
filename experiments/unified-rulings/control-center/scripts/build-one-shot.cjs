@@ -35,7 +35,7 @@ function build({capsule,inventory,knowledge,policy,node,license,destination,ci})
 }
 function reviewPolicy(commit){
   const status={status:'unverified',commit,reference:''};
-  return{rulesRights:{...status},rollbackRights:{...status},privacy:{...status},backupCustody:{...status},sourceReadyApproval:{...status},
+  return{appAuthorization:{...status,kind:''},rulesRights:{...status},rollbackRights:{...status},privacy:{...status},backupCustody:{...status},sourceReadyApproval:{...status},
     controllerName:'',privacyEmail:'',privacyLegalReference:'',backupRetentionDays:30,backupAccessPersons:1,
     externalBackupLocation:'',separateRecoveryKeyCustody:'',aiTransfersApproved:false};
 }
