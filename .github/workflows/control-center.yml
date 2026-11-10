@@ -340,3 +340,6 @@ jobs:
           $text = ('' | & $entry 2>&1) -join "`n"
           if ($LASTEXITCODE -ne 2 -or $text -notmatch 'NOT DEPLOYABLE:') { throw 'Actual CMD entry did not safely block before SSH.' }
           Write-Output 'Actual Windows CMD and bundled Node executed; missing launch conditions blocked before SSH. No Azure connection or deployment.'
+          # The launcher's exit 2 is the asserted safe outcome, not a CI error.
+          # GitHub's pwsh wrapper otherwise propagates that last native exit code.
+          exit 0
