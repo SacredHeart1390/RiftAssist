@@ -137,6 +137,7 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
       if(io.prepareAutostart){op.autostart=await io.prepareAutostart();helperPrepared=true;save(op,'preflight');}
       await io.preflight(p.previous.version,{kind:p.kind});
       save(op,'stop-intent');stopped=true;await io.stop();await io.assertStopped();stopConfirmed=true;save(op,'stopped');
+      if(p.kind==='replace'&&io.verifyStoppedKnowledge)await io.verifyStoppedKnowledge();
       // Only now, with all app/manager/worker writers stopped, are DB/keys/config read.
       await io.backupBudget(p.kind==='rollback'?c.candidateData:c.oldData);const settings=await io.configurationSnapshot();
       const sourceIsOld=p.kind!=='rollback';
@@ -156,7 +157,7 @@ function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
     } catch(error){
       const failure=error.code||'replacement-failed';
       if(finishing||failure==='autostart-guard-uncertain'){save(op,'recovery-required',failure);return op;}
-      if(stopped&&failure==='backup-integrity'){save(op,'recovery-required',failure);return op;}
+      if(stopped&&['backup-integrity','legacy-source-drift'].includes(failure)){save(op,'recovery-required',failure);return op;}
       // Unknown stop/config/start outcomes are observed first. Never restart while a writer may live.
       if(stopped)try{
         save(op,'recovery-stop',failure);

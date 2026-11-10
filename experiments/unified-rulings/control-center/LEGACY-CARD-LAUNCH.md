@@ -31,7 +31,7 @@
 
 ## 출시 조건 구분
 
-**기술:** v017의 JSON/ID/active 구조와 SQLite 운영 저장소를 호환시킨다. 카드0개/rules-only/공식 API를 필수로 강제한 실행 gate를 legacy 후보 검증으로 교체했다. store schema 변경·역 migration은 하지 않는다. 실제 DB·설정·키 호환성은 기존 C의 backup/restore probe가 검사한다. C 중지 전에는 기존 서버의 active release ID·원본 manifest·규칙/카드/사례 파일 해시를 후보의 원본 참조와 비교한다. Azure 자료가 로컬 참조와 다르면 중지 전에 차단하여 오래된 자료로 교체하지 않는다.
+**기술:** v017의 JSON/ID/active 구조와 SQLite 운영 저장소를 호환시킨다. 카드0개/rules-only/공식 API를 필수로 강제한 실행 gate를 legacy 후보 검증으로 교체했다. store schema 변경·역 migration은 하지 않는다. 실제 DB·설정·키 호환성은 기존 C의 backup/restore probe가 검사한다. C 중지 전에는 기존 서버의 active release ID·원본 manifest·규칙/카드/사례 파일 해시를 후보의 원본 참조와 비교한다. Azure 자료가 로컬 참조와 다르면 중지 전에 차단한다. 중지 직후에도 다시 검사해 확인/정지 사이의 변경을 탐지한다. 정지 후 원본이 달라졌다면 새 버전을 기동하거나 미검증 자료로 강제 복귀하지 않고 recovery-required로 보존한다.
 
 **권리:** API 키 미발급 자체는 v020 기술 기동 조건이 아니다. 반대로 키가 있다고 RiftNaru 번역·이미지·사례 사용이 허가되는 것도 아니다. Riot 영문/자산·앱 정책 적용과 RiftNaru 한국어/번역·이미지·제3자 사례의 공개·외부 AI 사용 근거는 별도로 검토한다. [Riot 정책](https://developer.riotgames.com/policies/riftbound)과 [문서](https://developer.riotgames.com/docs/riftbound)의 조건을 무시하거나 허가가 확인됐다고 단정하지 않는다. 실제 증거가 없으면 access와 ready를 해제하지 않는다. 이것은 카드 기능을 없애거나 v030 공식 API 개발을 기다리는 기본 일정과 다르다.
 

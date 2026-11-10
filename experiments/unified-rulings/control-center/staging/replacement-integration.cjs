@@ -25,6 +25,7 @@ class ActualIO extends FakeReplacementIO{
   async backupBudget(){/* bounded synthetic SQLite only */}
   async configurationSnapshot(){await this.configurationUnchanged();return{selected:this.selected};}
   async finalizeCandidate(){require('./files.cjs').chownTree(this.s.stage,this.c.candidateData);}
+  async verifyStoppedKnowledge(){await this.assertStopped();return require('./replacement-ubuntu.cjs').verifyLegacySource(this.c);}
   async select(version){await this.assertStopped();this.selected=version;this.aiPaused=version==='v0.1.7';if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
   async restorePrevious(version,snapshot,{pauseAi=false}={}){await this.select(version);this.aiPaused=version==='v0.1.7'&&pauseAi;if(this.systemd){P.atomic(this.unitFile,this.unitText(version),0o644);this.command(['daemon-reload']);}}
   async start(version){

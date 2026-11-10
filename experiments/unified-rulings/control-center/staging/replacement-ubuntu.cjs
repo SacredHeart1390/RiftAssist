@@ -172,6 +172,7 @@ class UbuntuReplacementIO {
   }
   async configurationUnchanged(){const c=this.config;if(P.hash(bounded(c.unitFile))!==c.unitHash||P.hash(bounded(c.caddyFile))!==c.caddyHash)P.fail('configuration-drift');}
   async finalizeCandidate(){prepareWorker(this.config);}
+  async verifyStoppedKnowledge(){await this.assertStopped();return verifyLegacySource(this.config);}
   async select(version,snapshot){
     const c=this.config;await this.assertStopped();await this.configurationUnchanged();
     if(version==='v0.2.0'){

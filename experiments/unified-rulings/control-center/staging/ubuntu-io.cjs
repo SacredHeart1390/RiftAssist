@@ -20,7 +20,11 @@ async function health(config,slot,{exercise=false}={}) {
   }
   if(answer?.status!==200||answer.data.appReleaseId!==version||answer.data.version!==version.slice(1)||!answer.data.indexedRuleCount)fail('health');
   if(version==='v0.2.0'&&answer.data.providerMode!=='mock')fail('paid-provider-blocked');
-  const cards=await jsonHTTP(ports[1],'/api/cards/search?q=staging&language=ko');if(version==='v0.1.7' ? cards.status!==503 : cards.status!==200||cards.data.total!==0)fail('card-rights');
+  const source=within(config.root,'releases',slot,'code'),dataRoot=within(config.root,'data',slot),pointer=readJSON(path.join(dataRoot,'knowledge-releases/active.json'));
+  const snapshot=await require(path.join(source,'src/knowledge-provider.js')).loadRelease(dataRoot,pointer.releaseId);
+  const expectedCards=version==='v0.1.7'?snapshot.cardCatalog.cards.length:require(path.join(source,'src/card-access.js')).createCardAccess(snapshot.legacyReview?'legacy-reviewed':'restricted').snapshot(snapshot).cardCatalog.cards.length;
+  const cards=await jsonHTTP(ports[1],'/api/cards/search?q=staging&language=ko');
+  if(cards.status!==(version==='v0.1.7'&&expectedCards===0?503:200)||!(version==='v0.1.7'&&expectedCards===0)&&cards.data.total!==expectedCards)fail('card-rights');
   if(version==='v0.2.0') {
     let key=fs.readFileSync(within(config.root,'data',slot,'private','manager.key'),'utf8');
     try {
@@ -38,7 +42,7 @@ async function health(config,slot,{exercise=false}={}) {
     const report=await jsonHTTP(ports[1],'/api/reports',{...options,body:JSON.stringify({clientKey:require('node:crypto').randomUUID(),requestId:asked.data.requestId,category:'app',description:'Synthetic staging health fixture only; not user data.'})});
     if(report.status!==200&&report.status!==201)fail('report-health');
   }
-  return{healthy:true,version,realApplication:true,provider:'mock-only',cardsPublic:0,admin:version==='v0.2.0'?'existing-authenticated-api':'legacy-app-host-only',syntheticExercise:exercise};
+  return{healthy:true,version,realApplication:true,provider:'mock-only',cardsPublic:expectedCards,admin:version==='v0.2.0'?'existing-authenticated-api':'legacy-app-host-only',syntheticExercise:exercise};
 }
 async function proxyHealth(config,expectedVersion) {
   const ca=within(config.root,'proxy','data','caddy','pki','authorities','local','root.crt');noLinks(ca,true);
