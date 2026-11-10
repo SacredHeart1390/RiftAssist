@@ -43,6 +43,7 @@ jobs:
           node scripts/one-line-inspection.cjs
           node scripts/final-inspection.cjs
           node --test scripts/final-inspection.test.cjs
+          node scripts/one-shot-release.test.cjs
           ./scripts/Test-ConsoleInstructions.ps1
           ./scripts/Test-OneLineInspection.ps1
           ./scripts/Test-FinalInspection.ps1
@@ -55,6 +56,7 @@ jobs:
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
+          python scripts/one-shot-install.test.py
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
@@ -174,11 +176,13 @@ jobs:
           node scripts/deployment-manifest.cjs
           node scripts/staging-manifest.cjs
           node --test scripts/final-inspection.test.cjs
+          node scripts/one-shot-release.test.cjs
           python staging/inspection.test.py
           python staging/replacement-inspection.test.py
           python staging/legacy-inspection.test.py
           python scripts/audit-v017-baseline.py
           python scripts/preparation.test.py
+          python scripts/one-shot-install.test.py
           python staging/release-blockers.test.py
           python staging/maintenance-metadata.test.py
           python staging/launch-details.test.py
@@ -264,3 +268,75 @@ jobs:
             ${{ runner.temp }}/control-center-installation-inventory.review.json
             ${{ runner.temp }}/control-center-manual-package-proof.json
           if-no-files-found: error
+
+  one-shot-release-kit:
+    if: github.ref == 'refs/heads/release/v0.2.0'
+    needs: [windows-validation, ubuntu-ssh-script-validation]
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: experiments/unified-rulings/control-center
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.22.1'
+          package-manager-cache: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: RiftAssist-v0.2.0-manual-release
+          path: ${{ runner.temp }}/one-shot-input/capsule
+      - uses: actions/download-artifact@v4
+        with:
+          name: RiftAssist-ControlCenter-ubuntu-ssh-proof
+          path: ${{ runner.temp }}/one-shot-input/proofs
+      - uses: actions/download-artifact@v4
+        with:
+          name: RiftAssist-ControlCenter-v0.2.0-win-x64
+          path: ${{ runner.temp }}/one-shot-input/windows
+      - name: Require successful rules/browser CI for this exact source commit
+        env:
+          RIFT_CI_TOKEN: ${{ github.token }}
+        run: |
+          $headers = @{ Authorization = "Bearer $env:RIFT_CI_TOKEN"; Accept = 'application/vnd.github+json' }
+          $url = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/rules-tests.yml/runs?head_sha=$env:GITHUB_SHA&per_page=20"
+          for ($attempt = 0; $attempt -lt 12; $attempt++) {
+            $runs = (Invoke-RestMethod -Uri $url -Headers $headers).workflow_runs
+            $run = $runs | Where-Object { $_.head_sha -eq $env:GITHUB_SHA -and $_.head_branch -eq 'release/v0.2.0' } | Select-Object -First 1
+            if ($run -and $run.status -eq 'completed') { break }
+            Start-Sleep -Seconds 5
+          }
+          if (!$run -or $run.conclusion -ne 'success') { throw 'Exact rules/browser CI has not succeeded; no release kit is published.' }
+          "RIFT_RULES_RUN_ID=$($run.id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Assemble pinned single-entry Windows kit (fail closed until real launch conditions exist)
+        run: |
+          $inputRoot = Join-Path $env:RUNNER_TEMP 'one-shot-input'
+          $out = Join-Path $env:RUNNER_TEMP 'RiftAssist-v0.2.0-one-shot-win-x64'
+          node scripts/build-one-shot.cjs "$inputRoot/capsule" "$inputRoot/proofs/control-center-installation-inventory.review.json" "$inputRoot/windows/runtime/node.exe" "$inputRoot/windows/runtime/NODE-LICENSE.txt" $out $env:GITHUB_RUN_ID $env:RIFT_RULES_RUN_ID
+          if ($LASTEXITCODE -ne 0) { throw 'Kit verification failed.' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RiftAssist-v0.2.0-one-shot-win-x64
+          path: ${{ runner.temp }}/RiftAssist-v0.2.0-one-shot-win-x64/
+          include-hidden-files: true
+          if-no-files-found: error
+      - uses: actions/download-artifact@v4
+        with:
+          name: RiftAssist-v0.2.0-one-shot-win-x64
+          path: ${{ runner.temp }}/RiftAssist-one-shot-downloaded
+      - name: Verify uploaded hidden files and execute actual Windows CMD entry without SSH
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'RiftAssist-one-shot-downloaded'
+          node -e "const r=require('./scripts/one-shot-release.cjs').inspect(process.argv[1]);if(!r.blockers.includes('source-not-ready')||!r.blockers.includes('approved-rules-missing'))process.exit(1);console.log(JSON.stringify({uploadedKitVerified:true,deployable:false,blockers:r.blockers}));" $out
+          if ($LASTEXITCODE -ne 0) { throw 'Downloaded kit failed closed-validation.' }
+          $entry = Join-Path $out 'START-RELEASE.cmd'
+          $text = ('' | & $entry 2>&1) -join "`n"
+          if ($LASTEXITCODE -ne 2 -or $text -notmatch 'NOT DEPLOYABLE:') { throw 'Actual CMD entry did not safely block before SSH.' }
+          Write-Output 'Actual Windows CMD and bundled Node executed; missing launch conditions blocked before SSH. No Azure connection or deployment.'
