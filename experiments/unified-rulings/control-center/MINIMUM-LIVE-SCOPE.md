@@ -1,6 +1,6 @@
 # v0.2.0 최소 라이브 범위
 
-2026-11-09 한국. 최우선은 기존 VM의 v017→v020 단일 교체다. Control Center 원클릭 배포, 상시 broker/sudoers 설치, 별도 VM/staging 운영, Riot API 승인은 최소 출시의 필수 조건이 아니다. 실제 운영·ready 변경 승인은 여전히 별도다.
+2026-11-10 한국. 최우선은 기존 VM의 v017→v020 단일 교체다. Control Center 자동화, 상시 broker/sudoers 설치, 별도 VM/staging 운영은 필수 조건이 아니다. 다만 [공식 Riftbound 문서](https://developer.riotgames.com/docs/riftbound)의 Digital Tools Policy는 서면 라이선스 또는 유효한 앱 전용 API 키를 요구한다. API 미사용·카드0개·공개 PDF만으로 앱/규칙 이용 허가를 대체하지 않는다. API 승인 대기 중에는 적용 가능한 별도 서면 허가가 확인돼야 하며 공개/AI 처리 권한은 구분하여 검토한다. 실제 운영·ready 변경 승인은 여전히 필요하다.
 
 | 기능 | 최소 출시 |
 |---|---|
