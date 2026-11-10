@@ -20,12 +20,19 @@ def require(condition):
 
 def shape(root):
     require(root.is_dir() and not root.is_symlink())
+    count, total = 0, 0
     for directory, dirs, files in os.walk(root, followlinks=False):
         for name in dirs + files:
             item = Path(directory) / name
             meta = item.lstat()
             require(stat.S_ISDIR(meta.st_mode) or
                     stat.S_ISREG(meta.st_mode) and meta.st_nlink == 1)
+            count += 1
+            if stat.S_ISREG(meta.st_mode):
+                require(meta.st_size <= 16 * 1024 * 1024)
+                total += meta.st_size
+            require(count <= 512 and total <= 64 * 1024 * 1024)
+    return total
 
 
 def protect_parent(root):
@@ -61,7 +68,8 @@ def main():
     base = Path("/var/lib/riftassist-replacement-upload") / site
     inventory = Path("/etc/riftassist-replacement/inventory.json")
     require(not os.path.lexists(base) and not os.path.lexists(inventory))
-    shape(upload)
+    total = shape(upload)
+    require(shutil.disk_usage("/var/lib").free >= 512 * 1024 * 1024 + total * 4)
     for parent in [Path("/var/lib/riftassist-replacement-upload"), inventory.parent]:
         protect_parent(parent)
     base.mkdir(mode=0o755)

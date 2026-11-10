@@ -103,6 +103,19 @@ class Bootstrap(unittest.TestCase):
         self.assertEqual(file.read_text(), "existing unrelated configuration")
         self.assertEqual(self.calls, [])
 
+    def test_oversized_upload_rejected_before_root_copy(self):
+        with (self.code / "oversized").open("wb") as stream:
+            stream.truncate(16 * 1024 * 1024 + 1)
+        self.assertEqual(self.execute()[0], 1)
+        self.assertFalse((self.root / "upload").exists())
+        self.assertEqual(self.calls, [])
+
+    def test_low_disk_rejected_before_root_copy(self):
+        with patch("shutil.disk_usage", return_value=types.SimpleNamespace(free=1)):
+            self.assertEqual(self.execute()[0], 1)
+        self.assertFalse((self.root / "upload").exists())
+        self.assertEqual(self.calls, [])
+
 
 if __name__ == "__main__":
     unittest.main()
