@@ -31,11 +31,13 @@ function inspect(root){
   if(source.ready!==true||source.developmentOnly!==false||plan.sourceReady!==true)blockers.push('source-not-ready');
   if(raw.installationApproved!==true||raw.inventoryVerified!==true)blockers.push('inventory-not-final');
   const attested=v=>v?.status==='verified'&&v.commit===m.commit&&useful(v.reference);
-  for(const n of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal','rollbackIsolation'])if(!attested(raw.evidence?.[n]))blockers.push(n+'-not-verified');
-  for(const n of ['legalReview','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
+  for(const n of ['topology','autostart','rights','privacy','resources','configuration','compatibility','rehearsal','rollbackIsolation'])if(!attested(raw.evidence?.[n]))blockers.push(n+'-not-verified');
+  for(const n of ['legalReview','rulesRights','rollbackRights','privacy','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
   if(policy.sourceMode!=='licensed-legacy')blockers.push('legacy-card-release-required');
   if(!useful(policy.controllerName)||!useful(policy.privacyEmail)||!/^\S+@\S+\.\S+$/.test(policy.privacyEmail)||!useful(policy.privacyLegalReference))blockers.push('privacy-details-missing');
-  if(policy.backupRetentionDays!==30||policy.backupAccessPersons!==1||!useful(policy.externalBackupLocation)||!useful(policy.separateRecoveryKeyCustody))blockers.push('backup-custody-missing');
+  const followUpItems=[];
+  if(!attested(raw.evidence?.backupPolicy)||policy.backupRetentionDays!==30||policy.backupAccessPersons!==1)followUpItems.push('backup-policy-not-recorded');
+  if(!attested(policy.backupCustody)||!useful(policy.externalBackupLocation)||!useful(policy.separateRecoveryKeyCustody))followUpItems.push('external-backup-custody-unconfirmed');
   const cfg=raw.evidence?.configuration;
   if(policy.aiTransfersApproved!==true&&(cfg?.liveProviderApproved!==false||cfg?.generationEnabled!==false))blockers.push('unapproved-ai-must-be-off');
   if(!Number.isSafeInteger(m.ci?.controlRunId)||!Number.isSafeInteger(m.ci?.rulesRunId)||m.ci?.commit!==m.commit||m.ci?.requiredJobsSucceeded!==true)blockers.push('exact-ci-missing');
@@ -48,7 +50,11 @@ function inspect(root){
     if(policy.aiTransfersApproved===true&&(!access?.rulesModelInput||!access?.cardsModelInput))blockers.push('legacy-ai-rights-missing');
     if(Object.entries(m.knowledgeFiles).some(([n,h])=>actual['knowledge/'+n]!==h))fail('knowledge-binding');
   }
-  return{m,raw,blockers:[...new Set(blockers)]};
+  const unique=[...new Set(blockers)];
+  const publicationBlockers=unique.filter(b=>['rights-not-verified','privacy-not-verified','legalReview-not-verified','rulesRights-not-verified','rollbackRights-not-verified','privacy-details-missing','legacy-ai-rights-missing','unapproved-ai-must-be-off'].includes(b));
+  const releaseDecisionBlockers=unique.filter(b=>['source-not-ready','sourceReadyApproval-not-verified'].includes(b));
+  const technicalBlockers=unique.filter(b=>!publicationBlockers.includes(b)&&!releaseDecisionBlockers.includes(b));
+  return{m,raw,blockers:unique,technicalBlockers,publicationBlockers,releaseDecisionBlockers,followUpItems,technicalChecksPassed:technicalBlockers.length===0};
 }
 function sshArgs(home){return['-F','NUL','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes','-o','UpdateHostKeys=no','-o','ForwardAgent=no','-o','ClearAllForwardings=yes','-o','ConnectionAttempts=1','-o','ConnectTimeout=10','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=2','-o','UserKnownHostsFile="'+path.join(home,'.ssh','known_hosts').replaceAll('\\','/')+'"','-i',path.join(home,'.ssh','riftassistant-key.pem')];}
 function native(file,args,input='',timeout=30000){return new Promise((resolve,reject)=>{
@@ -85,7 +91,8 @@ function cleanResult(r,id){
 }
 async function run(root,{journal,confirm,io,show=()=>{}}){
   const info=inspect(root),{m,raw,blockers}=info;
-  if(blockers.length){show('BLOCKED: '+blockers.join(', '));return{state:'blocked',blockers};}
+  if(info.followUpItems.length)show('FOLLOW-UP (not an execution gate): '+info.followUpItems.join(', '));
+  if(blockers.length){show('BLOCKED: '+JSON.stringify({technical:info.technicalBlockers,publication:info.publicationBlockers,releaseDecision:info.releaseDecisionBlockers}));return{state:'blocked',blockers,technicalBlockers:info.technicalBlockers,publicationBlockers:info.publicationBlockers,releaseDecisionBlockers:info.releaseDecisionBlockers,followUpItems:info.followUpItems};}
   let old;try{old=JSON.parse(fs.readFileSync(journal,'utf8'));}catch(e){if(e.code!=='ENOENT')fail('local-receipt-invalid');}
   io=io||adapter(process.env.USERPROFILE,root,{...m,root:raw.root});
   if(old){
@@ -119,7 +126,7 @@ async function run(root,{journal,confirm,io,show=()=>{}}){
 }
 async function main(){
   if(process.platform!=='win32')fail('windows-only');
-  const root=__dirname,info=inspect(root);if(info.blockers.length){console.log('NOT DEPLOYABLE: '+info.blockers.join(', '));process.exitCode=2;return;}
+  const root=__dirname,info=inspect(root);if(info.blockers.length){console.log('NOT DEPLOYABLE: '+JSON.stringify({technical:info.technicalBlockers,publication:info.publicationBlockers,releaseDecision:info.releaseDecisionBlockers,followUpItems:info.followUpItems}));process.exitCode=2;return;}
   const readline=require('node:readline/promises'),rl=readline.createInterface({input:process.stdin,output:process.stdout});
   try{const journal=path.join(process.env.LOCALAPPDATA,'RiftAssist','Release',info.m.inventoryHash+'.json');const result=await run(root,{journal,show:console.log,confirm:async()=>/^(y|yes)$/i.test((await rl.question('Execute the displayed A + C NOW? [y/N] ')).trim())});console.log(JSON.stringify(result));if(result.state!=='completed'||result.publicVersion!=='v0.2.0')process.exitCode=2;}finally{rl.close();}
 }

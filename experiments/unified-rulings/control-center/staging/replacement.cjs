@@ -98,11 +98,18 @@ function gates(c){
   if(!c.rehearsal)try{const legacy=rollbackReceipt(c);rollbackExecutionReference={kind:c.rollbackCode?'clean-code-namespace':'original-code',referenceVerified:legacy.referenceVerified,hash:legacy.hash,originalDirectoryTrusted:!c.rollbackCode,collectorPaused:Boolean(c.rollbackCode),generationPaused:Boolean(c.rollbackCode)};if(legacy.hash!==c.oldCodeHash)blockers.push('rollback-reference-drift');}catch{blockers.push('rollback-reference-unverified');}
   for(const [file,digest]of [[c.unitFile,c.unitHash],[c.caddyFile,c.caddyHash]]){P.noLinks(file,true);if(P.hash(fs.readFileSync(file))!==digest)blockers.push('configuration-drift');}
   const e=c.evidence||{},attested=v=>v?.status==='verified'&&v.commit===c.commit&&typeof v.reference==='string'&&v.reference.length>=3;
-  for(const name of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal'])if(!attested(e[name]))blockers.push(name+'-not-verified');
+  for(const name of ['topology','autostart','rights','privacy','resources','configuration','compatibility','rehearsal'])if(!attested(e[name]))blockers.push(name+'-not-verified');
   if(c.rollbackCode&&!c.rehearsal&&(!attested(e.rollbackIsolation)||e.rollbackIsolation.method!=='systemd-readonly-bind'||e.rollbackIsolation.collectorPaused!==true||e.rollbackIsolation.generationPaused!==true))blockers.push('rollback-isolation-not-verified');
   if(!c.rehearsal&&(r.manifest.ready!==true||r.manifest.developmentOnly!==false))blockers.push('release-not-ready');
   if(e.rehearsal?.mode!=='single-instance-replacement'||e.rehearsal?.actualApplicationStarted!==true||e.rehearsal?.maxConcurrentVersions!==1)blockers.push('single-instance-rehearsal-required');
-  return{mode:'single-instance-replacement',blockers,rollbackSourceAssessment,rollbackExecutionReference,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
+  // Off-host custody/retention is an operational follow-up, not a prerequisite
+  // for the stop -> consistent local backup -> independent restore transaction.
+  // Publication evidence remains required; splitting the report grants nothing.
+  const publicationBlockers=blockers.filter(b=>['rights-not-verified','privacy-not-verified'].includes(b));
+  const releaseDecisionBlockers=blockers.filter(b=>b==='release-not-ready');
+  const technicalBlockers=blockers.filter(b=>!publicationBlockers.includes(b)&&!releaseDecisionBlockers.includes(b));
+  const followUpItems=attested(e.backupPolicy)?[]:['backup-policy-not-recorded'];
+  return{mode:'single-instance-replacement',blockers,technicalBlockers,publicationBlockers,releaseDecisionBlockers,followUpItems,technicalChecksPassed:technicalBlockers.length===0,rollbackSourceAssessment,rollbackExecutionReference,readyForApprovedExecution:blockers.length===0,authorizedToDeploy:false,additionalVmRequired:false,maxConcurrentVersions:1};
 }
 function createReplacement(raw,io,{rehearsal=false,now=()=>Date.now()}={}) {
   const c=config(raw,{rehearsal});owner(c);const {audit}=require('./broker.cjs');audit(c,null);

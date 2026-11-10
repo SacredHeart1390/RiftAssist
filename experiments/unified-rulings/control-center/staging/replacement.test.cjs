@@ -67,3 +67,20 @@ test('failed independent decryption blocks both candidate activation and unsafe 
   const p=e.plan('replace',id()),op=await e.execute(p,p.digest);assert.equal(op.failure,'backup-integrity');assert.equal(op.state,'recovery-required');
   assert.equal(io.calls.includes('start'),false);assert.equal(io.calls.includes('select'),false);assert.equal(e.status().uncertain,true);
 }));
+
+test('missing retention policy does not skip local consistent backup or independent restore',()=>setup(async(s,io)=>{
+  delete s.raw.evidence.backupPolicy;
+  const c=R.config(s.raw,{rehearsal:true});P.atomic(path.join(c.root,'owner.json'),{purpose:'single-instance-replacement',siteId:c.siteId,inventoryHash:c.inventoryHash});
+  const e=R.createReplacement(s.raw,io,{rehearsal:true}),g=e.gates();
+  assert.equal(g.technicalChecksPassed,true);assert.deepEqual(g.blockers,[]);assert.deepEqual(g.followUpItems,['backup-policy-not-recorded']);
+  const p=e.plan('replace',id()),r=await e.execute(p,p.digest);assert.equal(r.state,'completed');
+  assert.equal(r.probe.verified,true);assert.equal((await V.verifyBackup(c,r.backupId)).verified,true);
+  assert.ok(io.calls.indexOf('stop')<io.calls.indexOf('snapshot'));assert.ok(io.calls.indexOf('copy')<io.calls.indexOf('start'));
+}));
+test('publication blockers are separate from technical checks and still prevent service stop',()=>setup(async(s,io)=>{
+  delete s.raw.evidence.rights;delete s.raw.evidence.privacy;
+  const c=R.config(s.raw,{rehearsal:true});P.atomic(path.join(c.root,'owner.json'),{purpose:'single-instance-replacement',siteId:c.siteId,inventoryHash:c.inventoryHash});
+  const e=R.createReplacement(s.raw,io,{rehearsal:true}),g=e.gates();
+  assert.equal(g.technicalChecksPassed,true);assert.deepEqual(g.publicationBlockers,['rights-not-verified','privacy-not-verified']);
+  assert.equal(g.readyForApprovedExecution,false);assert.throws(()=>e.plan('replace',id()),/release-blocked/);assert.deepEqual(io.calls,[]);
+}));

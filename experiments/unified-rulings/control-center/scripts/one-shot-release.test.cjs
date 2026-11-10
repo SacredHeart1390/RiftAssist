@@ -32,6 +32,25 @@ test('server preflight blocker prevents service stop request',async t=>{const s=
 test('failed-stable and recovery-required never report live v020 or retry',async t=>{for(const state of ['failed-stable','recovery-required']){const s=await fixture(t);s.io.replace=async id=>{s.calls.push('replace');return{protocol:'riftassist-replacement-1',inventoryHash:s.m.inventoryHash,ok:true,result:{id,state,failure:'synthetic-failure'}};};const r=await C.run(s.root,{journal:s.journal,io:s.io,confirm:async()=>true});assert.equal(r.state,state);assert.ok(!s.calls.includes('public-version'));assert.equal(s.calls.filter(x=>x==='replace').length,1);}});
 test('complete server response with wrong public version is not verified deployment success',async t=>{const s=await fixture(t);s.io.publicVersion=async()=>{throw Error('synthetic old cache/version');};const r=await C.run(s.root,{journal:s.journal,io:s.io,confirm:async()=>true});assert.equal(r.publicVersion,undefined);assert.equal(r.publicVersionVerified,false);});
 test('tampered package and unexpected files fail before any SSH',async t=>{const s=await fixture(t);fs.appendFileSync(path.join(s.root,'capsule/candidate/public/index.html'),'tamper');assert.throws(()=>C.inspect(s.root),/kit-integrity/);const a=await fixture(t);fs.writeFileSync(path.join(a.root,'unexpected.txt'),'x');assert.throws(()=>C.inspect(a.root),/kit-integrity/);});
-test('actual user placeholders, missing fallback rights and backup custody remain BLOCKED even after repinning public files',async t=>{const s=await fixture(t),file=path.join(s.root,'launch-policy.json'),p=JSON.parse(fs.readFileSync(file));p.controllerName='[공개할 성명 또는 법적 명칭]';p.externalBackupLocation='[실제로 사용할 VM 외부 보관 장소]';p.rollbackRights.status='unverified';fs.writeFileSync(file,JSON.stringify(p));rehash(s);const blockers=C.inspect(s.root).blockers;assert.ok(blockers.includes('privacy-details-missing'));assert.ok(blockers.includes('backup-custody-missing'));assert.ok(blockers.includes('rollbackRights-not-verified'));});
+test('public identity placeholders and missing fallback rights still block; off-host custody is a follow-up',async t=>{const s=await fixture(t),file=path.join(s.root,'launch-policy.json'),p=JSON.parse(fs.readFileSync(file));p.controllerName='[공개할 성명 또는 법적 명칭]';p.externalBackupLocation='[실제로 사용할 VM 외부 보관 장소]';p.rollbackRights.status='unverified';fs.writeFileSync(file,JSON.stringify(p));rehash(s);const blockers=C.inspect(s.root).blockers;assert.ok(blockers.includes('privacy-details-missing'));assert.ok(!blockers.includes('backup-custody-missing'));assert.ok(C.inspect(s.root).followUpItems.includes('external-backup-custody-unconfirmed'));assert.ok(blockers.includes('rollbackRights-not-verified'));});
 test('OpenSSH options preserve host key verification, no configuration file or password prompts',()=>{const a=C.sshArgs('C:\\Synthetic User');for(const v of ['NUL','BatchMode=yes','StrictHostKeyChecking=yes','UpdateHostKeys=no','ForwardAgent=no','ConnectionAttempts=1'])assert.ok(a.includes(v));assert.ok(!a.some(v=>v==='StrictHostKeyChecking=no'));});
 test('native subprocess failure and timeout discard secret stderr',async()=>{await assert.rejects(()=>C.native(process.execPath,['-e',"process.stderr.write('synthetic-secret');process.exit(7)"]),e=>!e.message.includes('synthetic-secret'));await assert.rejects(()=>C.native(process.execPath,['-e','setTimeout(()=>{},5000)'],'',30),/uncertain/);});
+
+test('missing external custody does not block approved A to C and does not claim off-host backup',async t=>{
+  const s=await fixture(t),file=path.join(s.root,'launch-policy.json'),p=JSON.parse(fs.readFileSync(file));
+  delete p.backupCustody;delete p.externalBackupLocation;delete p.separateRecoveryKeyCustody;delete p.backupRetentionDays;
+  fs.writeFileSync(file,JSON.stringify(p));rehash(s);
+  const report=C.inspect(s.root);assert.deepEqual(report.blockers,[]);assert.equal(report.technicalChecksPassed,true);
+  assert.deepEqual(report.followUpItems,['backup-policy-not-recorded','external-backup-custody-unconfirmed']);
+  const messages=[],r=await C.run(s.root,{journal:s.journal,io:s.io,confirm:async()=>true,show:m=>messages.push(m)});
+  assert.equal(r.state,'completed');assert.deepEqual(s.calls,['reserve','upload','install','preflight','replace','public-version']);
+  assert.ok(messages.some(m=>m.includes('external-backup-custody-unconfirmed')));assert.equal(r.externalBackupVerified,undefined);
+});
+test('technical package checks do not grant publication or release readiness',async t=>{
+  const s=await fixture(t,{ready:false}),file=path.join(s.root,'launch-policy.json'),p=JSON.parse(fs.readFileSync(file));
+  p.legalReview.status='unverified';fs.writeFileSync(file,JSON.stringify(p));rehash(s);
+  const report=C.inspect(s.root);assert.equal(report.technicalChecksPassed,true);
+  assert.ok(report.publicationBlockers.includes('legalReview-not-verified'));assert.ok(report.releaseDecisionBlockers.includes('source-not-ready'));
+  const r=await C.run(s.root,{journal:s.journal,io:s.io,confirm:()=>{throw Error('must remain blocked');}});
+  assert.equal(r.state,'blocked');assert.deepEqual(s.calls,[]);
+});

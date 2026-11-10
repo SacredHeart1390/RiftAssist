@@ -32,7 +32,9 @@ function build({capsule,inventory,knowledge,policy,node,license,destination,ci})
   fs.writeFileSync(path.join(destination,'KIT-MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n');
   const checked=client.inspect(destination);
   return{commit:raw.commit,siteId:raw.siteId,inventoryHash:manifest.inventoryHash,kitManifestSha256:hash(fs.readFileSync(path.join(destination,'KIT-MANIFEST.json'))),
-    filesVerified:Object.keys(manifest.files).length,deployable:checked.blockers.length===0,blockers:checked.blockers,azureContacted:false};
+    filesVerified:Object.keys(manifest.files).length,deployable:checked.blockers.length===0,blockers:checked.blockers,
+    technicalChecksPassed:checked.technicalChecksPassed,technicalBlockers:checked.technicalBlockers,publicationBlockers:checked.publicationBlockers,
+    releaseDecisionBlockers:checked.releaseDecisionBlockers,followUpItems:checked.followUpItems,azureContacted:false};
 }
 function reviewPolicy(commit){
   const status={status:'unverified',commit,reference:''};
