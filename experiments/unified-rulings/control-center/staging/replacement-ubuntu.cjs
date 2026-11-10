@@ -25,7 +25,8 @@ function prepareWorker(c){
   P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,knowledgeHash:c.knowledgeHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true,generationEnabled:c.evidence.configuration?.generationEnabled??null},0o644);
   const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,e.name);P.noLinks(file);if(e.isDirectory())walk(file);else fs.chownSync(file,c.uid,c.gid);}fs.chownSync(dir,c.uid,c.gid);};walk(c.candidateData);
 }
-function verifyLegacySource(c){
+function verifyLegacySource(c){try{return verifyLegacySourceBytes(c);}catch{P.fail('legacy-source-drift');}}
+function verifyLegacySourceBytes(c){
   const candidate=knowledgeHash(c.candidateData),manifest=P.readJSON(path.join(candidate.directory,'manifest.json'));
   const entry=manifest.sources?.legacyRelease;if(!entry)return{legacySource:false};
   const review=require(path.join(c.candidateCode,'src/legacy-card-release.js')).reviewScope(manifest);
