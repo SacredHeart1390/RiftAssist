@@ -317,3 +317,9 @@ test('a retained service-wide lock blocks different immutable site profiles with
  const siteId=id(),root=path.join(path.dirname(s.c.root),siteId),raw={...s.raw,siteId,root,launcher:path.join(root,'tools/replacement-launch.cjs')},c=R.config(raw,{rehearsal:true});R.initialize(c);
  const another=R.createReplacement(raw,new FakeReplacementIO(c),{rehearsal:true});assert.equal(another.status().locked,true);assert.throws(()=>another.plan('qualify-backup',id()),/busy/);assert.equal(fs.existsSync(lock),true);
 }));
+test('real helper digest reader hashes bounded bytes without recursion or executing the script',()=>run(async s=>{
+  const file=path.join(s.temporary,'synthetic-autostart.py'),body=Buffer.from('raise RuntimeError("synthetic helper must never execute")\n');
+  fs.writeFileSync(file,body);const io=new UbuntuReplacementIO({...s.c,rehearsal:false,evidence:{...s.c.evidence,autostart:{scriptPath:file}}});
+  assert.equal(io.helperScriptHash(),P.hash(body));fs.appendFileSync(file,'# synthetic drift\n');assert.notEqual(io.helperScriptHash(),P.hash(body));
+  fs.writeFileSync(file,Buffer.alloc(65537));assert.throws(()=>io.helperScriptHash(),/configuration-size/);
+}));

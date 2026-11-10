@@ -216,7 +216,7 @@ jobs:
           const plan=JSON.parse(fs.readFileSync(path.join(out,'INSTALLATION-PLAN.json'))),profile=JSON.parse(fs.readFileSync('staging/replacement-inventory.example.json'));
           Object.assign(profile,{siteId:plan.siteId,root:path.dirname(plan.targets.siteTools),candidateData:plan.targets.newData,candidateCode:plan.targets.candidate,launcher:plan.targets.siteTools+'/replacement-launch.cjs',rollbackCode:plan.targets.rollbackCode,oldCodeHash:proof.rollbackReferenceHash,candidateHash:proof.candidateHash,commit,schemaHash:proof.expectedSchemaHash,knowledgeHash:'0'.repeat(64)});
           for(const entry of Object.values(profile.evidence))entry.commit=commit;
-          profile.evidence.configuration.reference='Final user observations; values and EnvFiles path pending approved on-server validation. Zero knowledge hash is an absent-candidate sentinel for qualification only.';
+          profile.evidence.configuration.reference='Final user observations; values and EnvFiles path pending approved on-server validation. Zero knowledge hash is review-only; direct replacement requires an approved real knowledge hash before final installation.';
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'control-center-installation-inventory.review.json'),JSON.stringify(profile,null,2)+'\n');
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'control-center-manual-package-proof.json'),JSON.stringify(proof,null,2)+'\n');
           console.log(JSON.stringify(proof));

@@ -1,3 +1,19 @@
+# 현재 출시 확인표 — A 무중단 설치 → C 단일 교체
+
+2026-11-10 KST. 실행 기준은 [FINAL-LAUNCH.md](FINAL-LAUNCH.md)다. 독립 B는 기본 경로에서 제외한다. 아래 과거 확인표는 이력이며, 완료한 읽기 조사나 qualify-backup 중단을 다시 요청하지 않는다.
+
+- [ ] 실제 승인 규칙·개인정보·복구키/백업 정책·AI 방침 확정, 최종 source-ready 변경 승인.
+- [ ] exact 최종 commit/CI/capsule·불변 inventory/knowledge hash 고정. 현재 ready=false 검토본을 최종본으로 간주하지 않음.
+- [ ] A 승인 후 코드/clean65/새 도구·데이터 경로와 승인 지식만 설치. 기존 서비스/DB/키/env 내용/원본 active pointer 변경 없음.
+- [ ] C 승인 범위와 KST 창 확정. B 결과나 qualified 이력 불필요. 실제 데이터 검증은 C 내부로 명시.
+- [ ] --approved-replace 한 번 실행: 정지→WAL backup→독립 restore/복호화/schema/설정→새 사본→v020→관리자/HTTPS/버전.
+- [ ] 실패면 조건부 clean v017 복귀. 무결성/정지 불명확은 recovery-required로 유지, 강제 재시작/재전송 금지.
+- [ ] 실제 사용자 흐름/Control Center/PWA 확인, 새 기록 보존·원본/백업 보관. 정상 후 수동 rollback은 별도 승인.
+
+---
+
+## 과거 검토 이력 — 실행 지시 아님
+
 > 현재 실행 기준: [FINAL-LAUNCH.md](FINAL-LAUNCH.md). 원본을 보존한 별도 strict65 rollback 코드와 service-only readonly binding, 마지막 표적 source/config 조사 및 승인별 설치/교체 절차를 따른다. 이전 원본 extras 전체 검증을 true로 바꾸지 않는다.
 
 > 2026-11-09 실제 두 조사 반영: [확인된 토폴로지·추가2항목·WAL 자원·최소 승인/한 줄 명령](AZURE-LAUNCH-FINDINGS.md)이 최신 근거입니다. 이미 완료한 두 조사는 반복하지 않습니다. 새 조사는 ONE-LINE-INSPECTION.txt의 독립된 한 줄을 별도 승인 후 사용하며 ready=false를 유지합니다.

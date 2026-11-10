@@ -45,3 +45,25 @@ test('only precomputed exact LF or CRLF checkout hashes of the immutable baselin
 test('mixed line endings or a one-byte edit cannot be approved by changing the observed fingerprint',async()=>{const s=await fixture({realLegacy:true});try{const f=path.join(s.c.oldCode,'src/paths.js'),lf=fs.readFileSync(f,'utf8').replaceAll('\r\n','\n');fs.writeFileSync(f,lf.replace('\n','\r\n'));assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-baseline-mismatch/);fs.writeFileSync(f,lf.replace('path','Path'));assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-baseline-mismatch/);}finally{s.cleanup();}});
 test('missing and unexpected executable files block the trusted rollback reference',async()=>{const s=await fixture({realLegacy:true});try{const f=path.join(s.c.oldCode,'src/server.js'),saved=fs.readFileSync(f);fs.unlinkSync(f);assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-incomplete/);fs.writeFileSync(f,saved);fs.writeFileSync(path.join(s.c.oldCode,'src/unapproved.js'),'// synthetic unknown code\n');assert.throws(()=>R.legacyReceipt(s.c.oldCode),/legacy-unexpected-file/);}finally{s.cleanup();}});
 test('unknown or tampered baseline bytes fail closed without falling back to observed code',()=>{const {verifyReference}=require('./legacy-v017.cjs'),b=fs.readFileSync(path.join(__dirname,'legacy-v017-baseline.json'));assert.equal(verifyReference(b).fileCount,65);assert.throws(()=>verifyReference(Buffer.from('{}')),/legacy-reference-unverified/);const altered=Buffer.from(b);altered[5]^=1;assert.throws(()=>verifyReference(altered),/legacy-reference-unverified/);});
+test('direct replace needs no qualification and performs every backup check within one service outage',()=>setup(async(s,io,e)=>{
+  const starts=[],start=io.start.bind(io);io.start=async version=>{starts.push(version);await start(version);};
+  fs.writeFileSync(path.join(s.c.oldData,'.env'),'OPENAI_MODEL=synthetic-preserved-model\n');
+  assert.deepEqual(e.status().operations,[]);const p=e.plan('replace',id()),op=await e.execute(p,p.digest);
+  assert.equal(op.state,'completed');assert.equal(io.calls.filter(c=>c==='stop').length,1);assert.deepEqual(starts,['v0.2.0']);
+  assert.equal(op.probe.verified,true);assert.equal(op.probe.integrity,true);assert.ok(op.probe.encryptedRows>0);assert.equal(op.probe.compatibility.schemaHash,s.c.schemaHash);
+  assert.deepEqual(op.probe.keyNames,['manager.key','sessions.key','storage.key']);assert.equal(op.probe.runtimeConfig.requiresReview,false);
+  assert.equal(op.clone.sourceUnchanged,true);assert.equal(op.clone.schemaUnchanged,true);assert.equal(op.clone.runtimeConfig.restored,true);
+  assert.ok(io.calls.indexOf('quiescence')<io.calls.indexOf('snapshot'));assert.ok(io.calls.indexOf('copy')<io.calls.indexOf('start'));
+  assert.equal(e.status().operations.some(o=>o.kind==='qualify-backup'),false);
+}));
+test('direct replace schema failure starts only legacy recovery and never starts v020',()=>setup(async(s,io)=>{
+  const raw={...s.raw,schemaHash:'0'.repeat(64)},c=R.config(raw,{rehearsal:true});P.atomic(path.join(c.root,'owner.json'),{purpose:'single-instance-replacement',siteId:c.siteId,inventoryHash:c.inventoryHash});
+  const starts=[],start=io.start.bind(io);io.start=async version=>{starts.push(version);await start(version);};const e=R.createReplacement(raw,io,{rehearsal:true});
+  const p=e.plan('replace',id()),op=await e.execute(p,p.digest);assert.equal(op.failure,'schema-unverified');assert.equal(op.state,'failed-stable');assert.deepEqual(starts,['v0.1.7']);assert.equal(io.calls.includes('select'),false);
+}));
+test('failed independent decryption blocks both candidate activation and unsafe automatic legacy restart',()=>setup(async(s,io,e)=>{
+  // Corrupt a synthetic key, not an operational key. The archived cells cannot be verified.
+  const file=path.join(s.c.oldData,'private/storage.key'),key=fs.readFileSync(file);key[0]^=1;fs.writeFileSync(file,key);key.fill(0);
+  const p=e.plan('replace',id()),op=await e.execute(p,p.digest);assert.equal(op.failure,'backup-integrity');assert.equal(op.state,'recovery-required');
+  assert.equal(io.calls.includes('start'),false);assert.equal(io.calls.includes('select'),false);assert.equal(e.status().uncertain,true);
+}));

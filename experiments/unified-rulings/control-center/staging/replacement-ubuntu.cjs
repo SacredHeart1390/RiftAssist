@@ -32,7 +32,7 @@ class UbuntuReplacementIO {
     catch{P.fail('systemd-result-uncertain');}
   }
   helperPaths(){return{service:HELPER,guard:HELPER_GUARD,sentinel:HELPER_SENTINEL};}
-  helperScriptHash(){return this.helperScriptHash();}
+  helperScriptHash(){return P.hash(bounded(this.config.evidence.autostart.scriptPath));}
   async observed(service=this.config.service){
     if(![this.config.service,this.helperPaths().service].includes(service))P.fail('service');
     const raw=await this.run(['show',service,'--no-pager','--property=LoadState,ActiveState,SubState,MainPID,ControlGroup,User,Group,UnitFileState,KillMode,WorkingDirectory,FragmentPath,Job,DropInPaths,Type,Restart,Requires,Wants,After,PartOf,BindsTo,RootDirectory,RootImage,BindPaths,BindReadOnlyPaths,InaccessiblePaths,PrivateMounts,NoNewPrivileges,EnvironmentFiles']);
