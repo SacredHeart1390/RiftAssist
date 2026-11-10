@@ -30,7 +30,7 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
         safe.translationRecord=null;
         safe.translationStatus=legacy.koreanDisplay?card.translationStatus:'translation-rights-restricted';
         safe.authority='community-source';
-        safe.accessReview={reference:legacy.reference,koreanModelInput:legacy.koreanModelInput};
+        safe.accessReview={reviewHash:legacy.reviewHash,koreanModelInput:legacy.koreanModelInput};
         return {...safe,modelReady:Boolean(card.modelReady&&legacy.cardsModelInput&&legacy.rulesModelInput)};
       }
       safe.imageUrl = card.permissions.image === true ? safe.imageUrl : '';

@@ -3,7 +3,7 @@
   "releaseFamily": "v0.2.0",
   "scope": "mock-local-control-center",
   "files": {
-    "app-release.json": "060a1dfd317b01d61f660d2c6045ec0e4f9fa7a3969e1c1df9b80729a39a28a9",
+    "app-release.json": "5b6d94c8a61266b429cbc2ae9c81a33bd4561922757d3bcc3c7fb21eb17df180",
     "dev-fixtures/mock-cards.json": "cbc3a8073658783bdbd283396e95b6f55e4a738d0d8079b139da0dea3473f7f0",
     "dev-fixtures/rules.json": "7a9804933595c88f8363d0402e88aa5885dfccc4b35477d85ccaf09eb8440249",
     "manager-ui/index.html": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804",
@@ -44,7 +44,7 @@
     "src/answer-policy.js": "de1244bf836070321ad34af964cc26965d2568fbdcbf582bd4f164b4eba5d1e9",
     "src/answer-quality.js": "e0151bc59184395a4d8a1a9ec311a611d13df0c5c38af7067a79ba82a5a38ad4",
     "src/app-host.js": "a7a8c4e6e3c8083b8ced3626632543b35e56f580ef4b579f2f8fe778939ffb6b",
-    "src/card-access.js": "7827793f21f8a082ea2e350024f6104e49d4fc0204d6faad22bc0be9de80b1c3",
+    "src/card-access.js": "ddb41d6a0c7038a05c3543fb127a03450efe8c86163e70c4cb7ccfbd7acd42c3",
     "src/card-publication.js": "893aeac9f4a822e087f1ac3310ff620a551f609e2a75cda9060ae45d7d95ce05",
     "src/card-review-auth.js": "1359e9ac72634f4c6b0dfadeae1713d805588d14361fc98b6953eed1b9ada424",
     "src/card-review-authorization.js": "9ec9068082f7fa64fbd18720932b8a8b435d9353bd3ab185cdbea80385de669e",

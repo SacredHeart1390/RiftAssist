@@ -76,7 +76,7 @@
     "src/answer-policy.js": "de1244bf836070321ad34af964cc26965d2568fbdcbf582bd4f164b4eba5d1e9",
     "src/answer-quality.js": "e0151bc59184395a4d8a1a9ec311a611d13df0c5c38af7067a79ba82a5a38ad4",
     "src/app-host.js": "a7a8c4e6e3c8083b8ced3626632543b35e56f580ef4b579f2f8fe778939ffb6b",
-    "src/card-access.js": "7827793f21f8a082ea2e350024f6104e49d4fc0204d6faad22bc0be9de80b1c3",
+    "src/card-access.js": "ddb41d6a0c7038a05c3543fb127a03450efe8c86163e70c4cb7ccfbd7acd42c3",
     "src/card-publication.js": "893aeac9f4a822e087f1ac3310ff620a551f609e2a75cda9060ae45d7d95ce05",
     "src/card-review-auth.js": "1359e9ac72634f4c6b0dfadeae1713d805588d14361fc98b6953eed1b9ada424",
     "src/card-review-authorization.js": "9ec9068082f7fa64fbd18720932b8a8b435d9353bd3ab185cdbea80385de669e",
