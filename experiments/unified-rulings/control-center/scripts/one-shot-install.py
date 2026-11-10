@@ -72,7 +72,9 @@ def main():
     require(shutil.disk_usage("/var/lib").free >= 512 * 1024 * 1024 + total * 4)
     for parent in [Path("/var/lib/riftassist-replacement-upload"), inventory.parent]:
         protect_parent(parent)
-    base.mkdir(mode=0o755)
+    # Keep the entire holding tree root-only while copying and hardening modes.
+    # An upload's permissive mode must not open a writable copy race.
+    base.mkdir(mode=0o700)
     shutil.copytree(upload / "capsule", base / "code", symlinks=True)
     code = base / "code"
     check_tree(code, INPUT["capsuleFiles"])

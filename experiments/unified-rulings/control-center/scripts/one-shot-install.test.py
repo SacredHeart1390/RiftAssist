@@ -77,6 +77,7 @@ class Bootstrap(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertFalse(json.loads(out)["operationalDataRead"])
         self.assertEqual(len(self.calls), 2)
+        self.assertEqual((self.root / "upload" / self.site).stat().st_mode & 0o777, 0o700)
         self.assertTrue((Path(self.profile["candidateData"]) / "knowledge-releases/active.json").is_file())
 
     def test_tampered_capsule_never_executes_node(self):
