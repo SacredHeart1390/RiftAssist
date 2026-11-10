@@ -22,8 +22,20 @@ function prepareWorker(c){
   const worker=P.within(c.candidateData,'releases','v0.2.0');if(fs.existsSync(worker))P.fail('retained-release');
   fs.mkdirSync(path.dirname(worker),{recursive:true,mode:0o700});fs.cpSync(c.candidateCode,worker,{recursive:true,errorOnExist:true,force:false});
   P.atomic(path.join(c.candidateData,'.riftassist-environment.json'),{releaseFamily:'v0.2.0',environment:'production'});
-  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true,generationEnabled:c.evidence.configuration?.generationEnabled??null},0o644);
+  P.atomic(P.within(c.root,'launch.json'),{schemaVersion:1,purpose:'single-instance-replacement-launch',root:c.root,siteId:c.siteId,source:c.candidateCode,data:c.candidateData,ports:c.ports,commit:c.commit,candidateHash:c.candidateHash,knowledgeHash:c.knowledgeHash,liveProviderApproved:c.evidence.configuration?.liveProviderApproved===true,generationEnabled:c.evidence.configuration?.generationEnabled??null},0o644);
   const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,e.name);P.noLinks(file);if(e.isDirectory())walk(file);else fs.chownSync(file,c.uid,c.gid);}fs.chownSync(dir,c.uid,c.gid);};walk(c.candidateData);
+}
+function verifyLegacySource(c){
+  const candidate=knowledgeHash(c.candidateData),manifest=P.readJSON(path.join(candidate.directory,'manifest.json'));
+  const entry=manifest.sources?.legacyRelease;if(!entry)return{legacySource:false};
+  const review=require(path.join(c.candidateCode,'src/legacy-card-release.js')).reviewScope(manifest);
+  if(review.commit!==c.commit)P.fail('legacy-review-commit');
+  const pointer=P.readJSON(path.join(c.oldData,'knowledge-releases/active.json'),4096);
+  if(pointer.releaseId!==entry.source?.releaseId||!require(path.join(c.candidateCode,'src/knowledge-provider.js')).safeId(pointer.releaseId))P.fail('legacy-source-drift');
+  const old=P.within(c.oldData,'knowledge-releases',pointer.releaseId),file=path.join(old,'manifest.json');P.noLinks(file,true);
+  if(P.hash(fs.readFileSync(file))!==entry.source.manifestSha256)P.fail('legacy-source-drift');
+  for(const name of ['rules.json','cards.json','judge-cases.json']){const file=path.join(old,name);P.noLinks(file,true);if(fs.statSync(file).size>32*1024*1024||P.hash(fs.readFileSync(file))!==manifest.hashes[name])P.fail('legacy-source-drift');}
+  return{legacySource:true,originalDatasetHashesMatched:true,privateFilesRead:0};
 }
 class UbuntuReplacementIO {
   constructor(c){if(c.rehearsal)P.fail('production-adapter-scope');this.config=c;}
@@ -39,6 +51,7 @@ class UbuntuReplacementIO {
     return Object.fromEntries(raw.trim().split('\n').filter(s=>s.includes('=')).map(s=>[s.slice(0,s.indexOf('=')),s.slice(s.indexOf('=')+1)]));
   }
   async preflight(version,{kind='replace'}={}){
+    if(kind==='replace')verifyLegacySource(this.config);
     const c=this.config,o=await this.observed();await this.assertAutostartQuiescent();
     if(o.LoadState!=='loaded'||o.ActiveState!=='active'||o.User!=='azureuser'||!['','azureuser'].includes(o.Group)||o.KillMode!=='control-group'||o.FragmentPath!==c.unitFile||o.WorkingDirectory!==(version==='v0.1.7'?c.oldCode:c.candidateData)||o.ControlGroup!=='/system.slice/'+c.service)P.fail('topology-drift');
     require('./clean-rollback.cjs').assertNamespace(c,o,{installed:fs.existsSync(c.overrideFile)});
@@ -235,4 +248,4 @@ class UbuntuReplacementIO {
     return{version,localApplication:true,adminAuthenticated:true,https200:true,paidAiInvoked:false,aiPausedForBudgetReconciliation:paused};
   }
 }
-module.exports={UbuntuReplacementIO,override,budgetGuard,knowledgeHash,prepareWorker,helperGuard};
+module.exports={UbuntuReplacementIO,override,budgetGuard,knowledgeHash,prepareWorker,helperGuard,verifyLegacySource};

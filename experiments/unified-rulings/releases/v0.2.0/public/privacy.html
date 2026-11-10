@@ -28,6 +28,7 @@
           <li>OpenAI·RiftJudge 및 실제 호스팅·터널 제공자의 역할, 처리·보관 국가, 항목·목적·시점·기간, 제공·위탁·국외 이전에 필요한 고지·동의와 계약 조건.</li>
           <li>운영 로그·DB·백업·키의 실제 위치와 접근자, 보관·파기 주기, 삭제 요청 시 백업·외부 사본 처리, 정리 실패 대응, 실제 시행일과 변경 고지 방법.</li>
         </ul>
+        <p>기존 카드 포함 출시 경로는 원래 카드·규칙·사례 파일을 보존하고, 해시에 연결된 별도 권리 검토 범위에서만 공개·AI 입력·한국어·이미지·사례·외부 검색·번역을 허용합니다. 기존 RiftNaru 한국어는 비공식 출처로 유지합니다. 공개 허가와 외부 모델 입력 허가는 구분하며, 모델 전송 권한이 없는 한국어 이름·번역은 모델용 카드 자료·용어집에서 제외합니다. 공식 Riot API 연결은 차기 v0.3.0 개발 대상이며 v0.2.0 운영의 필수 기능이 아닙니다.</p>
         <h3>1. 처리 목적과 항목</h3>
         <p>RiftAssist는 카드 검색, 규칙 참고 답변, 근거 번역, 오류 제보 처리 및 남용·중복 요청 방지를 위해 다음 정보를 처리합니다. 질문이나 제보에 실명, 연락처, 계정 정보, 타인의 개인정보 또는 비밀을 적지 마세요.</p>
         <ul>
@@ -77,6 +78,7 @@
           <li>OpenAI/RiftJudge and actual hosting/tunnel provider roles, processing/storage countries, data, purposes, timing, duration, applicable disclosures/consent and contracts.</li>
           <li>Actual locations/access controls and retention/deletion schedules for logs, DBs, backups and keys; treatment of backups/external copies on requests; cleanup failure procedures; effective date and change notices.</li>
         </ul>
+        <p>The legacy-card release preserves original knowledge files and applies a separate hash-bound review for display, model input, Korean text, images, cases, remote search and source translation. Existing RiftNaru Korean remains unofficial. Korean names/translations without model-input permission are omitted from model card data and glossaries. Official Riot API integration is a v0.3.0 development target, not a v0.2.0 runtime requirement.</p>
         <h3>1. Purpose and data</h3>
         <p>RiftAssist processes questions, language, selected or recognized cards, request and deduplication identifiers, generated answers, sources, search/recovery traces, timestamps, status, duration, model/source versions, usage, errors and provider response IDs to provide reference answers and prevent abuse. Reports contain category, description, expected answer, tags, language, timestamps, status and administrator notes. Linking a question copies its question, answer, sources and trace into the report.</p>
         <p>A SHA-256 hash of a random session identifier links requests, reports and usage limits; new sessions are counted by date. This is not complete anonymity. There is no name/email/Riot account registration in the current app. Card searches and text used for card recognition reach the server; no separate persistent search-body storage was found in those APIs. Image attachments are rejected by the server. Do not enter personal, account or confidential information about yourself or others.</p>

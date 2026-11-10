@@ -4,11 +4,13 @@ Windows 단일 진입점은 [ONE-SHOT-LAUNCH.md](ONE-SHOT-LAUNCH.md)의 `START-R
 
 최종 통합 읽기 조사는 완료됐다. 새 조사·VM·상시 병렬 서비스·범용 배포 프레임워크는 만들지 않는다. 이 문서의 명령은 **아직 실행하지 않았고 승인 전 실행 금지**다. 코드/패키지는 ready=false, developmentOnly=true다. 다른 브랜치·원본 v017·운영 데이터·shared active.json은 수정하지 않았다.
 
+**2026-11-10 긴급 정정:** v020은 기존 v017의 카드 형식/기능과 개선사항을 합친 출시다. 카드0개/공식 API를 전제로 한 제한은 폐기한다. [카드 조사·호환 경로·권리 경계](LEGACY-CARD-LAUNCH.md)가 우선하며, minimum-release는 개발 보조용이다. 운영 자료 권리·보안·백업 검증은 해제하지 않는다. 전체 데이터 보존과 실제 공개/AI 권한을 구분한다.
+
 ## 기본 경로 — 독립 B 중단 생략
 
 2026-11-10 KST. 8edab74의 교체 흐름을 확인했다. helper 해시 reader의 자기 재귀 1건은 파일 SHA256 계산으로 수정하고 실제 합성 파일 회귀로 검증한다. 그 외 운영 트랜잭션 순서·검증·실패 복귀 로직은 변경하지 않았다. `replace`는 첫 operation으로 바로 실행할 수 있으며 `qualified` 이력을 요구하지 않는다. **기본은 A 한 번과 C 한 번**이다. 독립 `qualify-backup`은 요청한 경우에만 쓰는 진단 기능으로 남긴다.
 
-- 중단 전: 최종 코드/clean65 설치, 승인된 rules-only 후보를 **새** candidateData에 준비, 공개 inventory·정적 store/schema 계약·CI 확인.
+- 중단 전: 최종 코드/clean65 설치, 승인된 기존 카드 포함 후보를 **새** candidateData에 준비, 공개 inventory·정적 store/schema 계약·CI 확인.
 - C의 한 번 중단 안: writer 정지 → WAL 포함 봉인 백업 → 독립 복원/복호화/schema/설정 검사 → 새 데이터 사본 → v020 시작·검증. 중간에 v017을 재기동하지 않는다.
 - 통상 실패: 새 버전을 시작하지 않거나 정지한 뒤 clean v017+oldData로 복귀한다. **backup-integrity/정지·설정 불명확/복귀 실패는 강제 기동하지 않고 recovery-required**로 중단한다. 모든 실패에서 자동 복귀한다고 약속하지 않는다.
 
@@ -99,15 +101,15 @@ install -d -m0755 /etc/riftassist-replacement && test ! -e /etc/riftassist-repla
 printf '%s\n' '{"protocol":"riftassist-replacement-1","requestId":"<새 request UUID>","inventoryHash":"<설치 receipt.inventoryHash>","method":"preflight","payload":{}}' | /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 /usr/bin/node --disable-proto=throw "$RIFT_ROOT/tools/replacement-serve.cjs"
 ```
 
-실제 DB/WAL·키·env 본문의 호환성은 여전히 미검증이다. C의 승인된 preflight에서 실제 unit/EnvFiles 참조/자원·helper 상태를 다시 확인하고, 정지 후 독립 restore/probe가 성공해야만 v020으로 간다. A에 사용할 **승인 rules-only 지식의 새 root 준비**는 원본 shared active.json/카드 자료를 변경하는 작업과 다르며, 최종 profile의 실제 knowledgeHash에 고정한다.
+실제 DB/WAL·키·env 본문의 호환성은 여전히 미검증이다. C의 승인된 preflight에서 실제 unit/EnvFiles 참조/자원·helper 상태를 다시 확인하고, 정지 후 독립 restore/probe가 성공해야만 v020으로 간다. A에 사용할 **승인 기존 카드 포함 지식의 새 root 준비**는 원본 shared active.json/카드 자료를 변경하는 작업과 다르며, 최종 profile의 실제 knowledgeHash에 고정한다.
 
 ## C. 최종 운영 승인 — 백업·독립 검증·교체·조건부 실패 복귀를 한 번에
 
-실제 권한 확인된 rules-only 후보·개인정보 조건·복구키/백업 정책·최종 source/CI·A 설치 receipt를 확인한 후 **하나의 최종 운영 승인**을 받는다. **실제 Azure DB 검증을 먼저 끝내기 위한 B 중단은 요구하지 않는다.** 실제 검증은 아래 C 내부에서 v020 기동 전에 반드시 수행한다.
+실제 권한 확인된 기존 카드 포함 후보·개인정보 조건·복구키/백업 정책·최종 source/CI·A 설치 receipt를 확인한 후 **하나의 최종 운영 승인**을 받는다. **실제 Azure DB 검증을 먼저 끝내기 위한 B 중단은 요구하지 않는다.** 실제 검증은 아래 C 내부에서 v020 기동 전에 반드시 수행한다.
 
 사전 증거와 실행 중 증거를 혼동하지 않는다. inventory의 compatibility reference는 고정65개의 operations-store 코드와 v020 store 코드의 일치, 기대 schemaHash 및 CI에서 확인한 검사 계약을 가리킨다. `backupRestore` 검토 증거도 CI의 독립 복원 구현/시험 범위다. 운영 DB를 미리 읽었거나 이미 검증했다고 기록하지 않는다. `replace`의 `requireCompatible`, 독립 restore, `cloneBackup`의 schema/hosting/runtime-config 검사는 이 정적 증거와 관계없이 실행된다. 모르는 실제 설정은 성공으로 가정하지 않는다.
 
-승인된 rules-only knowledge를 새 candidateData에만 준비하고 실제 active+manifest hash를 inventory에 pin한다. shared active.json을 고치지 않는다. 새 지식/자료 설치도 C 준비 승인에 명시한다. 리프트나루 카드·이미지·번역1527개/제3자 사례는 넣지 않는다. fallback에 노출될 기존 자료의 권리 범위도 별도로 확인해야 하며 clean65 검증은 자료 이용 허가를 부여하지 않는다.
+승인된 기존 카드 포함 knowledge를 새 candidateData에만 준비하고 실제 active+manifest hash를 inventory에 pin한다. shared active.json을 고치지 않는다. 새 지식/자료 설치도 C 준비 승인에 명시한다. 원래 카드1,527개/규칙/사례 파일은 보존한다. 공개·AI·이미지·한국어/사례 노출은 별도 검토 범위에 따른다. fallback에 노출될 기존 자료의 권리 범위도 별도로 확인해야 하며 clean65 검증은 자료 이용 허가를 부여하지 않는다.
 
 환경 이전은 unit 인라인→EnvironmentFile 순서 또는 Node dotenv fallback의 실제 우선순위를 반영하고, 새0600.env에는 허용된 공급자 설정만 복원한다. 원본은 암호화 archive에 그대로 보존한다. 새 서비스 drop-in은 Environment와 EnvironmentFile을 reset하여 원래 파일의 키/포트가 새 DataRoot 설정을 덮지 않게 한다. launch descriptor가 root-owned인 조건과 full code/knowledge/schema/key hash 경계를 유지한다. liveProviderApproved와 generationEnabled의 실제 공개 서비스 승인 여부는 사용자가 정한다. 모델명은 검증된 기존 설정을 보존하며 강제 변경하지 않는다.
 
@@ -167,7 +169,7 @@ recovery-required에서 검증되지 않은 DB를 덮거나 기존 원본 ExecSt
 
 ## 사용자가 결정/제공할 최소 항목
 
-- 공개/AI 입력 허가와 최신성이 확인된 **실제 규칙 파일 및 출처·권리 검토 reference**. 최소 카드0/사례0. [공식 문서](https://developer.riotgames.com/docs/riftbound)의 서면 라이선스 또는 유효한 앱 전용 API 키 조건도 확인해야 한다. API 승인 대기 중 규칙 전용으로 전환하는 것만으로 허가를 대체하지 않는다. legacy fallback 데이터의 공개 범위에 대한 권리 검토도 필요하다. 권리 미확인을 운영 승인만으로 대체하지 않는다.
+- 기존 카드 포함 snapshot과 그 출처/버전·공개/AI/한국어/이미지/제3자 사례 권리 reference. API 키 미발급 자체는 기술 기동 차단 조건이 아니다. Riot 앱/자산 정책 적용과 기존 자료의 이용 권한을 별도로 검토한다. legacy fallback 자료 공개 권한도 확인한다. 원본/권리 상태를 바꾸거나 자료 미확인을 운영 승인만으로 대체하지 않는다.
 - 개인정보처리자 성명/법적 명칭, 연락처·권리 행사 창구, 처리 근거/고지·동의/국외 이전·위탁 해당 여부, 실제 시행일. 현재 동의 수집 전용 기능이 없으므로 제출 자체를 동의로 간주하지 않는다. v1.0까지 미룰 항목이 아니다.
 - 백업 보관·파기 기간, 접근자, VM 외부의 암호화 보관 장소와 **복구키 분리 보관 담당/방법**, 목표 RPO/RTO 및 유지보수 시간. 현재 archive 자동 삭제는 없다. 실제 backup/key 반출은 별도 승인 전 하지 않는다.
 - 기존 한도·모델은 보존한다. 최종 라이브에서 AI를 켤지, 복귀 시 일시 중지한 예산을 대조한 뒤 켤지 명시한다. 개발/CI는 계속 mock이고 유료 호출을 하지 않는다.

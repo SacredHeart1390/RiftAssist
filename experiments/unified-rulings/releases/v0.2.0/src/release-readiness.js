@@ -8,7 +8,9 @@ function assessRelease({manifest,evidence={},commit}={}){
  const attested=v=>v?.status==='verified'&&typeof v.reference==='string'&&v.reference.trim().length>=3&&v.reference.length<=300&&v.commit===commit;
  if(!attested(evidence.tests)||evidence.tests.failed!==0||!Number.isInteger(evidence.tests.passed)||evidence.tests.passed<1)blockers.push('tests-not-verified-for-commit');
  if(!['licensed-legacy','riot-official','approved-rules-only'].includes(evidence.sourceMode))blockers.push('data-source-mode-unconfirmed');
- if(evidence.sourceMode==='riot-official'&&!attested(evidence.riotApi))blockers.push('riot-api-approval-not-verified');
+ if(evidence.sourceMode==='riot-official')blockers.push('official-api-deferred-to-v030');
+ if(evidence.sourceMode==='approved-rules-only')blockers.push('legacy-card-release-required');
+ if(evidence.sourceMode==='licensed-legacy'&&(!attested(evidence.legacyKnowledge)||evidence.legacyKnowledge.cards<1||evidence.legacyKnowledge.schemaVersion!==1||evidence.legacyKnowledge.originalBytesPreserved!==true))blockers.push('legacy-knowledge-not-verified');
  const manual=evidence.deploymentPath==='manual-ssh';
  if(evidence.deploymentPath&&!['manual-ssh','restricted-broker'].includes(evidence.deploymentPath))blockers.push('deployment-path-unconfirmed');
  if(!attested(manual?evidence.manualProcedure:evidence.broker))blockers.push(manual?'manual-procedure-not-verified':'broker-not-verified');

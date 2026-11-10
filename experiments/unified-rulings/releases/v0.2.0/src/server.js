@@ -21,6 +21,7 @@ const { createAccess } = require('./access-control');
 const { createCardAccess } = require('./card-access');
 const minimumRelease=require('./minimum-release');
 const minimumScope=()=>minimumRelease.restricted(requestKnowledge.getStore()||knowledge.current());
+const legacyScope=()=> (requestKnowledge.getStore()||knowledge.current()).legacyReview;
 
 const ROOT = DATA_ROOT;
 const PUBLIC_DIR = path.join(APP_ROOT, 'public');
@@ -59,12 +60,12 @@ const OPENAI_MAX_OUTPUT_TOKENS = Number.isInteger(outputLimit) && outputLimit >=
 const MAX_MODEL_INPUT_CHARS = 50000;
 const store = createStore(ROOT);
 const access = createAccess({ port: Number(process.env.PUBLIC_PORT || PORT), publicOrigin: process.env.PUBLIC_ORIGIN || '', directory: store.directory, store, allowLegacySession: environment==='production'&&process.env.RIFTASSI_PRESERVE_V017_SESSION==='true' });
-const aiEnabled = () => OPENAI_GENERATION_ENABLED && store.setting('aiEnabled', true);
+const aiEnabled = () => OPENAI_GENERATION_ENABLED && store.setting('aiEnabled', true) && legacyScope()?.rulesModelInput!==false;
 const sourceTranslations = createSourceTranslations({
   getTerminology: () => terminology.glossary((requestKnowledge.getStore() || knowledge.current()).evidence),
   root: ROOT, model: OPENAI_MODEL, reasoningEffort: OPENAI_REASONING_EFFORT,
   maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS,
-  isEnabled: ()=>aiEnabled()&&!minimumScope(), getApiKey: () => process.env.OPENAI_API_KEY,
+  isEnabled: ()=>aiEnabled()&&!minimumScope()&&legacyScope()?.sourceTranslations!==false, getApiKey: () => process.env.OPENAI_API_KEY,
   log: appendLog,
   reserve: (owner) => store.reserveCall(owner, 'translation'), settle: store.finishCall,
 });
@@ -120,7 +121,7 @@ function hasTournamentContext(question) {
 function sourceGlossary(item) {
   const content = ` ${item.question || ''} ${item.answer || ''} ${item.officialTextEn || ''} `.toLocaleLowerCase();
   const names = new Map();
-  for (const card of (requestKnowledge.getStore() || cardAccess.snapshot(knowledge.current())).cardCatalog.cards) {
+  for (const card of cardAccess.forModel((requestKnowledge.getStore() || cardAccess.snapshot(knowledge.current())).cardCatalog.cards)) {
     if (!card.modelReady || !card.nameEn || !card.nameKo || card.nameEn.length < 3 || names.has(card.nameEn)) continue;
     const escaped = card.nameEn.toLocaleLowerCase().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
     if (new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'u').test(content)) names.set(card.nameEn, card.nameKo);
@@ -130,7 +131,7 @@ function sourceGlossary(item) {
 }
 
 async function prepareLocalization(kind, item) {
-  if(minimumScope())return {...item,localization:null};
+  if(minimumScope()||legacyScope()?.sourceTranslations===false)return {...item,localization:null};
   if (kind === 'rule' && item.officialTextKo) return item;
   try { return { ...item, localization: await sourceTranslations.prepare(kind, item, sourceGlossary(item)) }; }
   catch { console.warn('Source translation cache unavailable.'); return { ...item, localization: null }; }
@@ -299,7 +300,7 @@ async function searchJudge(question, cards = []) {
   // Remote semantic search fills gaps while the local full corpus is being collected.
   const complete = ['complete', 'complete-with-unavailable'].includes(snapshot.manifest.sources?.riftjudge?.coverage);
   if (complete && local.length >= 3) { judgeSearchAvailable = true; return local; }
-  const remote = await searchJudgeRemote(question, cards);
+  const remote = legacyScope()?.externalJudge===false?[]:await searchJudgeRemote(question, cards);
   const merged = new Map();
   const excluded = new Set(snapshot.judgeCases.filter(c => c.sourceAvailability === 'removed' || c.status === 'deprecated').map(c => String(c.id)));
   for (const item of local) merged.set(String(item.id), item);
@@ -499,7 +500,7 @@ async function handleAsk(req, res) {
   const requestId = request.id;
   req.riftRequestId = requestId;
   const selectedCards = cardResolution.selected;
-  const modelCards = selectedCards.filter(card => card.modelReady);
+  const modelCards = cardAccess.forModel(selectedCards);
   let retrieved = retrieval.search(snapshot.index, question, modelCards);
   const blockedByCards = cardResolution.restricted || cardResolution.unresolved.length > 0 || cardResolution.missing.length > 0;
   let blockedByEvidence = retrieved.trace.missingRequired.length > 0;
@@ -706,7 +707,7 @@ async function initialize() {
       try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
       sendJson(res, 200, {
         ok: true, version: '0.2.0', appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
-        features: { imageAttachments: false, sourceTranslations:!minimumScope(), thirdPartyCases:!minimumScope() },
+        features: { imageAttachments: false, sourceTranslations:!minimumScope()&&legacyScope()?.sourceTranslations!==false, thirdPartyCases:!minimumScope()&&legacyScope()?.judgeCases!==false },
         retention: { questionDays: 7, metadataDays: 30, reportDays: 90, imagesStored: false },
         aiConfigured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null,
         aiGenerationEnabled: aiEnabled(),
@@ -714,7 +715,7 @@ async function initialize() {
         indexedRuleCount: evidence.filter((item) => item.ruleId).length,
         indexedSupplementCount: evidence.filter((item) => !item.ruleId).length,
         evidenceCountByDocument,
-        riftJudgeSearchEnabled: !minimumScope(), riftJudgeSearchAvailable: judgeSearchAvailable,
+        riftJudgeSearchEnabled: !minimumScope()&&legacyScope()?.externalJudge!==false, riftJudgeSearchAvailable: judgeSearchAvailable,
         cardCatalog: { available: cardCatalogAvailable, version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess },
         generationBudget: { maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS, maxInputCharacters: MAX_MODEL_INPUT_CHARS },
       });
@@ -753,7 +754,7 @@ async function initialize() {
       }); return;
     }
     if (req.method === 'POST' && url.pathname === '/api/sources/translate') {
-      if(minimumScope()){sendJson(res,403,{code:'source_translation_restricted'});return;}
+      if(minimumScope()||legacyScope()?.sourceTranslations===false){sendJson(res,403,{code:'source_translation_restricted'});return;}
       // A translation can only use server-registered public source snapshots, never client text or URLs.
       if (!/^application\/json(?:;|$)/iu.test(req.headers['content-type'] || '')) { sendJson(res, 415, { code: 'json_required' }); return; }
       readJson(req).then(async (body) => {

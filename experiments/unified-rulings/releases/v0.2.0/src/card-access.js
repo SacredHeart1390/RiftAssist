@@ -3,23 +3,36 @@ const crypto = require('node:crypto');
 const { resolveCards } = require('./cards');
 const { hash, englishSource } = require('./card-translation-core');
 const { officialURL } = require('./card-publication');
-const VERSION = 'card-access-2';
+const VERSION = 'card-access-3';
 
 function createCardAccess(configuredMode, { allowMock = false } = {}) {
-  const mode = configuredMode === 'verified-only' ? 'verified-only' : 'restricted';
-  const configurationValid = configuredMode == null || configuredMode === '' || ['restricted', 'verified-only'].includes(configuredMode);
+  const mode = ['verified-only','legacy-reviewed'].includes(configuredMode) ? configuredMode : 'restricted';
+  const configurationValid = configuredMode == null || configuredMode === '' || ['restricted', 'verified-only','legacy-reviewed'].includes(configuredMode);
   const views = new WeakMap();
   function snapshot(original) {
     if (views.has(original)) return views.get(original);
     const raw = original.cardCatalog;
+    const legacy=mode==='legacy-reviewed'?original.legacyReview:null;
     // An operator must verify the app's approval/license before enabling verified-only.
     // These per-card flags are necessary technical checks, not proof of legal permission.
-    const cards = mode === 'restricted' ? [] : raw.cards.filter(card =>
+    const cards = mode === 'restricted' || mode==='legacy-reviewed'&&!legacy ? [] : raw.cards.filter(card => legacy ?
+      card.status!=='withdrawn'&&card.source.kind==='riftnaru-public'&&card.source.url&&card.source.version&&legacy.cardsDisplay
+      &&(card.status!=='preview-unreleased'||card.publication.publiclyRevealed&&officialURL(card.publication.url)&&card.publication.version)
+      :
       card.status !== 'withdrawn' && card.textVerified && card.textEn && card.source.url && card.source.version
       && (['riot-api', 'licensed'].includes(card.source.kind) || (allowMock && card.source.kind === 'mock' && card.source.verification === 'synthetic-fixture')) && card.permissions.display
       && (card.status !== 'preview-unreleased' || (card.publication.publiclyRevealed && card.publication.version && (officialURL(card.publication.url) || (allowMock && card.source.kind === 'mock' && card.publication.url.startsWith('https://example.invalid/')))))
     ).map(card => {
       const { translationProposal, translationHistory, officialKorean, officialKoreanCheck, sourceKorean, ...safe } = card;
+      if(legacy){
+        safe.imageUrl=legacy.images?safe.imageUrl:'';
+        if(!legacy.koreanDisplay){safe.nameKo='';safe.textKo='';safe.keywordsKo=[];safe.aliases=[];safe.subtitle='';safe.errata='';}
+        safe.translationRecord=null;
+        safe.translationStatus=legacy.koreanDisplay?card.translationStatus:'translation-rights-restricted';
+        safe.authority='community-source';
+        safe.accessReview={reference:legacy.reference,koreanModelInput:legacy.koreanModelInput};
+        return {...safe,modelReady:Boolean(card.modelReady&&legacy.cardsModelInput&&legacy.rulesModelInput)};
+      }
       safe.imageUrl = card.permissions.image === true ? safe.imageUrl : '';
       const record = safe.translationRecord;
       const approved = record && record.review.status === 'approved' && record.englishHash === hash(englishSource(card))
@@ -37,7 +50,7 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
       restrictedTotal: raw.cards.length - cards.length, visibleTotal: cards.length,
       modelReadyTotal: cards.filter(card => card.modelReady).length });
     const cacheScope = crypto.createHash('sha256').update(JSON.stringify({ version: VERSION, mode,
-      releaseId: original.releaseId, cards: raw.cards.map(card => card.contentHash) })).digest('hex');
+      releaseId: original.releaseId, legacyReview:legacy?.reviewHash||null,cards: raw.cards.map(card => card.contentHash) })).digest('hex');
     const view = Object.freeze({ ...original, rawCardCatalog: raw, cardAccess: access,
       cardCacheScope: cacheScope, cardCatalog: { ...raw, cards } });
     views.set(original, view);
@@ -53,6 +66,8 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
     const result = resolveCards(view.cardCatalog, filter(ids), question, filter(remembered), excluded);
     return { ...result, restricted };
   }
-  return { snapshot, resolve };
+  function forModel(cards){return cards.filter(c=>c.modelReady).map(c=>c.accessReview&&!c.accessReview.koreanModelInput?
+    {...c,nameKo:'',textKo:'',keywordsKo:[],aliases:[],subtitle:'',errata:'',translationRecord:null}:c);}
+  return { snapshot, resolve,forModel };
 }
 module.exports = { createCardAccess, VERSION };

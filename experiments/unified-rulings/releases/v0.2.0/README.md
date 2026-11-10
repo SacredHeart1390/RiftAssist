@@ -1,3 +1,5 @@
+> 2026-11-10 출시 목표 정정: **기존 v0.1.7 카드 DB 형식/검색·질문·판정 + v0.2.0 개선사항**을 출시한다. rules-only로 축소하지 않는다. 공식 API는 v0.3.0 개발 대상이며 v0.2.0 기동 의존성이 아니다. [실제 카드 감사·복원·권리 경계](../../control-center/LEGACY-CARD-LAUNCH.md), [확정 로드맵](../../control-center/LIVE-ROADMAP.md)을 따른다. 미확인 자료 권리나 ready 상태는 임의 승인하지 않는다.
+
 # RiftAssist v0.2.0 개발 릴리스
 
 [Control Center 2차](../../control-center/PHASE2.md)는 별도의 합성 관리자 GUID 환경에서 기존 로그인/쿠키 API를 재사용한다. `operations:read`/`operations:write`는 카드 권한과 분리하며 임의 loopback 포트만 사용한다. Azure는 별도 승인 후 고정 읽기 전용 OpenSSH 조회 구조만 준비했고 실제 접속하지 않았다. 관리자 3100 공개·운영 제어/DB 접근·실제 API 호출은 없다. 기존 재수집 거절과 카드 승인 우회 방지는 유지한다.

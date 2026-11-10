@@ -6,7 +6,7 @@
 
 최종 출시본에서는 전체 파일 hash/plan/clean65/commit/knowledge/정책·CI pin 검사 후 서비스·코드·inventory·A/C 영향 범위를 표시한다. **지금 시작하는 유지보수 창의 A와 C를 함께 승인하는 y 확인 한 번**만 받는다. 키 입력·클립보드 복사·단계별 승인은 없다. 현재 v017 원본과 shared active는 수정하지 않는다. AI 전송 미승인 시 generation/liveProvider 모두 꺼져 있어야 한다. noindex는 기존 v020의 전 응답 헤더 정책을 유지한다.
 
-승인 후 A: 새 사용자 업로드 폴더 예약 → 코드/public inventory/승인 규칙만 SCP → root 고정 Python bootstrap의 외부 pin/전 파일 검증 → 기존 install-code 엔진 → 새 데이터 경로에 규칙 설치 → receipt와 preflight 확인. 기존 DB·키·env·unit·Caddy는 A에서 변경하지 않는다. 코드 설치의 부분 실패도 자동 덮어쓰기·재설치하지 않는다.
+승인 후 A: 새 사용자 업로드 폴더 예약 → 코드/public inventory/검토된 카드 포함 지식만 SCP → root 고정 Python bootstrap의 외부 pin/전 파일 검증 → 기존 install-code 엔진 → 새 데이터 경로에 기존 카드 포함 지식 설치 → receipt와 preflight 확인. 기존 DB·키·env·unit·Caddy는 A에서 변경하지 않는다. 코드 설치의 부분 실패도 자동 덮어쓰기·재설치하지 않는다.
 
 C: 기존 `replacement-serve --approved-replace`를 **같은 operation ID로 한 번** 호출한다. 기존 엔진이 helper guard, drift·자원, cgroup 정지, WAL 포함 SQLite backup/AES-GCM, 독립 restore/복호화/schema/설정, 새 데이터 사본, 단독 기동, 관리자/규칙/HTTPS를 검사한다. 독립 B는 없다. Caddy는 바꾸지 않는다. 통상 실패는 검증된 clean65+oldData로 조건부 복귀하고, 무결성·상태 불명확/복구 실패는 recovery-required다. 기존 및 신규 기록은 보존하고 구 DB에 병합하지 않는다. **fallback의 자료 권리도 별도 확인되어야 하며 clean 코드 hash가 자료 권한을 대신하지 않는다.** 미확인 fallback 자료 공개를 허용하는 키트를 만들지 않는다.
 
@@ -16,7 +16,7 @@ C: 기존 `replacement-serve --approved-replace`를 **같은 operation ID로 한
 
 ## 실제 조건과 검증 경계
 
-- 2026-11-10 공식 [Riftbound 문서](https://developer.riotgames.com/docs/riftbound)의 Digital Tools Policy와 [정책](https://developer.riotgames.com/policies/riftbound)을 재확인했다. Riftbound 앱에는 서면 라이선스 또는 승인된 앱 전용 API 키가 필요하다고 명시하며, API가 규칙집 등 자산의 허가된 접근 경로라고 설명한다. 공개 PDF라는 이유로 규칙 전용 서비스가 자동 허가된다고 해석하지 않는다. 앱 허가 참조(appAuthorization, 실제 키 값 아님)와 각 자료의 공개·AI 사용 근거는 서로 구분하여 확인한다. API 승인 대기 상태에서 별도 서면 허가도 없다면 규칙만으로 출시를 우회하지 않는다. AI 전송 권한을 명시적으로 확인하지 못하면 전송은 비활성이다. 이 문서 자체는 법적 허가가 아니다.
+- v020은 검토된 기존 카드 자료를 사용하는 licensed-legacy 경로다. API 키 발급 여부를 기술적 실행 조건으로 강제하지 않는다. 대신 legalReview와 규칙/카드/번역/이미지/사례별 실제 권리 근거가 필요하다. [Riot 정책](https://developer.riotgames.com/policies/riftbound)과 [문서](https://developer.riotgames.com/docs/riftbound)의 앱/자산 조건 적용을 별도로 검토하며 기존 자료가 허가됐다고 임의 판단하지 않는다. API 승인도 RiftNaru의 번역·이미지 이용 허가를 대신하지 않는다. [실제 카드 조사와 복원 범위](LEGACY-CARD-LAUNCH.md)를 참고한다. v030 공식 API 개발은 v020 기동의 선행 의존성이 아니다.
 
 - 사용자 정책: 백업 30일, 운영자 1명 접근, 만료 시 법적 보존·복구 필요 검토 후 삭제. 현재 자동 만료/외부 반출 기능은 없으며 완료됐다고 표시하지 않는다.
 - 규칙 URL·공개/AI 이용 허가 근거, 실제 개인정보처리자 명칭/이메일/법적 고지, VM 외부 보관 장소·분리 복구키 방법은 아직 미확정이다. 대괄호 자리표시자는 입력으로 거절한다. 최초 사용자가 제공한 자리표시자를 실제 정보로 저장하지 않는다.

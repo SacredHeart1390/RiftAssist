@@ -77,7 +77,7 @@ async function isolatedServer(t, plans, options = {}) {
   const dir = path.join(directory, 'knowledge-releases', dataId);
   await fs.mkdir(dir, { recursive: true });
   const hashes = {};
-  for (const [name, value] of Object.entries({ 'rules.json': fixture.rules, 'cards.json': options.cards || syntheticPermittedCards(), 'judge-cases.json': options.judgeCases || [] })) {
+  for (const [name, value] of Object.entries({ 'rules.json': options.rules || fixture.rules, 'cards.json': options.cards || syntheticPermittedCards(), 'judge-cases.json': options.judgeCases || [] })) {
     const bytes = JSON.stringify(value);
     hashes[name] = crypto.createHash('sha256').update(bytes).digest('hex');
     await fs.writeFile(path.join(dir, name), bytes);

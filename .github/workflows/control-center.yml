@@ -334,7 +334,7 @@ jobs:
       - name: Verify uploaded hidden files and execute actual Windows CMD entry without SSH
         run: |
           $out = Join-Path $env:RUNNER_TEMP 'RiftAssist-one-shot-downloaded'
-          node -e "const r=require('./scripts/one-shot-release.cjs').inspect(process.argv[1]);if(!r.blockers.includes('source-not-ready')||!r.blockers.includes('approved-rules-missing'))process.exit(1);console.log(JSON.stringify({uploadedKitVerified:true,deployable:false,blockers:r.blockers}));" $out
+          node -e "const r=require('./scripts/one-shot-release.cjs').inspect(process.argv[1]);if(!r.blockers.includes('source-not-ready')||!r.blockers.includes('approved-legacy-knowledge-missing'))process.exit(1);console.log(JSON.stringify({uploadedKitVerified:true,deployable:false,blockers:r.blockers}));" $out
           if ($LASTEXITCODE -ne 0) { throw 'Downloaded kit failed closed-validation.' }
           $entry = Join-Path $out 'START-RELEASE.cmd'
           $text = ('' | & $entry 2>&1) -join "`n"

@@ -32,18 +32,20 @@ function inspect(root){
   if(raw.installationApproved!==true||raw.inventoryVerified!==true)blockers.push('inventory-not-final');
   const attested=v=>v?.status==='verified'&&v.commit===m.commit&&useful(v.reference);
   for(const n of ['topology','autostart','rights','privacy','backupPolicy','resources','configuration','compatibility','rehearsal','rollbackIsolation'])if(!attested(raw.evidence?.[n]))blockers.push(n+'-not-verified');
-  for(const n of ['appAuthorization','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
-  if(!['written-license','approved-app-specific-api-key'].includes(policy.appAuthorization?.kind))blockers.push('riot-app-authorization-required');
+  for(const n of ['legalReview','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])if(!attested(policy[n]))blockers.push(n+'-not-verified');
+  if(policy.sourceMode!=='licensed-legacy')blockers.push('legacy-card-release-required');
   if(!useful(policy.controllerName)||!useful(policy.privacyEmail)||!/^\S+@\S+\.\S+$/.test(policy.privacyEmail)||!useful(policy.privacyLegalReference))blockers.push('privacy-details-missing');
   if(policy.backupRetentionDays!==30||policy.backupAccessPersons!==1||!useful(policy.externalBackupLocation)||!useful(policy.separateRecoveryKeyCustody))blockers.push('backup-custody-missing');
   const cfg=raw.evidence?.configuration;
   if(policy.aiTransfersApproved!==true&&(cfg?.liveProviderApproved!==false||cfg?.generationEnabled!==false))blockers.push('unapproved-ai-must-be-off');
   if(!Number.isSafeInteger(m.ci?.controlRunId)||!Number.isSafeInteger(m.ci?.rulesRunId)||m.ci?.commit!==m.commit||m.ci?.requiredJobsSucceeded!==true)blockers.push('exact-ci-missing');
-  if(!m.knowledgeFiles||Object.keys(m.knowledgeFiles).length!==5)blockers.push('approved-rules-missing');
+  if(!m.knowledgeFiles||Object.keys(m.knowledgeFiles).length!==5)blockers.push('approved-legacy-knowledge-missing');
   else{
     const k=require(path.join(root,'capsule/site/tools/replacement-ubuntu.cjs')).knowledgeHash(path.join(root,'knowledge'));
-    const manifest=json(k.directory,'manifest.json'),cards=json(k.directory,'cards.json'),cases=json(k.directory,'judge-cases.json'),review=manifest.sources?.minimumRelease;
-    if(k.hash!==raw.knowledgeHash||review?.mode!=='approved-rules-only'||review.reviewCommit!==m.commit||review.rulesSha256!==hash(fs.readFileSync(path.join(k.directory,'rules.json')))||cards.cards?.length!==0||cases.length!==0||!useful(review.reviewReference))blockers.push('knowledge-scope');
+    const manifest=json(k.directory,'manifest.json'),cards=json(k.directory,'cards.json');
+    const access=require(path.join(root,'capsule/candidate/src/legacy-card-release.js')).reviewScope(manifest);
+    if(k.hash!==raw.knowledgeHash||!access||access.commit!==m.commit||!cards.cards?.length||manifest.sources?.minimumRelease)blockers.push('legacy-knowledge-scope');
+    if(policy.aiTransfersApproved===true&&(!access?.rulesModelInput||!access?.cardsModelInput))blockers.push('legacy-ai-rights-missing');
     if(Object.entries(m.knowledgeFiles).some(([n,h])=>actual['knowledge/'+n]!==h))fail('knowledge-binding');
   }
   return{m,raw,blockers:[...new Set(blockers)]};

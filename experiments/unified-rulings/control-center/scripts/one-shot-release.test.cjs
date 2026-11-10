@@ -10,12 +10,10 @@ async function fixture(t,{ready=true}={}){
   raw.candidateData=raw.root+'/data/v0.2.0';raw.candidateCode=raw.root+'/releases/v0.2.0';raw.launcher=raw.root+'/tools/replacement-launch.cjs';
   for(const entry of Object.values(raw.evidence))Object.assign(entry,{status:'verified',commit,reference:'synthetic test review only'});
   raw.evidence.configuration.generationEnabled=false;raw.evidence.configuration.liveProviderApproved=false;
-  const knowledge=path.join(temp,'knowledge'),baseRules=require('../../tests/helpers/isolated-server.cjs').fixture.rules,version=baseRules.find(r=>r.documentId==='tournament-rules')?.version||'synthetic',rules=[...baseRules,...['703.4.a.5','703.4.c.5'].map(ruleId=>({id:'tournament-rules:'+ruleId,ruleId,documentId:'tournament-rules',version,officialTextEn:'Synthetic deck box fixture 703.4.a.5 context; not an official rule.'}))];
-  const k=await require(path.join(release,'src/minimum-release')).stageMinimumRules(knowledge,{rules,review:{status:'verified',commit,reference:'synthetic test attestation only',rulesSha256:P.digest(rules),display:true,modelInput:true}});
-  fs.writeFileSync(path.join(knowledge,'knowledge-releases/active.json'),JSON.stringify({releaseId:k.manifest.releaseId}));
+  const knowledge=path.join(temp,'knowledge');await require('../../tests/helpers/legacy-knowledge.cjs').prepare(path.join(temp,'legacy-source'),knowledge,{commit});
   raw.knowledgeHash=require('../staging/replacement-ubuntu.cjs').knowledgeHash(knowledge).hash;
   const inventory=path.join(temp,'inventory.json');fs.writeFileSync(inventory,JSON.stringify(raw));
-  const policy=B.reviewPolicy(commit);for(const n of ['appAuthorization','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])policy[n]={status:'verified',commit,reference:'synthetic test policy only'};policy.appAuthorization.kind='written-license';
+  const policy=B.reviewPolicy(commit);for(const n of ['legalReview','rulesRights','rollbackRights','privacy','backupCustody','sourceReadyApproval'])policy[n]={status:'verified',commit,reference:'synthetic test policy only'};
   Object.assign(policy,{controllerName:'Synthetic Test Operator',privacyEmail:'synthetic@example.invalid',privacyLegalReference:'Synthetic nonproduction fixture',externalBackupLocation:'synthetic separate device',separateRecoveryKeyCustody:'synthetic separate vault'});
   const node=path.join(temp,'fixture-node'),license=path.join(temp,'license');fs.writeFileSync(node,'Synthetic binary placeholder, never executed.');fs.writeFileSync(license,'Synthetic license fixture.');
   const root=path.join(temp,'kit'),report=B.build({capsule,inventory,knowledge,policy,node,license,destination:root,ci:{commit,controlRunId:1,rulesRunId:2,requiredJobsSucceeded:true}});

@@ -14,6 +14,7 @@ function createRiotAdapter({ mode = 'mock', config = {}, fetchImpl = globalThis.
     },
     async collect() {
       if (mode === 'mock') { mockCatalog.cards.forEach(card => assertPublication(card, 'mock')); return structuredClone(mockCatalog); }
+      if(process.env.RIFTASSI_ALLOW_PRODUCTION_START==='true')throw Object.assign(new Error('Official API development belongs to v0.3.0; v0.2.0 production uses the legacy catalog.'),{code:'official-api-deferred-to-v030'});
       // Neither approval nor finding a key can automatically turn this mode on.
       if (config.enabled !== true || !config.approvedAppReference || !config.mappingVersion || typeof decodeOfficial !== 'function') {
         throw new Error('A reviewed endpoint/schema mapper and explicit app approval configuration are required.');

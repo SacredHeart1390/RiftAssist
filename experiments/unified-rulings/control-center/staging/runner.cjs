@@ -10,6 +10,12 @@ async function main(file) {
   const env={PUBLIC_ORIGIN:'https://localhost:'+c.proxyPort,PATH:process.env.PATH||'/usr/bin:/bin',...(process.env.SystemRoot?{SystemRoot:process.env.SystemRoot}:{}),RIFTASSI_DATA_ROOT:c.root,
     RIFTASSI_EXTERNAL_MODE:'mock',RIFTASSI_CARD_POLICY:'restricted',OPENAI_API_KEY:'development-mock-only',OPENAI_GENERATION_ENABLED:'true',LOG_CONTENT:'false',
     MANAGER_PORT:String(c.ports[0]),APP_PORT:String(c.ports[1]),PUBLIC_PORT:String(c.ports[1])};
+  if(c.version==='v0.2.0'){
+    const active=readJSON(path.join(c.root,'knowledge-releases/active.json'));
+    if(!require(path.join(c.source,'src/knowledge-provider.js')).safeId(active.releaseId))fail('knowledge');
+    const reviewed=require(path.join(c.source,'src/legacy-card-release.js')).reviewScope(readJSON(path.join(c.root,'knowledge-releases',active.releaseId,'manifest.json')));
+    if(reviewed)env.RIFTASSI_CARD_POLICY='legacy-reviewed';
+  }
   if(c.version==='v0.1.7') {
     const child=fork(path.join(c.source,'src/server.js'),[],{cwd:c.root,env:{...env,PORT:String(c.ports[1]),APP_RELEASE_ID:'v0.1.7'},stdio:['ignore','ignore','ignore','ipc']});
     for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>{if(child.connected)child.send({type:'shutdown'});else child.kill('SIGTERM');});

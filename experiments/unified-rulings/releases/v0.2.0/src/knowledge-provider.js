@@ -26,11 +26,14 @@ function validateRules(items) {
 function snapshot(releaseId, evidence, cards, manifest, judgeCases=[]) {
   validateRules(evidence);
   const cardCatalog = normalizeCatalog(cards);
+  const legacyReview=require('./legacy-card-release').reviewScope(manifest);
   if(manifest.sources?.minimumRelease?.mode==='approved-rules-only'){
     if(cardCatalog.cards.length||judgeCases.length||manifest.sources.minimumRelease.rulesSha256!==manifest.hashes?.['rules.json'])throw new Error('Minimum release scope does not match the reviewed rules-only dataset.');
   }
   return Object.freeze({
-    releaseId, evidence, cardCatalog, manifest, judgeCases, index: buildIndex(evidence), judgeIndex: buildJudgeIndex(judgeCases),
+    releaseId, evidence, cardCatalog, manifest, legacyReview,
+    judgeCases:legacyReview&&!legacyReview.judgeCases?[]:judgeCases,
+    index: buildIndex(evidence), judgeIndex: buildJudgeIndex(legacyReview&&!legacyReview.judgeCases?[]:judgeCases),
     evidenceCountByDocument:evidence.reduce((counts,item)=>{counts[item.documentId]=(counts[item.documentId]||0)+1;return counts;},{}),
   });
 }

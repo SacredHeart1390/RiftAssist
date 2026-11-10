@@ -25,6 +25,7 @@ function build({capsule,inventory,knowledge,policy,node,license,destination,ci})
   }
   fs.writeFileSync(path.join(destination,'START-RELEASE.cmd'),'@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\nset "NODE_OPTIONS="\r\nset "NODE_PATH="\r\nset "NODE_TLS_REJECT_UNAUTHORIZED=1"\r\n"%~dp0runtime\\node.exe" --disable-proto=throw "%~dp0one-shot-release.cjs"\r\nset "RIFT_EXIT=%ERRORLEVEL%"\r\necho.\r\necho Keep the operation ID. Failed writes are NEVER automatically retried.\r\npause\r\nexit /b %RIFT_EXIT%\r\n');
   fs.copyFileSync(path.join(__dirname,'../ONE-SHOT-LAUNCH.md'),path.join(destination,'READ-ME.md'));
+  fs.copyFileSync(path.join(__dirname,'../LEGACY-CARD-LAUNCH.md'),path.join(destination,'LEGACY-CARD-LAUNCH.md'));
   const manifest={protocol:'riftassist-one-shot-1',target:'azureuser@20.222.152.195',commit:raw.commit,siteId:raw.siteId,
     inventoryHash:hash(JSON.stringify(raw)),inventoryFileSha256:hash(fs.readFileSync(inventory)),planSha256:proof.planSha256,
     ci,knowledgeFiles:client.files(path.join(destination,'knowledge')),files:client.files(destination)};
@@ -35,7 +36,7 @@ function build({capsule,inventory,knowledge,policy,node,license,destination,ci})
 }
 function reviewPolicy(commit){
   const status={status:'unverified',commit,reference:''};
-  return{appAuthorization:{...status,kind:''},rulesRights:{...status},rollbackRights:{...status},privacy:{...status},backupCustody:{...status},sourceReadyApproval:{...status},
+  return{sourceMode:'licensed-legacy',legalReview:{...status},rulesRights:{...status},rollbackRights:{...status},privacy:{...status},backupCustody:{...status},sourceReadyApproval:{...status},
     controllerName:'',privacyEmail:'',privacyLegalReference:'',backupRetentionDays:30,backupAccessPersons:1,
     externalBackupLocation:'',separateRecoveryKeyCustody:'',aiTransfersApproved:false};
 }
