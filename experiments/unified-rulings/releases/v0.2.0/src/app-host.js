@@ -17,7 +17,7 @@ function releasePath(root, id, staging = false) {
   const manifest = JSON.parse(fs.readFileSync(path.join(folder, 'app-release.json'), 'utf8'));
   const isolated = staging && require('./environment').assertEnvironment(root) === 'staging';
   if (isolated) require('./staging-policy').stagingPorts(root);
-  if (manifest.releaseId !== id || manifest.dataSchema !== 2 || (isolated ? manifest.ready !== false : manifest.ready !== true)) throw new Error('준비가 완료되지 않은 앱 버전입니다.');
+  if (manifest.releaseId !== id || manifest.dataSchema !== 2 || (isolated ? manifest.ready !== false : manifest.ready !== true && !require('./environment').technicalReplacement(manifest))) throw new Error('준비가 완료되지 않은 앱 버전입니다.');
   return folder;
 }
 function createAppHost({ root, port = 3201, workerPorts = [3211, 3212], staging = false, onFailure = () => {} }) {

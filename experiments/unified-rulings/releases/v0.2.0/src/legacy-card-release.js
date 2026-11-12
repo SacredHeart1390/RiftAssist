@@ -39,4 +39,16 @@ async function prepareLegacyKnowledge(sourceRoot,destination,review){
   return{releaseId,cards:cards.cards.length,catalogVersion:cards.version,hashes,access,
     rawDatasetBytesPreserved:true,sourcePointerChanged:false,sourceDataChanged:false,userDataRead:false,authorizedToDeploy:false};
 }
-module.exports={mode,flags,reviewScope,prepareLegacyKnowledge};
+// Existing exposure ceiling, not a license or a verified rights review.
+function preservedScope(manifest, manifestSha256) {
+  if(process.env.RIFTASSI_PUBLICATION_MODE!=='preserve-existing')return null;
+  const pin=process.env.RIFTASSI_LEGACY_BASELINE_SHA256;
+  if(!/^[a-f0-9]{64}$/.test(pin||'')||manifestSha256!==pin||manifest.sources?.legacyRelease
+    ||manifest.sources?.minimumRelease||manifest.sources?.development
+    ||!names.every(n=>/^[a-f0-9]{64}$/.test(manifest.hashes?.[n]||'')))
+    throw Error('Existing deployment dataset does not match the pinned baseline.');
+  return Object.freeze({rulesDisplay:true,rulesModelInput:true,cardsDisplay:true,cardsModelInput:true,
+    koreanDisplay:true,koreanModelInput:true,images:false,judgeCases:true,externalJudge:false,sourceTranslations:false,
+    basis:'existing-deployment-ceiling',rightsVerified:false,reviewHash:pin});
+}
+module.exports={mode,flags,reviewScope,prepareLegacyKnowledge,preservedScope};

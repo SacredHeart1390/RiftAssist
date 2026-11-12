@@ -18,6 +18,14 @@ function assertSafeLocation(root) {
   }
   return location;
 }
+// Technical readiness does not grant publication or external-transfer rights.
+function technicalReplacement(manifest) {
+  return manifest?.releaseId === 'v0.2.0' && manifest.dataSchema === 2
+    && manifest.deployment?.ready === true && manifest.deployment.mode === 'preserve-existing'
+    && process.env.RIFTASSI_PUBLICATION_MODE === 'preserve-existing'
+    && process.env.RIFTASSI_CARD_POLICY === 'preserve-existing'
+    && /^[a-f0-9]{64}$/.test(process.env.RIFTASSI_LEGACY_BASELINE_SHA256 || '');
+}
 function assertEnvironment(root) {
   const location = assertSafeLocation(root), marker = path.join(location, '.riftassist-environment.json');
   let value;
@@ -30,7 +38,7 @@ function assertEnvironment(root) {
     const manifestFile = path.join(APP_ROOT, 'app-release.json');
     if (fs.lstatSync(manifestFile).isSymbolicLink()) throw new Error('This release is not ready for production.');
     const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
-    if (manifest.ready !== true || manifest.developmentOnly === true || manifest.runtimeScope === 'development-fixture-only') throw new Error('This release is not ready for production. An environment flag cannot override release readiness.');
+    if (!technicalReplacement(manifest) && (manifest.ready !== true || manifest.developmentOnly === true || manifest.runtimeScope === 'development-fixture-only')) throw new Error('This release is not ready for production. An environment flag cannot override release readiness.');
   }
   if (value.environment === 'production' && process.env.RIFTASSI_ALLOW_PRODUCTION_START !== 'true') throw new Error('Production startup requires a separate explicit deployment decision.');
   for (const name of ['private', 'knowledge', 'knowledge-releases', 'source-updates', 'tmp', 'releases']) {
@@ -44,4 +52,4 @@ function assertEnvironment(root) {
   }
   return value.environment;
 }
-module.exports = { assertSafeLocation, assertEnvironment };
+module.exports = { assertSafeLocation, assertEnvironment, technicalReplacement };

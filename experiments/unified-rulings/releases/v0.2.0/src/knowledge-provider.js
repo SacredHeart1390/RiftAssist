@@ -23,10 +23,11 @@ function validateRules(items) {
     }
   }
 }
-function snapshot(releaseId, evidence, cards, manifest, judgeCases=[]) {
+function snapshot(releaseId, evidence, cards, manifest, judgeCases=[], manifestSha256=null) {
   validateRules(evidence);
   const cardCatalog = normalizeCatalog(cards);
-  const legacyReview=require('./legacy-card-release').reviewScope(manifest);
+  const legacy=require('./legacy-card-release');
+  const legacyReview=legacy.preservedScope(manifest,manifestSha256)||legacy.reviewScope(manifest);
   if(legacyReview&&!cardCatalog.cards.length)throw new Error('Legacy card release must retain its card catalog.');
   if(manifest.sources?.minimumRelease?.mode==='approved-rules-only'){
     if(cardCatalog.cards.length||judgeCases.length||manifest.sources.minimumRelease.rulesSha256!==manifest.hashes?.['rules.json'])throw new Error('Minimum release scope does not match the reviewed rules-only dataset.');
@@ -41,7 +42,8 @@ function snapshot(releaseId, evidence, cards, manifest, judgeCases=[]) {
 async function loadRelease(root, id) {
   if (!safeId(id)) throw new Error('Invalid knowledge release ID.');
   const dir=path.join(root,'knowledge-releases',id);
-  const manifest=JSON.parse(await fs.readFile(path.join(dir,'manifest.json'),'utf8'));
+  const manifestBytes=await fs.readFile(path.join(dir,'manifest.json'));
+  const manifest=JSON.parse(manifestBytes);
   if (manifest.schemaVersion!==1 || manifest.releaseId!==id || manifest.validationStatus!=='validated') throw new Error('Unvalidated knowledge release.');
   if (manifest.effectiveFrom && (!Number.isFinite(Date.parse(manifest.effectiveFrom)) || Date.parse(manifest.effectiveFrom)>Date.now())) throw new Error('Release is not effective yet.');
   if (manifest.compatibleSchema!==2) throw new Error('Incompatible knowledge schema.');
@@ -52,7 +54,7 @@ async function loadRelease(root, id) {
   };
   const [rules,cards,judge]=await Promise.all([read('rules.json'),read('cards.json'),read('judge-cases.json')]);
   if (!Array.isArray(judge)||judge.length>100000)throw new Error('Invalid Q&A snapshot.');
-  return snapshot(id,rules,cards,manifest,judge);
+  return snapshot(id,rules,cards,manifest,judge,digest(manifestBytes));
 }
 function createKnowledgeProvider(root) {
   let active=null, timer=null, polling=false, lastError=null;

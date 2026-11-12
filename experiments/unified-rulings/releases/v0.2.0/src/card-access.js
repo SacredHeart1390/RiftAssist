@@ -6,16 +6,17 @@ const { officialURL } = require('./card-publication');
 const VERSION = 'card-access-3';
 
 function createCardAccess(configuredMode, { allowMock = false } = {}) {
-  const mode = ['verified-only','legacy-reviewed'].includes(configuredMode) ? configuredMode : 'restricted';
-  const configurationValid = configuredMode == null || configuredMode === '' || ['restricted', 'verified-only','legacy-reviewed'].includes(configuredMode);
+  const mode = ['verified-only','legacy-reviewed','preserve-existing'].includes(configuredMode) ? configuredMode : 'restricted';
+  const configurationValid = configuredMode == null || configuredMode === '' || ['restricted', 'verified-only','legacy-reviewed','preserve-existing'].includes(configuredMode);
   const views = new WeakMap();
   function snapshot(original) {
     if (views.has(original)) return views.get(original);
     const raw = original.cardCatalog;
-    const legacy=mode==='legacy-reviewed'?original.legacyReview:null;
+    const legacy=['legacy-reviewed','preserve-existing'].includes(mode)?original.legacyReview:null;
+    if(mode==='preserve-existing'&&legacy?.basis!=='existing-deployment-ceiling')throw Error('Pinned existing deployment scope required.');
     // An operator must verify the app's approval/license before enabling verified-only.
     // These per-card flags are necessary technical checks, not proof of legal permission.
-    const cards = mode === 'restricted' || mode==='legacy-reviewed'&&!legacy ? [] : raw.cards.filter(card => legacy ?
+    const cards = mode === 'restricted' || ['legacy-reviewed','preserve-existing'].includes(mode)&&!legacy ? [] : raw.cards.filter(card => legacy ?
       card.status!=='withdrawn'&&card.source.kind==='riftnaru-public'&&card.source.url&&card.source.version&&legacy.cardsDisplay
       &&(card.status!=='preview-unreleased'||card.publication.publiclyRevealed&&officialURL(card.publication.url)&&card.publication.version)
       :
