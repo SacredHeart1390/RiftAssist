@@ -125,7 +125,7 @@
     "src/legacy-card-release.js": "e611c741bb14da36271d49e594cea3ee86b37e53580c59c922e728667ea33d65",
     "src/release-version.js": "5a739eab9c62857b2f9a7d746b48fa91be31ed0d19f72b0652a5b879eb723f73",
     "scripts/bump-patch.cjs": "efd3194721c2952379fc5fa02bb86d0d901f6235e9fc65c7417be39ac8fa2b61",
-    "src/riftnaru-refresh.js": "f933417e3429cd1137e3ff71955c988de32b38b6e225804a87ce118350985a1c",
+    "src/riftnaru-refresh.js": "041c2067be5470575696f5492741be9ceefca3c01b8a8df4d204fd102425317d",
     "scripts/sync-riftnaru.cjs": "1c0cec4357acfc5aa376bcdf09e0c540ec0a6c3f1af08ae71b2d1fa3953c95da",
     "src/riftnaru-auto-release.js": "7a0adf0af596e5c925b759006521e25cd9c4fdac0d32d066236e9f82d3892b9b",
     "src/riftnaru-http.js": "986031bba6f359463b4962a7da9969882f3f02c51254aa4499ba82a29b641ef7",

@@ -21,7 +21,7 @@ function mergeRiftnaruCatalog(previous,observation){
       translationStatus:'unofficial-riftnaru',textVerified:false,permissions:{display:false,modelInput:false},
       prototypeUse:{enabled:true,modelInput:item.textComplete===true,redistribution:false,rightsConfirmed:false},
       source:{kind:'riftnaru-public',label:'Rift Naru 공개 카드 자료 · 공식 원문 대조 전',url:item.sourceUrl,
-        version,fetchedAt:item.fetchedAt||observation.capturedAt,updatedAt:item.updatedAt||observation.sourceSyncedAt||'',verification:'observed-public-page',
+        version,fetchedAt:item.fetchedAt||observation.capturedAt,updatedAt:item.updatedAt!==undefined?item.updatedAt:observation.sourceSyncedAt||'',verification:'observed-public-page',
         cardId:item.cardId,cardVersion:item.printingId}};
     const validated=normalizeCatalog({schemaVersion:1,version,cards:[card]}).cards[0];
     if(item.imageUrl&&!validated.imageUrl)throw Error('Unapproved image host.');
