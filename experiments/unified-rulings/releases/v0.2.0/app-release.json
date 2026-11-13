@@ -131,7 +131,7 @@
     "src/riftnaru-http.js": "986031bba6f359463b4962a7da9969882f3f02c51254aa4499ba82a29b641ef7",
     "src/riftnaru-source.js": "dd8f1e9b0b424fc4c3ee80bf8aac29158c54f382d2a65e8009a0431ed01db8a0",
     "src/riftnaru-sync-status.js": "bc9b34b42f435bc325b94b8d15100596c237e3e082d4445bc398348dd47244aa",
-    "src/riftnaru-sync.js": "4690d0c2955c6bf2a4b74ff5c0168fc4ac5070d4e455783a8079182b57d5550c"
+    "src/riftnaru-sync.js": "0600f8dac5a41e5237ec5cf4d37a828a3ae8c0de6db912700741e64177ac009c"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,

@@ -19,6 +19,7 @@ TimeoutStopSec=20s
 CPUQuota=20%
 MemoryHigh=256M
 MemoryMax=320M
+MemorySwapMax=128M
 TasksMax=32
 Nice=10
 IOSchedulingClass=idle

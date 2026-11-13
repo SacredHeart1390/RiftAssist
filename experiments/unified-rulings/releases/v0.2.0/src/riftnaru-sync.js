@@ -54,6 +54,7 @@ async function runSync({root,stateDir,seedFile,source=null,now=()=>new Date(),re
   state.sourceBlocked=false;state.nextEligibleAt=null;
   if(readOnly){state.batch=null;await save();return finish('checked-read-only',{wouldChange:delta.changed,total:index.cards.length});}
   if(!delta.changed){for(const row of rows)state.cards[row.id].publishedHash=S.fingerprint(row);state.batch=null;await save();return finish('unchanged',{total:index.cards.length});}
+  const disk=await fs.statfs(stateDir);if(Number(disk.bavail)*Number(disk.bsize)<(policy.minFreeBytes||1024*1024*1024))throw Error('sync-disk-budget');
   await backupRelease(root,stateDir,current.manifest.releaseId);
   const staged=await A.stageAutomatic(root,merged.catalog,A.hash(observation),A.regular(policy.signingKeyFile,32768));state.intent=staged;await save();
   try{

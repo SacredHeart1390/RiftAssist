@@ -3,7 +3,7 @@
   "releaseFamily": "v0.2.0",
   "scope": "mock-local-control-center",
   "files": {
-    "app-release.json": "9919c4a24add0bb5685f5e1ae5da03c8db8e9d7f8c3356475a41d562c58f9dd2",
+    "app-release.json": "7142af6ee7cc9ad4d10d539c5c8a036dd11875f02e23a2dc7dfeae34948ddabe",
     "dev-fixtures/mock-cards.json": "cbc3a8073658783bdbd283396e95b6f55e4a738d0d8079b139da0dea3473f7f0",
     "dev-fixtures/rules.json": "7a9804933595c88f8363d0402e88aa5885dfccc4b35477d85ccaf09eb8440249",
     "manager-ui/index.html": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804",
@@ -85,7 +85,7 @@
     "src/riftnaru-refresh.js": "f933417e3429cd1137e3ff71955c988de32b38b6e225804a87ce118350985a1c",
     "src/riftnaru-source.js": "dd8f1e9b0b424fc4c3ee80bf8aac29158c54f382d2a65e8009a0431ed01db8a0",
     "src/riftnaru-sync-status.js": "bc9b34b42f435bc325b94b8d15100596c237e3e082d4445bc398348dd47244aa",
-    "src/riftnaru-sync.js": "4690d0c2955c6bf2a4b74ff5c0168fc4ac5070d4e455783a8079182b57d5550c",
+    "src/riftnaru-sync.js": "0600f8dac5a41e5237ec5cf4d37a828a3ae8c0de6db912700741e64177ac009c",
     "src/riot-adapter.js": "0a583fffd92b052fb588712e060d56c316cef95eae3d7c1c871a3f99c9374906",
     "src/riot-converter.js": "d35dc7e6726c380af9828793831d267deb2aa335ce7131cfd9f31a842b59d285",
     "src/riot-snapshot.js": "186c0572707d53ddafb9204bc327f3c99211134e853f215c8648a23ed68dd0ca",
