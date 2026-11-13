@@ -127,8 +127,6 @@
     "scripts/bump-patch.cjs": "efd3194721c2952379fc5fa02bb86d0d901f6235e9fc65c7417be39ac8fa2b61",
     "src/riftnaru-refresh.js": "f933417e3429cd1137e3ff71955c988de32b38b6e225804a87ce118350985a1c",
     "scripts/sync-riftnaru.cjs": "1c0cec4357acfc5aa376bcdf09e0c540ec0a6c3f1af08ae71b2d1fa3953c95da",
-    "deploy/riftassist-riftnaru-sync.service": "1f6e5bfda29c3df30fd3bb9ce012af34b6d0d0f88cd7a3b6346f1dd0f30c9e7d",
-    "deploy/riftassist-riftnaru-sync.timer": "55e9d3aea1564d8b185dd45236033d0ef76c3c45b36e26fdc5ddc02286575020",
     "src/riftnaru-auto-release.js": "7a0adf0af596e5c925b759006521e25cd9c4fdac0d32d066236e9f82d3892b9b",
     "src/riftnaru-http.js": "986031bba6f359463b4962a7da9969882f3f02c51254aa4499ba82a29b641ef7",
     "src/riftnaru-source.js": "dd8f1e9b0b424fc4c3ee80bf8aac29158c54f382d2a65e8009a0431ed01db8a0",

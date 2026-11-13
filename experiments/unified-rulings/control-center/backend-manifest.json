@@ -3,7 +3,7 @@
   "releaseFamily": "v0.2.0",
   "scope": "mock-local-control-center",
   "files": {
-    "app-release.json": "d949fc71cc201017a417384c808a792c4cfa1222d235b2a085fcef278692f045",
+    "app-release.json": "9919c4a24add0bb5685f5e1ae5da03c8db8e9d7f8c3356475a41d562c58f9dd2",
     "dev-fixtures/mock-cards.json": "cbc3a8073658783bdbd283396e95b6f55e4a738d0d8079b139da0dea3473f7f0",
     "dev-fixtures/rules.json": "7a9804933595c88f8363d0402e88aa5885dfccc4b35477d85ccaf09eb8440249",
     "manager-ui/index.html": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804",
