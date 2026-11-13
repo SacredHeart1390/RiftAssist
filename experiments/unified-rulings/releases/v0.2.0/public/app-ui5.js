@@ -245,7 +245,7 @@ try {
 
 function refreshHealth(){return fetch('/api/health', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Connection failed'); return data; }).then((data) => {
   if (!['development', 'staging', 'production'].includes(data.environment) || !['mock', 'live', 'test'].includes(data.providerMode)) throw new Error('Invalid server runtime status');
-  state.versionMismatch=data.version!=='0.2.0';
+  state.versionMismatch=(data.releaseFamily || 'v'+data.version)!=='v0.2.0' || !/^0\.2\.\d+$/.test(data.version);
   if (typeof data.version === 'string' && /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(data.version)) {
     document.querySelectorAll('[data-app-version]').forEach(node => { node.textContent = `v${data.version}`; });
   }

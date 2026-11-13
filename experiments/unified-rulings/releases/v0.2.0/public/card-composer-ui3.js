@@ -54,6 +54,7 @@
       this.frozen = false;
       this.composing = false;
       this.catalog = null;
+      this.failedImages = new Set();
       this.rememberedIds = [];
       try { const saved=JSON.parse(sessionStorage.getItem('riftassi-card-ids')||'[]'); if(Array.isArray(saved))this.rememberedIds=saved.filter(id=>typeof id==='string'&&/^[a-zA-Z0-9:._-]{1,120}$/.test(id)).slice(-64); } catch { /* optional per-tab memory */ }
       this.excludedIds = new Set();
@@ -333,15 +334,19 @@
     }
 
     thumbnail(card) {
-      const placeholder = element('span', 'card-thumbnail-placeholder', '◇');
-      placeholder.setAttribute('aria-hidden', 'true');
-      if (!card.imageUrl || !/^https:\/\//iu.test(card.imageUrl)) return placeholder;
+      const name=this.name(card);
+      const placeholder = element('span', 'card-thumbnail-placeholder');
+      placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',name);placeholder.title=name;
+      const short=name.split(/\s*[,，:]\s*|\s+[-–—]\s+/u)[0];
+      placeholder.append(element('strong','',Array.from(short).slice(0,2).join('')),element('small','',String(card.code||card.set||card.type||'').slice(0,8)));
+      if (!card.imageUrl || !/^https:\/\//iu.test(card.imageUrl) || this.failedImages.has(card.imageUrl)) return placeholder;
       const image = element('img', 'card-thumbnail');
-      image.alt = '';
+      image.alt = name;
+      image.decoding = 'async';
       image.loading = 'lazy';
       image.referrerPolicy = 'no-referrer';
       image.src = card.imageUrl;
-      image.addEventListener('error', () => image.replaceWith(placeholder), { once: true });
+      image.addEventListener('error', () => { this.failedImages.add(card.imageUrl); image.replaceWith(placeholder); }, { once: true });
       return image;
     }
 

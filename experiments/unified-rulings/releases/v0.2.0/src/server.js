@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 const { searchCards, singleCharacterNames } = require('./cards');
 const { AsyncLocalStorage } = require('node:async_hooks');
 const { APP_ROOT, DATA_ROOT } = require('./paths');
+const releaseVersion = require('./release-version');
 const environment = require('./environment').assertEnvironment(DATA_ROOT);
 if (environment === 'staging') require('./staging-policy').stagingPorts(DATA_ROOT);
 const { fetchExternal: fetch, providerMode } = require('./external-services');
@@ -702,11 +703,11 @@ async function initialize() {
       try { access.session(req, res); } catch (error) { sendJson(res, error.statusCode || 401, { error: error.message }); return; }
     }
     if(['GET','HEAD'].includes(req.method)&&url.pathname==='/robots.txt'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?'':'User-agent: *\nAllow: /\nDisallow: /api/\n');return;}
-    if(req.method==='GET'&&url.pathname==='/api/release'){sendJson(res,200,{releaseId:'v0.2.0',version:'0.2.0'});return;}
+    if(req.method==='GET'&&url.pathname==='/api/release'){sendJson(res,200,{...releaseVersion,compatibilityReleaseId:'v0.2.0'});return;}
     if (req.method === 'GET' && url.pathname === '/api/health') {
       try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
       sendJson(res, 200, {
-        ok: true, version: '0.2.0', appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
+        ok: true, version: releaseVersion.version, releaseFamily: releaseVersion.releaseFamily, appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
         features: { imageAttachments: false, sourceTranslations:!minimumScope()&&legacyScope()?.sourceTranslations!==false, thirdPartyCases:!minimumScope()&&legacyScope()?.judgeCases!==false },
         retention: { questionDays: 7, metadataDays: 30, reportDays: 90, imagesStored: false },
         aiConfigured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null,

@@ -2,18 +2,50 @@ name: RiftAssist rules tests
 
 on:
   push:
+    paths:
+      - 'experiments/unified-rulings/releases/**'
+      - 'experiments/unified-rulings/tests/**'
+      - '.github/workflows/rules-tests.yml'
   pull_request:
+    paths:
+      - 'experiments/unified-rulings/releases/**'
+      - 'experiments/unified-rulings/tests/**'
+      - '.github/workflows/rules-tests.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: rules-tests-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  event-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          let run=true;
+          if(process.env.GITHUB_EVENT_NAME==='push'){
+            const [owner]=process.env.GITHUB_REPOSITORY.split('/');
+            const url='https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/pulls?state=open&head='+encodeURIComponent(owner+':'+process.env.GITHUB_REF_NAME)+'&per_page=1';
+            const r=await fetch(url,{headers:{Authorization:'Bearer '+process.env.GH_TOKEN}});
+            if(!r.ok)throw Error('PR state check failed');run=(await r.json()).length===0;
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'run='+run+'\n');
+          JS
   rules-tests:
+    needs: event-gate
+    if: needs.event-gate.outputs.run == 'true'
     name: Rules regression
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -38,6 +70,8 @@ jobs:
         run: npm run test:legacy
 
   browser-compatibility:
+    needs: event-gate
+    if: needs.event-gate.outputs.run == 'true'
     name: Browser mobile PWA and maintenance compatibility
     runs-on: ubuntu-24.04
     timeout-minutes: 10

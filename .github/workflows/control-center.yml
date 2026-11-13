@@ -2,15 +2,62 @@ name: Control Center validation
 on:
   push:
     branches: [feature/riot-api-v0.2, release/v0.2.0, develop/v0.3.0]
+    paths:
+      - 'experiments/unified-rulings/control-center/src/**'
+      - 'experiments/unified-rulings/control-center/tests/**'
+      - 'experiments/unified-rulings/control-center/scripts/**'
+      - 'experiments/unified-rulings/control-center/staging/**'
+      - 'experiments/unified-rulings/control-center/deployment/**'
+      - '.github/workflows/control-center.yml'
   pull_request:
+    paths:
+      - 'experiments/unified-rulings/control-center/src/**'
+      - 'experiments/unified-rulings/control-center/tests/**'
+      - 'experiments/unified-rulings/control-center/scripts/**'
+      - 'experiments/unified-rulings/control-center/staging/**'
+      - 'experiments/unified-rulings/control-center/deployment/**'
+      - '.github/workflows/control-center.yml'
   workflow_dispatch:
+    inputs:
+      package:
+        type: boolean
+        default: false
+        description: Explicit portable/package validation
+      upload_artifacts:
+        type: boolean
+        default: false
+        description: Explicitly allow temporary Actions storage (formal packages belong in GitHub Releases)
 permissions:
   contents: read
+  pull-requests: read
 concurrency:
   group: control-center-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
+  event-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          let run=true;
+          if(process.env.GITHUB_EVENT_NAME==='push'){
+            const [owner]=process.env.GITHUB_REPOSITORY.split('/');
+            const url='https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/pulls?state=open&head='+encodeURIComponent(owner+':'+process.env.GITHUB_REF_NAME)+'&per_page=1';
+            const r=await fetch(url,{headers:{Authorization:'Bearer '+process.env.GH_TOKEN}});
+            if(!r.ok)throw Error('PR state check failed');run=(await r.json()).length===0;
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'run='+run+'\n');
+          JS
   windows-validation:
+    needs: event-gate
+    if: needs.event-gate.outputs.run == 'true'
     runs-on: windows-latest
     timeout-minutes: 15
     defaults:
@@ -81,19 +128,24 @@ jobs:
       - name: Load WPF window on the Windows runner
         run: dotnet run --project tests/RiftAssist.ControlCenter.WpfSmoke/RiftAssist.ControlCenter.WpfSmoke.csproj --configuration Release -- "$env:RUNNER_TEMP/control-center-smoke"
       - name: Build portable development package
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: |
           $node = (Get-Command node).Source
           ./scripts/Publish-Windows.ps1 -NodePath $node -OutputDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-win-x64"
       - name: Verify ZIP root layout and extract the exact package for execution tests
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: |
           ./scripts/Test-PackageLayout.ps1 -PackageDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-win-x64" -ArchivePath "$env:RUNNER_TEMP/RiftAssist-ControlCenter-v0.2.0-win-x64.zip" -ExtractDirectory "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified" -ReportPath "$env:RUNNER_TEMP/control-center-layout.json"
       - name: Verify packaged backend and runtime through the C# client
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: |
           $bundle = "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified"
           dotnet run --project tests/RiftAssist.ControlCenter.Tests/RiftAssist.ControlCenter.Tests.csproj --configuration Release -- "$bundle/backend/v0.2.0" "$bundle/runtime/node.exe" "$env:RUNNER_TEMP/control-center-packaged-proof.json" "$bundle/backend-manifest.json"
       - name: Inspect actual EXE signature and embedded non-elevating manifest
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: ./scripts/Test-Publisher.ps1 -Executable "$env:RUNNER_TEMP/RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe" -ReportPath "$env:RUNNER_TEMP/control-center-publisher.json"
       - name: Start and close the actual packaged native executable
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: |
           $executable = Join-Path $env:RUNNER_TEMP 'RiftAssist-ControlCenter-verified/RiftAssist.ControlCenter.exe'
           Add-Type @'
@@ -134,13 +186,17 @@ jobs:
             $owned.Dispose()
           }
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-ControlCenter-v0.2.0-win-x64
+          retention-days: 3
           path: ${{ runner.temp }}/RiftAssist-ControlCenter-verified/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-ControlCenter-phase8-validation
+          retention-days: 7
           path: |
             ${{ runner.temp }}/control-center-layout.json
             ${{ runner.temp }}/control-center-proof.json
@@ -151,6 +207,8 @@ jobs:
           if-no-files-found: error
 
   ubuntu-ssh-script-validation:
+    needs: event-gate
+    if: needs.event-gate.outputs.run == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
@@ -206,6 +264,7 @@ jobs:
         run: |
           sudo env RIFTASSIST_TEST_CADDY="$RUNNER_TEMP/riftassist-caddy-package/unpacked/usr/bin/caddy" RIFTASSIST_REPLACEMENT_PROOF="$RUNNER_TEMP/control-center-replacement-proof.json" "$(command -v node)" staging/replacement-integration.cjs --systemd
       - name: Build reviewed code-only manual release capsule (no broker installation)
+        if: github.event_name == 'workflow_dispatch' && inputs.package
         run: |
           node - "$RUNNER_TEMP/RiftAssist-v0.2.0-manual-release" "$GITHUB_SHA" <<'JS'
           const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
@@ -226,16 +285,20 @@ jobs:
           console.log(JSON.stringify(proof));
           JS
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-v0.2.0-manual-release
+          retention-days: 3
           path: ${{ runner.temp }}/RiftAssist-v0.2.0-manual-release/
           if-no-files-found: error
           include-hidden-files: true
       - uses: actions/download-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-v0.2.0-manual-release
           path: ${{ runner.temp }}/RiftAssist-v0.2.0-manual-release-downloaded/
       - name: Verify actual uploaded code capsule including hidden baseline files
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         run: |
           node - "$RUNNER_TEMP/RiftAssist-v0.2.0-manual-release-downloaded" <<'JS'
           const fs=require('node:fs'),path=require('node:path');
@@ -247,8 +310,10 @@ jobs:
           console.log(JSON.stringify(proof));
           JS
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-ControlCenter-ubuntu-ssh-proof
+          retention-days: 7
           path: |
             ${{ runner.temp }}/control-center-ubuntu-proof.json
             ${{ runner.temp }}/control-center-real-staging-proof.json
@@ -259,8 +324,10 @@ jobs:
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-live-replacement-approval-kit
+          retention-days: 3
           path: |
             experiments/unified-rulings/control-center/FINAL-LAUNCH.md
             experiments/unified-rulings/control-center/MINIMUM-LIVE-SCOPE.md
@@ -270,7 +337,7 @@ jobs:
           if-no-files-found: error
 
   one-shot-release-kit:
-    if: github.ref == 'refs/heads/release/v0.2.0'
+    if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts && github.ref == 'refs/heads/release/v0.2.0'
     needs: [windows-validation, ubuntu-ssh-script-validation]
     runs-on: windows-latest
     timeout-minutes: 10
@@ -322,8 +389,10 @@ jobs:
           node scripts/build-one-shot.cjs "$inputRoot/capsule" "$inputRoot/proofs/control-center-installation-inventory.review.json" "$inputRoot/windows/runtime/node.exe" "$inputRoot/windows/runtime/NODE-LICENSE.txt" $out $env:GITHUB_RUN_ID $env:RIFT_RULES_RUN_ID
           if ($LASTEXITCODE -ne 0) { throw 'Kit verification failed.' }
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' && inputs.package && inputs.upload_artifacts
         with:
           name: RiftAssist-v0.2.0-one-shot-win-x64
+          retention-days: 3
           path: ${{ runner.temp }}/RiftAssist-v0.2.0-one-shot-win-x64/
           include-hidden-files: true
           if-no-files-found: error

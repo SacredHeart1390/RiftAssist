@@ -66,3 +66,10 @@ npm run riot:preview
 공유 `../../tests`의 `npm test`, `npm run test:e2e`는 v0.2.0을 기본 대상으로 한다. `npm run test:legacy`는 원본 v0.1.7의 고정 회귀를 별도로 실행한다. 모든 서버 검사는 임시 DB·자료·키·모의 API를 쓴다.
 
 전체 변경, 운영자 입력 항목, 승인 이후 실제 매퍼 작업과 안전한 배포/롤백 계획은 [작업 보고서](../../artifacts/riot-v0.2.0-2026-10-28/README.md), [배포·롤백 계획](../../artifacts/riot-v0.2.0-2026-10-28/deployment-and-rollback.md)에 있다. 승인만으로 운영 버전을 자동 전환하지 않는다.
+
+
+### Display patch releases
+
+Run `node scripts/bump-patch.cjs` once for each approved patch (next: 0.2.3). It increments the display PATCH, synchronizes HTML/resource/cache versions and hashes, and refreshes the backend manifest. Do not rename the v0.2.0 data family, releaseId or client protocol. Record the resulting Git commit in the server code-backup deployment receipt.
+
+Control Center packaging is manual-only. Actions uploads default off; if explicitly needed, development artifacts expire in 3 days and verification proofs in at most 7 days. Formal packages should be downloaded and preserved in GitHub Releases as a separate explicitly authorized release operation, rather than retained in Actions. Never delete existing artifacts without approval.

@@ -321,3 +321,7 @@ textarea::placeholder { color: #666875; }
 .answer-progress { margin:10px 0 0; font-size:13px; line-height:1.6; color:var(--muted); text-align:right; }
 @keyframes submit-spin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .submit-button[data-busy="true"] .submit-spinner { animation:none; } }
+
+.card-thumbnail-placeholder { overflow:hidden; gap:2px; align-content:center; padding:2px; box-sizing:border-box; border:1px solid #655638; }
+.card-thumbnail-placeholder strong { font-size:12px; line-height:1.1; }
+.card-thumbnail-placeholder small { font-size:6px; max-width:100%; overflow:hidden; white-space:nowrap; }
