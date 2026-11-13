@@ -372,6 +372,7 @@
       panel.append(header);
       const details = element('details', 'card-detail');
       details.append(element('summary', '', this.t('preview')));
+      if(card.imageUrl){const art=this.thumbnail(card);art.classList.add('card-detail-art');details.append(art);}
       if (!card.modelReady) details.append(element('p', 'card-pending', this.t('missing')));
       // Source provenance remains in the response and operations record.
       const stats = ['energy', 'power', 'might'].filter((key) => card.stats?.[key] != null).map((key) => `${this.t(key)} ${card.stats[key]}`);

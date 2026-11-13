@@ -2,9 +2,9 @@
   "name": "riftassist-rules-regression",
   "private": true,
   "scripts": {
-    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs minimum-release.test.cjs release-transition.test.cjs legacy-card-release.test.cjs ../control-center/staging/staging.test.cjs ../control-center/staging/replacement.test.cjs ../control-center/staging/replacement-hardening.test.cjs technical-replacement.test.cjs single-character-cards.test.cjs patch-version.test.cjs",
+    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs minimum-release.test.cjs release-transition.test.cjs legacy-card-release.test.cjs ../control-center/staging/staging.test.cjs ../control-center/staging/replacement.test.cjs ../control-center/staging/replacement-hardening.test.cjs technical-replacement.test.cjs single-character-cards.test.cjs patch-version.test.cjs legacy-image-restoration.test.cjs",
     "test:legacy": "node helpers/test-legacy.cjs",
-    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs e2e/single-character-cards.test.cjs e2e/patch-thumbnails.test.cjs",
+    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs e2e/single-character-cards.test.cjs e2e/patch-thumbnails.test.cjs e2e/legacy-images.test.cjs",
     "test:compat": "node helpers/run-compatibility.cjs",
     "test:inspection": "python ../control-center/staging/inspection.test.py"
   },

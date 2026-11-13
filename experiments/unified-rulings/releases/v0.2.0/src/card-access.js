@@ -1,9 +1,9 @@
 // Runtime views only. Never change knowledge files, permissions, releases or backups.
 const crypto = require('node:crypto');
-const { resolveCards } = require('./cards');
+const { resolveCards, preservedLegacyImage } = require('./cards');
 const { hash, englishSource } = require('./card-translation-core');
 const { officialURL } = require('./card-publication');
-const VERSION = 'card-access-3';
+const VERSION = 'card-access-4-pinned-images';
 
 function createCardAccess(configuredMode, { allowMock = false } = {}) {
   const mode = ['verified-only','legacy-reviewed','preserve-existing'].includes(configuredMode) ? configuredMode : 'restricted';
@@ -26,7 +26,8 @@ function createCardAccess(configuredMode, { allowMock = false } = {}) {
     ).map(card => {
       const { translationProposal, translationHistory, officialKorean, officialKoreanCheck, sourceKorean, ...safe } = card;
       if(legacy){
-        safe.imageUrl=legacy.images?safe.imageUrl:'';
+        safe.imageUrl=mode==='preserve-existing'&&legacy.imagePolicy==='v0.1.7-pinned-catalog'
+          ?preservedLegacyImage(card):legacy.images?safe.imageUrl:'';
         if(!legacy.koreanDisplay){safe.nameKo='';safe.textKo='';safe.keywordsKo=[];safe.aliases=[];safe.subtitle='';safe.errata='';}
         safe.translationRecord=null;
         safe.translationStatus=legacy.koreanDisplay?card.translationStatus:'translation-rights-restricted';

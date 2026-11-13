@@ -49,6 +49,6 @@ function preservedScope(manifest, manifestSha256) {
     throw Error('Existing deployment dataset does not match the pinned baseline.');
   return Object.freeze({rulesDisplay:true,rulesModelInput:true,cardsDisplay:true,cardsModelInput:true,
     koreanDisplay:true,koreanModelInput:true,images:false,judgeCases:true,externalJudge:false,sourceTranslations:false,
-    basis:'existing-deployment-ceiling',rightsVerified:false,reviewHash:pin});
+    basis:'existing-deployment-ceiling',imagePolicy:'v0.1.7-pinned-catalog',rightsVerified:false,reviewHash:pin});
 }
 module.exports={mode,flags,reviewScope,prepareLegacyKnowledge,preservedScope};

@@ -28,6 +28,17 @@ function artUrl(value) {
   return ['rgpub.io', 'riotgames.com', 'contentstack.io', 'ctfassets.net'].some((suffix) => host === suffix || host.endsWith(`.${suffix}`)) ? address : '';
 }
 
+// Match the v0.1.7 local RiftNaru image path, without changing any permission fields.
+// Called only for the exact pinned pre-existing catalog, never for new reviewed imports.
+function preservedLegacyImage(card) {
+  try {
+    const source=new URL(card.source?.url);
+    if(card.source?.kind!=='riftnaru-public'||!card.prototypeUse?.enabled||source.protocol!=='https:'
+      ||source.hostname!=='www.riftnaru.com'||!source.pathname.startsWith('/cards/'))return '';
+    return artUrl(card.imageUrl);
+  } catch { return ''; }
+}
+
 function normalizeCatalog(data) {
   if (!data || data.schemaVersion !== 1 || !Array.isArray(data.cards) || data.cards.length > 20000) throw new Error('Expected a schemaVersion 1 card catalog (at most 20,000 cards).');
   const ids = new Set();
@@ -211,4 +222,4 @@ function resolveCards(catalog, requestedIds, question, rememberedIds = [], exclu
   return { selected, unresolved: [...new Map(unresolved.map(card=>[card.id,card])).values()].slice(0,MAX_SELECTED_CARDS), missing: selected.filter(card=>!card.modelReady), references:question===question.normalize('NFKC')?references:[], automaticallyResolvedIds, version:catalog.version };
 }
 
-module.exports = { loadCardCatalog, normalizeCatalog, searchCards, cardSummary, resolveCards, singleCharacterNames, MAX_SELECTED_CARDS };
+module.exports = { loadCardCatalog, normalizeCatalog, searchCards, cardSummary, resolveCards, singleCharacterNames, preservedLegacyImage, MAX_SELECTED_CARDS };

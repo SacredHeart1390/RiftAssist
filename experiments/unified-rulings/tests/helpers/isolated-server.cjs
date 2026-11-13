@@ -96,6 +96,10 @@ async function isolatedServer(t, plans, options = {}) {
     ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
   };
   const cardPolicy = Object.hasOwn(options, 'cardPolicy') ? options.cardPolicy : 'verified-only';
+  if(options.preserveExistingImages){
+    env.RIFTASSI_PUBLICATION_MODE='preserve-existing';
+    env.RIFTASSI_LEGACY_BASELINE_SHA256=crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
+  }
   if (cardPolicy !== null) env.RIFTASSI_CARD_POLICY = cardPolicy;
   child = fork(path.join(release, 'src/server.js'), [], { cwd: directory, env,
     execArgv: ['--require', path.join(__dirname, 'mock-external.cjs')], silent: true, windowsHide: true });

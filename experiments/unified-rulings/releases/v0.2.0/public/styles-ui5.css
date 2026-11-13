@@ -325,3 +325,6 @@ textarea::placeholder { color: #666875; }
 .card-thumbnail-placeholder { overflow:hidden; gap:2px; align-content:center; padding:2px; box-sizing:border-box; border:1px solid #655638; }
 .card-thumbnail-placeholder strong { font-size:12px; line-height:1.1; }
 .card-thumbnail-placeholder small { font-size:6px; max-width:100%; overflow:hidden; white-space:nowrap; }
+
+.card-detail-art { display:block; width:min(100%,240px); height:auto; max-height:340px; object-fit:contain; margin:12px auto; }
+.card-thumbnail-placeholder.card-detail-art { display:grid; width:100px; height:140px; }
