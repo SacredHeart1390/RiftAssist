@@ -70,6 +70,6 @@ npm run riot:preview
 
 ### Display patch releases
 
-Run `node scripts/bump-patch.cjs` once for each approved patch (next: 0.2.3). It increments the display PATCH, synchronizes HTML/resource/cache versions and hashes, and refreshes the backend manifest. Do not rename the v0.2.0 data family, releaseId or client protocol. Record the resulting Git commit in the server code-backup deployment receipt.
+Run `node scripts/bump-patch.cjs` once for each approved patch (next: 0.2.3). It increments the displayVersion PATCH (internal manifest.version stays 0.2.0), synchronizes HTML/resource/cache versions and hashes, and refreshes the backend manifest. Do not rename the v0.2.0 data family, releaseId or client protocol. Record the resulting Git commit in the server code-backup deployment receipt.
 
 Control Center packaging is manual-only. Actions uploads default off; if explicitly needed, development artifacts expire in 3 days and verification proofs in at most 7 days. Formal packages should be downloaded and preserved in GitHub Releases as a separate explicitly authorized release operation, rather than retained in Actions. Never delete existing artifacts without approval.

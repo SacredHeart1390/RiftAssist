@@ -1,6 +1,6 @@
 {
   "releaseId": "v0.2.0",
-  "version": "0.2.2",
+  "version": "0.2.0",
   "dataSchema": 2,
   "ready": false,
   "developmentOnly": true,
@@ -50,7 +50,7 @@
     "public/styles-ui5.css": "5037aabfe9175cbc275448580bd44d704be8ec803b88ca7a3956defa3dfb3419",
     "public/styles.css": "75f19b0d36a37288e8ee9cc8346ba502a3163e0419947a4cec4d89ff9a62668f",
     "public/terms.html": "f71429f12171b036417f288411069308bd0ad9efca39cf28ccd112f33e391a5c",
-    "README.md": "25da902e20496922f6d977440955c0172fada1c59c3a94988502b20a1aa23541",
+    "README.md": "c1da66b2c1d2c7400d2b7ff73dbf60c3ace6fc6b0504d0ad977f73ab4714f31c",
     "riot.config.example.json": "1dd370d3f70aa5b41acec81a5f167bd3b11f545a0316ea20779133746f2432fe",
     "scripts/card-import-ui.mjs": "8c140b97bbee3f451185a9c122cb6ba832db773d24f0f4954ba4ec8f7b290fd7",
     "scripts/card-review-control.cjs": "636676ef8efcf8c0dda38f77b2cccbf69631517aca0af0bd6771563fe2b600c3",
@@ -62,7 +62,7 @@
     "scripts/knowledge.js": "0d47663e517adc448a04e79e91efbe2d3f7c699c40cdce96ff8ba649b1fe1fc2",
     "scripts/open-manager.ps1": "74336d52c2cb47aab3150f54a410660c3228fa5f547420c9e28cbe43eeb71a40",
     "scripts/prepare-control-center-demo.cjs": "4221da4514909187ac0b26767a50f18f0aa47b302f7134287a6dc0807b324d81",
-    "scripts/prepare-development.cjs": "a25d7084a11c0cefc25cde597d8db3959dd7f12b41b820c06b8be59c32e6f44d",
+    "scripts/prepare-development.cjs": "c0eb4c3181d5dbd0823471e71314419ad9e17823149de9dfb50bda433ce73763",
     "scripts/preview-card-translations.cjs": "4c2c83fccf1ddf37b17e2f04f3382e21f61b5451fca177e35fb0972bc3eb421b",
     "scripts/preview-riot-import.cjs": "a2cae96d7c10f460831962cab9d0814051c86df74b840640da15048b2efe10a8",
     "scripts/rebuild-local-rules.mjs": "a11cba190611d0105511d1f54368930b1b7f91844ce874e20ede1f46593ca3ae",
@@ -123,8 +123,8 @@
     "src/sync-store.js": "80020789e4c6838dfc54ff6cfc0afe3d31b19b0135f2f6fbdeb4fb0ed9e947d8",
     "src/terminology-ko.js": "22070a946bea64123b4e445741f3084d72eb54b561becb39632448df50f8b835",
     "src/legacy-card-release.js": "4ddbc75b000093ee85776ed2cd73dbfd6a82dca6bfcf3e442e92347657b2acc5",
-    "src/release-version.js": "81885681e9e281e2a36f9c786c2b29fe6953cf1612eecc8678af17b8b88a2609",
-    "scripts/bump-patch.cjs": "3a505fb9894493bf0a3ce77fd6585fb7a82a9e1d280c7a15a62a328a16ccec81"
+    "src/release-version.js": "5a739eab9c62857b2f9a7d746b48fa91be31ed0d19f72b0652a5b879eb723f73",
+    "scripts/bump-patch.cjs": "efd3194721c2952379fc5fa02bb86d0d901f6235e9fc65c7417be39ac8fa2b61"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,
@@ -139,5 +139,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.2"
+  "uiRevision": "patch-0.2.2",
+  "displayVersion": "0.2.2"
 }

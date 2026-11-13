@@ -23,7 +23,7 @@ async function main() {
   await fs.writeFile(path.join(DATA_ROOT, 'knowledge-releases/active.json'), JSON.stringify({ releaseId: id }), { flag: 'wx' });
   const worker = path.join(DATA_ROOT, 'releases/v0.2.0'); await fs.mkdir(worker, { recursive: true });
   for (const name of ['src', 'public', 'manager-ui', 'dev-fixtures']) await fs.cp(path.join(APP_ROOT, name), path.join(worker, name), { recursive: true });
-  await fs.writeFile(path.join(worker, 'app-release.json'), JSON.stringify({ releaseId: 'v0.2.0', dataSchema: 2, ready: true, runtimeScope: 'development-fixture-only' }), { flag: 'wx' });
+  await fs.writeFile(path.join(worker, 'app-release.json'), JSON.stringify({ releaseId: 'v0.2.0', version: '0.2.0', displayVersion: require('../app-release.json').displayVersion || require('../app-release.json').version, dataSchema: 2, ready: true, runtimeScope: 'development-fixture-only' }), { flag: 'wx' });
   console.log('Prepared a separate development environment with synthetic cards. No shared data, key, database or live pointer was copied.');
 }
 main().catch(() => { console.error('Development preparation stopped. Check that the isolated target is new and empty; existing production data was not accessed.'); process.exitCode = 1; });

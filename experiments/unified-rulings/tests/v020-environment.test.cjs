@@ -117,7 +117,7 @@ process.on('message',async()=>{await h.stop();process.exit(0);});`);
   const base = `http://127.0.0.1:${port}`, health = await fetch(base + '/api/health'), cookie = health.headers.get('set-cookie').split(';')[0];
   const data = await health.json();
   assert.ok(cookie.startsWith('rift_session_v020='));
-  assert.equal(data.version, require('../releases/v0.2.0/app-release.json').version); assert.equal(data.providerMode, 'mock'); assert.equal(data.cardCatalog.total, 0);
+  assert.equal(data.version, require('../releases/v0.2.0/src/release-version').version); assert.equal(data.providerMode, 'mock'); assert.equal(data.cardCatalog.total, 0);
   const res = await fetch(base + '/api/ask', { method: 'POST', headers: { Origin: base, Cookie: cookie, 'Content-Type': 'application/json' },
     body: JSON.stringify({ clientKey: require('node:crypto').randomUUID(), question: '같은 턴 같은 전장에서 다시 득점하나요?', language: 'ko' }) });
   const response = await res.json();
