@@ -77,8 +77,8 @@ async function activateAutomatic(root,nextId,expectedId,{rollback=false,authoriz
  const grant=Object.freeze({});grants.set(grant,{root:path.resolve(root),nextId,expectedId,digest:require('./card-translation-core').hash(next.manifest),action:rollback?'rollback':'activate'});
  return require('./knowledge-releases').activateRelease(root,nextId,expectedId,{autoAuthorization:grant});
 }
-async function stageAutomatic(root,catalog,observationHash,privateKey){
- const policy=readPolicy(root);if(process.getuid?.()!==policy.uid)throw Error('sync-process-identity');const pointer=JSON.parse(regular(path.join(root,'knowledge-releases/active.json'))),previous=readReleaseFiles(root,pointer.releaseId),delta=validateDelta(previous.cards,catalog,policy);if(!delta.changed)return null;
+async function stageAutomatic(root,catalog,observationHash,privateKey,expectedReleaseId){
+ const policy=readPolicy(root);if(process.getuid?.()!==policy.uid)throw Error('sync-process-identity');const pointer=JSON.parse(regular(path.join(root,'knowledge-releases/active.json')));if(!expectedReleaseId||pointer.releaseId!==expectedReleaseId)throw Error('sync-active-version-changed');const previous=readReleaseFiles(root,pointer.releaseId),delta=validateDelta(previous.cards,catalog,policy);if(!delta.changed)return null;
  const bytes=Buffer.from(JSON.stringify(catalog,null,2)+'\n'),id='riftnaru-auto-'+hash(bytes).slice(0,24),dir=path.join(root,'knowledge-releases',id);
  const manifest=structuredClone(previous.manifest);manifest.releaseId=id;manifest.createdAt=new Date().toISOString();manifest.hashes['cards.json']=hash(bytes);manifest.reviewRequired=false;
  manifest.counts={...manifest.counts,cards:catalog.cards.length};

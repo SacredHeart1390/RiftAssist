@@ -127,11 +127,11 @@
     "scripts/bump-patch.cjs": "efd3194721c2952379fc5fa02bb86d0d901f6235e9fc65c7417be39ac8fa2b61",
     "src/riftnaru-refresh.js": "041c2067be5470575696f5492741be9ceefca3c01b8a8df4d204fd102425317d",
     "scripts/sync-riftnaru.cjs": "1c0cec4357acfc5aa376bcdf09e0c540ec0a6c3f1af08ae71b2d1fa3953c95da",
-    "src/riftnaru-auto-release.js": "7a0adf0af596e5c925b759006521e25cd9c4fdac0d32d066236e9f82d3892b9b",
+    "src/riftnaru-auto-release.js": "6a9d1ab5f5d7bf7988bb294cea285748f15487f62ccd33a4aec501684efd1381",
     "src/riftnaru-http.js": "986031bba6f359463b4962a7da9969882f3f02c51254aa4499ba82a29b641ef7",
     "src/riftnaru-source.js": "dd8f1e9b0b424fc4c3ee80bf8aac29158c54f382d2a65e8009a0431ed01db8a0",
     "src/riftnaru-sync-status.js": "bc9b34b42f435bc325b94b8d15100596c237e3e082d4445bc398348dd47244aa",
-    "src/riftnaru-sync.js": "0600f8dac5a41e5237ec5cf4d37a828a3ae8c0de6db912700741e64177ac009c"
+    "src/riftnaru-sync.js": "1b3e94c218220fa6f3c3ff7a7fd1239f8a08ba4820f7ed3fd04679e7a74988cc"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,
