@@ -1,0 +1,45 @@
+[Unit]
+Description=RiftAssist bounded public card catalog synchronization
+After=network-online.target riftassist.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=riftassist-sync
+Group=riftassist-knowledge
+SupplementaryGroups=riftassist-sync
+UMask=0007
+EnvironmentFile=/etc/riftassist/riftnaru-sync.env
+ExecStart=/usr/bin/node --max-old-space-size=192 /opt/riftassist-riftnaru-code/scripts/sync-riftnaru.cjs
+StateDirectory=riftassist-riftnaru-sync
+StateDirectoryMode=0750
+RuntimeMaxSec=40min
+TimeoutStartSec=40min
+TimeoutStopSec=20s
+CPUQuota=20%
+MemoryHigh=256M
+MemoryMax=320M
+TasksMax=32
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/riftassist-riftnaru-sync
+BindPaths=/home/azureuser/RiftAssist-v020-e06496b0/knowledge-releases:/var/lib/riftassist-riftnaru-sync/runtime/knowledge-releases
+BindReadOnlyPaths=/home/azureuser/RiftAssist-v020-e06496b0/releases/v0.2.0:/opt/riftassist-riftnaru-code
+ReadOnlyPaths=/var/lib/riftassist-riftnaru-sync/runtime/knowledge-releases/2026-11-13-9546f1eb1242
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

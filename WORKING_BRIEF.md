@@ -134,3 +134,16 @@
 - Offline candidate mode preserves IDs, permissions, manual review and translation history; missing cards are retained. Private catalogs/collection evidence stay outside Git.
 - Targeted tests 16 and browser tests 34 passed on Windows. Full Linux CI and isolated candidate/live verification are required before activation. No runtime data/settings changed at this point.
 
+
+- Completed: commit 6f2409bab9f4a298b0953ee6966cd8e0fb199f6d, branch fix/v0.2.4-riftnaru-refresh; Linux CI 43364878775 succeeded (309 regression, compatibility/legacy checks, 34 browser; zero artifacts).
+- Azure activated 2026-11-13T04:30:39Z. Active knowledge 2026-11-13-9546f1eb1242; cards SHA256 9546f1eb1242c65b5c6c2f0da7452bfa879a384aff740d7b973d4578a6e9e766. Catalog riftnaru-2026-11-13-3ef366ec54c0.
+- Live mobile/desktop verified version, Shen/Mel, SFD image, Bullet Time errata, selection/resolve, KO/EN, no development banner, old PWA cache update; production/live and gpt-6-luna preserved. No paid AI test. 38 pre-existing missing English bodies remain.
+- Backup and final verification: /home/azureuser/RiftAssist-v020-e06496b0/code-backups/patch024-6f2409ba. Six data tables unchanged; app-host readiness naturally adds exactly one session counter per successful startup. Initial strict counter comparisons caused safe code-only rollbacks; no DB restore was performed.
+
+
+## 2026-11-13 v0.2.5 automatic card sync
+- Base: deployed 6f2409ba / active 2026-11-13-9546f1eb1242. Bounded daily inventory + 220 detail rotation; original IDs, manual review, translations, permissions and rules/cases retained.
+- Automatic releases require a pinned operator policy, dedicated process UID and Ed25519 signature, baseline hashes, per-release and rolling-week delta limits, backup and CAS activation. Existing manual review remains required outside this narrow capability.
+- Azure direct HTTP received Vercel 429; stopped without bypass. Existing Windows ordinary browser returns 200. Public API has no per-card modification date/ETag/Last-Modified and is no-store. Source-blocked jobs preserve data and honor cooldown; no AI, Git or Actions in scheduled jobs.
+- Related synthetic tests passed (63), including atomic failure, rollback, hot reload, duplicate lock, resume and seven-day rotation. Private source exports/catalogs stay outside Git. No prohibited card-list feature added.
+

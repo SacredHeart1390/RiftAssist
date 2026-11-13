@@ -40,10 +40,10 @@ async function prepareLegacyKnowledge(sourceRoot,destination,review){
     rawDatasetBytesPreserved:true,sourcePointerChanged:false,sourceDataChanged:false,userDataRead:false,authorizedToDeploy:false};
 }
 // Existing exposure ceiling, not a license or a verified rights review.
-function preservedScope(manifest, manifestSha256) {
+function preservedScope(manifest, manifestSha256,{autoTrusted=false}={}) {
   if(process.env.RIFTASSI_PUBLICATION_MODE!=='preserve-existing')return null;
   const pin=process.env.RIFTASSI_LEGACY_BASELINE_SHA256;
-  if(!/^[a-f0-9]{64}$/.test(pin||'')||manifestSha256!==pin||manifest.sources?.legacyRelease
+  if(!/^[a-f0-9]{64}$/.test(pin||'')||(manifestSha256!==pin&&!autoTrusted)||manifest.sources?.legacyRelease
     ||manifest.sources?.minimumRelease||manifest.sources?.development
     ||!names.every(n=>/^[a-f0-9]{64}$/.test(manifest.hashes?.[n]||'')))
     throw Error('Existing deployment dataset does not match the pinned baseline.');

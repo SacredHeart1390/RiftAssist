@@ -23,11 +23,11 @@ function validateRules(items) {
     }
   }
 }
-function snapshot(releaseId, evidence, cards, manifest, judgeCases=[], manifestSha256=null) {
+function snapshot(releaseId, evidence, cards, manifest, judgeCases=[], manifestSha256=null,autoTrusted=false) {
   validateRules(evidence);
   const cardCatalog = normalizeCatalog(cards);
   const legacy=require('./legacy-card-release');
-  const legacyReview=legacy.preservedScope(manifest,manifestSha256)||legacy.reviewScope(manifest);
+  const legacyReview=legacy.preservedScope(manifest,manifestSha256,{autoTrusted})||legacy.reviewScope(manifest);
   if(legacyReview&&!cardCatalog.cards.length)throw new Error('Legacy card release must retain its card catalog.');
   if(manifest.sources?.minimumRelease?.mode==='approved-rules-only'){
     if(cardCatalog.cards.length||judgeCases.length||manifest.sources.minimumRelease.rulesSha256!==manifest.hashes?.['rules.json'])throw new Error('Minimum release scope does not match the reviewed rules-only dataset.');
@@ -54,7 +54,9 @@ async function loadRelease(root, id) {
   };
   const [rules,cards,judge]=await Promise.all([read('rules.json'),read('cards.json'),read('judge-cases.json')]);
   if (!Array.isArray(judge)||judge.length>100000)throw new Error('Invalid Q&A snapshot.');
-  return snapshot(id,rules,cards,manifest,judge,digest(manifestBytes));
+  const manifestHash=digest(manifestBytes);
+  const autoTrusted=Boolean(manifest.sources?.riftnaruAuto&&require('./riftnaru-auto-release').verifyAutomaticRelease(root,id,manifest,cards,manifestHash));
+  return snapshot(id,rules,cards,manifest,judge,manifestHash,autoTrusted);
 }
 function createKnowledgeProvider(root) {
   let active=null, timer=null, polling=false, lastError=null;

@@ -1,5 +1,5 @@
-const CACHE_NAME = 'riftassi-patch-0.2.4';
-const APP_SHELL = ['/', '/styles-ui5.css?v=0.2.4', '/reports.css?v=0.2.4', '/legal.css?v=0.2.4', '/privacy.html', '/terms.html', '/card-composer-ui3.js?v=0.2.4', '/evidence-view.js?v=0.2.4', '/app-ui5.js?v=0.2.4', '/reports-ui3.js?v=0.2.4', '/manifest.webmanifest', '/icon.svg'];
+const CACHE_NAME = 'riftassi-patch-0.2.5';
+const APP_SHELL = ['/', '/styles-ui5.css?v=0.2.5', '/reports.css?v=0.2.5', '/legal.css?v=0.2.5', '/privacy.html', '/terms.html', '/card-composer-ui3.js?v=0.2.5', '/evidence-view.js?v=0.2.5', '/app-ui5.js?v=0.2.5', '/reports-ui3.js?v=0.2.5', '/manifest.webmanifest', '/icon.svg'];
 self.addEventListener('install', (event) => {
   event.waitUntil((async()=>{
     const responses=await Promise.all(APP_SHELL.map(async url=>{const r=await fetch(new Request(url,{cache:'reload'}));if(!r.ok||r.headers.get('X-RiftAssist-Release')!=='v0.2.0')throw new Error('Release changed during shell installation');return[url,r];}));

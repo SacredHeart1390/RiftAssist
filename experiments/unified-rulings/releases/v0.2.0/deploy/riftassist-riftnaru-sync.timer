@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily RiftAssist public card catalog check
+
+[Timer]
+OnCalendar=*-*-* 08:00:00 UTC
+RandomizedDelaySec=10min
+AccuracySec=1min
+Persistent=true
+Unit=riftassist-riftnaru-sync.service
+
+[Install]
+WantedBy=timers.target
