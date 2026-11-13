@@ -155,7 +155,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-runtime-notice-20261113');
+    const cache = await caches.open('riftassi-v0.2.0-single-character-20261113');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -279,11 +279,11 @@ test('PWA network responses override stale assets and query responses stay uncac
   const {server,page}=await openBrowser(t,{serviceWorkers:'allow'});
   await page.goto(server.baseURL);await page.evaluate(()=>navigator.serviceWorker.ready);await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   const result=await page.evaluate(async()=>{
-    const cache=await caches.open('riftassi-v0.2.0-runtime-notice-20261113');await cache.put('/app-ui5.js',new Response('stale fixture'));
+    const cache=await caches.open('riftassi-v0.2.0-single-character-20261113');await cache.put('/app-ui5.js',new Response('stale fixture'));
     const fresh=await(await fetch('/app-ui5.js')).text();
     await cache.put('/terms.html',new Response('preserved v020 shell'));
     return{fresh,cacheKeys:(await cache.keys()).map(r=>new URL(r.url).pathname)};
   });assert.ok(result.fresh.includes('pendingAsk'));assert.ok(!result.cacheKeys.some(p=>p.startsWith('/api/')));
   // A query response is never part of the cached shell, even during a version transition.
-  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-v0.2.0-runtime-notice-20261113');return(await cache.keys()).some(r=>new URL(r.url).searchParams.has('rollback-probe'));});assert.equal(check,false);
+  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-v0.2.0-single-character-20261113');return(await cache.keys()).some(r=>new URL(r.url).searchParams.has('rollback-probe'));});assert.equal(check,false);
 });

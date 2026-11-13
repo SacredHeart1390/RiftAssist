@@ -11,7 +11,7 @@
       errata: '정오표', source: '원문 출처', version: '자료 버전', updated: '갱신일',
       energy: '에너지', power: '힘', might: '위력', selectedNotice: '카드를 선택했습니다.',
       limit: '한 질문에는 서로 다른 카드 8장까지 연결할 수 있습니다.', tooLong: '질문은 10,000자까지 작성할 수 있습니다.',
-      checking: '카드 목록을 확인하고 있습니다.', catalog: () => '카드명 2글자 이상을 입력하면 해당 글자가 포함된 카드가 나타납니다. 목록에서 선택해 질문에 연결하세요.',
+      checking: '카드 목록을 확인하고 있습니다.', catalog: () => '카드명 2글자 이상을 입력하면 후보가 나타납니다. 한 글자 챔피언 이름도 검색할 수 있습니다.',
       noneCatalog: '카드 자료 준비 중입니다. 질문에 정확한 카드명과 효과를 적어 주세요.',
       restrictedCatalog: '카드 이용 권한 확인 중으로 카드 검색·이미지·카드에 의존하는 AI 판정을 제한합니다. 규칙·저지 사례는 계속 검색할 수 있습니다.',
       mockCard: '개발용 합성 카드 · 공식 카드 아님', previewCard: '미출시 프리뷰',
@@ -28,7 +28,7 @@
       errata: 'Errata', source: 'Original source', version: 'Data version', updated: 'Updated',
       energy: 'Energy', power: 'Power', might: 'Might', selectedNotice: 'Card selected.',
       limit: 'Select at most 8 different cards per question.', tooLong: 'Questions must be 10,000 characters or fewer.',
-      checking: 'Checking card catalog.', catalog: () => 'Type at least 2 characters of a card name. Choose a matching card from the suggestions to link it to your question.',
+      checking: 'Checking card catalog.', catalog: () => 'Enter at least 2 characters to search cards. Single-character Korean champion names are also supported.',
       noneCatalog: 'Card data is being prepared. Include the exact card name and effect in your question.',
       restrictedCatalog: 'Card search, images and card-dependent AI answers are restricted while usage rights are reviewed. Rule and judge-case search remains available.',
       mockCard: 'Synthetic development card · not an official card', previewCard: 'Preview · unreleased',
@@ -100,13 +100,14 @@
         if (!response.ok) throw new Error('Card catalog unavailable');
         this.catalog = await response.json();
         this.updateCatalogNote();
+        if(document.activeElement===this.textarea)this.schedule();
       } catch { this.catalogFailed = true; this.updateCatalogNote(); }
     }
 
     updateCatalogNote() {
       // Keep actionable errors visible; routine usage and collection details belong outside the form.
       const limited = this.catalog?.access?.mode === 'restricted' || (this.catalog?.access?.restrictedTotal > 0 && !this.catalog.total);
-      const message = this.catalogFailed ? this.t('error') : limited ? this.t('restrictedCatalog') : this.catalog && !this.catalog.total ? this.t('noneCatalog') : '';
+      const message = this.catalogFailed ? this.t('error') : limited ? this.t('restrictedCatalog') : this.catalog && !this.catalog.total ? this.t('noneCatalog') : this.catalog ? this.t('catalog')() : '';
       this.note.textContent = message;
       this.note.hidden = !message;
     }
@@ -165,7 +166,7 @@
     }
     scheduleResolution() {
       clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort();
-      if(this.frozen||this.composing||this.textarea.value.trim().length<2)return;
+      if(this.frozen||this.composing||(this.textarea.value.trim().length<2&&!this.catalog?.singleCharacterNames?.includes(this.textarea.value.trim())))return;
       this.resolveTimer=setTimeout(()=>this.resolveNames(),260);
     }
     async resolveNames() {
@@ -199,7 +200,7 @@
       if (caret !== this.textarea.selectionEnd || this.mentions.some((mention) => caret > mention.start && caret <= mention.end)) return;
       const query = this.textarea.value.slice(Math.max(0, caret - 100), caret).split('\n').pop();
       const lastWord = query.match(/[\p{L}\p{N}]+$/u)?.[0] || '';
-      if (!lastWord || query.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '').length < 2) return;
+      if (!lastWord || (query.normalize('NFKC').replace(/[^\p{L}\p{N}]/gu, '').length < 2 && !this.catalog?.singleCharacterNames?.includes(lastWord.normalize('NFKC')))) return;
       const number = ++this.requestNumber;
       this.searchController?.abort();
       this.searchController = new AbortController();

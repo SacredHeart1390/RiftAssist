@@ -106,6 +106,28 @@ function cardSummary(card) {
   return { id, nameKo, nameEn, subtitle, set, code, type, modelReady, imageUrl, translationStatus, authority, status };
 }
 
+const shortNameIndexes = new WeakMap();
+const oneKorean = value => /^[가-힣]$/u.test(value);
+function shortHead(value) {
+  const name=String(value||'').normalize('NFKC').trim();
+  return oneKorean(name)?name:name.match(/^([가-힣])(?:\s*[,，:]\s*\S|\s+[-–—]\s+\S)/u)?.[1]||'';
+}
+function englishHead(value) { return String(value||'').normalize('NFKC').split(/\s+[-–—]\s+|,\s*|:\s*/u)[0].trim().toLowerCase(); }
+function shortNameIndex(catalog) {
+  if(shortNameIndexes.has(catalog))return shortNameIndexes.get(catalog);
+  const active=catalog.cards.filter(c=>c.status!=='withdrawn');
+  const champion=c=>/전설|챔피언|\b(?:legend|champion)\b/iu.test(c.type);
+  const identity=c=>shortHead(c.nameKo)+'|'+englishHead(c.nameEn);
+  const anchors=new Set(active.filter(c=>champion(c)&&shortHead(c.nameKo)).map(identity));
+  const byCard=new Map();
+  for(const c of active){
+    const recognized=champion(c)||(/유닛|\bunit\b/iu.test(c.type)&&shortHead(c.nameKo)&&anchors.has(identity(c)));
+    byCard.set(c,recognized?[...new Set([shortHead(c.nameKo),...(c.aliases||[]).filter(oneKorean)].filter(Boolean))]:[]);
+  }
+  const index={byCard,names:[...new Set([...byCard.values()].flat())].sort()};shortNameIndexes.set(catalog,index);return index;
+}
+function singleCharacterNames(catalog) { return shortNameIndex(catalog).names; }
+
 function searchCards(catalog, query, language = 'ko', browse = false) {
   // Preserve original offsets for replacing the typed fragment in the textarea.
   const raw = String(query || '').slice(-100);
@@ -113,7 +135,7 @@ function searchCards(catalog, query, language = 'ko', browse = false) {
   const candidates = [raw, ...pieces.map((_, index) => pieces.slice(index).join(''))].map((value) => value.trimStart());
   const suffixes = [...new Set(candidates)].filter((value) => {
     const normalized = fold(value);
-    return raw.endsWith(value) && normalized.length >= 2;
+    return raw.endsWith(value) && (normalized.length >= 2 || singleCharacterNames(catalog).includes(value.trim()));
   });
   if (!fold(raw) && !browse) return [];
   return catalog.cards.filter((card) => card.status !== 'withdrawn').map((card) => {
@@ -121,7 +143,8 @@ function searchCards(catalog, query, language = 'ko', browse = false) {
     let best = null;
     for (const suffix of suffixes) {
       const q = fold(suffix);
-      const quality = Math.max(...names.map((name) => name === q ? 400 : name.startsWith(q) ? 250 : name.includes(q) ? 150 : 0));
+      const quality = q.length===1 ? (shortNameIndex(catalog).byCard.get(card)?.includes(suffix.trim())?400:0)
+        : Math.max(...names.map((name) => name === q ? 400 : name.startsWith(q) ? 250 : name.includes(q) ? 150 : 0));
       if (!quality) continue;
       const score = q.length * 1000 + quality;
       if (!best || score > best.score) best = { score, matchedText: suffix };
@@ -131,8 +154,8 @@ function searchCards(catalog, query, language = 'ko', browse = false) {
   }).filter(Boolean).sort((a, b) => b.score - a.score || (language === 'en' ? a.nameEn || a.nameKo : a.nameKo || a.nameEn).localeCompare(language === 'en' ? b.nameEn || b.nameKo : b.nameKo || b.nameEn)).slice(0, 50);
 }
 
-function nameAppears(question, name) {
-  if (!name || fold(name).length < 2) return false;
+function nameAppears(question, name, allowSingle=false) {
+  if (!name || (fold(name).length < 2 && !(allowSingle&&oneKorean(name)))) return false;
   const escaped = name.normalize('NFKC').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&').replace(/\s+/gu, '\\s*');
   return new RegExp(`(?:^|[^\\p{L}\\p{N}])${escaped}(?=$|[^\\p{L}\\p{N}]|(?:을|를|은|는|이|가|의|에|에게|에서|와|과|으로|로|도|만|랑|라고|까지|부터|보다|처럼)(?=$|[^\\p{L}\\p{N}]))`, 'iu').test(question.normalize('NFKC'));
 }
@@ -142,8 +165,8 @@ function exactCardMentions(catalog, question) {
   let entries=mentionIndexes.get(catalog);
   if(!entries){
     const names=new Map();
-    for(const card of catalog.cards.filter(c=>c.status!=='withdrawn'))for(const name of [card.nameKo,card.nameEn,...card.aliases]){
-      if(!name||fold(name).length<2)continue;
+    for(const card of catalog.cards.filter(c=>c.status!=='withdrawn'))for(const name of [card.nameKo,card.nameEn,...card.aliases,...(shortNameIndex(catalog).byCard.get(card)||[])]){
+      if(!name||(fold(name).length<2&&!shortNameIndex(catalog).byCard.get(card)?.includes(name)))continue;
       const normalized=name.normalize('NFKC'),key=normalized.toLowerCase();
       if(!names.has(key))names.set(key,{name:normalized,cards:[]});names.get(key).cards.push(card);
     }
@@ -165,7 +188,8 @@ function resolveCards(catalog, requestedIds, question, rememberedIds = [], exclu
     const card = byId.get(id);
     if (!card) throw Object.assign(new Error('The card catalog changed. Select the card again.'), { statusCode: 409 });
     if(card.status==='withdrawn')throw Object.assign(new Error('This card entry has been withdrawn. Select the current entry.'),{statusCode:409});
-    if (![card.nameKo, card.nameEn, ...card.aliases].some((name) => nameAppears(question, name))) throw Object.assign(new Error('A selected card is no longer present in the question. Select it again.'), { statusCode: 409 });
+    const shortNames=shortNameIndex(catalog).byCard.get(card)||[];
+    if (![card.nameKo, card.nameEn, ...card.aliases,...shortNames].some((name) => nameAppears(question, name,shortNames.includes(name)))) throw Object.assign(new Error('A selected card is no longer present in the question. Select it again.'), { statusCode: 409 });
     return card;
   });
   const selectedIds = new Set(selected.map(card=>card.id)),excluded=new Set(excludedIds),unresolved=[],references=[],automaticallyResolvedIds=[];
@@ -187,4 +211,4 @@ function resolveCards(catalog, requestedIds, question, rememberedIds = [], exclu
   return { selected, unresolved: [...new Map(unresolved.map(card=>[card.id,card])).values()].slice(0,MAX_SELECTED_CARDS), missing: selected.filter(card=>!card.modelReady), references:question===question.normalize('NFKC')?references:[], automaticallyResolvedIds, version:catalog.version };
 }
 
-module.exports = { loadCardCatalog, normalizeCatalog, searchCards, cardSummary, resolveCards, MAX_SELECTED_CARDS };
+module.exports = { loadCardCatalog, normalizeCatalog, searchCards, cardSummary, resolveCards, singleCharacterNames, MAX_SELECTED_CARDS };

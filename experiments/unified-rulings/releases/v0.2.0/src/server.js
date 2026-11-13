@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const fsSync = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { searchCards } = require('./cards');
+const { searchCards, singleCharacterNames } = require('./cards');
 const { AsyncLocalStorage } = require('node:async_hooks');
 const { APP_ROOT, DATA_ROOT } = require('./paths');
 const environment = require('./environment').assertEnvironment(DATA_ROOT);
@@ -722,7 +722,7 @@ async function initialize() {
       return;
     }
     if (req.method === 'GET' && url.pathname === '/api/cards/search') {
-      sendJson(res, 200, { version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess, results: searchCards(cardCatalog, url.searchParams.get('q'), url.searchParams.get('language'), url.searchParams.get('browse') === '1') });
+      sendJson(res, 200, { version: cardCatalog.version, updatedAt: cardCatalog.updatedAt, coverage: cardCatalog.coverage, total: cardCatalog.cards.length, modelReady: cardCatalog.cards.filter((card) => card.modelReady).length, access: snapshot.cardAccess, singleCharacterNames: singleCharacterNames(cardCatalog), results: searchCards(cardCatalog, url.searchParams.get('q'), url.searchParams.get('language'), url.searchParams.get('browse') === '1') });
       return;
     }
     if (req.method === 'POST' && url.pathname === '/api/cards/resolve') {
