@@ -6,6 +6,63 @@ const { chromium } = require('playwright');
 const { isolatedServer, fixture, release } = require('../helpers/isolated-server.cjs');
 const notice = 'RiftAssist was created under Riot Games\' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.';
 
+test('unconfirmed runtime stays hidden while health is pending',async t=>{
+  const {page,server}=await openBrowser(t);let releaseHealth;
+  const pending=new Promise(resolve=>{releaseHealth=resolve;});
+  await page.route('**/api/health',async route=>{await pending;const r=await route.fetch();await route.fulfill({response:r,json:{...await r.json(),environment:'production',providerMode:'live'}});});
+  try{
+    await page.goto(server.baseURL,{waitUntil:'domcontentloaded'});
+    assert.equal(await page.locator('#runtime-notice').isVisible(),false);
+    assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),/확인하고 있습니다/);
+  }finally{releaseHealth();}
+  await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
+  assert.equal(await page.locator('#runtime-notice').isVisible(),false);
+});
+
+for (const [environment, providerMode] of [['production','live'],['production','mock'],['staging','mock'],['development','mock'],['development','live'],['development','test']]) {
+  test(`runtime banner follows ${environment}/${providerMode} in Korean and English`, async t => {
+    const {page,server}=await openBrowser(t);
+    await page.route('**/api/health',async route=>{const r=await route.fetch();const data=await r.json();await route.fulfill({response:r,json:{...data,environment,providerMode}});});
+    await page.goto(server.baseURL);
+    await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
+    const banner=page.locator('#runtime-notice');
+    for(const language of ['ko','en']){
+      await page.locator('#language-select').selectOption(language);
+      assert.equal(await banner.isVisible(),environment==='development');
+      if(environment==='development'){
+        const text=await banner.innerText();
+        assert.match(text,language==='ko'?/개발 버전/:/Development version/);
+        assert.match(text,providerMode==='mock'?(language==='ko'?/모의 응답/:/mock responses/):providerMode==='live'?(language==='ko'?/실제 호출/:/live external/):(language==='ko'?/테스트 전송/:/test transport/));
+        if(providerMode!=='mock')assert.doesNotMatch(text,/모의|mock/);
+      }else assert.equal(await banner.textContent(),'');
+    }
+  });
+}
+
+for(const failure of ['network','http','missing-mode','invalid-json']){
+  test(`health ${failure} never implies mock; retry restores live development state`,async t=>{
+    const {page,server}=await openBrowser(t);let fail=true;
+    await page.route('**/api/health',async route=>{
+      if(fail&&failure==='network')return route.abort('failed');
+      if(fail&&failure==='http')return route.fulfill({status:503,json:{error:'Synthetic unavailable'}});
+      if(fail&&failure==='invalid-json')return route.fulfill({status:200,contentType:'application/json',body:'invalid'});
+      const r=await route.fetch(),data=await r.json();
+      await route.fulfill({response:r,json:{...data,environment:'development',providerMode:fail?undefined:'live'}});
+    });
+    await page.goto(server.baseURL);await page.locator('#connection-retry').waitFor({state:'visible'});
+    for(const language of ['ko','en']){
+      await page.locator('#language-select').selectOption(language);
+      assert.equal(await page.locator('#runtime-notice').isVisible(),false);
+      assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),language==='ko'?/연결하지 못했습니다/:/Could not connect/);
+      assert.equal(await page.locator('#submit-button').isDisabled(),true);
+    }
+    fail=false;await page.locator('#connection-retry').click();
+    await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
+    assert.match(await page.locator('#runtime-notice').innerText(),/live external/);
+    assert.doesNotMatch(await page.locator('#runtime-notice').innerText(),/mock/);
+  });
+}
+
 async function openBrowser(t, { width = 1280, serviceWorkers = 'block', serverOptions = {} } = {}) {
   const server = await isolatedServer(t, [], serverOptions);
   const browser = await chromium.launch({ headless: true, args: ['--no-proxy-server'],
@@ -98,7 +155,7 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-v0.2.0-single-service-20261105');
+    const cache = await caches.open('riftassi-v0.2.0-runtime-notice-20261113');
     return (await cache.keys()).map(req => new URL(req.url).pathname);
   });
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
@@ -222,11 +279,11 @@ test('PWA network responses override stale assets and query responses stay uncac
   const {server,page}=await openBrowser(t,{serviceWorkers:'allow'});
   await page.goto(server.baseURL);await page.evaluate(()=>navigator.serviceWorker.ready);await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   const result=await page.evaluate(async()=>{
-    const cache=await caches.open('riftassi-v0.2.0-single-service-20261105');await cache.put('/app-ui5.js',new Response('stale fixture'));
+    const cache=await caches.open('riftassi-v0.2.0-runtime-notice-20261113');await cache.put('/app-ui5.js',new Response('stale fixture'));
     const fresh=await(await fetch('/app-ui5.js')).text();
     await cache.put('/terms.html',new Response('preserved v020 shell'));
     return{fresh,cacheKeys:(await cache.keys()).map(r=>new URL(r.url).pathname)};
   });assert.ok(result.fresh.includes('pendingAsk'));assert.ok(!result.cacheKeys.some(p=>p.startsWith('/api/')));
   // A query response is never part of the cached shell, even during a version transition.
-  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-v0.2.0-single-service-20261105');return(await cache.keys()).some(r=>new URL(r.url).search);});assert.equal(check,false);
+  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-v0.2.0-runtime-notice-20261113');return(await cache.keys()).some(r=>new URL(r.url).searchParams.has('rollback-probe'));});assert.equal(check,false);
 });

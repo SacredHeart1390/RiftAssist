@@ -1,5 +1,6 @@
 const strings = {
   ko: {
+    developmentMock: '개발 버전 · 외부 서비스는 모의 응답을 사용합니다.', developmentLive: '개발 버전 · 외부 서비스의 실제 호출이 활성화되어 있습니다.', developmentTest: '개발 버전 · 테스트 전송 모드를 사용합니다.',
     prototype: '베타', language: '언어', eyebrow: 'TABLETOP RULES, CLEARLY',
     headline: '복잡한 상황도,<br><em>근거부터 차근차근.</em>',
     subhead: '카드 효과부터 대회 중 상황까지, 궁금한 내용을 그대로 적어 주세요. 게임 규칙과 대회 규칙, 리프트저지 사례를 함께 살펴봅니다.',
@@ -25,6 +26,7 @@ const strings = {
     caseQuestion: '질문', caseAnswer: '답변', openJudgeCase: '리프트저지 원문 보기 ↗', noCases: '검색된 관련 사례가 없습니다.', noRuleMatches: '질문과 직접 연결되는 공식 조항이 없습니다.',
   },
   en: {
+    developmentMock: 'Development version · external services use mock responses.', developmentLive: 'Development version · live external service calls are enabled.', developmentTest: 'Development version · test transport mode is active.',
     prototype: 'BETA', language: 'Language', eyebrow: 'TABLETOP RULES, CLEARLY',
     headline: 'Complex situations,<br><em>grounded in evidence.</em>',
     subhead: 'From card interactions to tournament situations, just describe what happened. The assistant considers gameplay rules, tournament rules and RiftJudge examples together.',
@@ -51,7 +53,7 @@ const strings = {
   },
 };
 
-const state = { providerMode: 'mock', language: 'ko', privacyReady: false, connectionFailed: false, versionMismatch:false, aiConfigured: false, aiEnabled: false, asking: false };
+const state = { environment: null, providerMode: null, language: 'ko', privacyReady: false, connectionFailed: false, versionMismatch:false, aiConfigured: false, aiEnabled: false, asking: false };
 let pendingAsk=null;
 let latestAnswer = null;
 const form = document.querySelector('#ask-form');
@@ -67,7 +69,15 @@ document.querySelector('[data-i18n^="privacyNote"]').after(connectionRetry);
 
 function tr(key) { return strings[state.language][key] || strings.ko[key] || key; }
 
+function updateRuntimeNotice() {
+  const banner = document.querySelector('#runtime-notice');
+  const show = state.privacyReady && !state.connectionFailed && !state.versionMismatch && state.environment === 'development';
+  banner.hidden = !show;
+  banner.textContent = show ? tr({ mock: 'developmentMock', live: 'developmentLive', test: 'developmentTest' }[state.providerMode]) : '';
+}
+
 function updatePrivacyNotice() {
+  updateRuntimeNotice();
   const notice = state.versionMismatch ? (state.language==='en'?'The service version changed. Save your input before reloading.':'서비스 버전이 변경됐습니다. 입력 내용을 보관한 뒤 새로고침해 주세요.') : state.connectionFailed ? tr('connectionError') : !state.privacyReady ? tr('privacyNoteLoading')
     : state.providerMode === 'mock' ? tr('privacyNoteMock') : `${tr(state.aiEnabled ? 'privacyNote' : 'privacyNoteSearchOnly')} ${tr(contentLoggingEnabled ? 'privacyNoteWithLogs' : 'privacyNoteMetadata')}`;
   document.querySelector('[data-i18n^="privacyNote"]').textContent = notice;
@@ -234,12 +244,14 @@ try {
 } catch { /* local storage may be unavailable */ }
 
 function refreshHealth(){return fetch('/api/health', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Connection failed'); return data; }).then((data) => {
+  if (!['development', 'staging', 'production'].includes(data.environment) || !['mock', 'live', 'test'].includes(data.providerMode)) throw new Error('Invalid server runtime status');
   state.versionMismatch=data.version!=='0.2.0';
   if (typeof data.version === 'string' && /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/.test(data.version)) {
     document.querySelectorAll('[data-app-version]').forEach(node => { node.textContent = `v${data.version}`; });
   }
   contentLoggingEnabled = data.contentLogging === true;
-  state.providerMode = data.providerMode || 'mock';
+  state.environment = data.environment;
+  state.providerMode = data.providerMode;
   state.aiConfigured = data.aiConfigured === true;
   state.aiEnabled = data.aiEnabled === true;
   state.privacyReady = true;
@@ -248,6 +260,11 @@ function refreshHealth(){return fetch('/api/health', { cache: 'no-store', signal
   if (!state.asking) submitButton.disabled = state.versionMismatch;
 }).catch(() => {
   state.connectionFailed = true;
+  state.privacyReady = false;
+  state.environment = null;
+  state.providerMode = null;
+  state.aiConfigured = false;
+  state.aiEnabled = false;
   submitButton.disabled = true;
   updatePrivacyNotice();
 });}
