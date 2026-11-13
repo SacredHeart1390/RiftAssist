@@ -35,14 +35,14 @@
     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
     "public/evidence-view.js": "e69596546ef48f0ca455241af735b935a2c932087c80d9b02588c7b85a9c84ee",
     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
-    "public/index.html": "55ca857f106a4656a338f8a991e8e7698cf423d153a7e31d0121242a4c17b410",
+    "public/index.html": "c26f5066fa27f907cf4796208b94e422703f4aa20982961a3dc9e2c0e526fd33",
     "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
     "public/privacy.html": "d41ea0ad8acd419d2e5765677101c67e83e5388630133df141134a5de72a3c7b",
     "public/reports-ui3.js": "8de1cc86e64d7a29ccee528d952c5a0ed7558e9f7100dfdfc9e984c2beea94fe",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "bc2913f068be3c4efa63478556a66da15631d08f137cf072369ffc96fdd0690e",
+    "public/service-worker.js": "3cb844e08bd1d364fa469ee405cb45b3059a0396d932eb3cc254923df7d20bf7",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
@@ -131,7 +131,10 @@
     "src/riftnaru-http.js": "986031bba6f359463b4962a7da9969882f3f02c51254aa4499ba82a29b641ef7",
     "src/riftnaru-source.js": "dd8f1e9b0b424fc4c3ee80bf8aac29158c54f382d2a65e8009a0431ed01db8a0",
     "src/riftnaru-sync-status.js": "bc9b34b42f435bc325b94b8d15100596c237e3e082d4445bc398348dd47244aa",
-    "src/riftnaru-sync.js": "1b3e94c218220fa6f3c3ff7a7fd1239f8a08ba4820f7ed3fd04679e7a74988cc"
+    "src/riftnaru-sync.js": "212d7fe85673645baee8b90bfd42608854aa69f511ac9a8bcbcdfdd82cffeadd",
+    "src/riftnaru-browser-inbox.js": "0cfd85213eb8699526b27a07293c97373b8f39fb9c3b9c63d5c6c01582b60523",
+    "src/riftnaru-browser.js": "cf1cffa7799b936c97c0562ac9b250341edbd4baa26f3632a490a3ca2c29af14",
+    "scripts/collect-riftnaru.cjs": "d353e6634894b8793054fa7a3b991132668916ac202da0f13a82f031daf439af"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,
@@ -146,6 +149,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.5",
-  "displayVersion": "0.2.5"
+  "uiRevision": "patch-0.2.6",
+  "displayVersion": "0.2.6"
 }
