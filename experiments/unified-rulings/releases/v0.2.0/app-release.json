@@ -133,7 +133,7 @@
     "src/riftnaru-sync-status.js": "bc9b34b42f435bc325b94b8d15100596c237e3e082d4445bc398348dd47244aa",
     "src/riftnaru-sync.js": "212d7fe85673645baee8b90bfd42608854aa69f511ac9a8bcbcdfdd82cffeadd",
     "src/riftnaru-browser-inbox.js": "0cfd85213eb8699526b27a07293c97373b8f39fb9c3b9c63d5c6c01582b60523",
-    "src/riftnaru-browser.js": "cf1cffa7799b936c97c0562ac9b250341edbd4baa26f3632a490a3ca2c29af14",
+    "src/riftnaru-browser.js": "e00412212239cc33320e89d2eaa1cf72b30315c4ef8ca02fb80c2d18443de0c2",
     "scripts/collect-riftnaru.cjs": "d353e6634894b8793054fa7a3b991132668916ac202da0f13a82f031daf439af"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",

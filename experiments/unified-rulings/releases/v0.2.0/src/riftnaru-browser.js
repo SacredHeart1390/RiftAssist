@@ -31,6 +31,9 @@ async function collectBrowser({chromium,plan,stateDir,executablePath,headless=tr
   }});
   const page=await context.newPage();page.setDefaultTimeout(30000);
   const robotsResponse=await page.goto('https://www.riftnaru.com/robots.txt',{waitUntil:'commit'}),robots=await guard(robotsResponse);if(!robotsResponse.headers()['content-type']?.includes('text/plain')||!allowsRobots(robots,'/cards'))throw new SourceError('source-robots-restricted');
+  let index,cached;try{cached=JSON.parse(await fs.readFile(path.join(stateDir,'index.json')));}catch(e){if(e.code!=='ENOENT')throw e;}
+  const reusable=cached&&Date.now()-Date.parse(cached.checkedAt)<3600000&&cached.hash===A.hash(cached.cards.map(S.fingerprint))&&(cached.planId===plan.planId||cached.cards.length===Object.keys(plan.known).length&&cached.cards.every(c=>plan.known[c.id]?.publishedHash===S.fingerprint(c)));
+  if(reusable){index=cached;progress({phase:'resume-index',total:index.cards.length});}else{
   await pause(intervalMs);
   const totalFromDom=async()=>{const text=await page.locator('main').innerText(),m=/전체\s*([\d,]+)\s*장/u.exec(text);if(!m)throw new SourceError('source-listing-schema');return Number(m[1].replace(/,/g,''));};
   const read=()=>page.locator('article.live-library-card').evaluateAll(readCardDom);
@@ -51,19 +54,21 @@ async function collectBrowser({chromium,plan,stateDir,executablePath,headless=tr
   for(const c of cards.filter(c=>!c.printingId)){await pause(intervalMs);await guard(await page.goto(c.sourceUrl,{waitUntil:'commit'}));const variants=S.objects(await page.content()).filter(v=>v.cardId&&v.variant&&v.variant.collectorNumber?.toLowerCase().startsWith(c.id+'-'));if(variants.length!==1)throw new SourceError('source-detail-identity');c.cardId=variants[0].cardId;c.printingId=variants[0].variant.printingId;}
   // Reopen the public first screen to catch a changed list during pagination.
   await pause(intervalMs);await guard(await page.goto('https://www.riftnaru.com/cards',{waitUntil:'commit'}));await page.locator('article.live-library-card').first().waitFor();if(await totalFromDom()!==total)throw new SourceError('source-changed-during-list');const first=await read();if(A.canonical(first)!==A.canonical(ko.slice(0,first.length)))throw new SourceError('source-changed-during-list');
-  const index={cards,checkedAt:now().toISOString(),sourceSyncedAt:'',hash:A.hash(cards.map(S.fingerprint))};await atomic(path.join(stateDir,'index.json'),index);
+  index={cards,planId:plan.planId,checkedAt:now().toISOString(),sourceSyncedAt:'',hash:A.hash(cards.map(S.fingerprint))};await atomic(path.join(stateDir,'index.json'),index);
+  }
+  const cards=index.cards,total=cards.length;
   const existing=Object.keys(plan.known),byId=new Map(cards.map(c=>[c.id,c]));if(existing.some(id=>!byId.has(id)))throw new SourceError('source-missing-suspected');
   const suspected=cards.filter(c=>!plan.known[c.id]||plan.known[c.id].publishedHash!==S.fingerprint(c));if(suspected.length>plan.limits.maxChanged||suspected.filter(c=>!plan.known[c.id]).length>plan.limits.maxNew||suspected.length/existing.length>plan.limits.maxChangeRatio)throw new SourceError('sync-mass-change');
   const selected=planRotation({cursor:plan.cursor,cards:plan.known},cards,plan.detailLimit),details=[];
   for(const step of selected){const listing=byId.get(step.id),old=checkpoint.details[step.id];
    if(old&&old.indexFingerprint===S.fingerprint(listing)&&Date.parse(old.card.fetchedAt)>=Date.parse(plan.issuedAt)-300000&&Date.now()-Date.parse(old.card.fetchedAt)<86400000){details.push(old.card);continue;}
    if(!allowsRobots(robots,new URL(listing.sourceUrl).pathname))throw new SourceError('source-robots-restricted');await pause(intervalMs);await guard(await page.goto(listing.sourceUrl,{waitUntil:'commit'}));
-   await page.waitForFunction(names=>names.some(name=>name&&document.body.innerText.includes(name)),[listing.nameKo,listing.nameEn]);
+   await page.waitForFunction(names=>names.some(name=>name&&document.body?.innerText?.includes(name)),[listing.nameKo,listing.nameEn]);
    const card=S.detailSnapshot(await page.content(),{...listing,errata:plan.known[step.id]?.lastGood.errata||''},now().toISOString());
    checkpoint.details[step.id]={indexFingerprint:S.fingerprint(listing),card};await atomic(path.join(stateDir,'checkpoint.json'),checkpoint);details.push(card);progress({phase:'details',checked:details.length,target:selected.length});
   }
   const bundle={schemaVersion:1,transport:'public-browser',complete:true,capturedAt:now().toISOString(),coverage:`partial-${details.length}-details-full-${total}-index`,baseReleaseId:plan.baseReleaseId,planId:plan.planId,index,cards:details};B.validateBundle(bundle,plan);await atomic(path.join(stateDir,'export.json'),bundle);const result={status:'collected',checked:details.length,total,requests,finishedAt:now().toISOString(),exportSha256:A.hash(await fs.readFile(path.join(stateDir,'export.json')))};await atomic(statusFile,result);return result;
- }catch(e){const error=terminal||e,code=(error.code||error.message||'').match(/\b(?:source|browser|sync)-[a-z-]+/u)?.[0],result={status:error.retryAt?'source-blocked':'failed',error:code||'browser-collection-failed',requests,finishedAt:now().toISOString(),...(error.retryAt?{nextEligibleAt:new Date(error.retryAt).toISOString()}:{})};await atomic(statusFile,result);return result;
+ }catch(e){const error=terminal||e,code=(error.code||error.message||'').match(/\b(?:source|browser|sync)-[a-z-]+/u)?.[0],result={status:error.retryAt?'source-blocked':'failed',error:code||'browser-collection-failed',requests,finishedAt:now().toISOString(),...(error.retryAt?{nextEligibleAt:new Date(error.retryAt).toISOString()}:{})};await atomic(statusFile,result);await atomic(path.join(stateDir,'last-error.json'),{at:now().toISOString(),message:String(error.message).slice(0,1000)});return result;
  }finally{await browser?.close().catch(()=>{});await unlock();}
 }
 module.exports={collectBrowser,readCardDom};
