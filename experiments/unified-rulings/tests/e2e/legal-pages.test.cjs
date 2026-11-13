@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { isolatedServer, fixture, release } = require('../helpers/isolated-server.cjs');
+const cacheName='riftassi-patch-'+require(path.join(release,'src/release-version')).version;
 const notice = 'RiftAssist was created under Riot Games\' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.';
 
 test('unconfirmed runtime stays hidden while health is pending',async t=>{
@@ -154,10 +155,10 @@ test('PWA precaches the new legal documents; offline navigation works and APIs s
   await page.goto(server.baseURL);
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
-  const keys = await page.evaluate(async () => {
-    const cache = await caches.open('riftassi-patch-0.2.3');
+  const keys = await page.evaluate(async (name) => {
+    const cache = await caches.open(name);
     return (await cache.keys()).map(req => new URL(req.url).pathname);
-  });
+  },cacheName);
   for (const route of ['/privacy.html', '/terms.html', '/legal.css']) assert.ok(keys.includes(route));
   assert.ok(keys.every(key => !key.startsWith('/api/')));
   await context.setOffline(true);
@@ -278,12 +279,12 @@ test('an unconfirmed ruling POST is never automatically resent and manual retry 
 test('PWA network responses override stale assets and query responses stay uncached',async t=>{
   const {server,page}=await openBrowser(t,{serviceWorkers:'allow'});
   await page.goto(server.baseURL);await page.evaluate(()=>navigator.serviceWorker.ready);await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
-  const result=await page.evaluate(async()=>{
-    const cache=await caches.open('riftassi-patch-0.2.3');await cache.put('/app-ui5.js',new Response('stale fixture'));
+  const result=await page.evaluate(async(name)=>{
+    const cache=await caches.open(name);await cache.put('/app-ui5.js',new Response('stale fixture'));
     const fresh=await(await fetch('/app-ui5.js')).text();
     await cache.put('/terms.html',new Response('preserved v020 shell'));
     return{fresh,cacheKeys:(await cache.keys()).map(r=>new URL(r.url).pathname)};
-  });assert.ok(result.fresh.includes('pendingAsk'));assert.ok(!result.cacheKeys.some(p=>p.startsWith('/api/')));
+  },cacheName);assert.ok(result.fresh.includes('pendingAsk'));assert.ok(!result.cacheKeys.some(p=>p.startsWith('/api/')));
   // A query response is never part of the cached shell, even during a version transition.
-  const check=await page.evaluate(async()=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open('riftassi-patch-0.2.3');return(await cache.keys()).some(r=>new URL(r.url).searchParams.has('rollback-probe'));});assert.equal(check,false);
+  const check=await page.evaluate(async(name)=>{await fetch('/terms.html?rollback-probe=1');const cache=await caches.open(name);return(await cache.keys()).some(r=>new URL(r.url).searchParams.has('rollback-probe'));},cacheName);assert.equal(check,false);
 });

@@ -3,11 +3,26 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import cardsModule from '../src/cards.js';
+import refreshModule from '../src/riftnaru-refresh.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const target = path.join(root, 'knowledge', 'cards.json');
 const input = process.argv[2];
-if (!input || process.argv.length !== 3) {
+if (input === '--candidate') {
+  try {
+    if (process.argv.length !== 6) throw new Error('Usage: --candidate <active-cards.json> <complete-export.json> <new-output-directory>');
+    const base = JSON.parse(await fs.readFile(path.resolve(process.argv[3]), 'utf8'));
+    const observation = JSON.parse(await fs.readFile(path.resolve(process.argv[4]), 'utf8'));
+    const result = refreshModule.mergeRiftnaruCatalog(base, observation);
+    const outputDirectory = path.resolve(process.argv[5]);
+    // A new directory prevents overwriting the active catalog or an earlier candidate.
+    await fs.mkdir(outputDirectory);
+    await fs.writeFile(path.join(outputDirectory, 'cards.json'), JSON.stringify(result.catalog, null, 2) + '\n', {flag:'wx'});
+    await fs.writeFile(path.join(outputDirectory, 'diff.json'), JSON.stringify(result.report, null, 2) + '\n', {flag:'wx'});
+    console.log(JSON.stringify({changed:result.report.changedAny,before:result.report.before,after:result.report.after,
+      added:result.report.added.length,changedCards:result.report.changed.length,missing:result.report.missing.length,held:result.report.held.length,version:result.report.version}));
+  } catch (error) { console.error(`Candidate stopped; active catalog retained: ${error.message}`); process.exitCode=1; }
+} else if (!input || process.argv.length !== 3) {
   console.error('Usage: node scripts/import-riftnaru.mjs <local-export.json>');
   process.exitCode = 1;
 } else {

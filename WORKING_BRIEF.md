@@ -128,3 +128,9 @@
 - 상세 이력은 DEVLOG.md, 계획은 PROJECT_PLAN.md, API 준비는 API_SETUP.md. 매번 세 문서 전체를 읽지 않는다.
 - 개발 채팅 사용 한도와 제품의 OpenAI API 사용료는 별개. 이 프로젝트 지침은 모델/요금제/추론 강도 설정을 변경하지 않는다.
 - 새 작업 채팅에서는 이 요약과 당장 할 일 하나를 지정하면 전체 대화 복사 없이 재개할 수 있다. 새 채팅은 계정 한도를 초기화하지 않는다.
+
+## 2026-11-13 v0.2.4 candidate
+- Base: deployed 81dd4f65 (v0.2.3). Full public RiftNaru listing: 1,527 unique printings/links; no new/missing IDs. Candidate: 583 changed, 944 unchanged; 323 image URLs checked, 112 errata records by printing scope.
+- Offline candidate mode preserves IDs, permissions, manual review and translation history; missing cards are retained. Private catalogs/collection evidence stay outside Git.
+- Targeted tests 16 and browser tests 34 passed on Windows. Full Linux CI and isolated candidate/live verification are required before activation. No runtime data/settings changed at this point.
+
