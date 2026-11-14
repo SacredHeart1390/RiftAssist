@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "reviewedAsOf": "2026-11-14",
+  "sources": {
+    "kr20261114": "https://playriftbound.com/ko-kr/news/announcements/kr-ban-list-nov-14/",
+    "global20261114": "https://playriftbound.com/en-us/news/announcements/radiance-ban-list-updates-effective-november-23-2026/",
+    "hub": "https://playriftbound.com/en-us/rules-hub/"
+  },
+  "cards": [
+    {"id":"called-shot","en":"Called Shot","ko":"공격 예고"},
+    {"id":"draven-vanquisher","en":"Draven, Vanquisher","ko":"드레이븐, 토벌자"},
+    {"id":"fight-or-flight","en":"Fight or Flight","ko":"싸우거나 도망치거나"},
+    {"id":"scrapheap","en":"Scrapheap","ko":"고철 더미"},
+    {"id":"dreaming-tree","en":"Dreaming Tree","ko":"꿈꾸는 나무"},
+    {"id":"obelisk-of-power","en":"Obelisk of Power","ko":"힘의 오벨리스크"},
+    {"id":"reavers-row","en":"Reaver’s Row","ko":"약탈자의 노"},
+    {"id":"ekko-recurrent","en":"Ekko, Recurrent"},
+    {"id":"stealthy-pursuer","en":"Stealthy Pursuer"},
+    {"id":"stacked-deck","en":"Stacked Deck"},
+    {"id":"arenas-greatest","en":"The Arena’s Greatest"},
+    {"id":"aspirants-climb","en":"Aspirant’s Climb"},
+    {"id":"master-yi-wuju-bladesman","en":"Master Yi, Wuju Bladesman"},
+    {"id":"riven-broken-blade","en":"Riven, Broken Blade"},
+    {"id":"zhonyas-hourglass","en":"Zhonya's Hourglass"},
+    {"id":"stellacorn-herder","en":"Stellacorn Herder"},
+    {"id":"nocturne-horrifying","en":"Nocturne, Horrifying"},
+    {"id":"rhasa-the-sunderer","en":"Rhasa the Sunderer"},
+    {"id":"brynhir-thundersong","en":"Brynhir Thundersong"},
+    {"id":"dazzling-aurora","en":"Dazzling Aurora"},
+    {"id":"baited-hook","en":"Baited Hook"},
+    {"id":"emperors-dais","en":"Emperor's Dais"},
+    {"id":"star-spring","en":"Star Spring"}
+  ],
+  "globalBaseline": ["called-shot","draven-vanquisher","fight-or-flight","scrapheap","dreaming-tree","obelisk-of-power","reavers-row","ekko-recurrent","stealthy-pursuer","stacked-deck","arenas-greatest","aspirants-climb"],
+  "global2v2Only": ["master-yi-wuju-bladesman"],
+  "globalEffective20261123": ["riven-broken-blade","zhonyas-hourglass","stellacorn-herder","nocturne-horrifying","rhasa-the-sunderer","brynhir-thundersong","dazzling-aurora","baited-hook","emperors-dais","star-spring"],
+  "krFutureSpiritforged": {"effectiveDate":null,"cards":["called-shot","draven-vanquisher","fight-or-flight","scrapheap","dreaming-tree","obelisk-of-power","reavers-row"]}
+}
