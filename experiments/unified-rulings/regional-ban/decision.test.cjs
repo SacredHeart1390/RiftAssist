@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { decide } = require('./decision.cjs');
+const { decide, resolveCardName } = require('./decision.cjs');
 const ask = (cardId, region, format, date, more = {}) => decide({ cardId, region, format, date, ...more });
 
 test('global November additions activate only on effective date', () => {
@@ -30,4 +30,10 @@ test('unknown inputs and event overrides cannot result in a definitive ruling', 
   assert.equal(ask('called-shot','global','standard','2026-11-24').ban,'unknown');
   assert.equal(ask('called-shot','global','standard','2026-11-14',{eventRules:true}).ban,'unknown');
   assert.equal(ask('called-shot','other','standard','2026-11-14').ban,'unknown');
+});
+test('only full verified card names resolve without confusing champion identities', () => {
+  assert.equal(resolveCardName('드레이븐, 토벌자').id, 'draven-vanquisher');
+  assert.equal(resolveCardName("REAVER'S ROW").id, 'reavers-row');
+  assert.equal(resolveCardName('드레이븐'), null);
+  assert.equal(resolveCardName('Draven, Showboat'), null);
 });
