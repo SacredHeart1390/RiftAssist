@@ -137,7 +137,7 @@
     "scripts/collect-riftnaru.cjs": "d353e6634894b8793054fa7a3b991132668916ac202da0f13a82f031daf439af",
     "src/regional-ban-events.json": "2bf153c8e56f5cc30fcc7813419f2272373b1402fc7879c99b747799ed1bb31e",
     "src/regional-ban-question.js": "1c207fc8a2cad2521eb6402c40bfef2abd9d59c2689873ebb7c42735cf5ecbc7",
-    "src/regional-ban.js": "f9a91ea2ab4add599a1a97564fb173e4cec4296eaba680d5a43ae68bafec6524",
+    "src/regional-ban.js": "c70aa987f368cbc222130752c42a5b0b80f1d0454e69c6160f132b28aedf231d",
     "src/regional-ban-monitor.cjs": "ac82230bf221cfe10c0c95374d59422a980943f31131fa70a99342b14b35e0b9",
     "scripts/monitor-regional-bans.cjs": "8edb8020ae9a7de934619259276a2568c40dbbae666eb2f177b78c0559ca2c88"
   },
