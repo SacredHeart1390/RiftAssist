@@ -139,7 +139,7 @@
     "src/regional-ban-question.js": "1c207fc8a2cad2521eb6402c40bfef2abd9d59c2689873ebb7c42735cf5ecbc7",
     "src/regional-ban.js": "c70aa987f368cbc222130752c42a5b0b80f1d0454e69c6160f132b28aedf231d",
     "src/regional-ban-monitor.cjs": "ac82230bf221cfe10c0c95374d59422a980943f31131fa70a99342b14b35e0b9",
-    "scripts/monitor-regional-bans.cjs": "8edb8020ae9a7de934619259276a2568c40dbbae666eb2f177b78c0559ca2c88"
+    "scripts/monitor-regional-bans.cjs": "95f7bcfc089b5043c9a6b190f0b98d3742ee38aa1c15bffcf5d28ea6d547f59a"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,
