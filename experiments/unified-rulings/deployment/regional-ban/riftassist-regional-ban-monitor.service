@@ -1,0 +1,14 @@
+[Unit]
+Description=Check official Riftbound ban announcements without changing active rulings
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=azureuser
+WorkingDirectory=/home/azureuser/RiftAssist-v020-e06496b0/releases/v0.2.0
+Environment=RIFTASSI_DATA_ROOT=/home/azureuser/RiftAssist-v020-e06496b0
+ExecStart=/usr/bin/node /home/azureuser/RiftAssist-v020-e06496b0/releases/v0.2.0/scripts/monitor-regional-bans.cjs
+NoNewPrivileges=yes
+PrivateTmp=yes
+

@@ -137,6 +137,7 @@ function renderCases(cases, citedCaseIds = [], comparisons = []) {
 }
 
 function setAnswerStatus(data) {
+  if(data.status==='regional-ban'){document.querySelector('#answer-status').textContent=state.language==='en'?'Official ban list':'공식 금지 목록';return;}
   const labels = {
     'ruling-generated': 'rulingGenerated', 'insufficient-evidence': 'insufficient', 'no-evidence': 'noEvidence',
     'evidence-only': 'evidenceOnly', 'ai-paused': 'aiPaused', 'model-error': 'modelError', 'card-details-needed': 'cardDetailsNeeded', 'card-access-restricted': 'cardAccessRestricted',
@@ -187,6 +188,7 @@ form.addEventListener('submit', async (event) => {
     document.querySelector('#resolution-section').hidden = !steps.length;
     document.querySelector('#answer-notice').textContent = '';
     document.querySelector('#answer-notice').hidden = true;
+    if(data.sourceUrls?.length){const notice=document.querySelector('#answer-notice');notice.hidden=false;notice.replaceChildren(...data.sourceUrls.map(url=>{const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=state.language==='en'?'Official source ↗':'공식 출처 ↗';return a;}));}
     renderEvidence(data.evidence, data.citedRuleIds || []);
     renderCases(data.judgeCases, data.citedCaseIds || [], data.caseComparisons || []);
     cardComposer.renderAnswer(document.querySelector('#answer-cards'), data.cards, data.citedCardIds || []);

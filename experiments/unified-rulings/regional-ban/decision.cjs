@@ -3,7 +3,7 @@
 // Research prototype. Explicit bounded evidence, no implication of card availability.
 const data = require('./events.json');
 const isoDate = date => /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date + 'T00:00:00Z')) && new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) === date;
-const normalizeName = value => String(value || '').normalize('NFKC').replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim().toLocaleLowerCase('en-US');
+const normalizeName = value => String(value || '').normalize('NFKC').replace(/[’‘]/g, "'").replace(/[,–—-]/g, ' ').replace(/\s+/g, ' ').trim().toLocaleLowerCase('en-US');
 
 // Only full, verified names are accepted. Short champion names do not identify a printing.
 function resolveCardName(name) {

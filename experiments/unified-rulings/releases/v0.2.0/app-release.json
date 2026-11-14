@@ -27,7 +27,7 @@
     "public/app-ui2.js": "37fedf9ce1839997854496e1c3630c23e4c0c0380efec8a17761e146027e0fb0",
     "public/app-ui3.js": "d56dc5ff9b63d067a14f751cf1cc99c6d761de72e8d95e36a47a8a9207e839be",
     "public/app-ui4.js": "8700d88a7cf0259f485374ba2fbe59c2b458338b41ce30aeb96735d5931fe31b",
-    "public/app-ui5.js": "fdfd0aad9cb48fb32b36b968b8c50ed9bbfb14fc9486573d9e2df6ee376d2b6c",
+    "public/app-ui5.js": "d56629098a9bf7a90054072b32077abf0016e67d921faa54bd270473e99bb567",
     "public/app.js": "38e7bcb4c91824fc422072ec95ade3e10759682b19f8d9eebbd041d696d85459",
     "public/card-composer-r2.js": "ba01bd1f4f429a60f394ea1f30f9377e3f7655910d7a01c949c0380c2f75564b",
     "public/card-composer-ui2.js": "7c0b6e480c601016be6760ac4df691630cc9dcf3b8e11ffe33d903e79699a7e0",
@@ -35,14 +35,14 @@
     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
     "public/evidence-view.js": "e69596546ef48f0ca455241af735b935a2c932087c80d9b02588c7b85a9c84ee",
     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
-    "public/index.html": "c26f5066fa27f907cf4796208b94e422703f4aa20982961a3dc9e2c0e526fd33",
+    "public/index.html": "2170f702b1501ab9091f2fb778e54c23f2f146369b3650aa87d87e94d2f7dceb",
     "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
     "public/privacy.html": "d41ea0ad8acd419d2e5765677101c67e83e5388630133df141134a5de72a3c7b",
     "public/reports-ui3.js": "8de1cc86e64d7a29ccee528d952c5a0ed7558e9f7100dfdfc9e984c2beea94fe",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "3cb844e08bd1d364fa469ee405cb45b3059a0396d932eb3cc254923df7d20bf7",
+    "public/service-worker.js": "d7992139a1b61ebc463fd8373979735b51ad641d35894f9fb433e705dda30784",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
@@ -113,7 +113,7 @@
     "src/riot-adapter.js": "0a583fffd92b052fb588712e060d56c316cef95eae3d7c1c871a3f99c9374906",
     "src/riot-converter.js": "d35dc7e6726c380af9828793831d267deb2aa335ce7131cfd9f31a842b59d285",
     "src/riot-snapshot.js": "186c0572707d53ddafb9204bc327f3c99211134e853f215c8648a23ed68dd0ca",
-    "src/server.js": "f1c74f727454e91ea1509cee9f4aa4c4ea8425ba32a553f67799b3cf7d067ad4",
+    "src/server.js": "d052e80cbd2a65be2abbbcbe454ba3cf6d5355e38d2c0ffdd8d069bbc0d024f0",
     "src/source-discovery.js": "cdca1fe30f7aca023cb25b869d1014c24fc4d0969f261bb4909667b4ac893036",
     "src/source-http.js": "5abd5ba5dad9c0ae2609e6693b96622c84c8a232924e63da6248dc03ddbaa7d8",
     "src/source-translations.js": "4e382715ae1b964d78489674c1e140f9c76c57418ca65afcd82a40849d0986e2",
@@ -134,7 +134,12 @@
     "src/riftnaru-sync.js": "212d7fe85673645baee8b90bfd42608854aa69f511ac9a8bcbcdfdd82cffeadd",
     "src/riftnaru-browser-inbox.js": "0cfd85213eb8699526b27a07293c97373b8f39fb9c3b9c63d5c6c01582b60523",
     "src/riftnaru-browser.js": "e00412212239cc33320e89d2eaa1cf72b30315c4ef8ca02fb80c2d18443de0c2",
-    "scripts/collect-riftnaru.cjs": "d353e6634894b8793054fa7a3b991132668916ac202da0f13a82f031daf439af"
+    "scripts/collect-riftnaru.cjs": "d353e6634894b8793054fa7a3b991132668916ac202da0f13a82f031daf439af",
+    "src/regional-ban-events.json": "2bf153c8e56f5cc30fcc7813419f2272373b1402fc7879c99b747799ed1bb31e",
+    "src/regional-ban-question.js": "1c207fc8a2cad2521eb6402c40bfef2abd9d59c2689873ebb7c42735cf5ecbc7",
+    "src/regional-ban.js": "f9a91ea2ab4add599a1a97564fb173e4cec4296eaba680d5a43ae68bafec6524",
+    "src/regional-ban-monitor.cjs": "ac82230bf221cfe10c0c95374d59422a980943f31131fa70a99342b14b35e0b9",
+    "scripts/monitor-regional-bans.cjs": "8edb8020ae9a7de934619259276a2568c40dbbae666eb2f177b78c0559ca2c88"
   },
   "runtimeDataSource": "legacy-card-catalog-v1",
   "riotApiRequired": false,
@@ -149,6 +154,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.6",
-  "displayVersion": "0.2.6"
+  "uiRevision": "patch-0.2.7",
+  "displayVersion": "0.2.7"
 }

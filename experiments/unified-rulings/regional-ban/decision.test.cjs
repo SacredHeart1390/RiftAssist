@@ -34,6 +34,7 @@ test('unknown inputs and event overrides cannot result in a definitive ruling', 
 test('only full verified card names resolve without confusing champion identities', () => {
   assert.equal(resolveCardName('드레이븐, 토벌자').id, 'draven-vanquisher');
   assert.equal(resolveCardName("REAVER'S ROW").id, 'reavers-row');
+  assert.equal(resolveCardName('Riven - Broken Blade').id, 'riven-broken-blade');
   assert.equal(resolveCardName('드레이븐'), null);
   assert.equal(resolveCardName('Draven, Showboat'), null);
 });

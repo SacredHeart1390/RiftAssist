@@ -4,6 +4,7 @@ const fsSync = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { searchCards, singleCharacterNames } = require('./cards');
+const regionalBanQuestion = require('./regional-ban-question');
 const { AsyncLocalStorage } = require('node:async_hooks');
 const { APP_ROOT, DATA_ROOT } = require('./paths');
 const releaseVersion = require('./release-version');
@@ -493,6 +494,8 @@ async function handleAsk(req, res) {
   let cardResolution;
   try { cardResolution = cardAccess.resolve(snapshot, payload.cardIds, question, payload.rememberedCardIds, payload.excludedCardIds); }
   catch (error) { sendJson(res, error.statusCode || 400, { error: error.message }); return; }
+  const banAnswer=regionalBanQuestion.evaluate(question,cardResolution.selected,language,new Date().toISOString().slice(0,10),cardCatalog.cards);
+  if(banAnswer){sendJson(res,200,{...banAnswer,language,requestId:null});return;}
   const owner = access.session(req, res);
   const request = store.beginQuestion(owner, payload.clientKey, question,
     store.hash(JSON.stringify({ question, language, cardIds: payload.cardIds || [], image: imageDataUrl ? store.hash(imageDataUrl) : null, cardPolicy: snapshot.cardCacheScope })),
