@@ -22,11 +22,19 @@ async function observe({ directory, fetchPage = fetch, now = Date.now() }) {
   for (const url of URLS) {
     const response = await fetchPage(url, { redirect: 'error', signal: AbortSignal.timeout(15000) });
     if (!response.ok || !/^text\/html(?:;|$)/i.test(response.headers.get('content-type') || '')) throw Error('official-source-unavailable');
-    const body = await response.text();
-    if (Buffer.byteLength(body) > 4 * 1024 * 1024 || body.length < 500) throw Error('official-source-invalid');
-    hashes[url] = crypto.createHash('sha256').update(body).digest('hex');
+    if (!response.body) throw Error('official-source-invalid');
+    const hash = crypto.createHash('sha256');
+    let bytes = 0;
+    for await (const chunk of response.body) {
+      bytes += chunk.length;
+      if (bytes > 4 * 1024 * 1024) throw Error('official-source-invalid');
+      hash.update(chunk);
+    }
+    if (bytes < 500) throw Error('official-source-invalid');
+    hashes[url] = hash.digest('hex');
   }
-  const status = !latest ? 'baseline-only' : URLS.some(url => latest.hashes?.[url] !== hashes[url]) ? 'review-required' : 'unchanged';
+  // No review/approval workflow exists yet; do not clear a previous warning.
+  const status = !latest ? 'baseline-only' : latest.status === 'review-required' || URLS.some(url => latest.hashes?.[url] !== hashes[url]) ? 'review-required' : 'unchanged';
   const observation = { at: new Date(now).toISOString(), status, hashes };
   const next = JSON.stringify({ schemaVersion: 1, observations: [...previous.observations, observation] });
   const temp = path.join(directory, `.official-observations-${crypto.randomUUID()}.tmp`);

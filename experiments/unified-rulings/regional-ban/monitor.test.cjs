@@ -19,7 +19,8 @@ test('official observations are six-hour gated, changed pages require review and
   assert.equal((await observe({directory,fetchPage,now:start+INTERVAL})).status, 'unchanged');
   version = 'b';
   assert.equal((await observe({directory,fetchPage,now:start+INTERVAL*2})).status, 'review-required');
+  assert.equal((await observe({directory,fetchPage,now:start+INTERVAL*3})).status, 'review-required');
   const before = await fs.readFile(path.join(directory,'official-observations.json'),'utf8');
-  await assert.rejects(observe({directory,now:start+INTERVAL*3,fetchPage:async()=>new Response('blocked',{status:403})}));
+  await assert.rejects(observe({directory,now:start+INTERVAL*4,fetchPage:async()=>new Response('blocked',{status:403})}));
   assert.equal(await fs.readFile(path.join(directory,'official-observations.json'),'utf8'),before);
 });
