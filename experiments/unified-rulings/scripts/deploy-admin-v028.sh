@@ -27,6 +27,8 @@ rollback(){
 trap 'result=$?; if [ "$result" -ne 0 ]; then rollback; fi' EXIT
 applied=1
 cp -a "$stage/admin-web" "$base/admin-web"
+test ! -e "$base/private/admin-probe.key"
+node -e "require('fs').writeFileSync('$base/private/admin-probe.key',require('crypto').randomBytes(32).toString('hex')+'\n',{flag:'wx',mode:0o600})"
 sudo -n install -d -m 755 /etc/riftassist
 if [ ! -e /etc/riftassist/admin-web.key ]; then
   sudo -n node -e "require('fs').writeFileSync('/etc/riftassist/admin-web.key',require('crypto').randomBytes(32).toString('hex')+'\n',{flag:'wx',mode:0o640})"

@@ -19,7 +19,7 @@ async function main(){const [mode,stage,folder,commit]=process.argv.slice(2);
    console.log('Verified v0.2.7 code, consistent server-only DB backup and retention-safe preservation receipt.');
   }finally{db.close();}
  }else if(mode==='verify'){
-  const h=await fetch('http://127.0.0.1:3001/api/health').then(r=>r.json()),r=await fetch('https://riftassistant.app/api/release').then(r=>r.json());
+  const h=await fetch('http://127.0.0.1:3001/api/health',{headers:{'X-RiftAssist-Health-Probe':fs.readFileSync(base+'/private/admin-probe.key','utf8').trim()}}).then(r=>r.json()),r=await fetch('https://riftassistant.app/api/release').then(r=>r.json());
   assert.equal(h.version,'0.2.8');assert.equal(r.version,'0.2.8');assert.equal(h.environment,'production');assert.equal(h.providerMode,'live');assert.equal(h.model,'gpt-6-luna');assert.equal(h.cardCatalog.total,1527);assert.deepEqual(h.retention,{questionDays:7,metadataDays:30,reportDays:90,imagesStored:false});
   const html=await fetch('https://riftassistant.app/').then(r=>r.text());assert.equal((html.match(/data-app-version>v0.2.8/g)||[]).length,2);
   const before=JSON.parse(fs.readFileSync(folder+'/preservation.json'));
@@ -30,6 +30,13 @@ async function main(){const [mode,stage,folder,commit]=process.argv.slice(2);
   const login=await fetch(url+'/api/login',{method:'POST',body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];
   const get=async p=>{const res=await fetch(url+p,{headers:{Cookie:cookie}});assert.equal(res.status,200);assert.match(res.headers.get('cache-control'),/no-store/);return res.json();};
   const overview=await get('/api/overview'),reports=await get('/api/reports');
+  const sql=new DatabaseSync(base+'/private/operations.sqlite',{readOnly:true});try{
+   const start=Date.parse(overview.today.from+'T00:00:00+09:00'),end=start+86400000;
+   assert.equal(overview.today.totals.questions,sql.prepare('SELECT count(*) n FROM requests WHERE created>=? AND created<?').get(start,end).n);
+   const c=sql.prepare("SELECT count(*) n,coalesce(sum(input_tokens),0) input,coalesce(sum(output_tokens),0) output FROM calls WHERE created>=? AND created<? AND coalesce(error,'') NOT IN ('input_budget_exceeded','request_deadline')").get(start,end);
+   assert.equal(overview.today.totals.aiCalls,c.n);assert.equal(overview.today.totals.inputTokens,c.input);assert.equal(overview.today.totals.outputTokens,c.output);
+   const before=JSON.stringify(sql.prepare('SELECT * FROM session_counts ORDER BY day').all());await get('/api/overview');await get('/api/overview');assert.equal(JSON.stringify(sql.prepare('SELECT * FROM session_counts ORDER BY day').all()),before);
+  }finally{sql.close();}
   const ro=require('./store.cjs').openStore(base);try{assert.deepEqual(overview.today,ro.usage(overview.today.from,overview.today.to));assert.equal(reports.total,ro.reports().total);if(reports.items.length){const d=await get('/api/reports/'+reports.items[0].id);assert.deepEqual(d,ro.detail(reports.items[0].id));console.log('Existing report detail and decryption verified (no plaintext output).');}}finally{ro.close();}
   fs.writeFileSync(base+'/deployment-v028.json',JSON.stringify({commit,version:h.version,verifiedAt:new Date().toISOString(),previousCommit:'c5713e3',backup:folder},null,2),{mode:0o600});
   console.log(JSON.stringify({version:h.version,environment:h.environment,providerMode:h.providerMode,model:h.model,cards:h.cardCatalog.total,today:overview.today.totals,unresolved:overview.today.unresolved,reports:reports.total,existingRecordsPreserved:true}));

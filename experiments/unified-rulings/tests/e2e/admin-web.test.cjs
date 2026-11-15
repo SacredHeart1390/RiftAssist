@@ -1,4 +1,4 @@
-﻿const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {once}=require('node:events'),{chromium}=require('playwright');
 const {fixture}=require('../helpers/admin-fixture.cjs');
 const {openStore}=require('../../admin-web/store.cjs');
@@ -19,5 +19,3 @@ for(const width of [1280,390])test(`admin login, metrics, filters, report detail
  const out=process.env.RIFTASSI_ADMIN_SCREENSHOTS;if(out){fs.mkdirSync(out,{recursive:true});await page.screenshot({path:path.join(out,`admin-synthetic-${width}.png`),fullPage:true});}
  await page.locator('#logout').click();await page.locator('#login').waitFor({state:'visible'});assert.equal((await page.request.get('http://127.0.0.1:'+app.address().port+'/api/reports')).status(),401);
 });
-
-

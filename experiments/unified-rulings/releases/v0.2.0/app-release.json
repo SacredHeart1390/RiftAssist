@@ -113,7 +113,7 @@
     "src/riot-adapter.js": "0a583fffd92b052fb588712e060d56c316cef95eae3d7c1c871a3f99c9374906",
     "src/riot-converter.js": "d35dc7e6726c380af9828793831d267deb2aa335ce7131cfd9f31a842b59d285",
     "src/riot-snapshot.js": "186c0572707d53ddafb9204bc327f3c99211134e853f215c8648a23ed68dd0ca",
-    "src/server.js": "91ebfd024691d592c7bc509b6be270b1397e79f4f4b59964f9639b5f10235533",
+    "src/server.js": "f3ceb8d5b453dcb6eaf7bae73a52c0ef979cbf1c06935b262718e650da5383d1",
     "src/source-discovery.js": "cdca1fe30f7aca023cb25b869d1014c24fc4d0969f261bb4909667b4ac893036",
     "src/source-http.js": "5abd5ba5dad9c0ae2609e6693b96622c84c8a232924e63da6248dc03ddbaa7d8",
     "src/source-translations.js": "4e382715ae1b964d78489674c1e140f9c76c57418ca65afcd82a40849d0986e2",

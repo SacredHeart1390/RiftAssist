@@ -3,6 +3,15 @@ const {once}=require('node:events'),{DatabaseSync}=require('node:sqlite');
 const {fixture}=require('./helpers/admin-fixture.cjs');
 const {openStore,bounds,dayKey}=require('../admin-web/store.cjs');
 const {createAdmin}=require('../admin-web/server.cjs');
+test('authenticated health probe never allocates user sessions or mutates DB',async t=>{
+ const s=await require('./helpers/isolated-server.cjs').isolatedServer(t,[]);
+ const key='d'.repeat(64);fs.writeFileSync(path.join(s.dataRoot,'private/admin-probe.key'),key,{mode:0o600});
+ const db=new DatabaseSync(path.join(s.dataRoot,'private/operations.sqlite'),{readOnly:true});s.addCleanup(()=>db.close());
+ const before=JSON.stringify(db.prepare('SELECT * FROM session_counts ORDER BY day').all());
+ for(let i=0;i<3;i++){const r=await fetch(s.baseURL+'/api/health',{headers:{'X-RiftAssist-Health-Probe':key}});assert.equal(r.status,200);assert.equal(r.headers.get('set-cookie'),null);}
+ assert.equal((await fetch(s.baseURL+'/api/health',{headers:{'X-RiftAssist-Health-Probe':'wrong'}})).status,403);
+ assert.equal(JSON.stringify(db.prepare('SELECT * FROM session_counts ORDER BY day').all()),before);assert.equal(s.externalCalls.length,0);
+});
 test('admin schema, KST aggregates, tokens, errors, reports, retention, WAL and read-only',async t=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'riftassist-admin-test-')),f=fixture(root),store=openStore(root,()=>f.now);
  t.after(()=>{store.close();f.db.close();const resolved=path.resolve(root);assert.equal(path.dirname(resolved),path.resolve(os.tmpdir()));assert.ok(path.basename(resolved).startsWith('riftassist-admin-test-'));fs.rmSync(resolved,{recursive:true,force:true});});

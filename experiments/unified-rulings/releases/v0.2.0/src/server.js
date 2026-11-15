@@ -19,7 +19,7 @@ const knowledge = createKnowledgeProvider(DATA_ROOT);
 const requestKnowledge = new AsyncLocalStorage();
 const { createSourceTranslations } = require('./source-translations');
 const { createStore } = require('./operations-store');
-const { createAccess } = require('./access-control');
+const { createAccess, safeEqual } = require('./access-control');
 const { createCardAccess } = require('./card-access');
 const minimumRelease=require('./minimum-release');
 const minimumScope=()=>minimumRelease.restricted(requestKnowledge.getStore()||knowledge.current());
@@ -712,7 +712,13 @@ async function initialize() {
     if(['GET','HEAD'].includes(req.method)&&url.pathname==='/robots.txt'){res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-cache'});res.end(req.method==='HEAD'?'':'User-agent: *\nAllow: /\nDisallow: /api/\n');return;}
     if(req.method==='GET'&&url.pathname==='/api/release'){sendJson(res,200,{...releaseVersion,compatibilityReleaseId:'v0.2.0'});return;}
     if (req.method === 'GET' && url.pathname === '/api/health') {
-      try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
+      if (req.headers['x-riftassist-health-probe']) {
+        let probeKey='';
+        try { probeKey=fsSync.readFileSync(path.join(ROOT,'private/admin-probe.key'),'utf8').trim(); } catch { /* probe unavailable */ }
+        if(!probeKey||!safeEqual(req.headers['x-riftassist-health-probe'],probeKey)) { sendJson(res,403,{error:'Invalid health probe'});return; }
+      } else {
+        try { access.session(req, res, true); } catch (error) { sendJson(res, error.statusCode || 503, { error: error.message }); return; }
+      }
       sendJson(res, 200, {
         ok: true, version: releaseVersion.version, releaseFamily: releaseVersion.releaseFamily, appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), cardSync:require('./riftnaru-sync-status').cardSyncStatus(DATA_ROOT), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
         features: { imageAttachments: false, sourceTranslations:!minimumScope()&&legacyScope()?.sourceTranslations!==false, thirdPartyCases:!minimumScope()&&legacyScope()?.judgeCases!==false },

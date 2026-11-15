@@ -1,4 +1,4 @@
-﻿const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {DatabaseSync}=require('node:sqlite');
 const {createStore}=require('../../releases/v0.2.0/src/operations-store');
 function fixture(root){
@@ -20,4 +20,3 @@ function fixture(root){
  return {db,now,start,seal,add};
 }
 module.exports={fixture};
-

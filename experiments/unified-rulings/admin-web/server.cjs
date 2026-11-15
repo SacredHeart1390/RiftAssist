@@ -1,7 +1,7 @@
 'use strict';
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {openStore,dayKey}=require('./store.cjs');
-function createAdmin({root,secret,health=()=>fetch('http://127.0.0.1:3001/api/health',{signal:AbortSignal.timeout(3000)}).then(r=>r.json()),store=openStore(root),now=Date.now}){
+function createAdmin({root,secret,health=()=>fetch('http://127.0.0.1:3001/api/health',{signal:AbortSignal.timeout(3000),headers:{'X-RiftAssist-Health-Probe':fs.readFileSync(path.join(root,'private/admin-probe.key'),'utf8').trim()}}).then(r=>{if(!r.ok)throw Error('Probe failed');return r.json();}),store=openStore(root),now=Date.now}){
  if(typeof secret!=='string'||secret.length<32)throw Error('Strong admin credential required');
  const sessions=new Map(),attempts=[];
  const digest=s=>crypto.createHash('sha256').update(s).digest();
