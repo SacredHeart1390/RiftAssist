@@ -11,7 +11,7 @@ test ! -e "$backup"
 test ! -e /etc/systemd/system/riftassist-admin.service
 test ! -e "$base/admin-web"
 umask 077
-mkdir "$backup"
+sudo -n install -d -m 700 -o azureuser -g azureuser "$backup"
 cd "$live"
 rsync -aR app-release.json public/index.html public/service-worker.js src/server.js "$backup/code/"
 node "$stage/admin-web/deploy-check.cjs" prepare "$stage" "$backup" "$commit"
