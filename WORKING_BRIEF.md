@@ -4,7 +4,7 @@
 
 ## 현재 상태 — 먼저 확인
 
-- **2026-11-16 v0.2.8 진행:** `feat/v0.2.8-admin-web`, 운영 기준 c5713e3(v0.2.7). 독립 `experiments/unified-rulings/admin-web/` 읽기 전용 SQLite·KST 통계·암호화 제보·인증/세션·localhost8765 구현. 금지 판정도 기존 질문 저장 흐름에 포함(이전 미기록 복원 불가). 관리자 합성11개·모바일/데스크톱2개·전체 브라우저40개 통과. Linux Node24 기준 회귀371개 중367개 통과 후 전송 누락 .gitattributes 보충, 실패 항목 포함 패키징65개 전부 통과. 호환성3개·구버전11개 통과. SSH 기존 홈키·호스트 지문 재사용, riftassist-azure 별칭 설정. 배포·실데이터 검증은 아직 미완료.
+- **2026-11-16 v0.2.8 운영 배포:** `feat/v0.2.8-admin-web`, 배포 커밋 `7350a9f48d484816a3f71c6c6fd9d21546bbd274`. Azure 공개 production/live·gpt-6-luna·카드1527 유지. 독립 `admin-web/` localhost8765 systemd 활성/자동기동, SQLite 읽기 전용·KST집계·제보복호화·인증8시간 구현. 집 PC riftassist-azure SSH 터널 실행 중, 실제 Edge1280/390px 로그인·통계·상세 성공. 실제 제보4/미해결1, 최근7일 질문21/호출26·30일109/148 독립SQL 일치. 관리자12·브라우저40·호환성3·구버전11 검증, 배포최종7350a9f CI 전체 성공(회귀371·관리자12·호환3·구버전11·브라우저40). 운영제보4건 복호화·기존기록/키/설정 보존·외부접근차단 확인. 유료AI0·운영시험기록0. 접속 http://127.0.0.1:8765, 키는 서버 /etc/riftassist/admin-web.key. 상세 `artifacts/admin-v028/DEPLOYMENT.md`.
 
 - **2026-11-13 v0.2.3 기존 이미지 경로 복구:** ef7684dc 운영 기준. 사용자 요청으로 고정된 기존 카탈로그의 v0.1.7 RiftNaru 이미지 경로만 복구한다. images 권한/출처 표식이나 검토 결과는 바꾸지 않으며 새 출처·수집기는 열지 않는다. 후보/선택/상세 로딩 및 실패 fallback을 검증한다. 표시 PATCH는 displayVersion=0.2.3, 내부 v0.2.0 유지.
 
