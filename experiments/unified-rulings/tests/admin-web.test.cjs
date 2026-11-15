@@ -1,0 +1,33 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {once}=require('node:events'),{DatabaseSync}=require('node:sqlite');
+const {fixture}=require('./helpers/admin-fixture.cjs');
+const {openStore,bounds,dayKey}=require('../admin-web/store.cjs');
+const {createAdmin}=require('../admin-web/server.cjs');
+test('admin schema, KST aggregates, tokens, errors, reports, retention, WAL and read-only',async t=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'riftassist-admin-test-')),f=fixture(root),store=openStore(root,()=>f.now);
+ t.after(()=>{store.close();f.db.close();const resolved=path.resolve(root);assert.equal(path.dirname(resolved),path.resolve(os.tmpdir()));assert.ok(path.basename(resolved).startsWith('riftassist-admin-test-'));fs.rmSync(resolved,{recursive:true,force:true});});
+ await t.test('KST midnight and strict date validation',()=>{assert.equal(dayKey(f.start-1),'2026-11-15');assert.equal(dayKey(f.start),'2026-11-16');assert.throws(()=>bounds('2026-02-30'));});
+ await t.test('questions distinct from API calls and sessions',()=>{const d=store.usage('2026-11-16','2026-11-16');assert.equal(d.totals.questions,4);assert.equal(d.totals.processed,2);assert.equal(d.totals.failed,1);assert.equal(d.totals.pending,1);assert.equal(d.totals.aiCalls,3);assert.equal(d.totals.newSessions,5);assert.equal(d.totals.noApi,1);assert.equal(d.totals.ruleBased,1);});
+ await t.test('calls, local rejection, errors and partial unknown tokens',()=>{const t=store.usage('2026-11-16','2026-11-16').totals;assert.equal(t.answer,2);assert.equal(t.translation,1);assert.equal(t.inputTokens,150);assert.equal(t.outputTokens,30);assert.equal(t.usageUnknown,1);assert.equal(t.localRejected,1);assert.equal(t.callErrors,1);});
+ await t.test('date range includes zero days and UTC-boundary requests',()=>{const d=store.usage('2026-11-14','2026-11-16');assert.equal(d.days.length,3);assert.equal(d.days[0].questions,0);assert.equal(d.days[1].questions,1);assert.equal(d.days[1].aiCalls,1);assert.throws(()=>store.usage('2026-01-01','2026-11-16'));});
+ await t.test('report filters, totals and privacy',()=>{assert.equal(store.reports().total,3);assert.equal(store.reports({unresolved:true}).total,2);assert.equal(store.reports({status:'resolved'}).total,1);assert.equal(store.reports({category:'app'}).total,0);assert.equal(store.reports({search:'report-1'}).total,1);assert.equal(store.usage('2026-11-16','2026-11-16').totals.newReports,3);assert.equal(store.usage('2026-11-16','2026-11-16').unresolved,2);assert.ok(!JSON.stringify(store.reports()).includes('owner-secret'));});
+ await t.test('decryption, question answer cards evidence errors history',()=>{const d=store.detail('report-1');assert.equal(d.content.description,'합성 사용자 제보');assert.equal(d.snapshot.question,'합성 질문');assert.equal(d.snapshot.response.cards[0].id,'test-card');assert.equal(d.snapshot.response.evidence[0].id,'r1');assert.equal(d.snapshot.trace.modelError,'synthetic-code');assert.equal(d.history[0].note,'합성 처리 이력');assert.ok(!JSON.stringify(d).includes('owner-secret'));assert.equal(store.detail('report-linked').origin,'request');});
+ await t.test('retention never reconstructs expired question or report',()=>{assert.equal(store.detail('report-expired'),null);assert.equal(store.detail('report-expired-question').snapshot,null);assert.ok(store.detail('report-expired-question').missing);assert.equal(store.usage('2026-10-16','2026-10-16').totals.questions,0);});
+ await t.test('reader sees committed WAL writes without checkpoint',()=>{f.add('wal-new',f.now,'regional-ban');assert.equal(store.usage('2026-11-16','2026-11-16').totals.questions,5);});
+ await t.test('underlying reader rejects all mutation',()=>{const original=DatabaseSync.prototype.exec;let reader;DatabaseSync.prototype.exec=function(sql){if(sql.includes('query_only'))reader=this;return original.call(this,sql);};let s;try{s=openStore(root,()=>f.now);assert.throws(()=>reader.exec("DELETE FROM reports"),/readonly|read-only/i);assert.equal(reader.prepare('PRAGMA query_only').get().query_only,1);}finally{DatabaseSync.prototype.exec=original;s?.close();}assert.equal(f.db.prepare('SELECT count(*) n FROM reports').get().n,4);});
+});
+test('HTTP admin authentication, session expiry, origin/host isolation and no-cache',async t=>{
+ let now=1000;const store={usage:()=>({totals:{}}),reports:()=>({items:[]}),detail:()=>({content:'synthetic'}),close:()=>{}},secret='a'.repeat(64);
+ const app=createAdmin({store,secret,now:()=>now,health:async()=>({ok:true,version:'0.2.8'})});app.listen(0,'127.0.0.1');await once(app,'listening');t.after(()=>new Promise(r=>app.close(r)));const base='http://127.0.0.1:'+app.address().port;
+ const request=(route,options={})=>fetch(base+route,options);
+ assert.equal((await request('/api/overview')).status,401);
+ assert.equal((await request('/api/login',{method:'POST',body:JSON.stringify({password:'wrong'})})).status,401);
+ const login=await request('/api/login',{method:'POST',body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];assert.match(login.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);
+ const data=await request('/api/overview',{headers:{Cookie:cookie}});assert.equal(data.status,200);assert.match(data.headers.get('cache-control'),/no-store/);assert.match(data.headers.get('x-robots-tag'),/noindex/);
+ assert.equal((await request('/api/reports',{headers:{Cookie:cookie,Origin:'https://evil.example'}})).status,403);
+ assert.equal(await new Promise((resolve,reject)=>{const req=require('node:http').get(base+'/api/reports',{headers:{Cookie:cookie,Host:'evil.example'}},r=>{r.resume();resolve(r.statusCode);});req.on('error',reject);}),403);
+ assert.equal((await request('/api/reports',{method:'PUT',headers:{Cookie:cookie}})).status,405);
+ assert.equal((await request('/api/reports',{headers:{Cookie:'riftadmin='+'b'.repeat(64)}})).status,401);
+ now+=8*3600000+1;assert.equal((await request('/api/reports',{headers:{Cookie:cookie}})).status,401);
+ assert.equal(app.address().address,'127.0.0.1');
+});

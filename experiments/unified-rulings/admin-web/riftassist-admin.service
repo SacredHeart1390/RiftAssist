@@ -1,0 +1,30 @@
+[Unit]
+Description=RiftAssist read-only SSH admin web
+After=network.target
+
+[Service]
+Type=simple
+User=azureuser
+Group=azureuser
+WorkingDirectory=/home/azureuser/RiftAssist-v020-e06496b0/admin-web
+Environment=RIFTASSI_DATA_ROOT=/home/azureuser/RiftAssist-v020-e06496b0
+Environment=RIFTASSI_ADMIN_KEY=/etc/riftassist/admin-web.key
+ExecStart=/usr/bin/node server.cjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

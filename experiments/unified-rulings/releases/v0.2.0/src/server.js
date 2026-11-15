@@ -495,7 +495,6 @@ async function handleAsk(req, res) {
   try { cardResolution = cardAccess.resolve(snapshot, payload.cardIds, question, payload.rememberedCardIds, payload.excludedCardIds); }
   catch (error) { sendJson(res, error.statusCode || 400, { error: error.message }); return; }
   const banAnswer=regionalBanQuestion.evaluate(question,cardResolution.selected,language,new Date().toISOString().slice(0,10),cardCatalog.cards);
-  if(banAnswer){sendJson(res,200,{...banAnswer,language,requestId:null});return;}
   const owner = access.session(req, res);
   const request = store.beginQuestion(owner, payload.clientKey, question,
     store.hash(JSON.stringify({ question, language, cardIds: payload.cardIds || [], image: imageDataUrl ? store.hash(imageDataUrl) : null, cardPolicy: snapshot.cardCacheScope })),
@@ -503,6 +502,11 @@ async function handleAsk(req, res) {
   if (request.response) { sendJson(res, 200, request.response); return; }
   const requestId = request.id;
   req.riftRequestId = requestId;
+  if(banAnswer){
+    const response={...banAnswer,language,requestId};
+    store.finishQuestion(requestId,response,{aiUsed:false,generationAttempts:[],ruleBased:true,at:new Date().toISOString()});
+    sendJson(res,200,response);return;
+  }
   const selectedCards = cardResolution.selected;
   const modelCards = cardAccess.forModel(selectedCards);
   let retrieved = retrieval.search(snapshot.index, question, modelCards);

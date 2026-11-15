@@ -35,14 +35,14 @@
     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
     "public/evidence-view.js": "e69596546ef48f0ca455241af735b935a2c932087c80d9b02588c7b85a9c84ee",
     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
-    "public/index.html": "2170f702b1501ab9091f2fb778e54c23f2f146369b3650aa87d87e94d2f7dceb",
+    "public/index.html": "38ac6d9f767b3a686a78d6ade7a725722cee3b2799be035f62cb9341719e80e2",
     "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
     "public/privacy.html": "d41ea0ad8acd419d2e5765677101c67e83e5388630133df141134a5de72a3c7b",
     "public/reports-ui3.js": "8de1cc86e64d7a29ccee528d952c5a0ed7558e9f7100dfdfc9e984c2beea94fe",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "d7992139a1b61ebc463fd8373979735b51ad641d35894f9fb433e705dda30784",
+    "public/service-worker.js": "2a887e5e5e9fa09ba9e086abd7bd8cedd37f5737201aabcc8e547f4e809cc196",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
@@ -113,7 +113,7 @@
     "src/riot-adapter.js": "0a583fffd92b052fb588712e060d56c316cef95eae3d7c1c871a3f99c9374906",
     "src/riot-converter.js": "d35dc7e6726c380af9828793831d267deb2aa335ce7131cfd9f31a842b59d285",
     "src/riot-snapshot.js": "186c0572707d53ddafb9204bc327f3c99211134e853f215c8648a23ed68dd0ca",
-    "src/server.js": "d052e80cbd2a65be2abbbcbe454ba3cf6d5355e38d2c0ffdd8d069bbc0d024f0",
+    "src/server.js": "91ebfd024691d592c7bc509b6be270b1397e79f4f4b59964f9639b5f10235533",
     "src/source-discovery.js": "cdca1fe30f7aca023cb25b869d1014c24fc4d0969f261bb4909667b4ac893036",
     "src/source-http.js": "5abd5ba5dad9c0ae2609e6693b96622c84c8a232924e63da6248dc03ddbaa7d8",
     "src/source-translations.js": "4e382715ae1b964d78489674c1e140f9c76c57418ca65afcd82a40849d0986e2",
@@ -154,6 +154,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.7",
-  "displayVersion": "0.2.7"
+  "uiRevision": "patch-0.2.8",
+  "displayVersion": "0.2.8"
 }

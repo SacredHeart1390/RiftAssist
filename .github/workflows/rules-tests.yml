@@ -5,11 +5,13 @@ on:
     paths:
       - 'experiments/unified-rulings/releases/**'
       - 'experiments/unified-rulings/tests/**'
+      - 'experiments/unified-rulings/admin-web/**'
       - '.github/workflows/rules-tests.yml'
   pull_request:
     paths:
       - 'experiments/unified-rulings/releases/**'
       - 'experiments/unified-rulings/tests/**'
+      - 'experiments/unified-rulings/admin-web/**'
       - '.github/workflows/rules-tests.yml'
   workflow_dispatch:
 
@@ -64,6 +66,8 @@ jobs:
           package-manager-cache: false
       - name: Run mocked rules regression tests
         run: npm test
+      - name: Read-only admin security and statistics (synthetic only)
+        run: npm run test:admin
       - name: Cross-version cards AI and reports (synthetic only)
         run: npm run test:compat
       - name: Verify unchanged v0.1.7 compatibility
