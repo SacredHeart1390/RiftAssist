@@ -11,8 +11,10 @@ for(const width of [1280,390])test(`admin login, metrics, filters, report detail
  const page=await browser.newPage({viewport:{width,height:900}});await page.clock.install({time:f.now});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:'+app.address().port);await page.locator('#password').fill(secret);await page.getByRole('button',{name:'로그인',exact:true}).click();await page.locator('main').waitFor({state:'visible'});await page.locator('#metrics').getByText('신규 접속 세션').waitFor();
  assert.match(await page.locator('#state').innerText(),/0.2.8.*production\/live.*gpt-6-luna/);
+ await page.locator('[data-tab=reports]').click();
  await page.locator('#reports .report').filter({hasText:'report-1'}).click();await page.locator('#detail').getByText('합성 사용자 제보',{exact:true}).waitFor();assert.match(await page.locator('#detail').innerText(),/합성 질문/);assert.match(await page.locator('#detail').innerText(),/합성 답변/);
  await page.locator('#report-status').selectOption('resolved');await page.locator('#reports-refresh').click();await page.waitForFunction(()=>document.querySelectorAll('#reports .report').length===1);assert.match(await page.locator('#reports').innerText(),/report-linked/);
+ await page.locator('[data-tab=overview]').click();
  await page.locator('#range').selectOption('7');await page.locator('#usage-refresh').click();await page.waitForFunction(()=>document.querySelectorAll('#usage tr').length===7);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  assert.equal(await page.getByRole('button',{name:/서버 중지|배포|DB 복원|모델 변경/}).count(),0);assert.deepEqual(errors,[]);

@@ -35,14 +35,14 @@
     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
     "public/evidence-view.js": "e69596546ef48f0ca455241af735b935a2c932087c80d9b02588c7b85a9c84ee",
     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
-    "public/index.html": "4f9413d314a92253986dbe9d3f5b1eaf46add12fca23dc99890939ce89e85095",
+    "public/index.html": "80b4f2ae32703fa60c6d4f99b6c0b21ebae25276773a8b4c4152f5ceee890415",
     "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
-    "public/privacy.html": "d41ea0ad8acd419d2e5765677101c67e83e5388630133df141134a5de72a3c7b",
+    "public/privacy.html": "ad942f8c48a2c51fe082dcc3707ef231d4f5c7190ee1c2c2fc95032052dc1c09",
     "public/reports-ui3.js": "8de1cc86e64d7a29ccee528d952c5a0ed7558e9f7100dfdfc9e984c2beea94fe",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "c79cbf36c13a8f3959af52c7e44375aa940d342bebe4d53465d4fe8f382ff9b7",
+    "public/service-worker.js": "c70d3387e5c6e88898a2e61c635dfd4cce6ec2bef5b92dd69da67ccdc31522c6",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
@@ -154,6 +154,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.9",
-  "displayVersion": "0.2.9"
+  "uiRevision": "patch-0.2.10",
+  "displayVersion": "0.2.10"
 }
