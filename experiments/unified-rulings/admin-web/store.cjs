@@ -64,7 +64,7 @@ function openStore(root,clock=Date.now){
  });}
 
  // Requests use the existing encrypted store. No migration, writes, or snapshot recovery.
- const failedStates=['failed','server-error','error','retrieval-error','insufficient-evidence'];
+ const failedStates=['failed','server-error','error','model-error','retrieval-error','insufficient-evidence'];
  const validId=id=>typeof id==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(id);
  const decode=value=>{try{return {value:unseal(value),error:false};}catch{return {value:null,error:true};}};
  const fields=(object,names)=>Object.fromEntries(names.filter(k=>object&&Object.hasOwn(object,k)).map(k=>[k,object[k]]));
