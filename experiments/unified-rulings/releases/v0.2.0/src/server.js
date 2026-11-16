@@ -378,7 +378,7 @@ async function askOpenAI(question, category, language, matches, cases, imageData
     officialVersions:{core:snapshot.manifest.sources?.core?.version,tournament:snapshot.manifest.sources?.tournament?.version},
     officialCheckedAt:snapshot.manifest.sources?.officialSync?.checkedAt || null,
     issues:context.trace?.intent, prerequisiteRuleIds:context.trace?.requiredRuleIds,
-    recoveryPass:context.recoveryPass===true };
+    recoveryPass:context.recoveryPass===true,recoveryReason:context.trace?.repairReason||null };
   const buildInput=()=>inputText(question,category,language,matches,cases,cards)+extraInstructions
     +'\nCurrent source snapshot and coverage (a refresh time is not a rules effective date):\n'+JSON.stringify(sourceContext)
     +(context.recoveryPass ? '\nAdditional official evidence has been retrieved. Re-evaluate the question using all supplied general rules and their interaction. Do not repeat an earlier retrieval gap. If a real game fact is absent, give supported conditional next steps. Do not invent an outcome just to make this pass complete.' : '');
@@ -538,7 +538,7 @@ async function handleAsk(req, res) {
     ai = { ruling:null,usage:null };
     if (!blockedByCards && !blockedByEvidence && aiEnabled() && process.env.OPENAI_API_KEY && matches.length) {
       let retry;
-      try { ai = await generateAttempt(); retry = recoveryRequest(ai.ruling); }
+      try { ai = await generateAttempt(); retry = recoveryRequest(ai.ruling,{cards:modelCards,evidence:matches}); }
       catch(error) {
         if(!['missing_rule_citation','missing_resolution_steps'].includes(error.code))throw error;
         retry={reason:error.code,queries:[],ruleIds:[]};
@@ -551,7 +551,7 @@ async function handleAsk(req, res) {
         if(blockedByEvidence) { ai={ruling:null,usage:null}; }
         else {
           ai=await generateAttempt(true);
-          if(recoveryRequest(ai.ruling)) throw Object.assign(new Error('Evidence recovery did not produce a supported actionable ruling.'),{code:'unresolved_evidence_gap',usage:ai.usage});
+          if(recoveryRequest(ai.ruling,{cards:modelCards,evidence:matches})) throw Object.assign(new Error('Evidence recovery did not produce a supported actionable ruling.'),{code:'unresolved_evidence_gap',usage:ai.usage});
         }
       }
     }

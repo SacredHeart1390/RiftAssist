@@ -1,18 +1,18 @@
 {
-  "name": "riftassist-rules-regression",
-  "private": true,
-  "scripts": {
-    "test": "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs minimum-release.test.cjs release-transition.test.cjs legacy-card-release.test.cjs ../control-center/staging/staging.test.cjs ../control-center/staging/replacement.test.cjs ../control-center/staging/replacement-hardening.test.cjs technical-replacement.test.cjs single-character-cards.test.cjs patch-version.test.cjs legacy-image-restoration.test.cjs riftnaru-refresh.test.cjs riftnaru-auto.test.cjs riftnaru-source.test.cjs riftnaru-browser.test.cjs regional-ban.test.cjs",
-    "test:legacy": "node helpers/test-legacy.cjs",
-    "test:e2e": "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs e2e/single-character-cards.test.cjs e2e/patch-thumbnails.test.cjs e2e/legacy-images.test.cjs e2e/riftnaru-browser-dom.test.cjs e2e/regional-ban.test.cjs e2e/admin-web.test.cjs",
-    "test:compat": "node helpers/run-compatibility.cjs",
-    "test:inspection": "python ../control-center/staging/inspection.test.py",
-    "test:admin": "node --test admin-web.test.cjs"
-  },
-  "devDependencies": {
-    "playwright": "1.62.1"
-  },
-  "engines": {
-    "node": ">=22.13"
-  }
+    "name":  "riftassist-rules-regression",
+    "private":  true,
+    "scripts":  {
+                    "test":  "node --test --test-concurrency=1 ruling-regression.test.cjs legal-operations.test.cjs card-access.test.cjs v020-environment.test.cjs card-translation.test.cjs card-sync.test.cjs card-review.test.cjs control-center.test.cjs control-center-operations.test.cjs release-readiness.test.cjs minimum-release.test.cjs release-transition.test.cjs legacy-card-release.test.cjs ../control-center/staging/staging.test.cjs ../control-center/staging/replacement.test.cjs ../control-center/staging/replacement-hardening.test.cjs technical-replacement.test.cjs single-character-cards.test.cjs patch-version.test.cjs legacy-image-restoration.test.cjs riftnaru-refresh.test.cjs riftnaru-auto.test.cjs riftnaru-source.test.cjs riftnaru-browser.test.cjs regional-ban.test.cjs scoring-source.test.cjs",
+                    "test:legacy":  "node helpers/test-legacy.cjs",
+                    "test:e2e":  "node --test --test-concurrency=1 e2e/user-flows.test.cjs e2e/legal-pages.test.cjs e2e/single-character-cards.test.cjs e2e/patch-thumbnails.test.cjs e2e/legacy-images.test.cjs e2e/riftnaru-browser-dom.test.cjs e2e/regional-ban.test.cjs e2e/admin-web.test.cjs e2e/scoring-source.test.cjs",
+                    "test:compat":  "node helpers/run-compatibility.cjs",
+                    "test:inspection":  "python ../control-center/staging/inspection.test.py",
+                    "test:admin":  "node --test admin-web.test.cjs"
+                },
+    "devDependencies":  {
+                            "playwright":  "1.62.1"
+                        },
+    "engines":  {
+                    "node":  "\u003e=22.13"
+                }
 }

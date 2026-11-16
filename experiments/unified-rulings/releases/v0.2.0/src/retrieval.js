@@ -1,4 +1,4 @@
-const VERSION = 'mechanics-dependency-search-5';
+const VERSION = 'mechanics-dependency-search-6-scoring-sources';
 const STOP = new Set('the and for with when what that this from have can does how are was were into your you not but then after before while during their them they about should would could game rules rule please 에서 으로 에게 하면 인가요 있나요 그리고 상황 어떻게 무엇 저는 우리 있는 없는 합니다 했습니다 있습니다 습니 니다'.split(' '));
 const GROUPS = [
   ['우선권','priority'],['체인','chain'],['리액션','반응','reaction'],['무효화','반격','차단','counter'],
@@ -43,10 +43,13 @@ function analyzeQuestion(question, cards=[]) {
   const zones = /폐기장|trash|graveyard/iu.test(q) && /패에서|패에|hand/iu.test(q);
   const deckConstruction = (quantity && (deck || zones || /장째|번째|copies|fourth/iu.test(q))) || /같은\s*(?:이름|카드).*(?:몇|제한)|copy limit|deck legality|덱\s*등록/iu.test(q);
   const effect = /효과|리액션|우선권|대상|추가.*(?:힘|비용)|무효|반항|counter|effect|target|resolve|priority|additional cost/iu.test(q);
-  const scoring = /점수|득점|\d\s*점|scor(?:e|es|ed|ing)|\bpoints?\b|conquer|\bhold(?:ing)?\b/iu.test(q);
+  const cardPointGain = /\bscore\s+(?:\d+|one|two|three|x)\s+points?\b/iu.test(cardText);
+  const conditionalTrigger = /\b(?:when|whenever|at)\b[^.\n]*,\s*if\b/iu.test(cardText);
+  const holdTrigger = /\bwhen\s+(?:i|you)\s+hold\b/iu.test(cardText);
+  const scoring = cardPointGain || /점수|득점|\d\s*점|scor(?:e|es|ed|ing)|\bpoints?\b|conquer|\bhold(?:ing)?\b/iu.test(q);
   const targetResolution = /대상|target/iu.test(q) && /해결|처리|체인|반응|후퇴|패로|손으로|사라|죽|죽었|처치|돌아|다시|변경|resolv|resolution|chain|react|retreat|hand|illegal|invalid|leave|left|die|died|kill|chang|retarget/iu.test(q);
   return {
-    deckConstruction, scoring, targetResolution, triggered, damage, death, timing,
+    deckConstruction, scoring, cardPointGain, conditionalTrigger, holdTrigger, targetResolution, triggered, damage, death, timing,
     cleanup: damage || death || /정리|cleanup/iu.test(q), needsCardText: !deckConstruction || effect,
     tournament: relevantEvent(q), quantityContext: quantity,
     simultaneousZones: zones, repeatedPlay: /번(?:째)?|회|times|fourth time/iu.test(q),
@@ -57,6 +60,11 @@ function analyzeQuestion(question, cards=[]) {
 // Validate the meaning of timing anchors against the active document, not just old rule numbers.
 // A unique match also survives a future renumbering. Changed/ambiguous meanings are surfaced in trace.
 const ANCHORS = [
+  ['470.1', /scoring\s+is\s+a\s+distinct\s+process\s+from\s+gaining\s+points/iu],
+  ['470.2', /gaining\s+points[\s\S]*score\s+x\s+points[\s\S]*does\s+not\s+refer/iu],
+  ['470.3', /process\s+of\s+scoring[\s\S]*without\s+referring[\s\S]*number\s+of\s+points/iu],
+  ['383.2.a.1', /additional\s+conditional\s+statement\s+immediately\s+after[\s\S]*part\s+of[\s\S]*trigger\s+condition/iu],
+  ['383.4.d.2.a', /hold\s+abilities\s+of\s+units[\s\S]*chain\s+as\s+pending\s+items/iu],
   ['158.1', /rules text.*top to bottom/iu],
   ['158.3', /while a spell or ability.*resolving.*no other spells or abilities/iu],
   ['158.3.a', /finish resolving all effects.*before/iu],
@@ -131,6 +139,8 @@ function search(index, question, cards=[], options={}) {
   if(intent.damage && /同時|동시|따로|각각|별개|두|번째|하나씩|separate|simultaneous|each/iu.test(searchQuestion)) anchor('418.1.d');
   if(intent.triggered) ['383.3','383.3.d','337.3','320.1'].forEach(anchor);
   if(intent.triggered && intent.death) anchor('383.2.c.2');
+  if(intent.conditionalTrigger) anchor('383.2.a.1');
+  if(intent.holdTrigger) anchor('383.4.d.2.a');
   if (intent.deckConstruction) {
     required.push('core-rules:103.3.b','core-rules:103.3.e');
     if (/챔피언|champion/iu.test(question)) required.push('core-rules:103.3.b.1');
@@ -139,7 +149,7 @@ function search(index, question, cards=[], options={}) {
     if (intent.tournament) required.push('tournament-rules:703.4.e','tournament-rules:703.3','tournament-rules:703.3.a.3');
     if (/리미티드|실드|드래프트|limited|sealed|draft/iu.test(question)) required.push('tournament-rules:602.3.a');
   }
-  if (intent.scoring) required.push('core-rules:472','core-rules:471.1','core-rules:471.2','core-rules:470');
+  if (intent.scoring) { ['470.1','470.2','470.3'].forEach(anchor);required.push('core-rules:472','core-rules:471.1','core-rules:471.2','core-rules:470'); }
   const targetPrinciples = ['355.15','359.3.e.1','359.3.e.2','359.3.e.5','340.1','359.3.d','359.3.e.7','359.3.e.8'].map(id=>'core-rules:'+id);
   if (intent.targetResolution) required.push(...targetPrinciples);
   for(const id of (options.ruleIds || []).slice(0,6)) {
@@ -213,7 +223,7 @@ function search(index, question, cards=[], options={}) {
     return {...item,parentContext:parents};
   });
   return { evidence:bundles, intent,
-    trace:{version:VERSION,intent,evidenceBudget:budget,requiredRuleIds:requiredIds,unresolvedAnchors,dependencyEdges,repairQueries:repairs,
+    trace:{version:VERSION,intent,evidenceBudget:budget,requiredRuleIds:requiredIds,unresolvedAnchors,dependencyEdges,repairQueries:repairs,repairReason:options.reason||null,
       missingFromIndex:requiredIds.filter(id=>!index.byId.has(id)),
       missingRequired:[...requiredIds.filter(id=>!bundles.some(item=>item.id===id)),...unresolvedAnchors.map(id=>'unresolved-current-rule:'+id)],
       candidates:candidates.map(i=>({id:i.id,score:i.searchScore,reason:i.selectionReason})),selectedIds:bundles.map(i=>i.id)} };

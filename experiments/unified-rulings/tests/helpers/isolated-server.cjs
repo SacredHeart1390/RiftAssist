@@ -8,6 +8,10 @@ const { fork } = require('node:child_process');
 const { DatabaseSync } = require('node:sqlite');
 const { once } = require('node:events');
 const fixture = require('../fixtures/rules-2026-10-09.json');
+// Extend the in-memory synthetic fixture; never republish or rewrite its card catalog.
+for (const rule of require('../fixtures/scoring-rules.cjs')) {
+  if (!fixture.rules.some(item => item.id === rule.id)) fixture.rules.push(rule);
+}
 const project = path.resolve(__dirname, '../..');
 const releaseId = process.env.RIFTASSI_TEST_RELEASE || 'v0.2.0';
 if (!/^v\d+\.\d+\.\d+$/.test(releaseId)) throw new Error('Expected a release version, not a filesystem path.');
@@ -122,7 +126,7 @@ async function isolatedServer(t, plans, options = {}) {
   });
   const health = await localRequest(port, '/api/health');
   assert.equal(health.status, 200);
-  assert.deepEqual(health.body.knowledge.unresolvedRuleAnchors, [], 'Fixture lacks a required current-rule anchor.');
+  assert.deepEqual(health.body.knowledge.unresolvedRuleAnchors, options.expectedUnresolvedAnchors || [], 'Fixture lacks a required current-rule anchor.');
   cookie = health.headers['set-cookie'][0].split(';')[0];
   return {
     baseURL: `http://127.0.0.1:${port}`,
