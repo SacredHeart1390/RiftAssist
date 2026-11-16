@@ -149,7 +149,8 @@ function search(index, question, cards=[], options={}) {
     if (intent.tournament) required.push('tournament-rules:703.4.e','tournament-rules:703.3','tournament-rules:703.3.a.3');
     if (/리미티드|실드|드래프트|limited|sealed|draft/iu.test(question)) required.push('tournament-rules:602.3.a');
   }
-  if (intent.scoring) { ['470.1','470.2','470.3'].forEach(anchor);required.push('core-rules:472','core-rules:471.1','core-rules:471.2','core-rules:470'); }
+  if(intent.cardPointGain) ['470.1','470.2','470.3'].forEach(anchor);
+  if (intent.scoring) required.push('core-rules:472','core-rules:471.1','core-rules:471.2','core-rules:470');
   const targetPrinciples = ['355.15','359.3.e.1','359.3.e.2','359.3.e.5','340.1','359.3.d','359.3.e.7','359.3.e.8'].map(id=>'core-rules:'+id);
   if (intent.targetResolution) required.push(...targetPrinciples);
   for(const id of (options.ruleIds || []).slice(0,6)) {

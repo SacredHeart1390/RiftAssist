@@ -109,7 +109,7 @@
     "src/paths.js": "543a38c9375258913c3cc5faa0a63cd639bb0aae81c9c8e75f53eae500f2293b",
     "src/pdf-rules.mjs": "508b9df13f2887f0776e16a0d6931f739be24e37e23afeea57b47303f28cd542",
     "src/release-readiness.js": "502447e743347656611a679180d4657263ac19c78c6e269c1e40eb91651904c2",
-    "src/retrieval.js": "935a4952662f4602c7bb0e3663f6877c2e100af249460c5219c899d352bdcfe4",
+    "src/retrieval.js": "12be8881e79a7dc1760eaee89b901eea24cffc95458b80bf633ae2571dcf4041",
     "src/riot-adapter.js": "0a583fffd92b052fb588712e060d56c316cef95eae3d7c1c871a3f99c9374906",
     "src/riot-converter.js": "d35dc7e6726c380af9828793831d267deb2aa335ce7131cfd9f31a842b59d285",
     "src/riot-snapshot.js": "186c0572707d53ddafb9204bc327f3c99211134e853f215c8648a23ed68dd0ca",

@@ -3,7 +3,7 @@
   "releaseFamily": "v0.2.0",
   "scope": "mock-local-control-center",
   "files": {
-    "app-release.json": "2d191d80d243b45f0f9d4b360ef834b144318d0f0689952a61106e0eead7d1f0",
+    "app-release.json": "d77133da83c43ecc53709509e0f4913d968fdd8b59b5b5db714c55b260840840",
     "dev-fixtures/mock-cards.json": "cbc3a8073658783bdbd283396e95b6f55e4a738d0d8079b139da0dea3473f7f0",
     "dev-fixtures/rules.json": "7a9804933595c88f8363d0402e88aa5885dfccc4b35477d85ccaf09eb8440249",
     "manager-ui/index.html": "dcf88bf52a7f38b65cc5bb98e20517c0ae5fbcef211910be0ff4e4720b13d804",
@@ -83,7 +83,7 @@
     "src/regional-ban.js": "c70aa987f368cbc222130752c42a5b0b80f1d0454e69c6160f132b28aedf231d",
     "src/release-readiness.js": "502447e743347656611a679180d4657263ac19c78c6e269c1e40eb91651904c2",
     "src/release-version.js": "5a739eab9c62857b2f9a7d746b48fa91be31ed0d19f72b0652a5b879eb723f73",
-    "src/retrieval.js": "935a4952662f4602c7bb0e3663f6877c2e100af249460c5219c899d352bdcfe4",
+    "src/retrieval.js": "12be8881e79a7dc1760eaee89b901eea24cffc95458b80bf633ae2571dcf4041",
     "src/riftnaru-auto-release.js": "6a9d1ab5f5d7bf7988bb294cea285748f15487f62ccd33a4aec501684efd1381",
     "src/riftnaru-browser-inbox.js": "0cfd85213eb8699526b27a07293c97373b8f39fb9c3b9c63d5c6c01582b60523",
     "src/riftnaru-browser.js": "e00412212239cc33320e89d2eaa1cf72b30315c4ef8ca02fb80c2d18443de0c2",
