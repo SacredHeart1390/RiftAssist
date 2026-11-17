@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 const { isolatedServer, fixture, release } = require('../helpers/isolated-server.cjs');
-const cacheName='riftassi-patch-'+require(path.join(release,'src/release-version')).version;
+const cacheName='riftassi-'+require(path.join(release,'app-release.json')).uiRevision;
 const notice = 'RiftAssist was created under Riot Games\' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.';
 
 test('unconfirmed runtime stays hidden while health is pending',async t=>{

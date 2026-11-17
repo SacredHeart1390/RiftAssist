@@ -8,10 +8,6 @@ User=azureuser
 Group=azureuser
 WorkingDirectory=/home/azureuser/RiftAssist-v020-e06496b0/admin-web
 Environment=RIFTASSI_DATA_ROOT=/home/azureuser/RiftAssist-v020-e06496b0
-Environment=RIFTASSI_ADMIN_KEY=/etc/riftassist/admin-web.key
-Environment=RIFTASSI_ADMIN_AUTH_DIRECTORY=/var/lib/riftassist-admin-auth
-StateDirectory=riftassist-admin-auth
-StateDirectoryMode=0700
 ExecStart=/usr/bin/node server.cjs
 Restart=on-failure
 RestartSec=5

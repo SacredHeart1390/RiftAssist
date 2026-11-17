@@ -25,18 +25,16 @@ test('admin schema, KST aggregates, tokens, errors, reports, retention, WAL and 
  await t.test('reader sees committed WAL writes without checkpoint',()=>{f.add('wal-new',f.now,'regional-ban');assert.equal(store.usage('2026-11-16','2026-11-16').totals.questions,5);});
  await t.test('underlying reader rejects all mutation',()=>{const original=DatabaseSync.prototype.exec;let reader;DatabaseSync.prototype.exec=function(sql){if(sql.includes('query_only'))reader=this;return original.call(this,sql);};let s;try{s=openStore(root,()=>f.now);assert.throws(()=>reader.exec("DELETE FROM reports"),/readonly|read-only/i);assert.equal(reader.prepare('PRAGMA query_only').get().query_only,1);}finally{DatabaseSync.prototype.exec=original;s?.close();}assert.equal(f.db.prepare('SELECT count(*) n FROM reports').get().n,4);});
 });
-test('HTTP admin authentication, session expiry, origin/host isolation and no-cache',async t=>{
- let now=1000;const store={usage:()=>({totals:{}}),reports:()=>({items:[]}),detail:()=>({content:'synthetic'}),close:()=>{}},secret='a'.repeat(64);
- const app=createAdmin({store,secret,now:()=>now,health:async()=>({ok:true,version:'0.2.8'})});app.listen(0,'127.0.0.1');await once(app,'listening');t.after(()=>new Promise(r=>app.close(r)));const base='http://127.0.0.1:'+app.address().port;
- const request=(route,options={})=>fetch(base+route,options);
- assert.equal((await request('/api/overview')).status,401);
- assert.equal((await request('/api/login',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({password:'wrong'})})).status,401);
- const login=await request('/api/login',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];assert.match(login.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);
- const data=await request('/api/overview',{headers:{Cookie:cookie}});assert.equal(data.status,200);assert.match(data.headers.get('cache-control'),/no-store/);assert.match(data.headers.get('x-robots-tag'),/noindex/);
- assert.equal((await request('/api/reports',{headers:{Cookie:cookie,Origin:'https://evil.example'}})).status,403);
- assert.equal(await new Promise((resolve,reject)=>{const req=require('node:http').get(base+'/api/reports',{headers:{Cookie:cookie,Host:'evil.example'}},r=>{r.resume();resolve(r.statusCode);});req.on('error',reject);}),403);
- assert.equal((await request('/api/reports',{method:'PUT',headers:{Cookie:cookie}})).status,405);
- assert.equal((await request('/api/reports',{headers:{Cookie:'riftadmin='+'b'.repeat(64)}})).status,401);
- now+=8*3600000+1;assert.equal((await request('/api/reports',{headers:{Cookie:cookie}})).status,401);
- assert.equal(app.address().address,'127.0.0.1');
+test('SSH-only HTTP admin has no login or expiry and keeps origin/host isolation and no-store',async t=>{
+ let now=1000;const store={usage:()=>({totals:{}}),reports:()=>({items:[]}),detail:()=>({content:'synthetic'}),requests:()=>({items:[]}),requestDetail:()=>({id:'synthetic'}),close:()=>{}};
+ const app=createAdmin({store,now:()=>now,health:async()=>({ok:true,version:'0.2.11'})});app.listen(0,'127.0.0.1');await once(app,'listening');t.after(()=>new Promise(r=>{app.closeAllConnections();app.close(r);}));const base='http://127.0.0.1:'+app.address().port;
+ for(const route of ['/api/overview','/api/reports','/api/requests','/api/requests/synthetic']){const r=await fetch(base+route);assert.equal(r.status,200);assert.equal(r.headers.get('set-cookie'),null);assert.match(r.headers.get('cache-control'),/no-store/);assert.match(r.headers.get('x-robots-tag'),/noindex/);}
+ for(const route of ['/api/login','/api/logout','/api/session'])for(const method of ['GET','POST'])assert.equal((await fetch(base+route,{method})).status,404);
+ assert.equal((await fetch(base+'/api/reports',{headers:{Cookie:'riftadmin_session_v1=invalid; riftadmin_trusted_v1=invalid'}})).status,200);
+ now+=31*86400000;assert.equal((await fetch(base+'/api/reports')).status,200);
+ assert.equal((await fetch(base+'/api/reports',{headers:{Origin:'https://evil.example'}})).status,403);
+ assert.equal((await fetch(base+'/api/reports',{headers:{Origin:'null'}})).status,403);
+ for(const host of ['evil.example','127.0.0.1.evil:8765','localhost.evil:8765','127.0.0.1:0','127.0.0.1:65536'])assert.equal(await new Promise((resolve,reject)=>{const req=require('node:http').get(base+'/api/reports',{headers:{Host:host}},r=>{r.resume();resolve(r.statusCode);});req.on('error',reject);}),403);
+ for(const headers of [{'Sec-Fetch-Site':'cross-site'},{Forwarded:'host=localhost'},{'X-Forwarded-For':'127.0.0.1'},{'X-Forwarded-Host':'localhost'}])assert.equal((await fetch(base+'/api/reports',{headers})).status,403);
+ assert.equal((await fetch(base+'/api/requests',{method:'PUT'})).status,405);assert.equal(app.address().address,'127.0.0.1');
 });
