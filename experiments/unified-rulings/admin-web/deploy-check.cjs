@@ -29,8 +29,8 @@ async function main(){const [mode,stage,folder,commit]=process.argv.slice(2);
   for(const [file,digest]of Object.entries(before.protectedFiles))assert.equal(hash(fs.readFileSync(base+'/'+file)),digest,'Protected configuration changed');
   const db=new DatabaseSync(base+'/private/operations.sqlite',{readOnly:true});try{for(const [table,rows]of Object.entries(before.records))for(const row of rows){const current=db.prepare('SELECT * FROM '+table+' WHERE id=?').get(row.id);assert.ok(current,'Existing record disappeared');assert.equal(hash(JSON.stringify(current)),row.hash,'Existing record changed');}}finally{db.close();}
   phase='admin-authentication';const secret=fs.readFileSync('/etc/riftassist/admin-web.key','utf8').trim(),url='http://127.0.0.1:8765';
-  assert.equal((await fetch(url+'/api/reports')).status,401);assert.equal((await fetch(url+'/api/login',{method:'POST',body:JSON.stringify({password:'wrong'})})).status,401);
-  const login=await fetch(url+'/api/login',{method:'POST',body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];
+  assert.equal((await fetch(url+'/api/reports')).status,401);assert.equal((await fetch(url+'/api/login',{method:'POST',headers:{Origin:url,'Content-Type':'application/json'},body:JSON.stringify({password:'wrong'})})).status,401);
+  const login=await fetch(url+'/api/login',{method:'POST',headers:{Origin:url,'Content-Type':'application/json'},body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];
   const get=async p=>{const res=await fetch(url+p,{headers:{Cookie:cookie}});assert.equal(res.status,200);assert.match(res.headers.get('cache-control'),/no-store/);return res.json();};
   phase='admin-read';const overview=await get('/api/overview'),reports=await get('/api/reports');
   phase='independent-sql-and-no-session-writes';

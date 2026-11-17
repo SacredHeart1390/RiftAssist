@@ -30,8 +30,8 @@ test('HTTP admin authentication, session expiry, origin/host isolation and no-ca
  const app=createAdmin({store,secret,now:()=>now,health:async()=>({ok:true,version:'0.2.8'})});app.listen(0,'127.0.0.1');await once(app,'listening');t.after(()=>new Promise(r=>app.close(r)));const base='http://127.0.0.1:'+app.address().port;
  const request=(route,options={})=>fetch(base+route,options);
  assert.equal((await request('/api/overview')).status,401);
- assert.equal((await request('/api/login',{method:'POST',body:JSON.stringify({password:'wrong'})})).status,401);
- const login=await request('/api/login',{method:'POST',body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];assert.match(login.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);
+ assert.equal((await request('/api/login',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({password:'wrong'})})).status,401);
+ const login=await request('/api/login',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({password:secret})});assert.equal(login.status,200);const cookie=login.headers.get('set-cookie').split(';')[0];assert.match(login.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);
  const data=await request('/api/overview',{headers:{Cookie:cookie}});assert.equal(data.status,200);assert.match(data.headers.get('cache-control'),/no-store/);assert.match(data.headers.get('x-robots-tag'),/noindex/);
  assert.equal((await request('/api/reports',{headers:{Cookie:cookie,Origin:'https://evil.example'}})).status,403);
  assert.equal(await new Promise((resolve,reject)=>{const req=require('node:http').get(base+'/api/reports',{headers:{Cookie:cookie,Host:'evil.example'}},r=>{r.resume();resolve(r.statusCode);});req.on('error',reject);}),403);
