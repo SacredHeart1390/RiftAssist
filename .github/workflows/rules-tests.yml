@@ -6,12 +6,14 @@ on:
       - 'experiments/unified-rulings/releases/**'
       - 'experiments/unified-rulings/tests/**'
       - 'experiments/unified-rulings/admin-web/**'
+      - 'experiments/unified-rulings/control-center/backend-manifest.json'
       - '.github/workflows/rules-tests.yml'
   pull_request:
     paths:
       - 'experiments/unified-rulings/releases/**'
       - 'experiments/unified-rulings/tests/**'
       - 'experiments/unified-rulings/admin-web/**'
+      - 'experiments/unified-rulings/control-center/backend-manifest.json'
       - '.github/workflows/rules-tests.yml'
   workflow_dispatch:
 
