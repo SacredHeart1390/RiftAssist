@@ -102,7 +102,9 @@ function openStore(root,clock=Date.now){
   const recent=row.created>=clock()-7*DAY,t=decode(row.trace),q=recent?decode(row.question):{value:null,error:false},a=recent?decode(row.response):{value:null,error:false},trace=t.value||{};
   const attempts=Array.isArray(trace.generationAttempts)?trace.generationAttempts:[];
   const calls=[],seen=new Set();for(const attempt of attempts){if(!validId(attempt.callId)||seen.has(attempt.callId))continue;seen.add(attempt.callId);
-   const call=db.prepare('SELECT id,kind,created,finished,input_tokens,output_tokens,error FROM calls WHERE id=? AND owner=? AND created>=?').get(attempt.callId,row.owner,clock()-30*DAY);if(call)calls.push(call);
+   const call=db.prepare('SELECT id,kind,created,finished,input_tokens,output_tokens,error FROM calls WHERE id=? AND owner=? AND created>=?').get(attempt.callId,row.owner,clock()-30*DAY);
+   if(call)calls.push({...call,diagnostic:fields(attempt.diagnostic,['stage','httpStatus','providerRequestId','networkCode','responseStatus','incompleteReason']),
+     reasoningTokens:Number.isInteger(attempt.usage?.output_tokens_details?.reasoning_tokens)?attempt.usage.output_tokens_details.reasoning_tokens:null});
   }
   const count=v=>Number.isFinite(v)&&v>=0?v:null;
   const tokens=(key,column)=>count(trace[key])??(calls.length&&calls.length===seen.size&&calls.every(c=>count(c[column])!==null)?calls.reduce((n,c)=>n+c[column],0):null);

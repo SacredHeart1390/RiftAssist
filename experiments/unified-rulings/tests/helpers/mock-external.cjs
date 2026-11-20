@@ -22,7 +22,9 @@ globalThis.fetch = async (url, options = {}) => {
     return Response.json({ error: { code: 'mock_queue_exhausted' } }, { status: 500 });
   }
   if (plan.delayMs) await new Promise(resolve => setTimeout(resolve, Math.min(3000, plan.delayMs)));
-  if (plan.error) return Response.json({ error: plan.error }, { status: plan.status || 429 });
+  if (plan.timeout) throw new DOMException('Synthetic deadline', 'TimeoutError');
+  if (plan.response) return Response.json(plan.response, { headers: { 'x-request-id': 'req_synthetic' } });
+  if (plan.error) return Response.json({ error: plan.error }, { status: plan.status || 429, headers: { 'x-request-id': 'req_synthetic' } });
   return Response.json({ id: `mock-response-${number + 1}`, status: 'completed',
     output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(plan.ruling) }] }],
     usage: plan.usage || { input_tokens: 100, output_tokens: 40, input_tokens_details: { cached_tokens: 10 } },

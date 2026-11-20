@@ -11,6 +11,7 @@ const releaseVersion = require('./release-version');
 const environment = require('./environment').assertEnvironment(DATA_ROOT);
 if (environment === 'staging') require('./staging-policy').stagingPorts(DATA_ROOT);
 const { fetchExternal: fetch, providerMode } = require('./external-services');
+const { identifier, modelFailure, providerFailure, transportFailure, matchesSchema } = require('./model-response');
 const { createKnowledgeProvider } = require('./knowledge-provider');
 const retrieval = require('./retrieval');
 const { recoveryRequest } = require('./answer-quality');
@@ -389,9 +390,9 @@ async function askOpenAI(question, category, language, matches, cases, imageData
   while(cases.length && modelInput.length+terminologyInstruction.length>MAX_MODEL_INPUT_CHARS) {
     cases.pop();modelInput=buildInput();terminologyInstruction=terms();
   }
-  if (modelInput.length + terminologyInstruction.length > MAX_MODEL_INPUT_CHARS) throw Object.assign(new Error('Selected evidence exceeds the input budget; no model request sent.'), { code: 'input_budget_exceeded' });
+  if (modelInput.length + terminologyInstruction.length > MAX_MODEL_INPUT_CHARS) throw modelFailure('input_budget_exceeded', { stage: 'before-send' });
   const remaining=context.deadline ? context.deadline-Date.now() : 45000;
-  if(remaining<8000)throw Object.assign(new Error('Request deadline leaves no generation window.'),{code:'request_deadline'});
+  if(remaining<8000)throw modelFailure('request_deadline', { stage: 'before-send' });
   const userContent = [{ type: 'input_text', text: modelInput }];
   if (imageDataUrl) userContent.push({ type: 'input_image', image_url: imageDataUrl, detail: 'auto' });
   const response = await fetch('https://api.openai.com/v1/responses', {
@@ -405,17 +406,29 @@ async function askOpenAI(question, category, language, matches, cases, imageData
       ],
       text: { format: { type: 'json_schema', name: 'riftbound_ruling', strict: true, schema: RULING_SCHEMA } },
     }), signal: AbortSignal.timeout(Math.min(45000,remaining)),
+  }).catch(error => { throw transportFailure(error); });
+  const diagnostic = { httpStatus: response.status, providerRequestId: identifier(response.headers.get('x-request-id')) };
+  const payload = await response.json().catch(error => {
+    if (['TimeoutError', 'AbortError'].includes(error.name)) throw transportFailure(error);
+    return null;
   });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(payload.error?.message || `OpenAI API returned HTTP ${response.status}`);
-    error.code = payload.error?.code || `http_${response.status}`;
-    throw error;
+  if (!response.ok) throw providerFailure(response, payload, diagnostic);
+  const outputDiagnostic = {
+    ...diagnostic,
+    stage: 'model-output',
+    responseStatus: identifier(payload?.status),
+    incompleteReason: identifier(payload?.incomplete_details?.reason),
+  };
+  if (payload?.status === 'incomplete') {
+    const code = outputDiagnostic.incompleteReason === 'max_output_tokens' ? 'incomplete_output' : 'model_incomplete';
+    throw modelFailure(code, outputDiagnostic, payload.usage);
   }
-  if (payload.status === 'incomplete') throw Object.assign(new Error('Model output budget reached; no automatic retry.'), { code: 'incomplete_output', usage: payload.usage });
   let ruling;
   try { ruling = JSON.parse(getOutputText(payload)); }
-  catch { throw Object.assign(new Error('Model did not return a complete structured answer.'), { code: 'invalid_output', usage: payload.usage }); }
+  catch { throw modelFailure('invalid_output', outputDiagnostic, payload?.usage); }
+  if (payload.status !== 'completed' || !matchesSchema(ruling, RULING_SCHEMA)) {
+    throw modelFailure('invalid_output', outputDiagnostic, payload.usage);
+  }
   const allowedRules = new Set(matches.map((item) => item.id));
   const allowedCases = new Set(cases.map((item) => String(item.id)));
   ruling.citedRuleIds = [...new Set(ruling.citedRuleIds.filter((id) => allowedRules.has(id)))];
@@ -436,14 +449,15 @@ async function askOpenAI(question, category, language, matches, cases, imageData
   }
   // Invalid citations are a generation failure, not proof that a rules question is unanswerable.
   if (!ruling.citedRuleIds.length && ruling.confidence !== 'insufficient' && !['missing-rule','source-conflict'].includes(ruling.evidenceAssessment?.status)) {
-    throw Object.assign(new Error('Generated ruling did not cite a supplied official clause.'), { code: 'missing_rule_citation', usage: payload.usage });
+    throw modelFailure('missing_rule_citation', { ...diagnostic, stage: 'evidence-validation' }, payload.usage);
   }
   ruling.resolutionSteps = (ruling.resolutionSteps || []).filter(step => typeof step === 'string' && step.trim()).slice(0, 6);
   if (ruling.confidence !== 'insufficient' && !ruling.resolutionSteps.length) {
-    throw Object.assign(new Error('Generated ruling omitted the resolution steps.'), { code: 'missing_resolution_steps', usage: payload.usage });
+    throw modelFailure('missing_resolution_steps', { ...diagnostic, stage: 'evidence-validation' }, payload.usage);
   }
   if (language === 'ko') terminology.normalizeRuling(ruling, cards);
-  return { configured: true, ruling, usage: payload.usage || null, responseId: payload.id || null };
+  return { configured: true, ruling, usage: payload.usage || null, responseId: identifier(payload.id),
+    diagnostic: { ...diagnostic, stage: 'completed' } };
 }
 
 function baseAnswer(language, status, recommendation, reasoning) {
@@ -519,6 +533,7 @@ async function handleAsk(req, res) {
   ]);
   let ai;
   let modelError = null;
+  let publicModelError = null;
   const generationAttempts = [];
   const initialRetrievalTrace = retrieved.trace;
   async function generateAttempt(recoveryPass=false) {
@@ -531,6 +546,7 @@ async function handleAsk(req, res) {
       store.finishCall(callId,usage,failure?.code || (failure ? 'model_request_failed' : null));
       generationAttempts.push({callId,recoveryPass,responseId:result?.responseId || null,usage,
         assessment:result?.ruling?.evidenceAssessment || null,error:failure?.code || null,
+        diagnostic:result?.diagnostic || failure?.diagnostic || null,
         evidenceIds:matches.map(i=>i.id),caseIds:cases.map(i=>i.id)});
     }
   }
@@ -558,7 +574,9 @@ async function handleAsk(req, res) {
   }
   catch (error) {
     modelError = error.statusCode === 429 ? 'daily_limit_or_busy' : error.code || 'model_request_failed';
-    console.error(`OpenAI request failed (${modelError}); request ID: ${requestId}`);
+    publicModelError = error.publicCode || modelError;
+    const diagnostic = error.diagnostic || {};
+    console.error('OpenAI request failed', JSON.stringify({ code: modelError, requestId, ...diagnostic }));
     ai = { configured: true, ruling: null, usage: error.usage || null };
   }
   // Every paid attempt is reserved and settled independently; never retry network/limit failures.
@@ -638,6 +656,16 @@ async function handleAsk(req, res) {
     answer.recommendation=language==='en'?'The evidence check failed after additional retrieval. This request has been recorded for correction; it is not a ruling that the game situation is undecidable.':'추가 근거 확인 후에도 답변 완성 검사를 통과하지 못했습니다. 수정할 수 있도록 오류를 기록했습니다. 게임 상황에 정답이 없다는 판정이 아닙니다.';
     answer.reasoning='';answer.followUpQuestions=[];
   }
+  if (publicModelError === 'model_authentication' || publicModelError === 'model_quota') {
+    answer.recommendation = language === 'en'
+      ? 'AI generation is temporarily unavailable. The references below are available for review.'
+      : 'AI 답변을 일시적으로 제공할 수 없습니다. 아래 공식 룰과 참고 사례를 확인해 주세요.';
+  }
+  if (publicModelError === 'model_timeout') {
+    answer.recommendation = language === 'en'
+      ? 'AI generation timed out. Review the references below or try again.'
+      : 'AI 답변 생성 시간이 초과됐습니다. 아래 근거를 확인하거나 다시 시도해 주세요.';
+  }
   const titledCases = cases.map((item) => ({ ...item,
     displayTitleLanguage: language,
     displayTitle: ai.ruling?.caseTitles?.find((entry) => String(entry.caseId) === String(item.id))?.title
@@ -648,7 +676,7 @@ async function handleAsk(req, res) {
     evidence: matches.map((item) => ({ ...item, requestId })), judgeCases: titledCases.map((item) => ({ ...item, requestId })),
     cards: selectedCards, cardCatalogVersion: cardCatalog.version, cardAccess: snapshot.cardAccess,
     sources: SOURCE_LINKS, knowledgeReleaseId: snapshot.releaseId,
-    ai: { configured: Boolean(process.env.OPENAI_API_KEY), generationEnabled: aiEnabled(), enabled: aiEnabled() && Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null, used: Boolean(ai.ruling), error: modelError },
+    ai: { configured: Boolean(process.env.OPENAI_API_KEY), generationEnabled: aiEnabled(), enabled: aiEnabled() && Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null, used: Boolean(ai.ruling), error: publicModelError },
     notice: '',
   };
   const logEntry = {

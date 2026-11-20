@@ -117,7 +117,7 @@ test('03 응답 지연·AI 오류: 진행 표시·중복 전송 방지 후 재�
   assert.equal(app.asks.length, 1);
   assert.equal(await app.page.locator('#submit-button').isEnabled(), true);
   assert.equal(await app.page.locator('#answer-progress').isVisible(), false);
-  assert.match(await app.page.locator('#answer-status').innerText(), /AI 연결 오류/);
+  assert.match(await app.page.locator('#answer-status').innerText(), /AI 답변 생성 실패/);
   await app.ask(); await resultShown(app.page);
   assert.equal(await app.page.locator('#answer-recommendation').innerText(), expected);
   assert.equal(app.server.externalCalls.length, 2);
