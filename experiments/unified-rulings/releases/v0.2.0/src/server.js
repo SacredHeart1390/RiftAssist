@@ -64,11 +64,14 @@ const MAX_MODEL_INPUT_CHARS = 50000;
 const store = createStore(ROOT);
 const access = createAccess({ port: Number(process.env.PUBLIC_PORT || PORT), publicOrigin: process.env.PUBLIC_ORIGIN || '', directory: store.directory, store, allowLegacySession: environment==='production'&&process.env.RIFTASSI_PRESERVE_V017_SESSION==='true' });
 const aiEnabled = () => OPENAI_GENERATION_ENABLED && store.setting('aiEnabled', true) && legacyScope()?.rulesModelInput!==false;
+const generalSourceTranslations = () => !minimumScope() && legacyScope()?.sourceTranslations !== false;
+const preservedCaseTranslations = () => !minimumScope() && legacyScope()?.basis === 'existing-deployment-ceiling'
+  && legacyScope()?.judgeCases === true;
 const sourceTranslations = createSourceTranslations({
   getTerminology: () => terminology.glossary((requestKnowledge.getStore() || knowledge.current()).evidence),
   root: ROOT, model: OPENAI_MODEL, reasoningEffort: OPENAI_REASONING_EFFORT,
   maxOutputTokens: OPENAI_MAX_OUTPUT_TOKENS,
-  isEnabled: ()=>aiEnabled()&&!minimumScope()&&legacyScope()?.sourceTranslations!==false, getApiKey: () => process.env.OPENAI_API_KEY,
+  isEnabled: aiEnabled, getApiKey: () => process.env.OPENAI_API_KEY,
   log: appendLog,
   reserve: (owner) => store.reserveCall(owner, 'translation'), settle: store.finishCall,
 });
@@ -134,10 +137,29 @@ function sourceGlossary(item) {
 }
 
 async function prepareLocalization(kind, item) {
-  if(minimumScope()||legacyScope()?.sourceTranslations===false)return {...item,localization:null};
   if (kind === 'rule' && item.officialTextKo) return item;
-  try { return { ...item, localization: await sourceTranslations.prepare(kind, item, sourceGlossary(item)) }; }
-  catch { console.warn('Source translation cache unavailable.'); return { ...item, localization: null }; }
+  const preservedCase = kind === 'case' && preservedCaseTranslations();
+  if (!generalSourceTranslations() && !preservedCase) {
+    return { ...item, localization: kind === 'case' ? { status: 'translation_restricted' } : null };
+  }
+  if (preservedCase) {
+    const current = requestKnowledge.getStore().judgeCases.find(candidate => String(candidate.id) === String(item.id));
+    const url = `https://app.riftjudge.com/questions/${item.id}`;
+    // Only the current published local case body may be translated in this mode.
+    if (!current || current.sourceAvailability !== 'available' || current.status === 'deprecated' ||
+      !/^\d+$/.test(String(item.id)) || current.url !== url || item.url !== url ||
+      current.question !== item.question || current.answer !== item.answer ||
+      current.bodyComplete !== item.bodyComplete || current.rulesVersion !== item.rulesVersion) {
+      return { ...item, localization: { status: 'translation_restricted' } };
+    }
+  }
+  try {
+    const localization = await sourceTranslations.prepare(kind, item, preservedCase ? [] : sourceGlossary(item));
+    return { ...item, localization };
+  } catch (error) {
+    console.warn('Source translation preparation failed', JSON.stringify({kind, code: identifier(error.code) || 'unknown'}));
+    return { ...item, localization: { status: 'translation_prepare_failed' } };
+  }
 }
 
 function sendJson(res, status, body) {
@@ -749,7 +771,9 @@ async function initialize() {
       }
       sendJson(res, 200, {
         ok: true, version: releaseVersion.version, releaseFamily: releaseVersion.releaseFamily, appReleaseId: process.env.APP_RELEASE_ID || 'v0.2.0-development', environment, providerMode: providerMode(), knowledge: knowledge.status(), cardSync:require('./riftnaru-sync-status').cardSyncStatus(DATA_ROOT), variant: 'unified-beta', mode: process.env.PUBLIC_ORIGIN ? 'public-beta' : 'local', contentLogging: false,
-        features: { imageAttachments: false, sourceTranslations:!minimumScope()&&legacyScope()?.sourceTranslations!==false, thirdPartyCases:!minimumScope()&&legacyScope()?.judgeCases!==false },
+        features: { imageAttachments: false, sourceTranslations:generalSourceTranslations(),
+          riftJudgeCaseTranslations:generalSourceTranslations() || preservedCaseTranslations(),
+          thirdPartyCases:!minimumScope()&&legacyScope()?.judgeCases!==false },
         retention: { questionDays: 7, metadataDays: 30, reportDays: 90, imagesStored: false },
         aiConfigured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_API_KEY ? OPENAI_MODEL : null,
         aiGenerationEnabled: aiEnabled(),
@@ -796,24 +820,32 @@ async function initialize() {
       }); return;
     }
     if (req.method === 'POST' && url.pathname === '/api/sources/translate') {
-      if(minimumScope()||legacyScope()?.sourceTranslations===false){sendJson(res,403,{code:'source_translation_restricted'});return;}
+      if (!generalSourceTranslations() && !preservedCaseTranslations()) { sendJson(res,403,{code:'source_translation_restricted'});return; }
       // A translation can only use server-registered public source snapshots, never client text or URLs.
       if (!/^application\/json(?:;|$)/iu.test(req.headers['content-type'] || '')) { sendJson(res, 415, { code: 'json_required' }); return; }
       readJson(req).then(async (body) => {
+        if (!['case', 'rule'].includes(body?.kind) || typeof body.id !== 'string' || !/^[a-f0-9]{64}$/.test(body.key || '')) {
+          if (!generalSourceTranslations() && body?.kind === 'rule') {
+            throw Object.assign(new Error('Restricted source'), { statusCode: 403, code: 'source_translation_restricted' });
+          }
+          throw Object.assign(new Error('Invalid source'), { statusCode: 400, code: 'invalid_source' });
+        }
+        if (!generalSourceTranslations() && body.kind !== 'case') throw Object.assign(new Error('Restricted source'), { statusCode: 403, code: 'source_translation_restricted' });
         const owner = access.session(req, res);
         const question = store.getQuestion(body.requestId, owner);
         const items = body.kind === 'case' ? question.response?.judgeCases : question.response?.evidence;
         const item = items?.find((item) => String(item.id) === body.id && item.localization?.key === body.key);
         if (!item) throw Object.assign(new Error('Source is not part of this question.'), { statusCode: 403 });
         // Previously saved translation keys may include now-restricted card-name glossaries.
-        const current = await sourceTranslations.prepare(body.kind, item, sourceGlossary(item));
+        const { localization: current } = await prepareLocalization(body.kind, item);
+        if (current?.status === 'translation_prepare_failed') throw Object.assign(new Error('Source preparation failed'), { statusCode: 503, code: current.status });
         if (current?.key !== body.key) throw Object.assign(new Error('Source permissions changed. Submit a new question.'), { statusCode: 403, code: 'source_permissions_changed' });
         const result = await sourceTranslations.translate(body.key, body.kind, body.id, owner);
         store.attachTranslation(body.requestId, owner, body.key, result.translation);
         return result;
       })
         .then((result) => sendJson(res, 200, result))
-        .catch((error) => sendJson(res, error.statusCode || 503, { code: error.code || 'translation_failed' }));
+        .catch((error) => sendJson(res, error.statusCode || 503, { code: error.publicCode || error.code || 'translation_failed' }));
       return;
     }
     if (url.pathname === '/api/reports' && req.method === 'POST') {
