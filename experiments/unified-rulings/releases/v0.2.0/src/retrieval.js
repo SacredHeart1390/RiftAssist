@@ -1,4 +1,4 @@
-const VERSION = 'mechanics-dependency-search-6-scoring-sources';
+const VERSION = 'mechanics-dependency-search-7-hide-and-payment';
 const STOP = new Set('the and for with when what that this from have can does how are was were into your you not but then after before while during their them they about should would could game rules rule please 에서 으로 에게 하면 인가요 있나요 그리고 상황 어떻게 무엇 저는 우리 있는 없는 합니다 했습니다 있습니다 습니 니다'.split(' '));
 const GROUPS = [
   ['우선권','priority'],['체인','chain'],['리액션','반응','reaction'],['무효화','반격','차단','counter'],
@@ -33,7 +33,10 @@ function tokenize(value) {
 function analyzeQuestion(question, cards=[]) {
   const q = question.normalize('NFKC');
   const cardText = cards.filter(c=>c.modelReady).map(c=>c.textEn || '').join('\n');
-  const mechanics = q + '\n' + cardText;
+  const hide = /\b(?:hide|hides|hiding|hidden)\b|숨기|숨길|숨긴|숨겨짐/iu.test(q);
+  const hideCost = hide && /비용|지불|힘|에너지|\b(?:costs?|pay|payment|power|energy)\b/iu.test(q);
+  // A card may have a separate triggered effect unrelated to the requested Hide payment.
+  const mechanics = hideCost ? q : q + '\n' + cardText;
   const triggered = /유발|발동|trigger|\bwhen\b|\bwhenever\b|\bat the (?:start|end)\b|\[deathknell\]/iu.test(mechanics);
   const damage = /피해|데미지|damage|\bdeal\s+\d/iu.test(mechanics);
   const death = /죽|처치|사망|\bdie[sd]?\b|\bkill(?:ed)?\b|lethal|deathknell/iu.test(mechanics);
@@ -50,7 +53,7 @@ function analyzeQuestion(question, cards=[]) {
   const targetResolution = /대상|target/iu.test(q) && /해결|처리|체인|반응|후퇴|패로|손으로|사라|죽|죽었|처치|돌아|다시|변경|resolv|resolution|chain|react|retreat|hand|illegal|invalid|leave|left|die|died|kill|chang|retarget/iu.test(q);
   return {
     deckConstruction, scoring, cardPointGain, conditionalTrigger, holdTrigger, targetResolution, triggered, damage, death, timing,
-    cleanup: damage || death || /정리|cleanup/iu.test(q), needsCardText: !deckConstruction || effect,
+    hide, hideCost, cleanup: damage || death || /정리|cleanup/iu.test(q), needsCardText: !deckConstruction || effect,
     tournament: relevantEvent(q), quantityContext: quantity,
     simultaneousZones: zones, repeatedPlay: /번(?:째)?|회|times|fourth time/iu.test(q),
     explicitRuleIds: [...q.matchAll(/\b\d{3}(?:\.?\d+)?(?:\.?[a-z])?(?:\.\d+)*\b/giu)].map((m)=>ruleKey(m[0])),
@@ -82,6 +85,31 @@ const ANCHORS = [
   ['320.1', /new pending items can be added.*finalized items cannot/iu],
 ];
 
+const HIDE_ANCHORS = [
+  ['422.1', /hiding a card[\s\S]*facedown at a battlefield you control/iu],
+  ['422.3', /facedown[\s\S]*permissions defined by\s+the effect that put them there/iu],
+  ['811.1.b', /open state[\s\S]*pay \[a\] to hide[\s\S]*next turn[\s\S]*base cost/iu],
+  ['811.1.c.1', /hide is not a subset of play/iu],
+  ['811.1.c.2', /hiding a card does not open a chain/iu],
+  ['135.2.e.5.a', /can be paid by power of any domain/iu],
+  ['163.1', /energy is used to pay numeric energy costs/iu],
+  ['163.2', /power is used to pay domain-associated power costs/iu],
+  ['166.1', /(?:energy or power|energy and power)[\s\S]{0,100}controlling player's rune pool/iu],
+  ['430.2', /abilities that add resources finalize immediately[\s\S]*resolve as soon as/iu],
+  ['445.2.c', /add resources with the reaction keyword[\s\S]*instructed to pay resources/iu],
+  ['356.1.b.3', /additional costs and(?:\/or)? cost increases[\s\S]*total cost/iu],
+];
+
+function resolveRuleReference(reference, evidence) {
+  const value = String(reference || '').trim();
+  const direct = evidence.find(rule => rule.id === value);
+  if (direct) return direct.id;
+  if (!/^\d{3}(?:\.[\da-z]+)*\.?$/i.test(value)) return null;
+  const number = ruleKey(value.replace(/\.$/, ''));
+  const candidates = evidence.filter(rule => rule.ruleId && ruleKey(rule.ruleId) === number);
+  return candidates.length === 1 ? candidates[0].id : null;
+}
+
 function buildIndex(items) {
   const df = new Map();
   const docs = items.map((item) => {
@@ -106,19 +134,24 @@ function buildIndex(items) {
       .map(m=>`${item.documentId}:${ruleKey(m[1])}`).filter(id=>byId.has(id) && id!==item.id);
     references.set(item.id, [...new Set(refs)]);
   }
-  if (byId.has('core-rules:158')) for (const [number, pattern] of ANCHORS) {
-    const preferred = byId.get('core-rules:'+number);
-    const matches = preferred && pattern.test(preferred.officialTextEn || '') ? [preferred]
-      : items.filter(i=>i.documentId==='core-rules' && pattern.test(i.officialTextEn || ''));
-    anchors.set(number, matches.length===1 ? matches[0].id : null);
+  function mapAnchors(definitions, target) {
+    for (const [number, pattern] of definitions) {
+      const preferred = byId.get('core-rules:'+number);
+      const matches = preferred && pattern.test(preferred.officialTextEn || '') ? [preferred]
+        : items.filter(i=>i.documentId==='core-rules' && pattern.test(i.officialTextEn || ''));
+      target.set(number, matches.length===1 ? matches[0].id : null);
+    }
   }
-  return { docs, df, average:docs.reduce((s,d)=>s+d.length,0)/Math.max(1,docs.length), byId, children, references, anchors };
+  const hideAnchors = new Map();
+  if (byId.has('core-rules:158')) mapAnchors(ANCHORS, anchors);
+  mapAnchors(HIDE_ANCHORS, hideAnchors);
+  return { docs, df, average:docs.reduce((s,d)=>s+d.length,0)/Math.max(1,docs.length), byId, children, references, anchors, hideAnchors };
 }
 
 function search(index, question, cards=[], options={}) {
   const repairs=(options.queries || []).filter(q=>typeof q==='string').slice(0,3).map(q=>q.slice(0,300));
   const searchQuestion=question+'\n'+repairs.join('\n');
-  const intent=analyzeQuestion(searchQuestion,cards);
+  const intent=analyzeQuestion(question,cards);
   const expansions=GROUPS.filter(g=>g.some(term=>searchQuestion.toLowerCase().includes(term.toLowerCase()))).flat();
   if (intent.deckConstruction) expansions.push('same named card','copies','deck construction','같은 이름','주 덱','장수','decklist','legality');
   if (intent.scoring) expansions.push('score','scoring','conquer','hold','battlefield','per turn');
@@ -126,18 +159,24 @@ function search(index, question, cards=[], options={}) {
   if (intent.triggered) expansions.push('triggered ability','condition','pending','finalized','simultaneously');
   if (intent.timing) expansions.push('resolving','entirety','priority','chain');
   if (intent.cleanup) expansions.push('cleanup','lethal damage','marked','kill');
+  if (intent.hide) expansions.push('hidden','hide facedown','open state','battlefield');
+  if (intent.hideCost) expansions.push('pay power of any domain','energy cost','rune pool','add resources');
   const baseTerms=[...new Set(tokenize(searchQuestion+' '+expansions.join(' ')))];
   const effectTerms=intent.needsCardText ? [...new Set(tokenize(cards.filter(c=>c.modelReady).map(c=>c.textEn).join(' ').slice(0,1800)))] : [];
   const required=[];
   const unresolvedAnchors=[];
-  const anchor=(number)=>{
-    const id=index.anchors.get(number);
+  const anchor=(number, anchors=index.anchors)=>{
+    const id=anchors.get(number);
     if(id)required.push(id);else unresolvedAnchors.push(number);
   };
-  if(intent.timing) ['158.1','158.3','158.3.a','340.1'].forEach(anchor);
-  if(intent.cleanup) ['418.1.b','142.4.b','321','319.5','323.4'].forEach(anchor);
-  if(intent.damage && /同時|동시|따로|각각|별개|두|번째|하나씩|separate|simultaneous|each/iu.test(searchQuestion)) anchor('418.1.d');
-  if(intent.triggered) ['383.3','383.3.d','337.3','320.1'].forEach(anchor);
+  if(intent.hide) {
+    const ids = intent.hideCost ? HIDE_ANCHORS.map(([id])=>id) : HIDE_ANCHORS.slice(0,5).map(([id])=>id);
+    for(const id of ids) anchor(id,index.hideAnchors);
+  }
+  if(intent.timing) ['158.1','158.3','158.3.a','340.1'].forEach(id=>anchor(id));
+  if(intent.cleanup) ['418.1.b','142.4.b','321','319.5','323.4'].forEach(id=>anchor(id));
+  if(intent.damage && /同時|동시|따로|각각|별개|두|번째|하나씩|separate|simultaneous|each/iu.test(question)) anchor('418.1.d');
+  if(intent.triggered) ['383.3','383.3.d','337.3','320.1'].forEach(id=>anchor(id));
   if(intent.triggered && intent.death) anchor('383.2.c.2');
   if(intent.conditionalTrigger) anchor('383.2.a.1');
   if(intent.holdTrigger) anchor('383.4.d.2.a');
@@ -149,14 +188,14 @@ function search(index, question, cards=[], options={}) {
     if (intent.tournament) required.push('tournament-rules:703.4.e','tournament-rules:703.3','tournament-rules:703.3.a.3');
     if (/리미티드|실드|드래프트|limited|sealed|draft/iu.test(question)) required.push('tournament-rules:602.3.a');
   }
-  if(intent.cardPointGain) ['470.1','470.2','470.3'].forEach(anchor);
+  if(intent.cardPointGain) ['470.1','470.2','470.3'].forEach(id=>anchor(id));
   if (intent.scoring) required.push('core-rules:472','core-rules:471.1','core-rules:471.2','core-rules:470');
   const targetPrinciples = ['355.15','359.3.e.1','359.3.e.2','359.3.e.5','340.1','359.3.d','359.3.e.7','359.3.e.8'].map(id=>'core-rules:'+id);
   if (intent.targetResolution) required.push(...targetPrinciples);
-  for(const id of (options.ruleIds || []).slice(0,6)) {
-    const canonical=String(id).includes(':') ? String(id) : 'core-rules:'+ruleKey(id);
-    if(index.byId.has(canonical)) required.push(canonical);
-  }
+  const requested = (options.ruleIds || []).slice(0,6);
+  const sourceRules = requested.length ? index.docs.map(({item})=>item) : [];
+  const requestedMatches = requested.map(id=>resolveRuleReference(id,sourceRules));
+  required.push(...requestedMatches.filter(Boolean));
   for(const number of intent.explicitRuleIds) {
     for(const prefix of ['core-rules:','tournament-rules:']) if(index.byId.has(prefix+number))required.push(prefix+number);
   }
@@ -225,8 +264,10 @@ function search(index, question, cards=[], options={}) {
   });
   return { evidence:bundles, intent,
     trace:{version:VERSION,intent,evidenceBudget:budget,requiredRuleIds:requiredIds,unresolvedAnchors,dependencyEdges,repairQueries:repairs,repairReason:options.reason||null,
+      requestedRulesOutsideIndex:requested.filter((_,i)=>!requestedMatches[i]),
+      decisiveRuleIds:intent.hideCost?['811.1.b','135.2.e.5.a'].map(id=>index.hideAnchors.get(id)).filter(Boolean):[],
       missingFromIndex:requiredIds.filter(id=>!index.byId.has(id)),
       missingRequired:[...requiredIds.filter(id=>!bundles.some(item=>item.id===id)),...unresolvedAnchors.map(id=>'unresolved-current-rule:'+id)],
       candidates:candidates.map(i=>({id:i.id,score:i.searchScore,reason:i.selectionReason})),selectedIds:bundles.map(i=>i.id)} };
 }
-module.exports={VERSION,buildIndex,search,analyzeQuestion,ruleKey,tokenize};
+module.exports={VERSION,buildIndex,search,analyzeQuestion,ruleKey,tokenize,resolveRuleReference};

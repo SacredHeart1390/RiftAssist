@@ -1,6 +1,8 @@
 // Decision completeness is part of the answer contract, not a second paid model call.
-const VERSION = 'complete-resolution-evidence-recovery-5-scoring-sources';
+const VERSION = 'complete-resolution-evidence-recovery-6-hide-and-payment';
 const INSTRUCTIONS = `
+For questions about hiding a card, separate taking the Hidden keyword action, an effect directly instructing a card to be put facedown, and later playing a facedown card. An Add ability supplies a resource; it does not itself change or waive a cost or hide a card. Evaluate the actual payment symbol, the legal timing and location, and any independently applicable additional or replacement cost. Do not infer later triggers from obsolete printing text or discuss unrelated effects unless they matter to the question. Prefer current official errata or applicable official rule text when supplied.
+Use exact supplied citation IDs, including document prefixes. Cite the governing clauses listed as decisive in the source context when they apply. Before setting missing-rule, check whether the exact requested clauses are already supplied and usable. A complete conditional ruling is allowed when only a specific game fact is missing.
 Answer the practical question: what must the players do now, and what is the resulting game state?
 Start recommendation with the ruling. Include the decisive outcome in recommendation itself, even when the user only asks whether a player's claim is correct. Do not stop at rejecting that claim. Explain the actual valid resolution.
 Return resolutionSteps: a short ordered array (normally 1-4 steps) applying the supplied card instructions and rules to this situation, ending with the resulting points, damage, zones, or next action. For a simple ruling use one concrete step. This is an execution guide, not private reasoning. Do not repeat long quotations.

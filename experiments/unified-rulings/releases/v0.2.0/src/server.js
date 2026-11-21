@@ -401,10 +401,12 @@ async function askOpenAI(question, category, language, matches, cases, imageData
     officialVersions:{core:snapshot.manifest.sources?.core?.version,tournament:snapshot.manifest.sources?.tournament?.version},
     officialCheckedAt:snapshot.manifest.sources?.officialSync?.checkedAt || null,
     issues:context.trace?.intent, prerequisiteRuleIds:context.trace?.requiredRuleIds,
-    recoveryPass:context.recoveryPass===true,recoveryReason:context.trace?.repairReason||null };
+    decisiveRuleIds:context.trace?.decisiveRuleIds,
+    recoveryPass:context.recoveryPass===true,recoveryReason:context.trace?.repairReason||null,
+    addedRuleIds:context.trace?.recoveryAddedRuleIds, requestedRulesOutsideIndex:context.trace?.requestedRulesOutsideIndex };
   const buildInput=()=>inputText(question,category,language,matches,cases,cards)+extraInstructions
     +'\nCurrent source snapshot and coverage (a refresh time is not a rules effective date):\n'+JSON.stringify(sourceContext)
-    +(context.recoveryPass ? '\nAdditional official evidence has been retrieved. Re-evaluate the question using all supplied general rules and their interaction. Do not repeat an earlier retrieval gap. If a real game fact is absent, give supported conditional next steps. Do not invent an outcome just to make this pass complete.' : '');
+    +(context.recoveryPass ? '\nReview the issue named in recoveryReason. Use the supplied clauses and listed additions, if any. If the cited clause already existed in the first set, apply it and correct any assessment that said it was absent. If a real game fact is absent, give supported conditional next steps. A missing or conflicting official source must remain a gap.' : '');
   let modelInput=buildInput();
   const terms=()=>language==='ko' ? terminology.instruction(terminology.glossary(snapshot.evidence),modelInput) : '';
   let terminologyInstruction=terms();
@@ -451,9 +453,10 @@ async function askOpenAI(question, category, language, matches, cases, imageData
   if (payload.status !== 'completed' || !matchesSchema(ruling, RULING_SCHEMA)) {
     throw modelFailure('invalid_output', outputDiagnostic, payload.usage);
   }
-  const allowedRules = new Set(matches.map((item) => item.id));
   const allowedCases = new Set(cases.map((item) => String(item.id)));
-  ruling.citedRuleIds = [...new Set(ruling.citedRuleIds.filter((id) => allowedRules.has(id)))];
+  const reportedCitationIds = ruling.citedRuleIds.slice(0,20).map(id=>identifier(id)).filter(Boolean);
+  ruling.citedRuleIds = [...new Set(ruling.citedRuleIds.map(id=>retrieval.resolveRuleReference(id,matches)).filter(Boolean))];
+  const rulingMeta = { reportedCitationIds, citedRuleIds:ruling.citedRuleIds, assessment:ruling.evidenceAssessment };
   ruling.citedCaseIds = [...new Set(ruling.citedCaseIds.map(String).filter((id) => allowedCases.has(id)))];
   ruling.caseTitles = (ruling.caseTitles || []).filter((item) => allowedCases.has(String(item.caseId))
     && typeof item.title === 'string' && item.title.trim() && item.title.length <= 160
@@ -471,14 +474,14 @@ async function askOpenAI(question, category, language, matches, cases, imageData
   }
   // Invalid citations are a generation failure, not proof that a rules question is unanswerable.
   if (!ruling.citedRuleIds.length && ruling.confidence !== 'insufficient' && !['missing-rule','source-conflict'].includes(ruling.evidenceAssessment?.status)) {
-    throw modelFailure('missing_rule_citation', { ...diagnostic, stage: 'evidence-validation' }, payload.usage);
+    throw Object.assign(modelFailure('missing_rule_citation', { ...diagnostic, stage: 'evidence-validation' }, payload.usage),{rulingMeta});
   }
   ruling.resolutionSteps = (ruling.resolutionSteps || []).filter(step => typeof step === 'string' && step.trim()).slice(0, 6);
   if (ruling.confidence !== 'insufficient' && !ruling.resolutionSteps.length) {
-    throw modelFailure('missing_resolution_steps', { ...diagnostic, stage: 'evidence-validation' }, payload.usage);
+    throw Object.assign(modelFailure('missing_resolution_steps', { ...diagnostic, stage: 'evidence-validation' }, payload.usage),{rulingMeta});
   }
   if (language === 'ko') terminology.normalizeRuling(ruling, cards);
-  return { configured: true, ruling, usage: payload.usage || null, responseId: identifier(payload.id),
+  return { configured: true, ruling, rulingMeta, usage: payload.usage || null, responseId: identifier(payload.id),
     diagnostic: { ...diagnostic, stage: 'completed' } };
 }
 
@@ -561,13 +564,21 @@ async function handleAsk(req, res) {
   async function generateAttempt(recoveryPass=false) {
     const callId = store.reserveCall(owner, 'answer');
     let result, failure=null;
-    try { result = await askOpenAI(question, category, language, matches, cases, imageDataUrl, modelCards, {trace:retrieved.trace,recoveryPass,deadline:startedAt+85000}); return result; }
+    try {
+      result = await askOpenAI(question, category, language, matches, cases, imageDataUrl, modelCards, {trace:retrieved.trace,recoveryPass,deadline:startedAt+85000});
+      result.review = recoveryRequest(result.ruling,{cards:modelCards,evidence:matches,
+        decisiveRuleIds:retrieved.trace.decisiveRuleIds,missingRequired:retrieved.trace.missingRequired});
+      return result;
+    }
     catch(error) { failure=error; throw error; }
     finally {
       const usage=result?.usage || failure?.usage || null;
       store.finishCall(callId,usage,failure?.code || (failure ? 'model_request_failed' : null));
+      const rulingMeta = result?.rulingMeta || failure?.rulingMeta;
       generationAttempts.push({callId,recoveryPass,responseId:result?.responseId || null,usage,
-        assessment:result?.ruling?.evidenceAssessment || null,error:failure?.code || null,
+        assessment:rulingMeta?.assessment || null,error:failure?.code || null,
+        reportedCitationIds:rulingMeta?.reportedCitationIds || [], citedRuleIds:rulingMeta?.citedRuleIds || [],
+        reviewReason:result?.review?.reason || failure?.code || null,
         diagnostic:result?.diagnostic || failure?.diagnostic || null,
         evidenceIds:matches.map(i=>i.id),caseIds:cases.map(i=>i.id)});
     }
@@ -576,20 +587,29 @@ async function handleAsk(req, res) {
     ai = { ruling:null,usage:null };
     if (!blockedByCards && !blockedByEvidence && aiEnabled() && process.env.OPENAI_API_KEY && matches.length) {
       let retry;
-      try { ai = await generateAttempt(); retry = recoveryRequest(ai.ruling,{cards:modelCards,evidence:matches}); }
+      try { ai = await generateAttempt(); retry = ai.review; }
       catch(error) {
         if(!['missing_rule_citation','missing_resolution_steps'].includes(error.code))throw error;
         retry={reason:error.code,queries:[],ruleIds:[]};
       }
       if(retry) {
-        retrieved=retrieval.search(snapshot.index,question,modelCards,{...retry,repair:true});
+        const previousIds = new Set(matches.map(item=>item.id));
+        const correctExisting = retry.reason === 'missing-rule' && retry.alreadySupplied
+          || ['missing_rule_citation','missing_resolution_steps','missing-decisive-citation'].includes(retry.reason);
+        if (correctExisting) {
+          retrieved = {...retrieved,trace:{...retrieved.trace,repairReason:retry.reason,recoveryMode:'review-supplied'}};
+        } else {
+          retrieved = retrieval.search(snapshot.index,question,modelCards,{...retry,repair:true});
+          retrieved.trace.recoveryMode = 'targeted-search';
+        }
+        retrieved.trace.recoveryAddedRuleIds = retrieved.evidence.filter(item=>!previousIds.has(item.id)).map(item=>item.id);
         blockedByEvidence=retrieved.trace.missingRequired.length>0;
-        matches=await Promise.all(retrieved.evidence.map(item=>prepareLocalization('rule',item)));
+        if (!correctExisting) matches=await Promise.all(retrieved.evidence.map(item=>prepareLocalization('rule',item)));
         if(retry.reason==='source-conflict') cases=cases.filter(item=>!item.applicabilityWarning);
         if(blockedByEvidence) { ai={ruling:null,usage:null}; }
         else {
           ai=await generateAttempt(true);
-          if(recoveryRequest(ai.ruling,{cards:modelCards,evidence:matches})) throw Object.assign(new Error('Evidence recovery did not produce a supported actionable ruling.'),{code:'unresolved_evidence_gap',usage:ai.usage});
+          if(ai.review) throw Object.assign(new Error('Evidence recovery did not produce a supported actionable ruling.'),{code:'unresolved_evidence_gap',usage:ai.usage});
         }
       }
     }

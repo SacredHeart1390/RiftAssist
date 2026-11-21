@@ -1,5 +1,6 @@
 // Evidence gaps are retrieval work, not an answer to the rules question.
 // This is a bounded coverage check, not a claim to mechanically verify every ruling.
+const {resolveRuleReference} = require('./retrieval');
 function scoringConflict(ruling,{cards=[],evidence=[]}={}) {
   if(!cards.some(c=>c.modelReady&&/\bscore\s+(?:\d+|one|two|three|x)\s+points?\b/iu.test(c.textEn||'')))return false;
   const cites=ruling.citedRuleIds||[];
@@ -25,14 +26,29 @@ function recoveryRequest(ruling,context={}) {
   const referral = /(?:심판|저지).{0,16}(?:물어|문의|확인하세요)|(?:ask|check with|consult).{0,18}(?:judge|referee)/iu;
   // A prohibition on finalizing targets is a ruling, not a claim of uncertain evidence.
   const gap = /(?:판정|결론|시점|시기|순서|여부).{0,30}(?:확정|특정|단정).{0,18}(?:없|어렵)|(?:제공된|발췌).{0,60}(?:없|부족|어렵)|(?:cannot|can't|unable to).{0,30}(?:determine|establish|confirm)|(?:not|isn't) enough (?:evidence|information)/iu;
-  const reason = ['missing-rule','source-conflict'].includes(assessment.status) ? assessment.status
+  const cited = ruling.citedRuleIds || [];
+  const evidence = context.evidence || [];
+  const ruleIds = (assessment.ruleIds || []).filter(id=>typeof id==='string').slice(0,6);
+  const requested = ruleIds.map(id=>resolveRuleReference(id,evidence));
+  const alreadySupplied = requested.length > 0 && requested.every(Boolean);
+  const missingDecisiveCitations = (context.decisiveRuleIds || []).filter(id=>!cited.includes(id));
+  // A stale self-assessment cannot override server coverage or a well-formed,
+  // actionable answer that cites the exact supplied clauses it claimed to need.
+  const contradictedMissingRule = assessment.status === 'missing-rule' && alreadySupplied
+    && requested.every(id=>cited.includes(id)) && !context.missingRequired?.length
+    && !missingDecisiveCitations.length && ruling.confidence !== 'insufficient'
+    && Boolean(ruling.reasoning?.trim()) && Boolean(ruling.recommendation?.trim())
+    && !gap.test(ruling.recommendation || '')
+    && !referral.test(ruling.recommendation || '');
+  const reason = assessment.status === 'source-conflict' || (assessment.status === 'missing-rule' && !contradictedMissingRule) ? assessment.status
     : !ruling.citedRuleIds?.length ? 'missing-citation'
     : !ruling.resolutionSteps?.length ? 'missing-steps'
+    : missingDecisiveCitations.length ? 'missing-decisive-citation'
     : referral.test(ruling.recommendation || '') && !ruling.requiresJudge ? 'generic-referral'
     : assessment.status !== 'missing-fact' && (gap.test(ruling.recommendation || '') || ruling.confidence === 'insufficient') ? 'unresolved-ruling' : null;
   if (!reason) return null;
   const queries=(assessment.queries || []).filter(q=>typeof q==='string' && q.trim()).slice(0,3).map(q=>q.slice(0,300));
   if(!queries.length) queries.push(String(ruling.reasoning || ruling.recommendation || '').slice(0,300));
-  return { reason, queries, ruleIds:(assessment.ruleIds || []).filter(id=>typeof id==='string').slice(0,6) };
+  return { reason, queries, ruleIds, alreadySupplied };
 }
 module.exports={recoveryRequest,scoringConflict};

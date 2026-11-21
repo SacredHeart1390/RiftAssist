@@ -58,6 +58,19 @@ async function screenshot(page, name) {
   await page.screenshot({ path: path.join(results, name), fullPage: true });
 }
 
+test('evidence validation failure uses its own Korean and English status', async t => {
+  const invalid = {...answer(),evidenceAssessment:{status:'source-conflict',queries:[],ruleIds:[]}};
+  const app = await browserSession(t, Array.from({length:4},()=>({ruling:invalid})));
+  await app.open(); await app.ready();
+  await app.ask();
+  await resultShown(app.page,'retrieval-error');
+  assert.equal(await app.page.locator('#answer-status').innerText(),'답변 근거 검증 실패');
+  await app.page.locator('#language-select').selectOption('en');
+  await app.ask('Can a player score twice at the same battlefield in one turn?');
+  await resultShown(app.page,'retrieval-error');
+  assert.equal(await app.page.locator('#answer-status').innerText(),'Answer evidence check failed');
+});
+
 test('01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호', async t => {
   const app = await browserSession(t, []);
   await app.open(); await app.ready();
