@@ -28,6 +28,9 @@ test('ambiguous bans and unknown event overrides stay undecided',async t=>{
  const s=await isolatedServer(t,[]);
  const unclear=await s.ask('드레이븐은 금지인가요?');
  assert.equal(unclear.body.regionalBan.ban,'unknown');
+ assert.match(unclear.body.reasoning,/한국 또는 글로벌/);
+ assert.match(unclear.body.reasoning,/Standard, 2v2, Sealed/);
+ assert.deepEqual(unclear.body.followUpQuestions,[]);
  const event=await s.ask('한국 Standard 이번 대회 2026-11-23 공격 예고 금지인가요?');
  assert.equal(event.body.regionalBan.ban,'unknown');assert.equal(s.externalCalls.length,0);
 });

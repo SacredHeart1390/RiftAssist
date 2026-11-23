@@ -54,6 +54,7 @@ test('02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘�
     reasoning: '355.15와 359.3.e.2/359.3.e.5에 따라 원래 선택을 유지하고 부적법한 대상 관련 지시를 수행하지 않습니다.',
     citedRuleIds: ['core-rules:355.15', 'core-rules:359.3.e.2', 'core-rules:359.3.e.5', 'core-rules:999.999'],
     citedCardIds: [star.id, retreat.id, 'not-a-supplied-card'], citedCaseIds: ['not-a-supplied-case'],
+    followUpQuestions: ['Synthetic legacy follow-up about an already supplied fact.'],
   });
   const server = await isolatedServer(t, [{ ruling: expected }]);
   const response = await server.ask(questions.targets, [star.id, retreat.id]);
@@ -66,6 +67,11 @@ test('02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘�
   assert.deepEqual(response.body.citedCardIds, [star.id, retreat.id]);
   assert.deepEqual(response.body.citedCaseIds, []);
   assert.deepEqual(response.body.resolutionSteps, expected.resolutionSteps);
+  assert.deepEqual(response.body.followUpQuestions, []);
+  const prompt = server.externalCalls[0].input.find(message => message.role === 'developer').content;
+  assert.match(prompt, /supported outcomes and next steps for each relevant condition/);
+  assert.match(prompt, /Return an empty followUpQuestions array/);
+  assert.doesNotMatch(JSON.stringify(server.externalCalls[0]), /ask (?:for missing|at most two|concise follow-up|for clarification)/i);
 });
 
 test('03 유성·빅토르: 피해·정리·유발의 기본 조항이 실제 AI 입력에 함께 들어간다', async t => {
@@ -103,6 +109,26 @@ test('05 실제 상황 정보 부족: 조건별 설명과 후속 질문을 불�
     followUpQuestions: ['빅토르도 같은 정리에서 처치되었나요?'], citedRuleIds: ['core-rules:383.2.c.2'],
   });
   assert.equal(recoveryRequest(conditional), null);
+});
+
+test('A missing game fact preserves both supported scoring branches without asking again', async t => {
+  const question = '한 턴에 같은 전장을 정복했습니다. 이 정복으로 득점하나요?';
+  const conditional = ruling({
+    recommendation: '이 턴에 같은 전장에서 이미 득점했다면 다시 득점하지 않습니다. 아직 득점하지 않았다면 이번 정복으로 득점합니다.',
+    reasoning: '코어룰 471.1의 정복 득점에는 472의 플레이어별·전장별·턴별 제한이 적용됩니다.',
+    resolutionSteps: ['이번 턴에 자신이 같은 전장에서 득점한 기록을 확인합니다.', '득점한 적이 없다면 정복 득점을 적용합니다.'],
+    evidenceAssessment: { status: 'missing-fact', queries: [], ruleIds: [] },
+    citedRuleIds: ['core-rules:471.1', 'core-rules:472'],
+    citedCardIds: [],
+  });
+  const server = await isolatedServer(t, [{ ruling: conditional }]);
+  const response = await server.ask(question);
+  assert.equal(response.body.status, 'ruling-generated');
+  assert.match(response.body.recommendation, /이미 득점했다면.*아직 득점하지 않았다면/);
+  assert.equal(response.body.resolutionSteps.length, 2);
+  assert.ok(response.body.citedRuleIds.includes('core-rules:472'));
+  assert.deepEqual(response.body.followUpQuestions, []);
+  assert.equal(server.externalCalls.length, 1);
 });
 
 test('06 근거 부족 초안: 한 번 보강한 뒤 정상 답변을 반환하고 두 호출을 정산한다', async t => {

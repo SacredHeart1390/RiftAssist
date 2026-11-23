@@ -16,15 +16,15 @@ function evaluate(question,cards,language='ko',today=new Date().toISOString().sl
  for(const name of require('./regional-ban-events.json').cards){if([name.en,name.ko,name.en?.replace(',',' -')].some(n=>n&&question.toLocaleLowerCase().includes(n.toLocaleLowerCase()))&&!matched.some(x=>x.id===name.id))matched.push(name);}
  const result=matched.length===1&&codeMatches.length<2&&region&&format?decide({cardId:matched[0].id,region,format,date,eventRules}):null;
  const ko=language!=='en';
- const follow=[];if(!matched.length)follow.push(ko?'금지 여부를 확인할 카드의 전체 이름이나 카드를 선택해 주세요.':'Select a card or enter its full name.');
- if(matched.length>1)follow.push(ko?'카드 한 장씩 질문해 주세요.':'Ask about one card at a time.');
- if(!region)follow.push(ko?'한국 또는 글로벌 지역을 지정해 주세요.':'Specify Korea or global.');
- if(!format)follow.push(ko?'Standard, 2v2, Sealed 중 형식을 지정해 주세요.':'Specify Standard, 2v2, or Sealed.');
- if(result?.ban==='unknown')follow.push(ko?'공식 시행일·출시일 또는 대회별 규정을 추가 확인해야 합니다.':'The effective date, release date, or event rules need verification.');
+ const limitations=[];
+ if(!matched.length||matched.length>1||codeMatches.length>1)limitations.push(ko?'정확한 카드가 특정되지 않았습니다.':'The exact card is not identified.');
+ if(!region)limitations.push(ko?'적용 지역(한국 또는 글로벌)이 명시되지 않았습니다.':'The applicable region (Korea or global) is unspecified.');
+ if(!format)limitations.push(ko?'대회 형식(Standard, 2v2, Sealed)이 명시되지 않았습니다.':'The event format (Standard, 2v2, or Sealed) is unspecified.');
+ if(result?.ban==='unknown')limitations.push(ko?'공식 시행일·출시일 또는 대회별 규정에 관한 근거가 부족합니다.':'Evidence for the effective date, release date, or event rules is insufficient.');
  const verdict=result?.ban==='banned'?(ko?'금지':'Banned'):result?.ban==='not-banned'?(ko?'금지 목록에 없음':'Not on the ban list'):(ko?'판정 보류':'Ruling pending');
  return {status:result?.ban==='unknown'||!result?'insufficient-evidence':'regional-ban',recommendation:verdict,
-  reasoning:result?.ban==='unknown'||!result?(ko?'확인된 공식 자료만으로는 단정할 수 없습니다.':'Official sources do not establish a definitive result.'):(ko?'확인된 공식 금지 목록 기준입니다. 카드 사용 가능 여부는 별도입니다.':'Based on the reviewed official ban list. Card availability is separate.'),
-  resolutionSteps:[],followUpQuestions:follow,evidence:[],judgeCases:[],cards:cards||[],citedRuleIds:[],citedCaseIds:[],citedCardIds:[],caseComparisons:[],
+  reasoning:result?.ban==='unknown'||!result?(limitations.join(' ')||(ko?'확인된 공식 자료만으로는 단정할 수 없습니다.':'Official sources do not establish a definitive result.')):(ko?'확인된 공식 금지 목록 기준입니다. 카드 사용 가능 여부는 별도입니다.':'Based on the reviewed official ban list. Card availability is separate.'),
+  resolutionSteps:[],followUpQuestions:[],evidence:[],judgeCases:[],cards:cards||[],citedRuleIds:[],citedCaseIds:[],citedCardIds:[],caseComparisons:[],
   regionalBan:result||{ban:'unknown',availability:'unknown',sources:[]},ai:{used:false},sourceUrls:result?.sources||[]};
 }
 module.exports={evaluate};

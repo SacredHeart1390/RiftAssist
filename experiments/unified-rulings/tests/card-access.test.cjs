@@ -105,6 +105,8 @@ test('verified cards retain search/selection/model input; display-only cards nev
   assert.equal(supplied.find(card => card.id === ready.id).textEn, ready.textEn.trim());
   const paused = await server.ask(`${displayOnly.nameKo}를 사용한 뒤 ${question}`, [displayOnly.id]);
   assert.equal(paused.body.ai.used, false); assert.equal(paused.body.status, 'card-details-needed');
+  assert.ok(paused.body.reasoning.includes(displayOnly.nameKo));
+  assert.deepEqual(paused.body.followUpQuestions, []);
   assert.equal(server.externalCalls.length, 1);
 });
 

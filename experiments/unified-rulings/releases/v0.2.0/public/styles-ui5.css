@@ -181,7 +181,6 @@ textarea::placeholder { color: #666875; }
 .judge-status.status-unverified { color: #f0c57e; }
 .judge-status.status-deprecated { color: #ed9e9e; }
 .empty-evidence { color: #858692; font-size: 10px; line-height: 1.6; margin: 9px 0 0; }
-#follow-up-list { color: #c0c0c9; font-size: 10px; line-height: 1.8; margin: 9px 0 0; padding-left: 18px; }
 
 .side-column { display: flex; flex-direction: column; gap: 13px; padding-top: 2px; }
 .side-card { background: rgba(26,27,36,.78); border: 1px solid #2d2e38; border-radius: 11px; padding: 16px; }
@@ -287,7 +286,7 @@ textarea::placeholder { color: #666875; }
 .evidence-body p.rule-quote, .evidence-body p.case-question, .evidence-body p.case-answer { font-size: 14px; }
 .evidence-body p.translation-note, .evidence-body p.translation-status { font-size: 12px; }
 .translation-retry { font-size: 12px; }
-.empty-evidence, #follow-up-list { font-size: 12px; }
+.empty-evidence { font-size: 12px; }
 .answer-sources h3, .source-list a, .answer-disclaimer { font-size: 11px; }
 .side-card-heading { font-size: 12px; }
 .sources-subtitle { font-size: 10px; }
@@ -361,7 +360,7 @@ h1 { margin:0; font-family:inherit; font-size:clamp(23px,3vw,30px); font-weight:
 .answer-topline { flex-wrap:wrap; }
 .answer-label { font-size:14px; }
 .answer-card h2 { font-size:20px; line-height:1.65; overflow-wrap:anywhere; outline:none; }
-.answer-reasoning,.resolution-steps,#follow-up-list { font-size:14px; line-height:1.85; }
+.answer-reasoning,.resolution-steps { font-size:14px; line-height:1.85; }
 .answer-section { margin-top:22px; }
 .result-group { margin-top:18px; border-top:1px solid var(--line); padding-top:4px; }
 .result-group > summary { display:flex; align-items:center; gap:6px; min-height:48px; padding:8px 0; cursor:pointer; list-style:none; font-size:14px; }

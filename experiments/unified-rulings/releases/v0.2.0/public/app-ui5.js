@@ -13,7 +13,7 @@ const strings = {
     privacyNoteWithLogs: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
     privacyNoteMetadata: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
     privacyNoteMock: '개발용 모의 응답입니다. 질문을 외부 OpenAI·RiftJudge로 보내지 않습니다. 기록은 분리된 개발 DB에 저장됩니다.', privacyNoteLoading: '연결 상태를 확인하고 있습니다.', connectionError: '서버에 연결하지 못했습니다. 잠시 후 페이지를 새로고침해 주세요.', answerLabel: '답변', newQuestion: '새 질문', sourceLinks: '출처 바로가기', officialLink: '공식 규칙 허브 ↗',
-    resolutionTitle: '처리 순서', ruleEvidenceTitle: '참조한 공식 룰', caseEvidenceTitle: '참고한 리프트저지 사례', followUpTitle: '확인이 필요한 점',
+    resolutionTitle: '처리 순서', ruleEvidenceTitle: '참조한 공식 룰', caseEvidenceTitle: '참고한 리프트저지 사례',
     cardEvidenceTitle: '질문에 연결된 카드', cardDetailsNeeded: '카드 확인 필요', cardAccessRestricted: '카드 이용 제한', caseComparison: 'AI가 설명한 사례 적용', sharedConditions: '공통 조건', differences: '차이점', application: '현재 질문에 적용',
     sourcesTitle: '연결된 출처',
     sourcesSubtitle: '공식 문서와 커뮤니티 판례를 구분해 보여줍니다.', officialTag: '공식', communityTag: '커뮤니티',
@@ -39,7 +39,7 @@ const strings = {
     privacyNoteWithLogs: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
     privacyNoteMetadata: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
     privacyNoteMock: 'Development mock responses. Questions do not reach external OpenAI/RiftJudge services. Records are stored in the separate development DB.', privacyNoteLoading: 'Checking connection status.', connectionError: 'Could not connect to the server. Please refresh the page shortly.', answerLabel: 'Answer', newQuestion: 'New question', sourceLinks: 'Open references', officialLink: 'Official Rules Hub ↗',
-    resolutionTitle: 'Resolution steps', ruleEvidenceTitle: 'Official rules referenced', caseEvidenceTitle: 'RiftJudge examples', followUpTitle: 'Details to confirm',
+    resolutionTitle: 'Resolution steps', ruleEvidenceTitle: 'Official rules referenced', caseEvidenceTitle: 'RiftJudge examples',
     cardEvidenceTitle: 'Cards linked to the question', cardDetailsNeeded: 'Card confirmation needed', cardAccessRestricted: 'Card access restricted', caseComparison: 'AI explanation of applicability', sharedConditions: 'Shared conditions', differences: 'Differences', application: 'Application to this question',
     sourcesTitle: 'Connected references',
     sourcesSubtitle: 'Official documents and community cases are clearly distinguished.', officialTag: 'OFFICIAL', communityTag: 'COMMUNITY',
@@ -207,14 +207,6 @@ form.addEventListener('submit', async (event) => {
     renderCases(data.judgeCases, data.citedCaseIds || [], data.caseComparisons || []);
     cardComposer.renderAnswer(document.querySelector('#answer-cards'), data.cards, data.citedCardIds || []);
     document.querySelector('#answer-card-section').hidden = !data.cards?.length;
-    const followUp = document.querySelector('#follow-up-list');
-    followUp.replaceChildren();
-    for (const prompt of data.followUpQuestions || []) {
-      const item = document.createElement('li');
-      item.textContent = prompt;
-      followUp.append(item);
-    }
-    document.querySelector('#follow-up-section').hidden = !(data.followUpQuestions || []).length;
     appendSourceLinks(data.sources);
     answerCard.hidden = false;
     answerCard.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -233,7 +225,6 @@ form.addEventListener('submit', async (event) => {
     document.querySelector('#core-rule-count').textContent = '0';
     document.querySelector('#answer-cards').replaceChildren();
     document.querySelector('#answer-card-section').hidden = true;
-    document.querySelector('#follow-up-section').hidden = true;
     document.querySelector('#answer-notice').textContent = '';
     appendSourceLinks([]);
     answerCard.hidden = false;
