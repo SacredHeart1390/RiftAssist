@@ -1,7 +1,7 @@
 (() => {
   const words = {
     ko: {
-      list: '카드 후보', selected: '선택한 카드', loading: '카드를 찾는 중…', choose: '↑↓ 이동 · Tab 선택 · Esc 닫기',
+      list: '카드 후보', selected: '선택한 카드', loading: '카드를 찾는 중…', choose: '↑↓ 후보 이동 · Tab 카드 선택 · Enter 검색 · Shift+Enter 줄바꿈',
       none: '등록된 카드가 없습니다. 이름을 계속 직접 입력할 수 있습니다.', error: '카드 목록을 불러오지 못했습니다. 질문은 직접 작성할 수 있습니다.',
       namesOnly: '효과 본문 확인 필요', ready: '원문 등록됨', preview: '효과와 출처 보기', remove: '카드 연결 해제',
       community: '참고 원문', communityNote: '공개 카드 페이지에서 수집한 참고 자료입니다. 한국어는 비공식 번역이며 공식 최신 원문·정오표와의 대조가 필요합니다.', collected: '수집일',
@@ -18,7 +18,7 @@
       citation: '답변에서 인용', unavailable: '모델 사용 준비 전',
     },
     en: {
-      list: 'Card suggestions', selected: 'Selected cards', loading: 'Finding cards…', choose: '↑↓ navigate · Tab select · Esc close',
+      list: 'Card suggestions', selected: 'Selected cards', loading: 'Finding cards…', choose: '↑↓ navigate · Tab select card · Enter search · Shift+Enter newline',
       none: 'No registered card matches. You can continue typing its name.', error: 'Card search is unavailable. You can still write your question.',
       namesOnly: 'Effect text needs confirmation', ready: 'Original available', preview: 'Show text and source', remove: 'Unlink card',
       community: 'Reference text', communityNote: 'Reference data collected from a public card page. Korean text is an unofficial translation; compare with current official text and errata.', collected: 'Collected',
@@ -72,9 +72,10 @@
       textarea.addEventListener('click', () => this.schedule());
       textarea.addEventListener('keyup', (event) => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) this.schedule(); });
       // Search during Korean IME composition too; Enter still belongs to the IME.
-      textarea.addEventListener('compositionstart', () => { this.composing = true; });
-      textarea.addEventListener('compositionend', () => { this.composing = false; if(this.committingChoice)return; if (!this.pointerSelecting && (this.popup.hidden || this.snapshot?.value !== textarea.value)) this.schedule(); this.scheduleResolution(); });
+      textarea.addEventListener('compositionstart', () => { this.composing = true; this.imeEnterUntil = 0; });
+      textarea.addEventListener('compositionend', () => { this.composing = false; this.imeEnterUntil = performance.now() + 30; if(this.committingChoice)return; if (!this.pointerSelecting && (this.popup.hidden || this.snapshot?.value !== textarea.value)) this.schedule(); this.scheduleResolution(); });
       textarea.addEventListener('keydown', (event) => this.onKeyDown(event), { capture:true });
+      textarea.addEventListener('keyup', (event) => { if (event.key === 'Enter') this.imeEnterUntil = 0; });
       document.addEventListener('pointerdown', (event) => {
         if (!this.popup.contains(event.target) && event.target !== textarea) this.hideSuggestions();
       });
@@ -245,6 +246,8 @@
           this.pointerSelecting = true;
           if (event.pointerType === 'mouse') event.preventDefault();
         });
+        // A real pointer movement changes the Tab target; merely scrolling under a parked mouse does not.
+        option.addEventListener('pointermove', (event) => { if (event.pointerType !== 'touch' && (event.clientX !== this.pointerX || event.clientY !== this.pointerY)) { this.pointerX = event.clientX; this.pointerY = event.clientY; this.setActive(index); } });
         option.addEventListener('click', () => this.selectResult(index));
         this.options.append(option);
       });
@@ -263,60 +266,104 @@
       this.textarea.removeAttribute('aria-activedescendant');
     }
 
+    setActive(index) {
+      this.active = index;
+      [...this.options.children].forEach((option, position) => option.setAttribute('aria-selected', String(position === index)));
+      this.textarea.setAttribute('aria-activedescendant', 'card-option-' + index);
+    }
+
+    submitQuestion() {
+      const form = this.textarea.form;
+      const button = form?.querySelector('#submit-button');
+      if (this.frozen || this.composing || !this.textarea.value.trim() || !button || button.disabled) return;
+      this.hideSuggestions();
+      form.requestSubmit(button);
+    }
+
     onKeyDown(event) {
-      if(this.frozen)return;
+      if (event.key === 'Enter') {
+        // Shift+Enter always remains a newline, even with a highlighted candidate.
+        if (event.shiftKey) return;
+        // Some browsers end composition immediately before its Enter keydown.
+        // Keyup ends this same-gesture guard; a later physical Enter can submit.
+        if (event.isComposing || this.composing || event.keyCode === 229) return;
+        if (performance.now() < (this.imeEnterUntil || 0)) { event.preventDefault(); return; }
+        event.preventDefault();
+        if (event.repeat || this.frozen || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (this.selectionTask) {
+          if (!this.submitAfterSelection) {
+            this.submitAfterSelection = true;
+            this.selectionTask.then(selected => { if (selected) this.submitQuestion(); }).finally(() => { this.submitAfterSelection = false; });
+          }
+        } else this.submitQuestion();
+        return;
+      }
+      if (this.frozen) return;
       if (event.key === 'Escape') { if (!this.popup.hidden) event.preventDefault(); this.hideSuggestions(); return; }
       if (event.key === 'Tab' || event.code === 'Tab') {
-        if (!event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey && !this.popup.hidden && this.results.length) {
+        if (!event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey && (this.selectionTask || (!this.popup.hidden && this.results.length))) {
           event.preventDefault();
           event.stopPropagation();
-          const index=this.active>=0?this.active:0;
-          if(this.composing||event.isComposing||event.keyCode===229){
-            const result=this.results[index],snapshot=this.snapshot;
-            this.committingChoice=true;clearTimeout(this.timer);this.textarea.blur();
-            setTimeout(()=>{
-              this.composing=false;this.trackEdits();this.committingChoice=false;
-              if(snapshot&&snapshot.value===this.textarea.value){this.results=[result];this.snapshot=snapshot;this.selectResult(0);}else{this.hideSuggestions();this.textarea.focus();this.schedule();}
-            },0);
-          }else this.selectResult(index);
-        } else { this.hideSuggestions(); }
+          if (!this.selectionTask) this.selectResult(this.active >= 0 ? this.active : 0);
+        } else this.hideSuggestions();
         return;
       }
-      // Only the IME owns Enter during composition; arrows navigate a visible card list.
-      if((event.isComposing||this.composing||event.keyCode===229)&&!['ArrowDown','ArrowUp'].includes(event.key))return;
-      // Enter always remains a textarea newline, including when a candidate is highlighted.
-      if (event.key === 'Enter') { this.hideSuggestions(); return; }
-      if (this.popup.hidden || !this.results.length) {
-        return;
-      }
+      if (this.popup.hidden || !this.results.length) return;
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault();
-        this.active = this.active < 0 ? (event.key === 'ArrowDown' ? 0 : this.results.length - 1)
-          : (this.active + (event.key === 'ArrowDown' ? 1 : -1) + this.results.length) % this.results.length;
-        [...this.options.children].forEach((option, index) => option.setAttribute('aria-selected', String(index === this.active)));
-        event.target.setAttribute('aria-activedescendant', `card-option-${this.active}`);
+        this.setActive(this.active < 0 ? (event.key === 'ArrowDown' ? 0 : this.results.length - 1)
+          : (this.active + (event.key === 'ArrowDown' ? 1 : -1) + this.results.length) % this.results.length);
         this.options.children[this.active]?.scrollIntoView({ block: 'nearest' });
       }
     }
 
-    async selectResult(index) {
-      const result = this.results[index];
-      const snapshot = this.snapshot;
-      if (this.composing) { this.textarea.blur(); this.composing = false; this.trackEdits(); }
-      if (!result || !snapshot || this.frozen || snapshot.value !== this.textarea.value) return;
-      if (!this.getCardIds().includes(result.id) && this.getCardIds().length >= 8) { this.announce(this.t('limit')); return; }
-      const selectionNumber = this.selectionNumber = (this.selectionNumber || 0) + 1;
-      const range = { start: snapshot.caret - result.matchedText.length, end: snapshot.caret };
-      if (snapshot.value.slice(range.start, range.end) !== result.matchedText) return;
+    selectResult(index) {
+      // One transaction owns both IME commitment and the asynchronous detail lookup.
+      if (this.selectionTask) return this.selectionTask;
+      const result = this.results[index], snapshot = this.snapshot;
+      if (!result || !snapshot || this.frozen || snapshot.value !== this.textarea.value) return Promise.resolve(false);
+      this.committingChoice = true;
+      this.hideSuggestions();
+      clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort();
+      this.selectionTask = this.commitResult(result, snapshot).finally(() => {
+        this.selectionTask = null;
+        this.committingChoice = false;
+        this.scheduleResolution();
+      });
+      return this.selectionTask;
+    }
+
+    async commitResult(result, snapshot) {
       try {
-        const response = await fetch(`/api/cards/${encodeURIComponent(result.id)}`);
+        if (this.composing) {
+          // Blur is used only to ask the native IME to commit. Never clear its state
+          // or insert text on a zero-delay timer while its final input is pending.
+          const committed = new Promise(resolve => {
+            const done = () => { clearTimeout(timeout);this.textarea.removeEventListener('compositionend', done);resolve(); };
+            const timeout = setTimeout(done, 250);
+            this.textarea.addEventListener('compositionend', done);
+          });
+          this.textarea.blur();
+          await committed;
+          await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+          this.textarea.focus();
+          if (this.composing) return false;
+        }
+        this.imeEnterUntil = 0;
+        this.trackEdits();
+        if (snapshot.value !== this.textarea.value || snapshot.caret !== this.textarea.selectionStart || this.frozen) return false;
+        if (!this.getCardIds().includes(result.id) && this.getCardIds().length >= 8) { this.announce(this.t('limit')); return false; }
+        const selectionNumber = this.selectionNumber;
+        const range = { start: snapshot.caret - result.matchedText.length, end: snapshot.caret };
+        if (snapshot.value.slice(range.start, range.end) !== result.matchedText) return false;
+        const response = await fetch('/api/cards/' + encodeURIComponent(result.id));
         if (!response.ok) throw new Error('Card details unavailable');
         const { card } = await response.json();
-        if (selectionNumber !== this.selectionNumber || snapshot.value !== this.textarea.value || this.frozen) return;
+        if (card?.id !== result.id || selectionNumber !== this.selectionNumber || snapshot.value !== this.textarea.value || snapshot.caret !== this.textarea.selectionStart || this.frozen || this.composing) return false;
         const label = this.name(card);
         const nextCharacter = snapshot.value[range.end];
         const insertion = label + (!nextCharacter || /[\p{L}\p{N}]/u.test(nextCharacter) ? ' ' : '');
-        if (snapshot.value.length - (range.end - range.start) + insertion.length > this.textarea.maxLength) { this.announce(this.t('tooLong')); return; }
+        if (snapshot.value.length - (range.end - range.start) + insertion.length > this.textarea.maxLength) { this.announce(this.t('tooLong')); return false; }
         this.textarea.setRangeText(insertion, range.start, range.end, 'end');
         this.trackEdits();
         this.mentions=this.mentions.filter(mention=>mention.end<=range.start||mention.start>=range.start+label.length);
@@ -325,12 +372,12 @@
         this.excludedIds.delete(card.id);this.remember(card);
         this.hideSuggestions();
         this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        this.hideSuggestions();
         this.textarea.focus();
         this.renderHighlights();
         this.renderSelected();
-        this.announce(`${label}: ${this.t('selectedNotice')}`);
-      } catch { this.announce(this.t('error')); }
+        this.announce(label + ': ' + this.t('selectedNotice'));
+        return true;
+      } catch { this.announce(this.t('error')); return false; }
     }
 
     thumbnail(card) {
