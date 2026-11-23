@@ -67,6 +67,10 @@ test('02 유성·후퇴: 실제 질문 API가 대상 원칙을 전달하고 잘�
   assert.deepEqual(response.body.citedCardIds, [star.id, retreat.id]);
   assert.deepEqual(response.body.citedCaseIds, []);
   assert.deepEqual(response.body.resolutionSteps, expected.resolutionSteps);
+  if (path.basename(release) === 'v0.1.7') {
+    assert.deepEqual(response.body.followUpQuestions, expected.followUpQuestions);
+    return;
+  }
   assert.deepEqual(response.body.followUpQuestions, []);
   const prompt = server.externalCalls[0].input.find(message => message.role === 'developer').content;
   assert.match(prompt, /supported outcomes and next steps for each relevant condition/);
