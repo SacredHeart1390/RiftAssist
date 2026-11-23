@@ -1,4 +1,4 @@
-const VERSION = 'mechanics-dependency-search-7-hide-and-payment';
+const VERSION = 'mechanics-dependency-search-8-play-costs-and-choices';
 const STOP = new Set('the and for with when what that this from have can does how are was were into your you not but then after before while during their them they about should would could game rules rule please 에서 으로 에게 하면 인가요 있나요 그리고 상황 어떻게 무엇 저는 우리 있는 없는 합니다 했습니다 있습니다 습니 니다'.split(' '));
 const GROUPS = [
   ['우선권','priority'],['체인','chain'],['리액션','반응','reaction'],['무효화','반격','차단','counter'],
@@ -33,6 +33,10 @@ function tokenize(value) {
 function analyzeQuestion(question, cards=[]) {
   const q = question.normalize('NFKC');
   const cardText = cards.filter(c=>c.modelReady).map(c=>c.textEn || '').join('\n');
+  const costCards = cards.filter(c=>c.modelReady && String(c.textEn||'').split(/[.\n]/u).some(s=>/\bas an additional cost\b/iu.test(s) && /\b(?:kill|discard|recycle|exhaust|banish)\b/iu.test(s)));
+  const nonStandardCost = costCards.length > 0;
+  const costUnit = costCards.some(c=>/unit|유닛/iu.test(c.type||''));
+  const sharedChoice = /\beach player\b[^.\n]{0,180}\b(?:picks?|chooses?|kills?)\b/iu.test(cardText);
   const hide = /\b(?:hide|hides|hiding|hidden)\b|숨기|숨길|숨긴|숨겨짐/iu.test(q);
   const hideCost = hide && /비용|지불|힘|에너지|\b(?:costs?|pay|payment|power|energy)\b/iu.test(q);
   // A card may have a separate triggered effect unrelated to the requested Hide payment.
@@ -53,6 +57,7 @@ function analyzeQuestion(question, cards=[]) {
   const targetResolution = /대상|target/iu.test(q) && /해결|처리|체인|반응|후퇴|패로|손으로|사라|죽|죽었|처치|돌아|다시|변경|resolv|resolution|chain|react|retreat|hand|illegal|invalid|leave|left|die|died|kill|chang|retarget/iu.test(q);
   return {
     deckConstruction, scoring, cardPointGain, conditionalTrigger, holdTrigger, targetResolution, triggered, damage, death, timing,
+    nonStandardCost, costUnit, sharedChoice,
     hide, hideCost, cleanup: damage || death || /정리|cleanup/iu.test(q), needsCardText: !deckConstruction || effect,
     tournament: relevantEvent(q), quantityContext: quantity,
     simultaneousZones: zones, repeatedPlay: /번(?:째)?|회|times|fourth time/iu.test(q),
@@ -100,6 +105,25 @@ const HIDE_ANCHORS = [
   ['356.1.b.3', /additional costs and(?:\/or)? cost increases[\s\S]*total cost/iu],
 ];
 
+// Pin general procedures from their current meaning, not a card name or a model's
+// guessed rule number. Missing/ambiguous definitions remain a visible source gap.
+const PLAY_ANCHORS = [
+  ['303.1', /game actions[\s\S]*one at a time[\s\S]*executed completely/iu],
+  ['303.2', /game actions cannot be performed simultaneously/iu],
+  ['303.2.a', /simultaneously[\s\S]*turn order[\s\S]*starting[\s\S]*current turn player/iu],
+  ['354', /move the card from its current zone to the chain/iu],
+  ['355.10.c', /(?:included|mentioned) only as part of a cost[\s\S]*trigger condition[\s\S]*replacement effect/iu],
+  ['356.2.a.1', /mandatory[\s\S]*must be paid[\s\S]*as an additional cost|mandatory[\s\S]*as an additional cost[\s\S]*must be paid/iu],
+  ['356.2.b.1', /optional[\s\S]*paid only if[\s\S]*\bmay\b|optional[\s\S]*\bmay\b[\s\S]*paid only if/iu],
+  ['356.7', /costs may be energy costs[\s\S]*power costs[\s\S]*non.standard costs/iu],
+  ['357.2', /pay any non.standard cost[\s\S]*summed in step 3[\s\S]*any order/iu],
+  ['358.2', /check that all costs were paid/iu],
+  ['359.2.c', /(?:a|is a) unit[\s\S]{0,30}enters the board[\s\S]*location/iu],
+  ['355.10.e', /chosen in whole or in part by other players/iu],
+  ['355.18', /players to make choices[\s\S]*not outlined[\s\S]*made on resolution/iu],
+  ['412.1', /player[\s\S]{0,35}perform(?:s|ing)[\s\S]{0,20}game action[\s\S]{0,35}responsible/iu],
+];
+
 function resolveRuleReference(reference, evidence) {
   const value = String(reference || '').trim();
   const direct = evidence.find(rule => rule.id === value);
@@ -143,9 +167,11 @@ function buildIndex(items) {
     }
   }
   const hideAnchors = new Map();
+  const playAnchors = new Map();
   if (byId.has('core-rules:158')) mapAnchors(ANCHORS, anchors);
   mapAnchors(HIDE_ANCHORS, hideAnchors);
-  return { docs, df, average:docs.reduce((s,d)=>s+d.length,0)/Math.max(1,docs.length), byId, children, references, anchors, hideAnchors };
+  mapAnchors(PLAY_ANCHORS, playAnchors);
+  return { docs, df, average:docs.reduce((s,d)=>s+d.length,0)/Math.max(1,docs.length), byId, children, references, anchors, hideAnchors, playAnchors };
 }
 
 function search(index, question, cards=[], options={}) {
@@ -161,6 +187,8 @@ function search(index, question, cards=[], options={}) {
   if (intent.cleanup) expansions.push('cleanup','lethal damage','marked','kill');
   if (intent.hide) expansions.push('hidden','hide facedown','open state','battlefield');
   if (intent.hideCost) expansions.push('pay power of any domain','energy cost','rune pool','add resources');
+  if (intent.nonStandardCost) expansions.push('mandatory optional additional non-standard costs','pay costs before unit enters board');
+  if (intent.sharedChoice) expansions.push('each player chooses during resolution','not targeted','game action responsibility');
   const baseTerms=[...new Set(tokenize(searchQuestion+' '+expansions.join(' ')))];
   const effectTerms=intent.needsCardText ? [...new Set(tokenize(cards.filter(c=>c.modelReady).map(c=>c.textEn).join(' ').slice(0,1800)))] : [];
   const required=[];
@@ -173,6 +201,11 @@ function search(index, question, cards=[], options={}) {
     const ids = intent.hideCost ? HIDE_ANCHORS.map(([id])=>id) : HIDE_ANCHORS.slice(0,5).map(([id])=>id);
     for(const id of ids) anchor(id,index.hideAnchors);
   }
+  if(intent.nonStandardCost) {
+    for(const id of ['354','355.10.c','356.2.a.1','356.2.b.1','356.7','357.2','358.2'])anchor(id,index.playAnchors);
+    if(intent.costUnit)anchor('359.2.c',index.playAnchors);
+  }
+  if(intent.sharedChoice)for(const id of ['303.1','303.2','303.2.a','355.10.e','355.18','412.1'])anchor(id,index.playAnchors);
   if(intent.timing) ['158.1','158.3','158.3.a','340.1'].forEach(id=>anchor(id));
   if(intent.cleanup) ['418.1.b','142.4.b','321','319.5','323.4'].forEach(id=>anchor(id));
   if(intent.damage && /同時|동시|따로|각각|별개|두|번째|하나씩|separate|simultaneous|each/iu.test(question)) anchor('418.1.d');
