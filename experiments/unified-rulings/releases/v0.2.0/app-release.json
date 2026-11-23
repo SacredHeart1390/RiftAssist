@@ -31,18 +31,18 @@
     "public/app.js": "38e7bcb4c91824fc422072ec95ade3e10759682b19f8d9eebbd041d696d85459",
     "public/card-composer-r2.js": "ba01bd1f4f429a60f394ea1f30f9377e3f7655910d7a01c949c0380c2f75564b",
     "public/card-composer-ui2.js": "7c0b6e480c601016be6760ac4df691630cc9dcf3b8e11ffe33d903e79699a7e0",
-    "public/card-composer-ui3.js": "d9cb469ae947cf7743160eb9e62c8b4ddbfffe717d068e7bc83872dba6a8abed",
+    "public/card-composer-ui3.js": "b995a6b5fb84572060b28096aaf45fec4ee8bece70c24773f77789e478a666b5",
     "public/card-composer.js": "43ec861196aa0997136e3ff5f2e4c60b192e2593e43b693f3d330bbbff1dac46",
     "public/evidence-view.js": "ba2d6fdb5f6ef3833ffe6fca091cf99a38dee6cef9a246112c5ac988ed7b1a41",
     "public/icon.svg": "1865c992975ee8dcc101e9d88be2b35b81bf3159d4e39a13a258e7b78110e612",
-    "public/index.html": "1888d66a0c996f7b0cd4bd506ce467921e523eab69ac540ece3fbafe3077da90",
+    "public/index.html": "02ccb31634b52119d783eab55e5cce43c353c6dc6d048513ce9623d43250d2fd",
     "public/legal.css": "eb90c9a239c3dd82884327899c54806714664ec377c945acc5763db190cca2f8",
     "public/manifest.webmanifest": "a67a7c9675fc0ae97bf7ac6a2f87933d63c554811f0272a99e792fe3c2478e4a",
     "public/privacy.html": "e2aabd3a0d18f1c409ab3fdf9f481b35577d6692605b3ba5681062de86c17854",
     "public/reports-ui3.js": "74f70ac15f6dfc35d3de3a746e9f0075eb39c544a126b75a8f18f6ba9d38b2f2",
     "public/reports.css": "807c8f46c921bcabea5e9d34aa6241885cd16db7604d975740b9eec7cdcd72c0",
     "public/reports.js": "0e04f3cab31632c1167d82430ef6f6601d24a78d2c97cfc150476525af2a53ef",
-    "public/service-worker.js": "b809dcbf9ef0165afed5c984af53750ad826973c80dfff587b1d777a2e8f4b39",
+    "public/service-worker.js": "7473cee8749ae5d562208d3f7001841b282929b4f8a15f073fd89a496cc990a9",
     "public/styles-r2.css": "e8d9dd2cdff6c3c4b180f3b687694a7f13e5c7fdd0daababb624ea82bdee7a57",
     "public/styles-ui2.css": "b738fc9adf100bca6cbb41262029a0595f9f6140061e9b6ca28c46d8343e5a3f",
     "public/styles-ui3.css": "52d9793d067ed6eee780c229719d62523f4e08ca8716050e3283d5c7eeeb34e9",
@@ -155,6 +155,6 @@
     "publicationApproval": false,
     "officialRiotApi": false
   },
-  "uiRevision": "patch-0.2.17",
-  "displayVersion": "0.2.17"
+  "uiRevision": "patch-0.2.18",
+  "displayVersion": "0.2.18"
 }

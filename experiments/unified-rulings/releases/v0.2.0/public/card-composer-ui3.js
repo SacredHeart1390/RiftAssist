@@ -10,7 +10,7 @@
       koreanAI: 'RiftAssist AI 번역 · 비공식', koreanMock: '개발용 모의 번역 · 공식 번역 아님', translationPending: '한국어 번역은 관리자 검토 대기 중입니다. 영문 원문을 확인하세요.', translationSource: '번역 출처·검토',
       errata: '정오표', source: '원문 출처', version: '자료 버전', updated: '갱신일',
       energy: '에너지', power: '힘', might: '위력', selectedNotice: '카드를 선택했습니다.',
-      limit: '한 질문에는 서로 다른 카드 8장까지 연결할 수 있습니다.', tooLong: '질문은 10,000자까지 작성할 수 있습니다.',
+      limit: '한 질문에는 서로 다른 카드 8장까지 연결할 수 있습니다.', tooLong: '질문은 10,000자까지 작성할 수 있습니다.', selectionRetry: '카드 선택을 완료하지 못했습니다. 후보를 다시 선택해 주세요.',
       checking: '카드 목록을 확인하고 있습니다.', catalog: () => '카드명 2글자부터 · 한 글자 챔피언도 검색',
       noneCatalog: '카드 자료 준비 중입니다. 질문에 정확한 카드명과 효과를 적어 주세요.',
       restrictedCatalog: '카드 이용 권한 확인 중으로 카드 검색·이미지·카드에 의존하는 AI 판정을 제한합니다. 규칙·저지 사례는 계속 검색할 수 있습니다.',
@@ -27,7 +27,7 @@
       koreanAI: 'RiftAssist AI translation · unofficial', koreanMock: 'Mock translation · not official', translationPending: 'Korean translation awaits operator review. Check the English original.', translationSource: 'Translation source and review',
       errata: 'Errata', source: 'Original source', version: 'Data version', updated: 'Updated',
       energy: 'Energy', power: 'Power', might: 'Might', selectedNotice: 'Card selected.',
-      limit: 'Select at most 8 different cards per question.', tooLong: 'Questions must be 10,000 characters or fewer.',
+      limit: 'Select at most 8 different cards per question.', tooLong: 'Questions must be 10,000 characters or fewer.', selectionRetry: 'Card selection did not finish. Select the suggestion again.',
       checking: 'Checking card catalog.', catalog: () => '2+ characters, or a single-character Korean champion name.',
       noneCatalog: 'Card data is being prepared. Include the exact card name and effect in your question.',
       restrictedCatalog: 'Card search, images and card-dependent AI answers are restricted while usage rights are reviewed. Rule and judge-case search remains available.',
@@ -67,17 +67,45 @@
       textarea.setAttribute('aria-controls', 'card-options');
       textarea.setAttribute('aria-autocomplete', 'list');
       textarea.setAttribute('aria-expanded', 'false');
-      textarea.addEventListener('input', () => { this.trackEdits(); this.renderHighlights(); this.renderSelected(); if (!this.pointerSelecting && !this.committingChoice) this.schedule(); if(!this.committingChoice)this.scheduleResolution(); });
+      textarea.addEventListener('input', (event) => this.onInput(event));
       textarea.addEventListener('scroll', () => { this.mirror.scrollTop = textarea.scrollTop; this.mirror.scrollLeft = textarea.scrollLeft; });
       textarea.addEventListener('click', () => this.schedule());
       textarea.addEventListener('keyup', (event) => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) this.schedule(); });
       // Search during Korean IME composition too; Enter still belongs to the IME.
-      textarea.addEventListener('compositionstart', () => { this.composing = true; this.imeEnterUntil = 0; });
-      textarea.addEventListener('compositionend', () => { this.composing = false; this.imeEnterUntil = performance.now() + 30; if(this.committingChoice)return; if (!this.pointerSelecting && (this.popup.hidden || this.snapshot?.value !== textarea.value)) this.schedule(); this.scheduleResolution(); });
+      textarea.addEventListener('compositionstart', () => {
+        this.cancelChoice();
+        this.composing = true;
+        this.imeEnterUntil = 0;
+        this.composition = {
+          prefix: textarea.value.slice(0, textarea.selectionStart),
+          suffix: textarea.value.slice(textarea.selectionEnd),
+          changedAt: performance.now(),
+        };
+      });
+      textarea.addEventListener('compositionend', (event) => {
+        this.composing = false;
+        this.imeEnterUntil = performance.now() + 30;
+        if (this.composition) {
+          this.composition.data = event.data;
+          this.composition.endedAt = this.composition.changedAt = performance.now();
+        }
+        this.trackEdits();
+        this.recordCommittedInput();
+        if (this.selectionTask) return;
+        if (!this.pointerSelecting && !this.hasCompositionCandidate()) this.schedule();
+        this.scheduleResolution();
+      });
       textarea.addEventListener('keydown', (event) => this.onKeyDown(event), { capture:true });
       textarea.addEventListener('keyup', (event) => { if (event.key === 'Enter') this.imeEnterUntil = 0; });
+      document.addEventListener('keydown', (event) => {
+        if (event.code === 'Tab' && !event.shiftKey && this.choice?.composition &&
+            this.composing && document.activeElement === document.body) event.preventDefault();
+      }, { capture: true });
       document.addEventListener('pointerdown', (event) => {
-        if (!this.popup.contains(event.target) && event.target !== textarea) this.hideSuggestions();
+        if (!this.popup.contains(event.target) && event.target !== textarea) {
+          this.cancelChoice();
+          this.hideSuggestions();
+        }
       });
       document.addEventListener('pointerup', () => { setTimeout(() => { this.pointerSelecting = false; }, 0); });
       document.addEventListener('pointercancel', () => { this.pointerSelecting = false; });
@@ -299,13 +327,16 @@
         return;
       }
       if (this.frozen) return;
-      if (event.key === 'Escape') { if (!this.popup.hidden) event.preventDefault(); this.hideSuggestions(); return; }
+      if (event.key === 'Escape') { this.cancelChoice(); if (!this.popup.hidden) event.preventDefault(); this.hideSuggestions(); return; }
       if (event.key === 'Tab' || event.code === 'Tab') {
         if (!event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey && (this.selectionTask || (!this.popup.hidden && this.results.length))) {
           event.preventDefault();
           event.stopPropagation();
           if (!this.selectionTask) this.selectResult(this.active >= 0 ? this.active : 0);
-        } else this.hideSuggestions();
+        } else {
+          this.cancelChoice();
+          this.hideSuggestions();
+        }
         return;
       }
       if (this.popup.hidden || !this.results.length) return;
@@ -317,67 +348,170 @@
       }
     }
 
+    compositionRange(snapshot, composition, value) {
+      const start = snapshot.caret - snapshot.matchedLength;
+      const { prefix, suffix } = composition;
+      // Only the original composition slot may change. Its suffix anchors the
+      // right edge even when the final Windows input moves the caret.
+      if (prefix.length < start || prefix.length > snapshot.caret ||
+          !snapshot.value.startsWith(prefix) || snapshot.value.slice(snapshot.caret) !== suffix ||
+          !value.startsWith(prefix) || !value.endsWith(suffix) ||
+          value.length < prefix.length + suffix.length) return null;
+      return { start, end: value.length - suffix.length };
+    }
+
+    onInput(event) {
+      const composition = this.composition;
+      const imeInput = composition && (event.isComposing ||
+        event.inputType === 'insertCompositionText' || event.inputType === 'insertFromComposition' ||
+        (event.inputType === 'insertText' && (this.composing ||
+          (!composition.finalInput && event.data != null && event.data === composition.data &&
+           performance.now() - composition.endedAt < 100))));
+      this.trackEdits();
+      if (imeInput) {
+        composition.changedAt = performance.now();
+        if (!this.composing) composition.finalInput = true;
+        this.recordCommittedInput();
+      } else {
+        this.composition = null;
+        this.cancelChoice();
+      }
+      this.renderHighlights();
+      this.renderSelected();
+      const keepCandidate = imeInput && !this.composing && this.hasCompositionCandidate();
+      if (!this.pointerSelecting && !this.selectionTask && !keepCandidate) this.schedule();
+      if (!this.selectionTask) this.scheduleResolution();
+    }
+
+    hasCompositionCandidate() {
+      return !this.popup.hidden && this.composition && this.results.some(result => this.compositionRange(
+        { ...this.snapshot, matchedLength: result.matchedText.length }, this.composition, this.textarea.value));
+    }
+
+    recordCommittedInput() {
+      const choice = this.choice;
+      if (!choice?.composition || choice.composition !== this.composition || choice.controller.signal.aborted) return;
+      choice.value = this.textarea.value;
+      choice.revision = this.selectionNumber;
+    }
+
+    cancelChoice() {
+      this.choice?.controller.abort();
+    }
+
+    selectionFailed(code) {
+      const status = document.querySelector('#card-announcement');
+      status.dataset.selectionError = code;
+      this.announce(this.t(code === 'detail-unavailable' ? 'error' : 'selectionRetry'));
+      return false;
+    }
+
     selectResult(index) {
-      // One transaction owns both IME commitment and the asynchronous detail lookup.
       if (this.selectionTask) return this.selectionTask;
       const result = this.results[index], snapshot = this.snapshot;
-      if (!result || !snapshot || this.frozen || snapshot.value !== this.textarea.value) return Promise.resolve(false);
-      this.committingChoice = true;
+      if (!result || !snapshot || this.frozen) return Promise.resolve(false);
+      const matchedLength = result.matchedText.length;
+      const start = snapshot.caret - matchedLength;
+      if (!matchedLength || start < 0 || snapshot.value.slice(start, snapshot.caret) !== result.matchedText) {
+        return Promise.resolve(this.selectionFailed('invalid-match'));
+      }
+      const activeComposition = this.composition;
+      const composition = activeComposition && this.compositionRange(
+        { ...snapshot, matchedLength }, activeComposition, this.textarea.value) ? activeComposition : null;
+      if (!composition && (this.composing || snapshot.value !== this.textarea.value || snapshot.caret !== this.textarea.selectionStart)) {
+        this.schedule();
+        return Promise.resolve(this.selectionFailed('candidate-changed'));
+      }
+
+      delete document.querySelector('#card-announcement').dataset.selectionError;
+      this.trackEdits();
+      const choice = {
+        id: result.id, snapshot: { ...snapshot, matchedLength }, composition,
+        value: this.textarea.value, revision: this.selectionNumber,
+        controller: new AbortController(),
+      };
+      this.choice = choice;
       this.hideSuggestions();
-      clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort();
-      this.selectionTask = this.commitResult(result, snapshot).finally(() => {
+      clearTimeout(this.resolveTimer);
+      this.resolveNumber++;
+      this.resolveController?.abort();
+      this.selectionTask = Promise.resolve().then(() => this.commitResult(choice)).finally(() => {
+        this.choice = null;
         this.selectionTask = null;
-        this.committingChoice = false;
+        this.schedule();
         this.scheduleResolution();
       });
       return this.selectionTask;
     }
 
-    async commitResult(result, snapshot) {
+    async waitForComposition(choice) {
+      const composition = choice.composition;
+      const deadline = performance.now() + 750;
+      // Chromium and Windows text services may deliver terminal input on either
+      // side of compositionend. Keep the slot open until both have had time to settle.
+      while (!choice.controller.signal.aborted && performance.now() < deadline) {
+        if (!this.composing && performance.now() - composition.changedAt >= 64) return true;
+        await new Promise(resolve => setTimeout(resolve, 16));
+      }
+      return false;
+    }
+
+    async commitResult(choice) {
+      const { id, snapshot, composition, controller } = choice;
+      const refocus = composition && this.composing && document.activeElement === this.textarea;
+      // Start detail lookup independently. Its response never authorizes a write
+      // until the native input and the anchored replacement range are validated.
+      const detail = fetch('/api/cards/' + encodeURIComponent(id), { signal: controller.signal })
+        .then(response => response.ok ? response.json() : null)
+        .then(data => data?.card?.id === id ? data.card : null)
+        .catch(() => null);
       try {
-        if (this.composing) {
-          // Blur is used only to ask the native IME to commit. Never clear its state
-          // or insert text on a zero-delay timer while its final input is pending.
-          const committed = new Promise(resolve => {
-            const done = () => { clearTimeout(timeout);this.textarea.removeEventListener('compositionend', done);resolve(); };
-            const timeout = setTimeout(done, 250);
-            this.textarea.addEventListener('compositionend', done);
-          });
-          this.textarea.blur();
-          await committed;
-          await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
-          this.textarea.focus();
-          if (this.composing) return false;
+        if (refocus) this.textarea.blur();
+        if (composition && !await this.waitForComposition(choice)) {
+          return this.selectionFailed(controller.signal.aborted ? 'input-changed' : 'ime-timeout');
+        }
+        if (refocus && document.activeElement === document.body) this.textarea.focus();
+        const card = await detail;
+        if (composition && !await this.waitForComposition(choice)) {
+          return this.selectionFailed(controller.signal.aborted ? 'input-changed' : 'ime-timeout');
+        }
+        if (controller.signal.aborted || this.frozen || this.composing ||
+            choice.revision !== this.selectionNumber || choice.value !== this.textarea.value) {
+          return this.selectionFailed('input-changed');
+        }
+        if (!card) return this.selectionFailed('detail-unavailable');
+        const value = this.textarea.value;
+        const range = composition ? this.compositionRange(snapshot, composition, value)
+          : snapshot.caret === this.textarea.selectionStart && snapshot.caret === this.textarea.selectionEnd
+            ? { start: snapshot.caret - snapshot.matchedLength, end: snapshot.caret } : null;
+        if (!range) return this.selectionFailed('range-changed');
+        const ids = this.getCardIds();
+        if (!ids.includes(id) && ids.length >= 8) { this.announce(this.t('limit')); return false; }
+        const label = this.name(card);
+        const nextCharacter = value[range.end];
+        const insertion = label + (!nextCharacter || /[\p{L}\p{N}]/u.test(nextCharacter) ? ' ' : '');
+        if (value.length - (range.end - range.start) + insertion.length > this.textarea.maxLength) {
+          this.announce(this.t('tooLong'));
+          return false;
         }
         this.imeEnterUntil = 0;
-        this.trackEdits();
-        if (snapshot.value !== this.textarea.value || snapshot.caret !== this.textarea.selectionStart || this.frozen) return false;
-        if (!this.getCardIds().includes(result.id) && this.getCardIds().length >= 8) { this.announce(this.t('limit')); return false; }
-        const selectionNumber = this.selectionNumber;
-        const range = { start: snapshot.caret - result.matchedText.length, end: snapshot.caret };
-        if (snapshot.value.slice(range.start, range.end) !== result.matchedText) return false;
-        const response = await fetch('/api/cards/' + encodeURIComponent(result.id));
-        if (!response.ok) throw new Error('Card details unavailable');
-        const { card } = await response.json();
-        if (card?.id !== result.id || selectionNumber !== this.selectionNumber || snapshot.value !== this.textarea.value || snapshot.caret !== this.textarea.selectionStart || this.frozen || this.composing) return false;
-        const label = this.name(card);
-        const nextCharacter = snapshot.value[range.end];
-        const insertion = label + (!nextCharacter || /[\p{L}\p{N}]/u.test(nextCharacter) ? ' ' : '');
-        if (snapshot.value.length - (range.end - range.start) + insertion.length > this.textarea.maxLength) { this.announce(this.t('tooLong')); return false; }
+        this.composition = null;
         this.textarea.setRangeText(insertion, range.start, range.end, 'end');
         this.trackEdits();
-        this.mentions=this.mentions.filter(mention=>mention.end<=range.start||mention.start>=range.start+label.length);
+        this.mentions = this.mentions.filter(mention => mention.end <= range.start || mention.start >= range.start + label.length);
         this.mentions.push({ start: range.start, end: range.start + label.length, label, card });
-        this.mentions.sort((a,b)=>a.start-b.start);
-        this.excludedIds.delete(card.id);this.remember(card);
-        this.hideSuggestions();
-        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        this.mentions.sort((a,b) => a.start - b.start);
+        this.excludedIds.delete(id);
+        this.remember(card);
         this.textarea.focus();
-        this.renderHighlights();
-        this.renderSelected();
+        this.choice = null;
+        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
         this.announce(label + ': ' + this.t('selectedNotice'));
         return true;
-      } catch { this.announce(this.t('error')); return false; }
+      } finally {
+        controller.abort();
+        if (refocus && document.activeElement === document.body) this.textarea.focus();
+      }
     }
 
     thumbnail(card) {
@@ -465,11 +599,12 @@
     freeze(value) {
       this.frozen = value;
       this.textarea.readOnly = value;
-      if (value) { this.hideSuggestions(); this.selectionNumber = (this.selectionNumber || 0) + 1; clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort(); }
+      if (value) { this.cancelChoice(); this.hideSuggestions(); this.selectionNumber = (this.selectionNumber || 0) + 1; clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort(); }
       this.renderSelected();
     }
 
     reset() {
+      this.cancelChoice();
       this.hideSuggestions();
       clearTimeout(this.resolveTimer);this.resolveNumber++;this.resolveController?.abort();this.excludedIds.clear();
       this.selectionNumber = (this.selectionNumber || 0) + 1;

@@ -4,7 +4,8 @@ const {isolatedServer,syntheticPermittedCards}=require('../helpers/isolated-serv
 const {catalog}=require('../helpers/single-character-catalog.cjs');
 async function setup(t,width=1280){
  const data=catalog(),sample=data.cards[0];data.cards.push(...[
-  ['teemo-tactician','티모 - 전략가','Teemo - Tactician'],['teemo-strategy','티모 - 전략의 달인','Teemo - Strategist']
+  ['teemo-tactician','티모 - 전략가','Teemo - Tactician'],['teemo-strategy','티모 - 전략의 달인','Teemo - Strategist'],
+  ['sentry','보초병','Sentry']
  ].map(([id,nameKo,nameEn])=>({...sample,id,nameKo,nameEn,code:id,aliases:[],textEn:'Synthetic test effect.'})));
  const s=await isolatedServer(t,[],{cards:syntheticPermittedCards(data)});
  const browser=await chromium.launch({headless:true,executablePath:process.env.RIFTASSI_E2E_EXECUTABLE_PATH||undefined,args:['--no-proxy-server']});
@@ -66,6 +67,7 @@ test('Escape, ordinary Tab/Shift+Tab, delayed selection cancellation, touch and 
  await query('티모-전');await input.press('Shift+Tab');assert.equal(await input.evaluate(el=>el===document.activeElement),false);
  await context.route('**/api/cards/teemo-tactician',async route=>{await new Promise(r=>setTimeout(r,180));await route.continue();});
  await query('티모-전');await input.press('Tab');await input.fill('붙여넣은 다른 질문');await page.waitForTimeout(350);assert.equal(await input.inputValue(),'붙여넣은 다른 질문');assert.equal(await selected.count(),0);
+ assert.equal(await page.locator('#card-announcement').getAttribute('data-selection-error'),'input-changed');
  await context.unroute('**/api/cards/teemo-tactician');await query('멜');await options.first().tap();await selected.waitFor({state:'visible'});
  await page.locator('#language-select').selectOption('en');await query('Teemo');assert.match(await page.locator('#card-suggestion-status').innerText(),/Tab select card · Enter search · Shift\+Enter newline/);
  assert.equal(s.externalCalls.length,0);
@@ -78,4 +80,54 @@ test('late native-commit event cannot overwrite a Tab insertion or duplicate its
  await input.evaluate(el=>el.addEventListener('blur',()=>setTimeout(()=>{el.value='티모-전';el.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'전'}));el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertCompositionText',data:'전'}));},20),{once:true}));
  await input.press('Tab');await selected.waitFor({state:'visible'});await page.waitForTimeout(150);
  assert.equal(await input.inputValue(),'티모 - 전략가 ');assert.equal(await selected.count(),1);assert.equal(await selected.getAttribute('data-card-id'),'teemo-tactician');assert.equal(s.externalCalls.length,0);
+});
+
+for (const scenario of [
+  {base:'먼저 티모-', preview:'전', commit:'전략', final:'전략', endCaret:0, expected:'먼저 티모 - 전략가 이후 질문', name:'티모 - 전략가', id:'teemo-tactician', apiFirst:true},
+  {base:'먼저 보', preview:'초', commit:'초', final:'초초', endCaret:2, expected:'먼저 보초병 이후 질문', name:'보초병', id:'sentry', apiFirst:false},
+]) test('Tab rebases a changed IME tail and caret inside a sentence: '+scenario.id,async t=>{
+ const {s,page,context,input,options,selected}=await setup(t);
+ const suffix=' 이후 질문';
+ let requests=0,releaseDetails,seenDetails,ended=false,responseBeforeEnd;
+ const detailsGate=new Promise(resolve=>releaseDetails=resolve);
+ const responded=new Promise(resolve=>seenDetails=resolve);
+ page.on('response',response=>{if(response.url().endsWith('/api/cards/'+scenario.id)){responseBeforeEnd=!ended;seenDetails();}});
+ await context.route('**/api/cards/'+scenario.id,async route=>{requests++;if(!scenario.apiFirst)await detailsGate;await route.continue();});
+ await input.fill(scenario.base+suffix);
+ await input.evaluate((el,start)=>{
+   el.setSelectionRange(start,start);
+   el.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));
+ },scenario.base.length);
+ await input.evaluate((el,{base,preview,suffix})=>{
+   el.value=base+preview+suffix;
+   el.setSelectionRange(base.length+preview.length,base.length+preview.length);
+   el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertCompositionText',isComposing:true,data:preview}));
+ },{...scenario,suffix});
+ await options.filter({has:page.locator('.card-option-copy > strong',{hasText:scenario.name})}).hover();
+ const previewValue=await input.inputValue();
+ await input.press('Tab');
+ if(scenario.apiFirst) await Promise.race([responded,new Promise(resolve=>setTimeout(resolve,120))]);
+ ended=true;
+ await input.evaluate((el,{base,commit,suffix})=>{
+   el.value=base+commit+suffix;
+   el.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:commit}));
+ },{...scenario,suffix});
+ await page.waitForTimeout(20);
+ await input.evaluate((el,{base,final,suffix,endCaret})=>{
+   el.value=base+final+suffix;
+   el.setSelectionRange(base.length+endCaret,base.length+endCaret);
+   el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertCompositionText',data:final}));
+ },{...scenario,suffix});
+ assert.notEqual(previewValue,await input.inputValue());
+ if(!scenario.apiFirst){
+   await page.waitForFunction(()=>document.activeElement===document.querySelector('#question'),{},{timeout:3000});
+   await input.press('Tab');await input.press('Tab');releaseDetails();
+ }
+ await selected.waitFor({state:'visible',timeout:5000});
+ assert.equal(await input.inputValue(),scenario.expected);
+ assert.equal(await selected.getAttribute('data-card-id'),scenario.id);
+ assert.equal(requests,1);assert.equal(await selected.count(),1);
+ assert.equal(responseBeforeEnd,scenario.apiFirst);
+ const resolved=await s.request('/api/cards/resolve',{method:'POST',body:{question:scenario.expected,cardIds:[scenario.id]}});
+ assert.equal(resolved.status,200);assert.ok(resolved.body.cards.some(card=>card.id===scenario.id));
 });
