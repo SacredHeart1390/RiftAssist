@@ -10,6 +10,6 @@ for(const width of [1280,390])test(`play procedures show the supported ruling an
  await page.locator('#question').fill(choiceCard.nameKo);await page.locator('.card-option').first().waitFor();await page.locator('#question').press('ArrowDown');await page.locator('#question').press('Tab');await page.locator('.selected-card').waitFor();await page.locator('#question').fill(choiceCard.nameKo+'의 처치 행동은 누가 선택하고 책임지나요?');await page.locator('#submit-button').click();
  await page.waitForFunction(()=>document.querySelector('#answer-recommendation')?.textContent.includes('각 플레이어'));
  assert.equal(await page.locator('#answer-recommendation').innerText(),ruling.recommendation);assert.equal(await page.locator('#resolution-steps li').count(),2);
- await page.locator('#language-select').selectOption('en');const item=page.locator('#evidence-list details').filter({hasText:'355.10.e'}).first();await item.locator('summary').click();assert.match(await item.innerText(),/chosen|targets/);
+ await page.locator('#language-select').selectOption('en');await page.locator('#official-rules > summary').click();const item=page.locator('#evidence-list details').filter({hasText:'355.10.e'}).first();await item.locator('summary').click();assert.match(await item.innerText(),/chosen|targets/);
  assert.equal(s.externalCalls.length,1);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
 });

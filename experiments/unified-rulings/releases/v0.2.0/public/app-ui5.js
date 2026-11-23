@@ -2,17 +2,17 @@ const strings = {
   ko: {
     developmentMock: '개발 버전 · 외부 서비스는 모의 응답을 사용합니다.', developmentLive: '개발 버전 · 외부 서비스의 실제 호출이 활성화되어 있습니다.', developmentTest: '개발 버전 · 테스트 전송 모드를 사용합니다.',
     prototype: '베타', language: '언어', eyebrow: 'TABLETOP RULES, CLEARLY',
-    headline: '복잡한 상황도,<br><em>근거부터 차근차근.</em>',
+    headline: '리프트바운드 룰링 검색',
     subhead: '카드 효과부터 대회 중 상황까지, 궁금한 내용을 그대로 적어 주세요. 게임 규칙과 대회 규칙, 리프트저지 사례를 함께 살펴봅니다.',
     promptLabel: '어떤 상황인가요?',
-    promptPlaceholder: '예: 대회 시간 종료 후 마지막 차례에 시간 왜곡을 사용했어요. 추가 차례를 진행할 수 있나요?',
-    askButton: '근거 찾아 답변받기', footerDisclaimer: 'RiftAssist의 AI 답변은 오류가 있을 수 있는 참고 정보입니다. 공식 Riot Games 판정이나 대회 저지의 최종 판정을 대체하지 않습니다.',
+    promptPlaceholder: '카드명과 궁금한 상황을 입력하세요.',
+    askButton: '검색', coreRulesGroup: '공식 룰', tournamentRulesGroup: '토너먼트 룰', casesGroup: '리프트저지 사례', footerMore: '안내·Riot 고지', footerDisclaimer: 'RiftAssist의 AI 답변은 오류가 있을 수 있는 참고 정보입니다. 공식 Riot Games 판정이나 대회 저지의 최종 판정을 대체하지 않습니다.',
     privacyLink: '개인정보 처리방침', termsLink: '이용약관',
     privacyNote: '질문 일부와 검색어가 필요 시 RiftJudge로 전송됩니다. AI 생성 시 질문·선택 카드·검색 근거를 OpenAI로 보냅니다.',
     privacyNoteSearchOnly: '질문 일부와 검색어가 필요 시 RiftJudge로 전송됩니다. 현재 OpenAI 생성 호출은 꺼져 있습니다.',
     privacyNoteWithLogs: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
     privacyNoteMetadata: '질문·답변 본문은 7일, 검색·처리 기록은 30일, 제보와 연결 사본은 90일 후 정리 대상입니다. 백업은 별도 관리합니다. 개인정보는 적지 마세요. 자세한 내용은 하단 개인정보 처리방침에서 확인하세요.',
-    privacyNoteMock: '개발용 모의 응답입니다. 질문을 외부 OpenAI·RiftJudge로 보내지 않습니다. 기록은 분리된 개발 DB에 저장됩니다.', privacyNoteLoading: '연결 상태를 확인하고 있습니다.', connectionError: '서버에 연결하지 못했습니다. 잠시 후 페이지를 새로고침해 주세요.', answerLabel: '근거 기반 답변', newQuestion: '새 질문', sourceLinks: '출처 바로가기', officialLink: '공식 규칙 허브 ↗',
+    privacyNoteMock: '개발용 모의 응답입니다. 질문을 외부 OpenAI·RiftJudge로 보내지 않습니다. 기록은 분리된 개발 DB에 저장됩니다.', privacyNoteLoading: '연결 상태를 확인하고 있습니다.', connectionError: '서버에 연결하지 못했습니다. 잠시 후 페이지를 새로고침해 주세요.', answerLabel: '답변', newQuestion: '새 질문', sourceLinks: '출처 바로가기', officialLink: '공식 규칙 허브 ↗',
     resolutionTitle: '처리 순서', ruleEvidenceTitle: '참조한 공식 룰', caseEvidenceTitle: '참고한 리프트저지 사례', followUpTitle: '확인이 필요한 점',
     cardEvidenceTitle: '질문에 연결된 카드', cardDetailsNeeded: '카드 확인 필요', cardAccessRestricted: '카드 이용 제한', caseComparison: 'AI가 설명한 사례 적용', sharedConditions: '공통 조건', differences: '차이점', application: '현재 질문에 적용',
     sourcesTitle: '연결된 출처',
@@ -28,17 +28,17 @@ const strings = {
   en: {
     developmentMock: 'Development version · external services use mock responses.', developmentLive: 'Development version · live external service calls are enabled.', developmentTest: 'Development version · test transport mode is active.',
     prototype: 'BETA', language: 'Language', eyebrow: 'TABLETOP RULES, CLEARLY',
-    headline: 'Complex situations,<br><em>grounded in evidence.</em>',
+    headline: 'Riftbound Ruling Search',
     subhead: 'From card interactions to tournament situations, just describe what happened. The assistant considers gameplay rules, tournament rules and RiftJudge examples together.',
     promptLabel: 'What happened?',
-    promptPlaceholder: 'For example: I played Time Warp on the final turn after time was called at a tournament. Can I take another turn?',
-    askButton: 'Search and answer', footerDisclaimer: 'RiftAssist AI answers are reference information and may contain errors. They do not replace official Riot Games rulings or a tournament judge’s final decision.',
+    promptPlaceholder: 'Enter cards and your rules question.',
+    askButton: 'Search', coreRulesGroup: 'Official rules', tournamentRulesGroup: 'Tournament rules', casesGroup: 'RiftJudge cases', footerMore: 'About · Riot notice', footerDisclaimer: 'RiftAssist AI answers are reference information and may contain errors. They do not replace official Riot Games rulings or a tournament judge’s final decision.',
     privacyLink: 'Privacy Policy', termsLink: 'Terms of Use',
     privacyNote: 'Question excerpts and search terms go to RiftJudge when needed. AI generation sends your question, selected cards and retrieved sources to OpenAI.',
     privacyNoteSearchOnly: 'Question excerpts and search terms go to RiftJudge when needed. OpenAI generation is currently off.',
     privacyNoteWithLogs: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
     privacyNoteMetadata: 'Question and answer bodies become eligible for cleanup after 7 days, search/processing records after 30 days, and reports with linked copies after 90 days. Backups are managed separately. Do not enter personal information. See the Privacy Policy in the footer.',
-    privacyNoteMock: 'Development mock responses. Questions do not reach external OpenAI/RiftJudge services. Records are stored in the separate development DB.', privacyNoteLoading: 'Checking connection status.', connectionError: 'Could not connect to the server. Please refresh the page shortly.', answerLabel: 'Evidence-based answer', newQuestion: 'New question', sourceLinks: 'Open references', officialLink: 'Official Rules Hub ↗',
+    privacyNoteMock: 'Development mock responses. Questions do not reach external OpenAI/RiftJudge services. Records are stored in the separate development DB.', privacyNoteLoading: 'Checking connection status.', connectionError: 'Could not connect to the server. Please refresh the page shortly.', answerLabel: 'Answer', newQuestion: 'New question', sourceLinks: 'Open references', officialLink: 'Official Rules Hub ↗',
     resolutionTitle: 'Resolution steps', ruleEvidenceTitle: 'Official rules referenced', caseEvidenceTitle: 'RiftJudge examples', followUpTitle: 'Details to confirm',
     cardEvidenceTitle: 'Cards linked to the question', cardDetailsNeeded: 'Card confirmation needed', cardAccessRestricted: 'Card access restricted', caseComparison: 'AI explanation of applicability', sharedConditions: 'Shared conditions', differences: 'Differences', application: 'Application to this question',
     sourcesTitle: 'Connected references',
@@ -65,7 +65,7 @@ const caseList = document.querySelector('#case-list');
 const cardComposer = new window.CardComposer(question, state.language);
 let contentLoggingEnabled = false;
 const connectionRetry=document.createElement('button');connectionRetry.type='button';connectionRetry.id='connection-retry';connectionRetry.hidden=true;
-document.querySelector('[data-i18n^="privacyNote"]').after(connectionRetry);
+document.querySelector('#connection-status').after(connectionRetry);
 
 function tr(key) { return strings[state.language][key] || strings.ko[key] || key; }
 
@@ -81,6 +81,9 @@ function updatePrivacyNotice() {
   const notice = state.versionMismatch ? (state.language==='en'?'The service version changed. Save your input before reloading.':'서비스 버전이 변경됐습니다. 입력 내용을 보관한 뒤 새로고침해 주세요.') : state.connectionFailed ? tr('connectionError') : !state.privacyReady ? tr('privacyNoteLoading')
     : state.providerMode === 'mock' ? tr('privacyNoteMock') : `${tr(state.aiEnabled ? 'privacyNote' : 'privacyNoteSearchOnly')} ${tr(contentLoggingEnabled ? 'privacyNoteWithLogs' : 'privacyNoteMetadata')}`;
   document.querySelector('[data-i18n^="privacyNote"]').textContent = notice;
+  const connectionStatus = document.querySelector('#connection-status');
+  connectionStatus.textContent = notice;
+  connectionStatus.hidden = state.privacyReady && !state.connectionFailed && !state.versionMismatch;
   connectionRetry.textContent=state.language==='en'?'Check connection again':'연결 다시 확인';connectionRetry.hidden=!state.connectionFailed&&!state.versionMismatch;
 }
 
@@ -88,7 +91,7 @@ function applyLanguage(language) {
   state.language = language === 'en' ? 'en' : 'ko';
   document.documentElement.lang = state.language;
   cardComposer.setLanguage(state.language);
-  document.title = state.language === 'en' ? 'RiftAssist — Riftbound Rules' : 'RiftAssist · 리프트어시 — 리프트바운드 규칙 도우미';
+  document.title = state.language === 'en' ? 'RiftAssist — Riftbound Ruling Search' : 'RiftAssist · 리프트바운드 룰링 검색';
   document.querySelectorAll('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n;
     if (strings[state.language][key]) element.innerHTML = strings[state.language][key];
@@ -126,14 +129,24 @@ function appendSourceLinks(sources) {
     const link = safeLink(source.url, source.title);
     if (link) list.append(link);
   }
+  document.querySelector('#official-rules').hidden = !Number(document.querySelector('#core-rule-count').textContent) && !list.childElementCount;
 }
 
 function renderEvidence(evidence, citedRuleIds = []) {
-  window.EvidenceView.renderRules(evidenceList, evidence, citedRuleIds, state.language, tr('noRuleMatches'));
+  const core = (evidence || []).filter(item => item.documentId !== 'tournament-rules');
+  const tournament = (evidence || []).filter(item => item.documentId === 'tournament-rules');
+  window.EvidenceView.renderRules(evidenceList, core, citedRuleIds, state.language, tr('noRuleMatches'));
+  window.EvidenceView.renderRules(document.querySelector('#tournament-evidence-list'), tournament, citedRuleIds, state.language, tr('noRuleMatches'));
+  document.querySelector('#core-rule-count').textContent = core.length;
+  document.querySelector('#tournament-rule-count').textContent = tournament.length;
+  document.querySelector('#official-rules').hidden = !core.length && !document.querySelector('#source-list').childElementCount;
+  document.querySelector('#tournament-rules').hidden = !tournament.length;
 }
 
 function renderCases(cases, citedCaseIds = [], comparisons = []) {
   window.EvidenceView.renderCases(caseList, cases, citedCaseIds, comparisons, state.language, tr('noCases'));
+  document.querySelector('#case-count').textContent = (cases || []).length;
+  document.querySelector('#judge-cases').hidden = !cases?.length;
 }
 
 function setAnswerStatus(data) {
@@ -181,6 +194,7 @@ form.addEventListener('submit', async (event) => {
     answerCard.dataset.status = data.status;
     setAnswerStatus(data);
     latestAnswer = data;
+    document.querySelectorAll('.result-group').forEach(group => { group.open = false; });
     document.querySelector('#answer-recommendation').textContent = data.recommendation;
     document.querySelector('#answer-reasoning').textContent = data.reasoning;
     const steps = (data.resolutionSteps || []).filter(step => typeof step === 'string' && step.trim());
@@ -203,7 +217,7 @@ form.addEventListener('submit', async (event) => {
     document.querySelector('#follow-up-section').hidden = !(data.followUpQuestions || []).length;
     appendSourceLinks(data.sources);
     answerCard.hidden = false;
-    answerCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    answerCard.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   } catch (error) {
     latestAnswer = null;
     answerCard.dataset.status = 'error';
@@ -214,6 +228,9 @@ form.addEventListener('submit', async (event) => {
     document.querySelector('#resolution-section').hidden = true;
     evidenceList.replaceChildren();
     caseList.replaceChildren();
+    document.querySelector('#tournament-evidence-list').replaceChildren();
+    document.querySelectorAll('.result-group').forEach(group => { group.open = false; group.hidden = true; });
+    document.querySelector('#core-rule-count').textContent = '0';
     document.querySelector('#answer-cards').replaceChildren();
     document.querySelector('#answer-card-section').hidden = true;
     document.querySelector('#follow-up-section').hidden = true;

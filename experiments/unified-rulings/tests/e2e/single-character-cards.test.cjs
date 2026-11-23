@@ -25,6 +25,6 @@ for(const width of [1280,390])test(`single-character autocomplete IME selection 
  const r=await s.request('/api/cards/resolve',{method:'POST',body:{question:await input.inputValue(),cardIds:[id]}});assert.equal(r.status,200);assert.ok(r.body.cards.some(c=>c.id===id));
  await page.locator('.unlink-card').click();assert.equal(await page.locator('#selected-cards .selected-card').count(),0);
  await input.fill('멜');await page.locator('#card-options .card-option').first().click();await page.locator('#selected-cards .selected-card').waitFor({state:'visible'});
- await page.locator('#language-select').selectOption('en');assert.match(await page.locator('#card-catalog-note').innerText(),/Single-character Korean champion/);
+ await page.locator('#language-select').selectOption('en');assert.match(await page.locator('#card-catalog-note').innerText(),/single-character Korean champion/i);
  assert.equal(s.externalCalls.length,0);
 });

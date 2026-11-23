@@ -20,11 +20,10 @@
   const close = document.createElement('button'); close.type='button'; close.addEventListener('click',()=>{if(!sending)dialog.close();});
   actions.append(send,close); form.append(heading,context,categoryLabel,fieldset,descriptionLabel,expectedLabel,warning,status,actions); document.body.append(dialog);
   const footer = document.createElement('section'); footer.className='report-footer';
-  const footerText = document.createElement('p'), open = document.createElement('button');
-  open.type='button';footer.append(footerText,open);document.querySelector('.page-footer').before(footer);
+  const open = document.createElement('button');
+  open.type='button';footer.append(open);document.querySelector('.legal-links').append(footer);
   const answerButton=document.createElement('button');answerButton.type='button';answerButton.className='answer-report-button';document.querySelector('#answer-notice').after(answerButton);
   function labels() {
-    footerText.textContent=text('답변이 틀리거나, 이용 중 오류가 있으신가요?','Wrong answer or a problem using the app?');
     open.textContent=text('오류·버그 제보','Report a problem');answerButton.textContent=text('이 답변 제보하기','Report this answer');
   }
   function show() {

@@ -74,7 +74,7 @@ test('evidence validation failure uses its own Korean and English status', async
 test('01 데스크톱: 첫 화면과 빈 입력·공백 입력 보호', async t => {
   const app = await browserSession(t, []);
   await app.open(); await app.ready();
-  assert.match(await app.page.title(), /리프트어시/);
+  assert.match(await app.page.title(), /리프트바운드 룰링 검색/);
   assert.equal(await app.page.locator('h1').isVisible(), true);
   assert.equal(await app.page.locator('#question').isVisible(), true);
   await app.page.locator('#submit-button').click();
@@ -100,6 +100,8 @@ test('02 데스크톱: 카드 Tab 선택 → 질문 → 처리 순서·접이식
   await resultShown(app.page);
   assert.equal(await app.page.locator('#answer-recommendation').innerText(), expected);
   assert.deepEqual(await app.page.locator('#resolution-steps li').allTextContents(), steps);
+  assert.equal(await app.page.locator('#official-rules').evaluate(el => el.open), false);
+  await app.page.locator('#official-rules > summary').click();
   const rule = app.page.locator('#evidence-list details').filter({ hasText: '472' }).first();
   assert.equal(await rule.evaluate(el => el.open), false);
   await rule.locator('summary').click();
@@ -144,7 +146,7 @@ test('04 초기 서버 연결 실패: 오류 안내를 표시하고 새로고침
     return route.continue();
   });
   await app.open();
-  await app.page.waitForFunction(() => /연결.*(?:실패|못)|서버.*(?:실패|못)/u.test(document.querySelector('.privacy-note').textContent));
+  await app.page.waitForFunction(() => /연결.*(?:실패|못)|서버.*(?:실패|못)/u.test(document.querySelector('#connection-status').textContent));
   assert.equal(await app.page.locator('#submit-button').isDisabled(), true);
   assert.equal(app.server.externalCalls.length, 0);
   await app.page.reload(); await app.ready(); await app.ask(); await resultShown(app.page);

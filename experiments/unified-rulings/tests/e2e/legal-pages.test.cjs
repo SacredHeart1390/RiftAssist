@@ -14,7 +14,7 @@ test('unconfirmed runtime stays hidden while health is pending',async t=>{
   try{
     await page.goto(server.baseURL,{waitUntil:'domcontentloaded'});
     assert.equal(await page.locator('#runtime-notice').isVisible(),false);
-    assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),/확인하고 있습니다/);
+    assert.match(await page.locator('#connection-status').innerText(),/확인하고 있습니다/);
   }finally{releaseHealth();}
   await page.waitForFunction(()=>!document.querySelector('#submit-button').disabled);
   assert.equal(await page.locator('#runtime-notice').isVisible(),false);
@@ -54,7 +54,7 @@ for(const failure of ['network','http','missing-mode','invalid-json']){
     for(const language of ['ko','en']){
       await page.locator('#language-select').selectOption(language);
       assert.equal(await page.locator('#runtime-notice').isVisible(),false);
-      assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),language==='ko'?/연결하지 못했습니다/:/Could not connect/);
+      assert.match(await page.locator('#connection-status').innerText(),language==='ko'?/연결하지 못했습니다/:/Could not connect/);
       assert.equal(await page.locator('#submit-button').isDisabled(),true);
     }
     fail=false;await page.locator('#connection-retry').click();
@@ -98,6 +98,8 @@ for (const width of [1280, 390, 320]) {
     const { page, server, browser } = await openBrowser(t, { width });
     await page.goto(server.baseURL);
     await page.waitForFunction(() => !document.querySelector('#submit-button').disabled);
+    assert.equal(await page.locator('.footer-info').evaluate(el=>el.open),false);
+    await page.locator('.footer-info > summary').click();
     assert.equal(await page.locator('.riot-notice').innerText(), notice);
     assert.match(await page.locator('.footer-disclaimer').innerText(), /공식 Riot Games.*대회 저지의 최종 판정/);
     const privacy = page.getByRole('link', { name: '개인정보 처리방침', exact: true });
@@ -113,6 +115,7 @@ for (const width of [1280, 390, 320]) {
     if (width === 390) await screen(page, 'mobile-privacy.png');
     await page.goto(server.baseURL);
     await page.locator('#language-select').selectOption('en');
+    await page.locator('.footer-info > summary').click();
     assert.equal(await page.locator('.riot-notice').innerText(), notice);
     assert.match(await page.locator('.footer-disclaimer').innerText(), /official Riot Games rulings.*tournament judge/);
     await page.getByRole('link', { name: 'Terms of Use', exact: true }).click();
@@ -262,7 +265,7 @@ test('a rolled-back server disables the new UI without discarding input or forci
   await page.route('**/api/health',async route=>{checks++;const response=await route.fetch(),body=await response.json();await route.fulfill({response,json:{...body,version:'0.1.7'}});});
   await page.goto(server.baseURL);await page.locator('#connection-retry').waitFor({state:'visible'});
   await page.locator('#question').fill('보존할 합성 질문');assert.equal(await page.locator('#submit-button').isDisabled(),true);
-  assert.match(await page.locator('[data-i18n^="privacyNote"]').innerText(),/버전이 변경/);assert.equal(checks,1);
+  assert.match(await page.locator('#connection-status').innerText(),/버전이 변경/);assert.equal(checks,1);
   assert.equal(await page.locator('#question').inputValue(),'보존할 합성 질문');
 });
 
